@@ -1,0 +1,879 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="94c9ba79-1d61-404b-8cb0-6b250a4a4658" name="Changes" comment="Initial commit - I took the Tiamat branch with vehicle registry integrated, split it into a separate Sobek project and essentially removed all the Stop place code from it. There may still be some traces of the Stop place part, but mostly this is &quot;Vehicle registry only&quot;">
+      <change afterPath="$PROJECT_DIR$/.github/pull_request_template.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.github/workflows/ci.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.github/workflows/entur-push.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/IntelliLang.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/httpRequests/http-client.cookies" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/httpRequests/http-requests-log.http" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Keycloak_Setup_Guide.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/renovate.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/SobekApplication.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/auth/AuthorizationService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/auth/DefaultAuthorizationService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/auth/OAuth2Config.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/auth/SobekEntityResolver.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/auth/SobekSecurityConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/auth/UsernameFetcher.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/auth/check/SobekOriganisationChecker.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/autosys/MapperService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/changelog/EntityChangedEvent.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/changelog/EntityChangedEventActiveMQPublisher.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/changelog/EntityChangedEventLocalPublisher.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/changelog/EntityChangedEventPubSubPublisher.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/changelog/EntityChangedEventPublisher.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/changelog/EntityChangedListener.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/changelog/LocalChangelogConfiguration.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/config/ApplicationContextProvider.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/config/AuthorizationServiceConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/config/ChainedTransactionConfiguration.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/config/GeometryFactoryConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/config/HazelCastConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/config/JerseyConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/config/JettyConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/config/RutebankenBlobStoreConfiguration.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/config/StreamingPublicationDeliveryConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/diff/SobekObjectDiffer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/diff/generic/DiffType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/diff/generic/Difference.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/diff/generic/GenericDiffConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/diff/generic/GenericObjectDiffer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/diff/generic/SubmodeEnumuration.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/dtoassembling/dto/IdMappingDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/dtoassembling/dto/IdMappingDtoCsvMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/dtoassembling/dto/IdMappingIntervalDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/dtoassembling/dto/JbvCodeMappingDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/exporter/AsyncPublicationDeliveryExporter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/exporter/PublicationDeliveryCreator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/exporter/PublicationDeliveryStructurePage.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/exporter/SobekComositeFrameExporter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/exporter/SobekPublicationDeliveryExportException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/exporter/SobekResourceFrameExporter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/exporter/SobekServiceFrameExporter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/exporter/StreamingPublicationDelivery.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/exporter/async/ExportJobWorker.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/exporter/async/NetexMappingIterator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/exporter/async/NetexMappingIteratorList.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/exporter/eviction/EntitiesEvictor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/exporter/eviction/SessionEntitiesEvictor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/exporter/params/ExportParams.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/exporter/params/SearchObject.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/filter/LoggingFilter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/general/PeriodicCacheLogger.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/general/ResettableMemoizer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/geo/DoubleValuesToCoordinateSequence.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/importer/DeckPlanImporter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/importer/ImportParams.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/importer/ImportType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/importer/KeyValueListAppender.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/importer/PublicationDeliveryImporter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/importer/VehicleImporter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/importer/VehicleModelImporter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/importer/VehicleTypeImporter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/importer/converter/DeckPlanIdConverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/importer/converter/GenericIdConverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/importer/converter/VehicleIdConverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/importer/converter/VehicleModelIdConverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/importer/converter/VehicleTypeIdConverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/importer/handler/DeckPlanImportHandler.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/importer/handler/VehicleImportHandler.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/importer/handler/VehicleModelImportHandler.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/importer/handler/VehicleTypeImportHandler.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/importer/log/ImportLogger.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/importer/log/ImportLoggerTask.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/importer/matching/OriginalIdMatcher.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/importer/modifier/WordsRemover.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/jersey/JerseyJava8TimeConverterProvider.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/lock/LockException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/lock/MutateLock.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/lock/TimeoutMaxLeaseTimeLock.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/AccessibilityAssessment.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/AccessibilityAssessmentRefStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/AccessibilityAssessment_VersionedChildStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/AccessibilityLimitation.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/AccessibilityLimitation_VersionedChildStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/AlternativeName.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/Common_VersionFrameStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/ContainmentAggregationStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/CoveredEnumeration.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/DataManagedObjectStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/DataSourceRefStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/EmbeddableMultilingualString.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/EntityInVersionStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/EntityStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/Equipment_VersionStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/Equipments_RelStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/ExtensionsStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/FromVersionRef.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/GenderLimitationEnumeration.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/GeneralSign.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/GroupOfEntitiesRefStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/GroupOfEntities_VersionStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/GroupOfPointsRefStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/GroupOfPoints_VersionStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/InstalledEquipment_VersionStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/LanguageUsageStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/LanguageUseEnumeration.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/Languages.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/LimitationStatusEnumeration.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/LinkRefStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/LocaleStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/ModificationEnumeration.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/ModificationSetEnumeration.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/MultilingualString.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/MultilingualStringEntity.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/NameTypeEnumeration.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/OneToManyRelationshipStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/OrderedVersionOfObjectRefStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/OrganisationRefStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/PassageTypeEnumeration.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/PassengerEquipment_VersionStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/PaymentByMobileStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/PaymentMethodEnumeration.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/PersistablePolygon.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/Point.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/PointOnLink.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/PointOnLink_VersionedChildStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/PointRefStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/PointRefs_RelStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/PrivateCodeStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/Projections_RelStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/QueueManagementEnumeration.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/RelationshipStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/ResourceFrame.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/SanitaryEquipment.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/SanitaryEquipment_VersionStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/SanitaryFacilityEnumeration.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/ServiceFrame.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/SignContentEnumeration.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/SignEquipment_VersionStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/SimpleObjectRefStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/StaffingEnumeration.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/StatusEnumeration.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/StrictContainmentAggregationStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/SystemOfUnits.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/TransitionEnumeration.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/TypeOfEntity_VersionStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/TypeOfEquipmentRefStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/TypeOfFrameRefStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/TypeOfPointRefStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/TypeOfPointRefs_RelStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/TypeOfValueRefStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/TypeOfValue_VersionStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/ValidBetween.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/Value.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/VersionFrameDefaultsStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/VersionFrame_VersionStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/VersionOfObjectRefStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/VersionRefStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/VersionedChildStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/Versions_RelStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/ZoneRefStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/Zone_VersionStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/authorization/AuthorizationResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/authorization/EntityPermissions.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/authorization/UserPermissions.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/identification/IdentifiedEntity.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/job/ExportJob.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/job/JobStatus.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/netex.ucls" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/package-info.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/tag/Tag.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/tag/TagPK.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/AllPublicTransportModesEnumeration.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/ComponentOrientationEnumeration.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/CompositeFrame.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/Composite_VersionFrameStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/ContactRefStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/Deck.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/DeckComponent_VersionStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/DeckEntranceTypeEnumeration.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/DeckPlan.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/DeckPlanRefStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/DeckSpace_VersionStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/FacilityRequirements_RelStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/FareClassEnumeration.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/Frames_RelStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/FuelTypeEnumeration.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/LocatableSpot_VersionStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/OnboardSpace_VersionStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/PassengerCapacity.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/PassengerCapacityStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/PassengerCarryingRequirements_RelStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/PassengerEntrance.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/PassengerSpace.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/PassengerSpaceTypeEnumeration.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/PassengerSpot.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/PropulsionTypeEnumeration.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/ServiceFacilitySets_RelStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/SpotRow.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/TableTypeEnumeration.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/Train.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/TrainComponents_RelStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/TrainSizeEnumeration.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/TrainSizeStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/Train_VersionStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/TransportOrganisationRefStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/TransportTypeRefStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/TransportType_VersionStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/TypeOfLocatableSpotEnumeration.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/ValidityConditions_RelStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/Vehicle.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/VehicleEquipmentProfile.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/VehicleEquipmentProfileMember.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/VehicleEquipmentProfileRefStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/VehicleEquipmentProfileRefs_RelStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/VehicleEquipmentProfile_VersionStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/VehicleManoeuvringRequirements_RelStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/VehicleModel.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/VehicleModelProfileRefStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/VehicleModelRefStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/VehicleModel_VersionStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/VehicleOrientationEnumeration.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/VehicleSideEnumeration.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/VehicleType.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/VehicleTypeRefStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/VehicleType_VersionStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/model/vehicle/Vehicle_VersionStructure.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/id/GaplessIdGeneratorService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/id/GeneratedIdState.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/id/IdGeneratorException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/id/NetexIdAssigner.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/id/NetexIdHelper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/id/NetexIdProvider.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/id/TypeFromIdResolver.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/id/ValidPrefixList.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/mapping/NetexMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/mapping/NetexMappingContext.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/mapping/NetexMappingContextThreadLocal.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/mapping/NetexMappingException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/mapping/PublicationDeliveryHelper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/mapping/converter/AccessibilityLimitationsListConverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/mapping/converter/AlternativeNamesConverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/mapping/converter/DeckListConverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/mapping/converter/DeckPlanRefConverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/mapping/converter/DurationConverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/mapping/converter/KeyValuesToKeyListConverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/mapping/converter/LineStringConverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/mapping/converter/LocalDateTimeInstantConverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/mapping/converter/OffsetDateTimeInstantConverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/mapping/converter/PassengerCapacitySetConverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/mapping/converter/PassengerEntranceListConverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/mapping/converter/PassengerSpaceListConverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/mapping/converter/PassengerSpotListConverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/mapping/converter/PolygonConverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/mapping/converter/SimplePointVersionStructureConverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/mapping/converter/SpotRowListConverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/mapping/converter/TransportTypeRefConverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/mapping/converter/ValidBetweenConverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/mapping/converter/VehicleEquipmentProfileMemberListConverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/mapping/converter/VehicleModelRefConverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/mapping/converter/ZonedDateTimeInstantConverter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/mapping/mapper/AccessibilityAssessmentMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/mapping/mapper/DataManagedObjectStructureMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/mapping/mapper/DeckMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/mapping/mapper/DeckPlanMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/mapping/mapper/KeyListToKeyValuesMapMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/mapping/mapper/MultilingualStringMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/mapping/mapper/NetexIdMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/mapping/mapper/PassengerCapacityStructureMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/mapping/mapper/PassengerEntranceMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/mapping/mapper/PassengerSpaceMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/mapping/mapper/PassengerSpotMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/mapping/mapper/SpotRowMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/mapping/mapper/TagKeyValuesMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/mapping/mapper/VehicleEquipmentProfileMemberMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/mapping/mapper/VehicleMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/mapping/mapper/VehicleModelMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/mapping/mapper/VehicleTypeMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/validation/NetexReferenceValidatorException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/validation/NetexXmlReferenceValidator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/repository/DataManagedObjectStructureRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/repository/DeckPlanRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/repository/DeckPlanRepositoryCustom.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/repository/DeckPlanRepositoryImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/repository/EntityInVersionRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/repository/ExportJobRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/repository/InstalledEquipmentRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/repository/TagRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/repository/VehicleEquipmentProfileRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/repository/VehicleModelRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/repository/VehicleModelRepositoryCustom.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/repository/VehicleModelRepositoryImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/repository/VehicleRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/repository/VehicleRepositoryCustom.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/repository/VehicleRepositoryImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/repository/VehicleTypeRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/repository/VehicleTypeRepositoryCustom.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/repository/VehicleTypeRepositoryImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/repository/generic/GenericEntityInVersionRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/repository/iterator/ScrollableResultIterator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/repository/listener/IdentifiedEntityListener.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/repository/reference/ReferenceResolver.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/repository/search/SearchHelper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/dto/DtoMappingSemaphore.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/exception/ErrorResponseEntity.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/exception/ErrorResponseEntityMessageBodyWriter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/exception/GeneralExceptionMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/exception/NoSuchElementMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/graphql/GraphQLNames.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/graphql/GraphQLResource.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/graphql/RegisterGraphQLSchema.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/graphql/RequestLoggingInstrumentation.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/graphql/SobekExceptionMaxDepth.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/graphql/SobekExceptionWhileDataFetching.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/graphql/fetchers/KeyValuesDataFetcher.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/graphql/fetchers/OriginalIdsDataFetcher.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/graphql/fetchers/PolygonFetcher.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/graphql/fetchers/PrivateCodeFetcher.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/graphql/fetchers/ReferenceFetcher.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/graphql/fetchers/TagFetcher.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/graphql/fetchers/UserPermissionsFetcher.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/graphql/fetchers/VehicleTypeDeckPlanFetcher.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/graphql/fetchers/VehicleTypeFetcher.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/graphql/fetchers/VehicleTypeVehicleFetcher.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/graphql/helpers/CleanupHelper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/graphql/helpers/KeyValueWrapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/graphql/mappers/AlternativeNameMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/graphql/mappers/EmbeddableMultilingualStringMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/graphql/mappers/GroupOfEntitiesMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/graphql/mappers/IdMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/graphql/mappers/ValidBetweenMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/graphql/operations/TagOperationsBuilder.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/graphql/resolvers/MutableTypeResolver.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/graphql/scalars/CustomScalars.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/graphql/scalars/DateScalar.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/graphql/types/CustomGraphQLTypes.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/graphql/types/DeckPlanObjectTypeCreator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/graphql/types/EntityRefObjectTypeCreator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/graphql/types/TagObjectTypeCreator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/graphql/types/VehicleTypeObjectTypeCreator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/graphql/types/VersionLessEntityRef.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/health/HealthResource.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/netex/publicationdelivery/AsyncExportResource.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/netex/publicationdelivery/AutosysAPIResource.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/netex/publicationdelivery/ExportResource.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/netex/publicationdelivery/ImportResource.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/netex/publicationdelivery/PublicationDeliveryStreamingOutput.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/netex/publicationdelivery/PublicationDeliveryUnmarshaller.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/netex/publicationdelivery/VehicleExportResource.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/netex/publicationdelivery/VehicleImportResource.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/netex/publicationdelivery/async/EntityQueueProcessor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/netex/publicationdelivery/async/PublicationDeliveryPartialUnmarshaller.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/netex/publicationdelivery/async/RunnableUnmarshaller.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/netex/publicationdelivery/async/TypesEventFilter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/netex/publicationdelivery/async/UnmarshalResult.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/promethouse/PrometheusResource.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/service/BlobStoreService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/service/GcsBlobStoreService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/service/LocalBlobStoreService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/service/ObjectMerger.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/service/RutebankenBlobStoreService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/service/TagCreator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/service/batch/BackgroundJobs.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/service/batch/PerSecondLogger.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/service/merge/AlternativeNamesMerger.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/service/merge/KeyValuesMerger.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/service/metrics/PrometheusMetricsService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/time/ExportTimeZone.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/versioning/ValidityUpdater.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/versioning/VersionCreator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/versioning/VersionIncrementor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/versioning/save/DeckPlanVersionedSaverService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/versioning/save/DefaultMergingVersionedSaverService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/versioning/save/DefaultVersionedSaverService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/versioning/save/VehicleModelVersionedSaverService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/versioning/save/VehicleTypeVersionedSaverService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/versioning/save/VehicleVersionedSaverService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/versioning/util/CopiedEntity.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/versioning/util/MobilityImpairedAccessCalculator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/versioning/util/ReferenceVersionUpdater.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/versioning/validate/VersionValidator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/application-local.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/banner.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/db/migration/V1__Base_version.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/hazelcast.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/logback.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/SobekIntegrationTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/SobekTestApplication.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/auth/DefaultAuthorizationServiceTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/auth/MockedRoleAssignmentExtractor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/auth/RoleAssignmentListBuilder.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/autosys/MapperServiceTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/changelog/EntityChangedJMSListener.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/diff/generic/GenericObjectDifferTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/dtoassembling/dto/IdMappingDtoCsvMapperTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/exporter/StreamingPublicationDeliveryIntegrationTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/exporter/ValidationTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/exporter/async/NetexReferenceRemovingIteratorTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/importer/KeyValueListAppenderTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/importer/PublicationDeliveryImporterTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/importer/matching/OriginalIdMatcherTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/importer/modifier/WordsRemoverTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/lock/TimeoutMaxLeaseTimeLockTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/model/TagTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/model/VersionOfObjectRefStructureTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/model/job/ExportJobTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/netex/id/GaplessIdGeneratorServiceTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/netex/id/NetexIdHelperTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/netex/id/RandomizedTestNetexIdGenerator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/netex/mapping/NetexMapperTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/netex/mapping/converter/KeyValuesToKeyListConverterTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/netex/mapping/converter/LineStringConverterTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/netex/mapping/converter/OffsetDateTimeInstantConverterTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/netex/mapping/converter/PolygonConverterTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/netex/mapping/converter/SimplePointVersionStructureConverterTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/netex/mapping/mapper/DataManagedObjectStructureMapperTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/netex/mapping/mapper/KeyListToKeyValuesMapMapperTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/netex/mapping/mapper/NetexIdMapperTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/netex/mapping/mapper/TagKeyValuesMapperTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/netex/validation/NetexXmlReferenceValidatorTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/repository/reference/ReferenceResolverTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/rest/dto/DtoResourceIntegrationTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/rest/exception/GeneralExceptionMapperTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/rest/graphql/scalars/CustomScalarsTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/rest/graphql/scalars/DateScalarTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/rest/graphql/types/CustomGraphQLTypesTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/rest/netex/publicationdelivery/ImportResourceTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/rest/netex/publicationdelivery/PathLinkImportTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/rest/netex/publicationdelivery/PublicationDeliveryStreamingOutputTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/rest/netex/publicationdelivery/PublicationDeliveryTestHelper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/rest/netex/publicationdelivery/PublicationDeliveryUnmarshallerTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/rest/netex/publicationdelivery/async/PublicationDeliveryPartialUnmarshallerTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/service/merge/KeyValuesMergerTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/versioning/ValidityUpdaterTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/versioning/VersionCreatorTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/versioning/util/MobilityImpairedAccessCalculatorTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/resources/application.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/resources/db/migration/V0__setup.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/resources/logback-test.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/resources/org/rutebanken/tiamat/rest/netex/publicationdelivery/brakar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/resources/org/rutebanken/tiamat/rest/netex/publicationdelivery/parking.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/resources/publication_delivery/tiamat_publication_delivery.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/resources/publication_delivery/vehicle_sample.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vehicle_class_diagram.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/vehicle_class_diagram.puml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;GunnarAtEgde&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/entur/sobek.git&quot;,
+    &quot;accountId&quot;: &quot;695d793f-6866-4041-a21c-d04efba4cbb7&quot;
+  }
+}</component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="jar://$PROJECT_DIR$/../../../../../Program Files/Java/jdk-21/lib/src.zip!/java.base/jdk/internal/misc/Unsafe.java" root0="SKIP_INSPECTION" />
+    <setting file="jar://$MAVEN_REPOSITORY$/org/springframework/spring-aop/6.2.9/spring-aop-6.2.9.jar!/org/springframework/aop/framework/JdkDynamicAopProxy.class" root0="SKIP_INSPECTION" />
+    <setting file="jar://$MAVEN_REPOSITORY$/org/springframework/spring-aop/6.2.9/spring-aop-6.2.9.jar!/org/springframework/aop/support/AopUtils.class" root0="SKIP_INSPECTION" />
+  </component>
+  <component name="HttpClientOnboardingState">{
+  &quot;isOnboardingCommentShown&quot;: true
+}</component>
+  <component name="KubernetesApiPersistence">{}</component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 0
+}</component>
+  <component name="ProjectId" id="33h3qspsS7d1eoiai1pr2vsSXf7" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.SobekApplication.executor&quot;: &quot;Run&quot;,
+    &quot;HTTP Request.All in generated-requests.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.DtoQuayResourceTest.getLocalReferences.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.MapperServiceTest.TestBusVehicleMapping.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.MapperServiceTest.TestPrivateVehicleMapping (1).executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.MapperServiceTest.TestPrivateVehicleMapping.executor&quot;: &quot;Debug&quot;,
+    &quot;Java Scratch.Java.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;Spring Boot.Sobek local.executor&quot;: &quot;Debug&quot;,
+    &quot;Spring Boot.Unnamed.executor&quot;: &quot;Run&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/GunnarThorGudlaugsso/git/Entur/sobek&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;ml.llm.LLMConfigurable&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="ReactorSettings">
+    <option name="notificationShown" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="org.rutebanken.sobek.rest.graphql.fetchers" />
+      <recent name="org.rutebanken.sobek.rest.graphql.types" />
+      <recent name="org.rutebanken.sobek.netex.mapping.converter" />
+      <recent name="org.rutebanken.sobek.netex.mapping.mapper" />
+      <recent name="org.rutebanken.sobek.repository" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Spring Boot.Sobek local">
+    <configuration default="true" type="AZURE_FUNCTION_SUPPORT" factoryName="Run Functions">
+      <option name="appName" />
+      <option name="appServicePlanName" />
+      <option name="appServicePlanResourceGroup" />
+      <option name="appSettingsKey" value="d2fbbc8f-8e25-4057-bf8c-1ff2e9087538" />
+      <option name="artifact" />
+      <option name="debugOptions" />
+      <option name="deployment" />
+      <option name="deploymentStagingDirectoryPath" />
+      <option name="funcPath" />
+      <option name="functionHostArguments" />
+      <option name="hostJsonPath" />
+      <option name="insightsName" />
+      <option name="instrumentationKey" />
+      <option name="javaVersion" />
+      <option name="localSettingsJsonPath" />
+      <option name="moduleName" />
+      <option name="os" />
+      <option name="pricingTier" />
+      <option name="providerMap">
+        <map />
+      </option>
+      <option name="region" />
+      <option name="resourceGroup" />
+      <option name="stagingFolder" />
+      <option name="subscription" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="SobekApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="org.rutebanken.sobek.SobekApplication" />
+      <module name="sobek" />
+      <shortenClasspath name="ARGS_FILE" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="org.rutebanken.sobek.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="Application" factoryName="Application">
+      <module name="sobek" />
+      <shortenClasspath name="ARGS_FILE" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="All in generated-requests" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" path="$APPLICATION_CONFIG_DIR$/scratches/generated-requests.http">
+      <method v="2" />
+    </configuration>
+    <configuration name="MapperServiceTest.TestBusVehicleMapping" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="sobek" />
+      <shortenClasspath name="ARGS_FILE" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="org.rutebanken.sobek.autosys.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="org.rutebanken.sobek.autosys" />
+      <option name="MAIN_CLASS_NAME" value="org.rutebanken.sobek.autosys.MapperServiceTest" />
+      <option name="METHOD_NAME" value="TestBusVehicleMapping" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="MapperServiceTest.TestPrivateVehicleMapping (1)" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="sobek" />
+      <shortenClasspath name="ARGS_FILE" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="org.rutebanken.sobek.autosys.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="org.rutebanken.sobek.autosys" />
+      <option name="MAIN_CLASS_NAME" value="org.rutebanken.sobek.autosys.MapperServiceTest" />
+      <option name="METHOD_NAME" value="TestPrivateVehicleMapping" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="MapperServiceTest.TestPrivateVehicleMapping" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="sobek" />
+      <shortenClasspath name="ARGS_FILE" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="org.rutebanken.sobek.autosys.mapping.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="org.rutebanken.sobek.service.autosys" />
+      <option name="MAIN_CLASS_NAME" value="org.rutebanken.sobek.service.autosys.MapperServiceTest" />
+      <option name="METHOD_NAME" value="TestPrivateVehicleMapping" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="JUnit" factoryName="JUnit">
+      <shortenClasspath name="ARGS_FILE" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Unnamed" type="JarApplication" nameIsGenerated="true">
+      <option name="WORKING_DIRECTORY" value="C:\Users\GunnarThorGudlaugsso\git\Entur\sobek" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="JarApplication">
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Java GG" type="Java Scratch">
+      <option name="MAIN_CLASS_NAME" value="SobekApplication" />
+      <module name="sobek" />
+      <shortenClasspath name="NONE" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Unnamed" type="Java Scratch" nameIsGenerated="true">
+      <module name="sobek" />
+      <shortenClasspath name="MANIFEST" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="Java Scratch">
+      <shortenClasspath name="MANIFEST" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Sobek local" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <option name="ACTIVE_PROFILES" value="local, local-changelog, local-blobstore" />
+      <envs>
+        <env name="env" value="dev" />
+      </envs>
+      <module name="sobek" />
+      <option name="SHORTEN_COMMAND_LINE" value="ARGS_FILE" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="org.rutebanken.sobek.SobekApplication" />
+      <option name="VM_PARAMETERS" value="--add-opens java.base/java.lang=ALL-UNNAMED" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <option name="SHORTEN_COMMAND_LINE" value="ARGS_FILE" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="Application.SobekApplication" />
+      <item itemvalue="HTTP Request.All in generated-requests" />
+      <item itemvalue="JAR Application.Unnamed" />
+      <item itemvalue="Java Scratch.Unnamed" />
+      <item itemvalue="Java Scratch.Java GG" />
+      <item itemvalue="JUnit.MapperServiceTest.TestBusVehicleMapping" />
+      <item itemvalue="JUnit.MapperServiceTest.TestPrivateVehicleMapping" />
+      <item itemvalue="JUnit.MapperServiceTest.TestPrivateVehicleMapping (1)" />
+      <item itemvalue="Spring Boot.Sobek local" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JUnit.MapperServiceTest.TestBusVehicleMapping" />
+        <item itemvalue="JUnit.MapperServiceTest.TestPrivateVehicleMapping (1)" />
+        <item itemvalue="JUnit.MapperServiceTest.TestPrivateVehicleMapping" />
+        <item itemvalue="HTTP Request.All in generated-requests" />
+        <item itemvalue="Application.SobekApplication" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.26830.84" />
+        <option value="bundled-js-predefined-d6986cc7102b-3aa1da707db6-JavaScript-IU-252.26830.84" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="StructureViewState">
+    <option name="selectedTab" value="Logical" />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="94c9ba79-1d61-404b-8cb0-6b250a4a4658" name="Changes" comment="" />
+      <created>1759755671498</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1759755671498</updated>
+      <workItem from="1759823492995" duration="2271000" />
+      <workItem from="1759828047470" duration="43203000" />
+      <workItem from="1760518810786" duration="14307000" />
+      <workItem from="1761119931632" duration="24687000" />
+      <workItem from="1761225644297" duration="8332000" />
+      <workItem from="1761724435722" duration="14076000" />
+      <workItem from="1761756148993" duration="109300000" />
+      <workItem from="1762764353245" duration="26538000" />
+      <workItem from="1762873419355" duration="8959000" />
+      <workItem from="1763048099525" duration="5405000" />
+    </task>
+    <task id="LOCAL−00001" summary="For demo/POC - service for getting data from Norwegian authorities based on car reg no + service for importing vehicle data (in progress) + service for fetching data with GraphQL (in progress)">
+      <option name="closed" value="true" />
+      <created>1762517909803</created>
+      <option name="number" value="LOCAL−00001" />
+      <option name="presentableId" value="LOCAL−00001" />
+      <updated>1762517909803</updated>
+    </task>
+    <task id="LOCAL−00002" summary="Mappe VehicleType.Id = netexid">
+      <option name="closed" value="true" />
+      <created>1762519461791</created>
+      <option name="number" value="LOCAL−00002" />
+      <option name="presentableId" value="LOCAL−00002" />
+      <updated>1762519461791</updated>
+    </task>
+    <task id="LOCAL−00003" summary="Further work on Vehicle import:&#10;- If the same data is imported multiple times, it will generate a new version of the same objects (not new objects)&#10;- DeckPlan will be connected to the VehicleType in the database&#10;- References from Vehicle, VehicleType and VehicleModel are handled so that the references to the correct objects are stored in the database&#10;- PassengerCapacity is saved">
+      <option name="closed" value="true" />
+      <created>1762936922565</created>
+      <option name="number" value="LOCAL−00003" />
+      <option name="presentableId" value="LOCAL−00003" />
+      <updated>1762936922565</updated>
+    </task>
+    <task id="LOCAL−00004" summary="GraphQL definitions for DeckPlan">
+      <option name="closed" value="true" />
+      <created>1762937784214</created>
+      <option name="number" value="LOCAL−00004" />
+      <option name="presentableId" value="LOCAL−00004" />
+      <updated>1762937784214</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="For demo/POC - service for getting data from Norwegian authorities based on car reg no + service for importing vehicle data (in progress) + service for fetching data with GraphQL (in progress)" />
+    <MESSAGE value="Mappe VehicleType.Id = netexid" />
+    <MESSAGE value="Further work on Vehicle import:&#10;- If the same data is imported multiple times, it will generate a new version of the same objects (not new objects)&#10;- DeckPlan will be connected to the VehicleType in the database&#10;- References from Vehicle, VehicleType and VehicleModel are handled so that the references to the correct objects are stored in the database&#10;- PassengerCapacity is saved" />
+    <MESSAGE value="GraphQL definitions for DeckPlan" />
+    <MESSAGE value="Initial commit - I took the Tiamat branch with vehicle registry integrated, split it into a separate Sobek project and essentially removed all the Stop place code from it. There may still be some traces of the Stop place part, but mostly this is &quot;Vehicle registry only&quot;" />
+    <option name="LAST_COMMIT_MESSAGE" value="Initial commit - I took the Tiamat branch with vehicle registry integrated, split it into a separate Sobek project and essentially removed all the Stop place code from it. There may still be some traces of the Stop place part, but mostly this is &quot;Vehicle registry only&quot;" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/rest/dto/DtoQuayResourceTest.java</url>
+          <line>94</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/graphql/fetchers/StopPlaceFetcher.java</url>
+          <line>112</line>
+          <option name="timeStamp" value="10" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/graphql/fetchers/StopPlaceFetcher.java</url>
+          <line>148</line>
+          <option name="timeStamp" value="12" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/rest/netex/publicationdelivery/ImportResource.java</url>
+          <line>88</line>
+          <option name="timeStamp" value="14" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/exporter/StreamingPublicationDelivery.java</url>
+          <line>852</line>
+          <option name="timeStamp" value="21" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+    <watches-manager>
+      <configuration name="SpringBootApplicationConfigurationType">
+        <watch expression="environment" />
+        <watch expression="environment.containsArgument(INCLUDE_EXPIRED)" />
+        <watch expression="environment.getArgument(INCLUDE_EXPIRED)" />
+      </configuration>
+      <inline-watch fileUrl="file://$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/autosys/MapperService.java" line="153">
+        <watch expression="merke.getMerke() + (handelsbetegnelse == null || handelsbetegnelse.isEmpty() ? &quot;&quot; : &quot; &quot;  + handelsbetegnelse.getFirst()) + &quot; - &quot; + karosseriType.getKodeNavn()" />
+      </inline-watch>
+    </watches-manager>
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+</project>

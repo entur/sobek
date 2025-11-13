@@ -1,0 +1,245 @@
+<PublicationDelivery xmlns="http://www.netex.org.uk/netex" xmlns:ns2="http://www.opengis.net/gml/3.2" xmlns:ns3="http://www.siri.org.uk/siri" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.12:NO-NeTEx-vehicle:1.4" xsi:schemaLocation="">
+	<PublicationTimestamp>2025-10-23T13:38:07.765</PublicationTimestamp>
+	<ParticipantRef>NMR</ParticipantRef>
+	<dataObjects>
+		<CompositeFrame modification="new" version="1" status="active" id="NMR:CompositeFrame:1672963685">
+			<frames>
+				<ResourceFrame modification="new" version="1" status="active" id="NMR:ResourceFrame:1419647701">
+					<equipments>
+						<SanitaryEquipment modification="new" version="1" status="active" id="VYG:SanitaryEquipment:1">
+							<Gender>both</Gender>
+							<SanitaryFacilityList/>
+							<NumberOfToilets>1</NumberOfToilets>
+							<PaymentMethods/>
+						</SanitaryEquipment>
+					</equipments>
+					<vehicleTypes>
+						<VehicleType created="2025-10-15T13:37:57.115" changed="2025-10-15T13:37:57.115" modification="new" version="1" status="active" id="VYG:VehicleType:1">
+							<ValidBetween>
+								<FromDate>2025-10-15T13:37:57.115</FromDate>
+							</ValidBetween>
+							<Name>Exqui City 24</Name>
+							<Description>Van Hool</Description>
+							<EuroClass>6</EuroClass>
+							<SelfPropelled>true</SelfPropelled>
+							<PropulsionType>combustion</PropulsionType>
+							<FuelType>diesel</FuelType>
+							<TransportMode>bus</TransportMode>
+							<capacities>
+								<PassengerCapacity created="2025-10-16T11:51:24.856" changed="2025-10-16T11:51:24.856" modification="new" version="1" status="active" id="VYG:PassengerCapacity:1">
+									<ValidBetween>
+										<FromDate>2025-10-16T11:51:24.856</FromDate>
+									</ValidBetween>
+									<FareClass>standardClass</FareClass>
+									<TotalCapacity>160</TotalCapacity>
+									<SeatingCapacity>52</SeatingCapacity>
+									<StandingCapacity>108</StandingCapacity>
+								</PassengerCapacity>
+							</capacities>
+							<Length>23.82</Length>
+						</VehicleType>
+					</vehicleTypes>
+					<vehicleModels>
+						<VehicleModel created="2025-10-17T10:09:08.224" changed="2025-10-17T10:09:08.224" modification="new" version="1" status="active" id="VYG:VehicleModel:1">
+							<ValidBetween>
+								<FromDate>2025-10-17T10:09:08.224</FromDate>
+							</ValidBetween>
+							<Name>Exqui City 24</Name>
+							<Description>Van Hool</Description>
+							<Manufacturer>Van Hool NV</Manufacturer>
+							<TransportTypeRef ref="VYG:VehicleType:1"/>
+						</VehicleModel>
+					</vehicleModels>
+					<vehicleEquipmentProfiles>
+						<VehicleEquipmentProfile modification="new" version="1" status="active" id="VYG:VehicleEquipmentProfile:1">
+							<vehicleEquipmentProfileMembers>
+								<VehicleEquipmentProfileMember modification="new" version="1" status="active" id="1">
+									<EquipmentRef ref="VYG:SanitaryEquipment:1"/>
+									<MinimumUnits>1</MinimumUnits>
+								</VehicleEquipmentProfileMember>
+							</vehicleEquipmentProfileMembers>
+						</VehicleEquipmentProfile>
+					</vehicleEquipmentProfiles>
+					<vehicles>
+						<Vehicle created="2025-10-14T12:55:20.429" changed="2025-10-14T12:55:20.429" modification="new" version="1" status="active">
+							<ValidBetween>
+								<FromDate>2025-10-14T12:55:20.429</FromDate>
+							</ValidBetween>
+							<Name lang="nor">Van Hool 2</Name>
+							<Description lang="nor">Enda et kjøretøy.</Description>
+							<BuildDate>2025-07-16</BuildDate>
+							<ChassisNumber>YE2324HC0J2066363</ChassisNumber>
+							<RegistrationNumber>VJ14916</RegistrationNumber>
+							<RegistrationDate>2025-10-14</RegistrationDate>
+							<OperationalNumber>4321</OperationalNumber>
+							<TransportTypeRef ref="VYG:VehicleType:1"/>
+							<VehicleModelRef ref="VYG:VehicleModel:1"/>
+						</Vehicle>
+						<Vehicle created="2025-10-14T10:34:21.172" changed="2025-10-14T10:34:21.172" modification="new" version="1" status="active">
+							<ValidBetween>
+								<FromDate>2025-10-14T10:34:21.172</FromDate>
+							</ValidBetween>
+							<Name lang="nor">Van Hool 1</Name>
+							<Description lang="nor">Beskrivelse av et kjøretøy.</Description>
+							<BuildDate>2025-07-14</BuildDate>
+							<ChassisNumber>YE2324HC9J2066362</ChassisNumber>
+							<RegistrationNumber>VJ14916</RegistrationNumber>
+							<RegistrationDate>2025-10-10</RegistrationDate>
+							<OperationalNumber>1234</OperationalNumber>
+							<TransportTypeRef ref="VYG:VehicleType:1"/>
+							<VehicleModelRef ref="VYG:VehicleModel:1"/>
+						</Vehicle>
+					</vehicles>
+					<deckPlans>
+						<DeckPlan created="2025-10-21T05:51:43.431" changed="2025-10-21T05:51:43.431" modification="new" version="1" status="active" id="VYG:DeckPlan:1">
+							<ValidBetween>
+								<FromDate>2025-10-21T05:51:43.431</FromDate>
+							</ValidBetween>
+							<Name>DeckPlan 1</Name>
+							<Description>Description of Deck plan</Description>
+							<decks>
+								<Deck created="2025-10-21T05:53:06.821" changed="2025-10-21T05:53:06.821" modification="new" version="1" status="active" id="VYG:Deck:1">
+									<ValidBetween>
+										<FromDate>2025-10-21T05:53:06.821</FromDate>
+									</ValidBetween>
+									<Name>Deck 1</Name>
+									<Description>Description of Deck</Description>
+									<deckSpaces>
+										<PassengerSpace created="2025-10-21T06:31:24.255" changed="2025-10-21T06:31:24.255" modification="new" version="1" status="active" id="VYG:PassengerSpace:1">
+											<ValidBetween>
+												<FromDate>2025-10-21T06:31:24.255</FromDate>
+											</ValidBetween>
+											<Name>Passenger space 1</Name>
+											<Description>Description of passenger space</Description>
+											<Label>Multi purpose area</Label>
+											<Width>1.50</Width>
+											<Length>2.23</Length>
+											<deckEntrances>
+												<PassengerEntrance created="2025-10-21T07:06:10.466" changed="2025-10-21T07:06:10.466" modification="new" version="1" status="active" id="VYG:PassengerEntrance:1">
+													<ValidBetween>
+														<FromDate>2025-10-21T07:06:10.466</FromDate>
+													</ValidBetween>
+													<Name>Entrance 1</Name>
+													<Description>Front entrance</Description>
+													<VehicleSide>rightSide</VehicleSide>
+													<DistanceFromFront>2.50</DistanceFromFront>
+													<DeckEntranceType>external</DeckEntranceType>
+												</PassengerEntrance>
+												<PassengerEntrance created="2025-10-21T07:08:52.617" changed="2025-10-21T07:08:52.617" modification="new" version="1" status="active" id="VYG:PassengerEntrance:2">
+													<ValidBetween>
+														<FromDate>2025-10-21T07:08:52.617</FromDate>
+													</ValidBetween>
+													<Name>Entrance 2</Name>
+													<Description>Rear entrance</Description>
+													<VehicleSide>rightSide</VehicleSide>
+													<DistanceFromFront>14.50</DistanceFromFront>
+													<DeckEntranceType>external</DeckEntranceType>
+												</PassengerEntrance>
+											</deckEntrances>
+											<passengerSpots>
+												<PassengerSpot created="2025-10-21T07:31:36.829" changed="2025-10-21T07:31:36.829" modification="new" version="1" status="active" id="VYG:PassengerSpot:1">
+													<ValidBetween>
+														<FromDate>2025-10-21T07:31:36.829</FromDate>
+													</ValidBetween>
+													<Name>1A</Name>
+													<Description>First row</Description>
+													<Label>1A</Label>
+													<Orientation>forwards</Orientation>
+													<LocatableSpotType>seat</LocatableSpotType>
+													<SpotRowRef ref="VYG:SpotRow:1"/>
+													<TableType>none</TableType>
+													<HasArmrest>true</HasArmrest>
+													<LegSpace>0.80</LegSpace>
+													<HasPower>true</HasPower>
+													<IsByWindow>true</IsByWindow>
+													<IsByAisle>false</IsByAisle>
+													<IsBetweenSeats>false</IsBetweenSeats>
+													<IsInFrontRow>true</IsInFrontRow>
+													<IsInEndRow>false</IsInEndRow>
+													<IsFacingWindow>false</IsFacingWindow>
+													<IsFacingAisle>false</IsFacingAisle>
+												</PassengerSpot>
+												<PassengerSpot created="2025-10-21T07:33:28.633" changed="2025-10-21T07:33:28.633" modification="new" version="1" status="active" id="VYG:PassengerSpot:2">
+													<ValidBetween>
+														<FromDate>2025-10-21T07:33:28.633</FromDate>
+													</ValidBetween>
+													<Name>1C</Name>
+													<Description>First row</Description>
+													<Label>1C</Label>
+													<Orientation>forwards</Orientation>
+													<LocatableSpotType>seat</LocatableSpotType>
+													<SpotRowRef ref="VYG:SpotRow:1"/>
+													<TableType>none</TableType>
+													<HasArmrest>true</HasArmrest>
+													<LegSpace>0.80</LegSpace>
+													<HasPower>true</HasPower>
+													<IsByWindow>false</IsByWindow>
+													<IsByAisle>true</IsByAisle>
+													<IsBetweenSeats>false</IsBetweenSeats>
+													<IsInFrontRow>true</IsInFrontRow>
+													<IsInEndRow>false</IsInEndRow>
+													<IsFacingWindow>false</IsFacingWindow>
+													<IsFacingAisle>false</IsFacingAisle>
+												</PassengerSpot>
+												<PassengerSpot created="2025-10-21T07:33:29.883" changed="2025-10-21T07:33:29.883" modification="new" version="1" status="active" id="VYG:PassengerSpot:3">
+													<ValidBetween>
+														<FromDate>2025-10-21T07:33:29.883</FromDate>
+													</ValidBetween>
+													<Name>1D</Name>
+													<Description>First row</Description>
+													<Label>1D</Label>
+													<Orientation>forwards</Orientation>
+													<LocatableSpotType>seat</LocatableSpotType>
+													<SpotRowRef ref="VYG:SpotRow:1"/>
+													<TableType>none</TableType>
+													<HasArmrest>true</HasArmrest>
+													<LegSpace>0.80</LegSpace>
+													<HasPower>true</HasPower>
+													<IsByWindow>false</IsByWindow>
+													<IsByAisle>true</IsByAisle>
+													<IsBetweenSeats>false</IsBetweenSeats>
+													<IsInFrontRow>true</IsInFrontRow>
+													<IsInEndRow>false</IsInEndRow>
+													<IsFacingWindow>false</IsFacingWindow>
+													<IsFacingAisle>false</IsFacingAisle>
+												</PassengerSpot>
+												<PassengerSpot created="2025-10-21T07:33:31.692" changed="2025-10-21T07:33:31.692" modification="new" version="1" status="active" id="VYG:PassengerSpot:4">
+													<ValidBetween>
+														<FromDate>2025-10-21T07:33:31.692</FromDate>
+													</ValidBetween>
+													<Name>1F</Name>
+													<Description>First row</Description>
+													<Label>1F</Label>
+													<Orientation>forwards</Orientation>
+													<LocatableSpotType>seat</LocatableSpotType>
+													<SpotRowRef ref="VYG:SpotRow:1"/>
+													<TableType>none</TableType>
+													<HasArmrest>true</HasArmrest>
+													<LegSpace>0.80</LegSpace>
+													<HasPower>true</HasPower>
+													<IsByWindow>true</IsByWindow>
+													<IsByAisle>false</IsByAisle>
+													<IsBetweenSeats>false</IsBetweenSeats>
+													<IsInFrontRow>true</IsInFrontRow>
+													<IsInEndRow>false</IsInEndRow>
+													<IsFacingWindow>false</IsFacingWindow>
+													<IsFacingAisle>false</IsFacingAisle>
+												</PassengerSpot>
+											</passengerSpots>
+										</PassengerSpace>
+									</deckSpaces>
+									<spotRows>
+										<SpotRow created="2025-10-21T08:25:41.353" changed="2025-10-21T08:25:41.353" modification="new" version="1" status="active" id="1">
+											<Label>1</Label>
+											<NumberingFromFront>true</NumberingFromFront>
+										</SpotRow>
+									</spotRows>
+								</Deck>
+							</decks>
+						</DeckPlan>
+					</deckPlans>
+				</ResourceFrame>
+			</frames>
+		</CompositeFrame>
+	</dataObjects>
+</PublicationDelivery>

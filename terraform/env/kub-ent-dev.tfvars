@@ -1,0 +1,6 @@
+pubsub_project = "ent-sobek-dev"
+storage_project = "ent-sobek-dev"
+kube_namespace = "sobek"
+bucket_instance_suffix = "dev"
+location = "europe-west1"
+bucket_instance_prefix="ror-sobek-gcp2"

@@ -13,7 +13,7 @@ Sobek is created with technologies like Spring Boot, Hibernate, Postgis, Jersey 
 ### NeTEx exports
 Supports exporting vehicles and other entities to the http://netex-cen.eu/ format.
 There are many options for exports:
-* Asynchronous exports to google cloud storage. Asynchronous exports handles large amount of data, even if exporting thousands of stop places.
+* Asynchronous exports to google cloud storage. Asynchronous exports handles large amount of data, even if exporting thousands of vehicles.
 * Synchronous exports directly returned
 * Several export parameters and filtering (ex: query or administrative polygons filtering)
 * Exports can be validated against the NeTEx schema, ensuring quality.
@@ -190,7 +190,7 @@ Starts up PostGIS server with settings matching the ones in [`application-local.
 
 Starts up [LocalStack](https://www.localstack.cloud/) meant for developing AWS specific features.
 
-See also [Disable AWS S3 Autoconfiguration](#disable-aws-s3-autoconfiguration), [NeTEx Export](#netex-export).
+See also [Synchronous NeTEx export with query params](#synchronous-netex-export-with-query-params).
 
 #### Run It!
 
@@ -208,7 +208,7 @@ docker compose up
 ```
 
 This will start Sobek with PostgreSQL and Hazelcast. and you can access Sobek on http://localhost:1888 and the database on http://localhost:5433 
-and graphiql on http://localhost:8777/services/stop_places/graphql , At start up sobek copy empty schema to the database. Spring properties are set in application.properties.
+and graphiql on http://localhost:8780/services/vehicles/graphql , At start up sobek copy empty schema to the database. Spring properties are set in application.properties.
 Security is disabled in this setup.
 
 ## Run with external properties file and PostgreSQL
@@ -326,7 +326,7 @@ See also http://stackoverflow.com/a/26514779
 
 ## ID Generation
 ### Background
-During the implementation of Sobek was desirable to produce NeTEx IDs for stop places more or less gap less.
+During the implementation of Sobek was desirable to produce NeTEx IDs for vehicles more or less gap less.
 The reason for this implementation was legacy systems with restrictions of maximum number of digits.
 
 ### Configure ID generation
@@ -353,83 +353,22 @@ publicationDeliveryUnmarshaller.validateAgainstSchema=true
 ```
 
 ## Synchronous NeTEx export with query params
-It is possible to export stop places and topographic places directly to NeTEx format. This is the endpoint:
-https://api.dev.entur.io/stop-places/v1/netex
-
-### Query by name example:
-```http request
-GET https://api.dev.entur.io/stop-places/v1/netex?q=Arne%20Garborgs%20vei
-```
-
-### Query by ids that contains the number 3115
-```http request
-GET https://api.dev.entur.io/stop-places/v1/netex?q=3115
-```
-
-### Query by stop place type
-```http request
-GET https://api.dev.entur.io/stop-places/v1/netex?stopPlaceType=RAIL_STATION
-```
-It is also possible with multiple types.
-
-### Query by municipality ID
-```http request
-GET https://api.dev.entur.io/stop-places/v1/netex?municipalityReference=KVE:TopographicPlace:1003
-```
-
-### Query by county ID
-```http request
-GET https://api.dev.entur.io/stop-places/v1/netex?countyReference=KVE:TopographicPlace:11
-```
+It is possible to export vehicles and related data directly to NeTEx format. This is the endpoint:
+https://api.dev.entur.io/vehicles/v1/netex
 
 ### Limit size of results
 ```http request
-GET https://api.dev.entur.io/stop-places/v1/netex?size=1000
+GET https://api.dev.entur.io/vehicles/v1/netex?size=1000
 ```
 
 ### Page
 ```http request
-GET https://api.dev.entur.io/stop-places/v1/netex?page=1
-```
-
-### ID list
-You can specify a list of NSR stop place IDs to return
-```http request
-GET https://api.dev.entur.io/stop-places/v1/netex?idList=NSR:StopPlace:3378&idList=NSR:StopPlace:123
+GET https://api.dev.entur.io/vehicles/v1/netex?page=1
 ```
 
 ### All Versions
-```allVersions```. Acceptable values are true or false. If set to true, all versions of matching stop places will be returned.
-If set to false, the highest version by number will be returned for matching stop places. This parameter is not enabled when using the version valitity parmaeter.
-
-### Stop places without location
-Match only stop places without location
-Use the parameter: ```withoutLocationOnly=true```
-
-### Topographic export mode
-The parameter ```topographicPlaceExportMode``` can be set to *NONE*, *RELEVANT* or *ALL*
-Relevant topographic places will be found from the exported list of stop places.
-
-### Tariff Zone export mode
-The parameter ```tariffZoneExportMode``` can be set to *NONE*, *RELEVANT* or *ALL*
-Relevant tariff zones with be found from the exported list of stop places. Because stop places can have a list of tariff zone refs.
-
-### Group of stop places export mode
-The parameter ```groupOfStopPlacesExportMode``` can be set to *NONE*, *RELEVANT* or *ALL*
-Relevant group of stop places can be found from the exported list of stop places.
-
-### Version validity
-The ```versionValidity``` parameter controls what stop places to return.
-* ALL: returns all stops in any version (See allVersions attribute), regardless of version validity
-* CURRENT: returns only stop place versions valid at the current time
-* FUTURE_CURRENT: returns only stop place versions valid at the current time, as well as versions valid in the future.
-
-### Example
-```
-https://api.dev.entur.io/stop-places/v1/netex?tariffZoneExportMode=RELEVANT&topographicPlaceExportMode=RELEVANT&groupOfStopPlacesExportMode=NONE&q=Nesbru&versionValidity=CURRENT&municipalityReference=KVE:TopographicPlace:0220
-```
-
-Returns stop places with current version validity now, matching the query 'Nesbru' and exists in municipality 0220. Fetches relevant tariff zones and topographic places.
+```allVersions```. Acceptable values are true or false. If set to true, all versions of matching vehicles will be returned.
+If set to false, the highest version by number will be returned for matching vehicles. This parameter is not enabled when using the version valitity parmaeter.
 
 ## Async NeTEx export from Sobek
 Asynchronous export uploads exported data to google cloud storage. When initiated, you will get a job ID back.
@@ -439,21 +378,21 @@ When the job is finished, you can download the exported data.
 
 ### Start async export:
 ```
-curl https://api.dev.entur.io/stop-places/v1/netex/export/initiate
+curl https://api.dev.entur.io/vehicles/v1/netex/export/initiate
 ```
 Pro tip: Pipe the output from curl to xmllint to format the output:
 ```
-curl https://api.dev.entur.io/stop-places/v1/netex/export/initiate | xmllint --format -
+curl https://api.dev.entur.io/vehicles/v1/netex/export/initiate | xmllint --format -
 ```
 
 ### Check job status:
 ```
-curl https://api.dev.entur.io/stop-places/v1/netex/export
+curl https://api.dev.entur.io/vehicles/v1/netex/export
 ```
 
 ### When job is done. Download it:
 ```
-curl https://api.dev.entur.io/stop-places/v1/netex/export/130116/content | zcat | xmllint --format - > export.xml
+curl https://api.dev.entur.io/vehicles/v1/netex/export/130116/content | zcat | xmllint --format - > export.xml
 ```
 
 See also https://rutebanken.atlassian.net/browse/NRP-924
@@ -461,9 +400,9 @@ See also https://rutebanken.atlassian.net/browse/NRP-924
 ## Truncate data in sobek database
 Clean existing data in postgresql (streamline if frequently used):
 ```
-TRUNCATE stop_place CASCADE;
-TRUNCATE quay CASCADE;
-TRUNCATE topographic_place CASCADE;
+TRUNCATE vehicle CASCADE;
+TRUNCATE vehicle_type CASCADE;
+TRUNCATE deck_plan CASCADE;
 ```
 
 ## Import data into Sobek
@@ -475,15 +414,14 @@ Example:
 export MAVEN_OPTS='-Xms256m -Xmx1712m -Xss256m -XX:NewSize=64m -XX:MaxNewSize=128m -Dfile.encoding=UTF-8'
 ```
 
-### Import NeTEx file without *NSR* IDs
+### Import NeTEx file without *NMR* IDs
 This NeTEx file should not contain NSR ID. (The NSR prefix is configurable in the class ValidPrefixList)
-* Sobek will match existing stops based on name and coordinates.
-* Sobek will merge Quays inside stops that are close, have the same original ID and does not have too different compass bearing.
+* Sobek will match existing vehicles, vehicle types, vehicle models and deck plans based on their original ID.
 
 Sobek will return the modified NeTEx structure with it's own NSR IDs. Original IDs will be present in key value list on each object.
 
 ```shell
-curl -XPOST -H"Content-Type: application/xml" -d@my-nice-netex-file.xml http://localhost:1997/services/stop_places/netex
+curl -XPOST -H"Content-Type: application/xml" -d@my-nice-netex-file.xml http://localhost:1997/services/vehicles/netex
 ```
 
 ### Importing with importType=INITIAL
@@ -500,10 +438,10 @@ If not, the application may complain about user not being authenticated if Sprin
 ## GraphQL
 GraphQL endpoint is available on
 ```
-https://api.dev.entur.io/stop-places/v1/graphql
+https://api.dev.entur.io/vehicles/v1/graphql
 ```
 
-Tip: GraphiQL UI available on https://api.dev.entur.io/graphql-explorer/stop-places using *GraphiQL*:
+Tip: GraphiQL UI available on https://api.dev.entur.io/graphql-explorer/vehicles using *GraphiQL*:
 https://github.com/graphql/graphiql
 (Use e.g. `Modify Headers` for Chrome to add bearer-token for mutations)
 

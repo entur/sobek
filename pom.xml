@@ -586,7 +586,7 @@
                     <container>
                         <!-- Same as EXPOSE, doesn't actually publish the ports but acts as documentation -->
                         <ports>
-                            <port>8777</port>
+                            <port>8780</port>
                         </ports>
                     </container>
                     <pluginExtensions>

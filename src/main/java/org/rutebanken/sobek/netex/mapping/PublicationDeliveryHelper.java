@@ -162,7 +162,7 @@ public class PublicationDeliveryHelper {
 
     public boolean hasVehicleTypes(ResourceFrame netexResourceFrame) {
         return netexResourceFrame.getVehicleTypes() != null
-                && netexResourceFrame.getVehicleTypes().getTransportType_DummyType() != null;
+                && netexResourceFrame.getVehicleTypes().getTransportType_Dummy() != null;
     }
 
     public boolean hasVehicleModels(ResourceFrame netexResourceFrame) {

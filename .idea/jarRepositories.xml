@@ -7,9 +7,19 @@
       <option name="url" value="https://repo.maven.apache.org/maven2" />
     </remote-repository>
     <remote-repository>
+      <option name="id" value="snapshots" />
+      <option name="name" value="entur-snapshot-milestone" />
+      <option name="url" value="https://entur2.jfrog.io/artifactory/entur-snapshot-milestone" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="central2" />
       <option name="name" value="Check central first to avoid a lot of not found warnings" />
       <option name="url" value="https://repo.maven.apache.org/maven2" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="central" />
+      <option name="name" value="entur-release-milestone" />
+      <option name="url" value="https://entur2.jfrog.io/artifactory/entur-release-milestone" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="central" />

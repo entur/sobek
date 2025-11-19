@@ -70,7 +70,7 @@ public class VehicleTypeImportHandler {
     public void handleVehicleTypes(ResourceFrame netexResourceFrame, ImportParams importParams, AtomicInteger vehicleTypesCounter, ResourceFrame responseResourceframe) {
 
         if (publicationDeliveryHelper.hasVehicleTypes(netexResourceFrame)) {
-            var originalVehicleTypes = netexResourceFrame.getVehicleTypes().getTransportType_DummyType();
+            var originalVehicleTypes = netexResourceFrame.getVehicleTypes().getTransportType_Dummy();
             logger.info("Publication delivery contains {} vehicle types for import.", originalVehicleTypes.size());
 
             logger.info("About to check if incoming vehicle types have previously been imported with the same id");
@@ -93,7 +93,7 @@ public class VehicleTypeImportHandler {
 
             responseResourceframe.withVehicleTypes(
                     new VehicleTypesInFrame_RelStructure()
-                            .withTransportType_DummyType(vehicleTypeElements));
+                            .withTransportType_Dummy(vehicleTypeElements));
 
             logger.info("Finished importing vehicle types");
         }

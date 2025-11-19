@@ -26,5 +26,10 @@
       <option name="name" value="Open Source Geospatial Foundation Repository" />
       <option name="url" value="https://repo.osgeo.org/repository/release/" />
     </remote-repository>
+    <remote-repository>
+      <option name="id" value="central" />
+      <option name="name" value="central" />
+      <option name="url" value="https://entur2.jfrog.io/entur2/entur-team-rutebanken-snapshot" />
+    </remote-repository>
   </component>
 </project>

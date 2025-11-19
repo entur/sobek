@@ -4,10 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="94c9ba79-1d61-404b-8cb0-6b250a4a4658" name="Changes" comment="Change port number">
+    <list default="true" id="94c9ba79-1d61-404b-8cb0-6b250a4a4658" name="Changes" comment="Fix main branch name">
+      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -319,7 +318,10 @@
       <workItem from="1762873419355" duration="8959000" />
       <workItem from="1763048099525" duration="8520000" />
       <workItem from="1763107289670" duration="6021000" />
-      <workItem from="1763365545498" duration="2677000" />
+      <workItem from="1763365545498" duration="8112000" />
+      <workItem from="1763549848416" duration="1542000" />
+      <workItem from="1763552114548" duration="54000" />
+      <workItem from="1763552185764" duration="1000000" />
     </task>
     <task id="LOCAL−00001" summary="For demo/POC - service for getting data from Norwegian authorities based on car reg no + service for importing vehicle data (in progress) + service for fetching data with GraphQL (in progress)">
       <option name="closed" value="true" />
@@ -356,7 +358,28 @@
       <option name="presentableId" value="LOCAL−00005" />
       <updated>1763054341534</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL−00006" summary="Change port number and fix Readme">
+      <option name="closed" value="true" />
+      <created>1763368840849</created>
+      <option name="number" value="LOCAL−00006" />
+      <option name="presentableId" value="LOCAL−00006" />
+      <updated>1763368840849</updated>
+    </task>
+    <task id="LOCAL−00007" summary="Add Terraform files">
+      <option name="closed" value="true" />
+      <created>1763368867870</created>
+      <option name="number" value="LOCAL−00007" />
+      <option name="presentableId" value="LOCAL−00007" />
+      <updated>1763368867870</updated>
+    </task>
+    <task id="LOCAL−00008" summary="Fix main branch name">
+      <option name="closed" value="true" />
+      <created>1763369020468</created>
+      <option name="number" value="LOCAL−00008" />
+      <option name="presentableId" value="LOCAL−00008" />
+      <updated>1763369020468</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -380,7 +403,10 @@
     <MESSAGE value="GraphQL definitions for DeckPlan" />
     <MESSAGE value="Initial commit - I took the Tiamat branch with vehicle registry integrated, split it into a separate Sobek project and essentially removed all the Stop place code from it. There may still be some traces of the Stop place part, but mostly this is &quot;Vehicle registry only&quot;" />
     <MESSAGE value="Change port number" />
-    <option name="LAST_COMMIT_MESSAGE" value="Change port number" />
+    <MESSAGE value="Change port number and fix Readme" />
+    <MESSAGE value="Add Terraform files" />
+    <MESSAGE value="Fix main branch name" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fix main branch name" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

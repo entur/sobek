@@ -455,7 +455,7 @@
 		<dependency>
 			<groupId>org.entur</groupId>
 			<artifactId>autosys</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>0.0.2-SNAPSHOT</version>
 		</dependency>
 
     </dependencies>
@@ -469,6 +469,10 @@
             <id>osgeo</id>
             <name>Open Source Geospatial Foundation Repository</name>
             <url>https://repo.osgeo.org/repository/release/</url>
+        </repository>
+        <repository>
+            <id>central</id>
+            <url>https://entur2.jfrog.io/entur2/entur-team-rutebanken-snapshot</url>
         </repository>
     </repositories>
 

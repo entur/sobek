@@ -57,11 +57,17 @@ resource "google_sql_database" "db" {
   instance = google_sql_database_instance.db_instance.name
 }
 
+data "google_secret_manager_secret_version" "db_password" {
+  secret  = "SPRING_DATASOURCE_PASSWORD"
+  project = var.cloudsql_project
+}
+
+
 resource "google_sql_user" "db-user" {
   name = var.ror-sobek-db-username
   project = var.cloudsql_project
   instance = google_sql_database_instance.db_instance.name
-  password = var.ror-sobek-db-password
+  password = data.google_secret_manager_secret_version.db_password.secret_data
 }
 
 # database read replica used by sobek

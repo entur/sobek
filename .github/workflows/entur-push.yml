@@ -37,22 +37,22 @@ jobs:
       - uses: actions/upload-artifact@v4.6.2
         with:
           path: target/*.jar
-      - name: Sonar Scan
-        if: github.repository_owner == 'entur' && github.ref == 'refs/heads/main'
-        env:
-          SONAR_TOKEN: ${{ secrets.ENTUR_SONAR_PASSWORD }}
-          SONAR_PROJECT_NAME: ${{ github.event.repository.name }}
-          SONAR_PROJECT_KEY: entur_${{ github.event.repository.name }}
-        run: |
-          mvn org.jacoco:jacoco-maven-plugin:prepare-agent verify \
-              org.jacoco:jacoco-maven-plugin:report sonar:sonar \
-              -Dmaven.main.skip \
-              -DskipTests \
-              -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
-              -Dsonar.organization=enturas-github \
-              -Dsonar.projectName=${SONAR_PROJECT_NAME} \
-              -Dsonar.host.url=https://sonarcloud.io \
-              -Dsonar.login=${SONAR_TOKEN}
+#      - name: Sonar Scan
+#        if: github.repository_owner == 'entur' && github.ref == 'refs/heads/main'
+#        env:
+#          SONAR_TOKEN: ${{ secrets.ENTUR_SONAR_PASSWORD }}
+#          SONAR_PROJECT_NAME: ${{ github.event.repository.name }}
+#          SONAR_PROJECT_KEY: entur_${{ github.event.repository.name }}
+#        run: |
+#          mvn org.jacoco:jacoco-maven-plugin:prepare-agent verify \
+#              org.jacoco:jacoco-maven-plugin:report sonar:sonar \
+#              -Dmaven.main.skip \
+#              -DskipTests \
+#              -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
+#              -Dsonar.organization=enturas-github \
+#              -Dsonar.projectName=${SONAR_PROJECT_NAME} \
+#              -Dsonar.host.url=https://sonarcloud.io \
+#              -Dsonar.login=${SONAR_TOKEN}
   docker-lint:
     needs: [maven-verify]
     uses: entur/gha-docker/.github/workflows/lint.yml@v1

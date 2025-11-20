@@ -22,10 +22,14 @@ jobs:
           distribution: temurin
           cache: maven
 
+      - name: Copy maven settings
+        run: |
+          wget https://raw.githubusercontent.com/entur/ror-maven-settings/master/.m2/settings.xml -O .github/workflows/settings.xml
+
       - name: Run tests
         run: |
           sudo timedatectl set-timezone "Europe/Oslo"
-          mvn --batch-mode test
+          mvn --batch-mode test  -s .github/workflows/settings.xml
 
 
   image:

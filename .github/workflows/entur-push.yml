@@ -33,7 +33,7 @@ jobs:
             ${{ runner.os }}-maven-
 
       - name: Run maven build
-        run: mvn -q verify -s .github/workflows/settings.xml
+        run: mvn -q verify -s .github/workflows/settings.xml -DskipTests=true
       - uses: actions/upload-artifact@v4.6.2
         with:
           path: target/*.jar

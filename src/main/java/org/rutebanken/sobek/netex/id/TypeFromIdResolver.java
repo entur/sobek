@@ -34,7 +34,13 @@ public class TypeFromIdResolver {
             Class<T> clazz =  (Class<T>) Class.forName(canonicalName);
             return clazz;
         } catch (ClassNotFoundException e) {
-            throw new RuntimeException("Type " + canonicalName + " (member class " + memberClass +") cannot be found", e);
+            canonicalName = EntityInVersionStructure.class.getPackage().getName() + ".vehicle." + memberClass;
+            try {
+                Class<T> clazz = (Class<T>) Class.forName(canonicalName);
+                return clazz;
+            } catch (ClassNotFoundException e2) {
+                throw new RuntimeException("Type " + canonicalName + " (member class " + memberClass + ") cannot be found", e2);
+            }
         }
     }
 }

@@ -22,7 +22,6 @@ import jakarta.persistence.EntityTransaction;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
-import org.locationtech.jts.geom.GeometryFactory;
 import org.rutebanken.sobek.netex.id.GeneratedIdState;
 import org.rutebanken.sobek.repository.TagRepository;
 import org.rutebanken.sobek.versioning.VersionCreator;
@@ -30,8 +29,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -41,12 +42,11 @@ import static org.rutebanken.sobek.netex.id.GaplessIdGeneratorService.INITIAL_LA
 @SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT, classes = SobekTestApplication.class)
 @ActiveProfiles({"test","gcs-blobstore"})
 @EnableAspectJAutoProxy(proxyTargetClass = true)
+@EntityScan(basePackages = {"org.rutebanken.sobek.model"})
+@EnableJpaRepositories(basePackages = {"org.rutebanken.sobek.repository"})
 public abstract class SobekIntegrationTest {
 
     private static Logger logger = LoggerFactory.getLogger(SobekIntegrationTest.class);
-
-    @Autowired
-    protected GeometryFactory geometryFactory;
 
     @Autowired
     protected HazelcastInstance hazelcastInstance;

@@ -4,10 +4,20 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="94c9ba79-1d61-404b-8cb0-6b250a4a4658" name="Changes" comment="Fix main branch name">
-      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
+    <list default="true" id="94c9ba79-1d61-404b-8cb0-6b250a4a4658" name="Changes" comment="Try to get mvn less verbose">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/id/TypeFromIdResolver.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/netex/id/TypeFromIdResolver.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application-local.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application-local.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/SobekIntegrationTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/SobekIntegrationTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/dtoassembling/dto/IdMappingDtoCsvMapperTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/dtoassembling/dto/IdMappingDtoCsvMapperTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/exporter/StreamingPublicationDeliveryIntegrationTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/netex/mapping/NetexMapperTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/rest/dto/DtoResourceIntegrationTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/rest/dto/DtoResourceIntegrationTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/rest/netex/publicationdelivery/ImportResourceTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/rest/netex/publicationdelivery/PublicationDeliveryStreamingOutputTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/rest/netex/publicationdelivery/PublicationDeliveryStreamingOutputTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/rest/netex/publicationdelivery/async/PublicationDeliveryPartialUnmarshallerTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/rest/netex/publicationdelivery/async/PublicationDeliveryPartialUnmarshallerTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/versioning/VersionCreatorTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/versioning/VersionCreatorTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,43 +67,48 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.SobekApplication.executor&quot;: &quot;Run&quot;,
-    &quot;HTTP Request.All in generated-requests.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.DtoQuayResourceTest.getLocalReferences.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.MapperServiceTest.TestBusVehicleMapping.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.MapperServiceTest.TestPrivateVehicleMapping (1).executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.MapperServiceTest.TestPrivateVehicleMapping.executor&quot;: &quot;Debug&quot;,
-    &quot;Java Scratch.Java.executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
-    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
-    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
-    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;Spring Boot.Sobek local.executor&quot;: &quot;Debug&quot;,
-    &quot;Spring Boot.Unnamed.executor&quot;: &quot;Run&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/GunnarThorGudlaugsso/git/Entur/sobek&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;ml.llm.LLMConfigurable&quot;,
-    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.SobekApplication.executor": "Run",
+    "HTTP Request.All in generated-requests.executor": "Run",
+    "JUnit.DefaultAuthorizationServiceTest.executor": "Run",
+    "JUnit.DtoQuayResourceTest.getLocalReferences.executor": "Run",
+    "JUnit.ExportJobTest.executor": "Run",
+    "JUnit.IdMappingDtoCsvMapperTest.whenOptionalFieldsAreNull_printEmptyString.executor": "Run",
+    "JUnit.MapperServiceTest.TestBusVehicleMapping.executor": "Run",
+    "JUnit.MapperServiceTest.TestPrivateVehicleMapping (1).executor": "Run",
+    "JUnit.MapperServiceTest.TestPrivateVehicleMapping.executor": "Debug",
+    "JUnit.ReferenceResolverTest.testResolveVehicle.executor": "Run",
+    "JUnit.TagTest.executor": "Run",
+    "Java Scratch.Java.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "Spring Boot.Sobek local.executor": "Debug",
+    "Spring Boot.Unnamed.executor": "Run",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "junie.onboarding.icon.badge.shown": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/GunnarThorGudlaugsso/git/Entur/sobek",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "settings.editor.selected.configurable": "ml.llm.LLMConfigurable",
+    "to.speed.mode.migration.done": "true",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="ReactorSettings">
     <option name="notificationShown" value="true" />
   </component>
@@ -106,7 +121,7 @@
       <recent name="org.rutebanken.sobek.repository" />
     </key>
   </component>
-  <component name="RunManager" selected="Spring Boot.Sobek local">
+  <component name="RunManager" selected="JUnit.ReferenceResolverTest.testResolveVehicle">
     <configuration default="true" type="AZURE_FUNCTION_SUPPORT" factoryName="Run Functions">
       <option name="appName" />
       <option name="appServicePlanName" />
@@ -137,20 +152,6 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="SobekApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="org.rutebanken.sobek.SobekApplication" />
-      <module name="sobek" />
-      <shortenClasspath name="ARGS_FILE" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="org.rutebanken.sobek.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <configuration default="true" type="Application" factoryName="Application">
       <module name="sobek" />
       <shortenClasspath name="ARGS_FILE" />
@@ -158,56 +159,68 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="All in generated-requests" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" path="$APPLICATION_CONFIG_DIR$/scratches/generated-requests.http">
-      <method v="2" />
-    </configuration>
-    <configuration name="MapperServiceTest.TestBusVehicleMapping" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="ExportJobTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="sobek" />
       <shortenClasspath name="ARGS_FILE" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="org.rutebanken.sobek.autosys.*" />
+          <option name="PATTERN" value="org.rutebanken.sobek.model.job.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="org.rutebanken.sobek.autosys" />
-      <option name="MAIN_CLASS_NAME" value="org.rutebanken.sobek.autosys.MapperServiceTest" />
-      <option name="METHOD_NAME" value="TestBusVehicleMapping" />
+      <option name="PACKAGE_NAME" value="org.rutebanken.sobek.model.job" />
+      <option name="MAIN_CLASS_NAME" value="org.rutebanken.sobek.model.job.ExportJobTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="IdMappingDtoCsvMapperTest.whenOptionalFieldsAreNull_printEmptyString" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="sobek" />
+      <shortenClasspath name="ARGS_FILE" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="org.rutebanken.sobek.dtoassembling.dto.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="org.rutebanken.sobek.dtoassembling.dto" />
+      <option name="MAIN_CLASS_NAME" value="org.rutebanken.sobek.dtoassembling.dto.IdMappingDtoCsvMapperTest" />
+      <option name="METHOD_NAME" value="whenOptionalFieldsAreNull_printEmptyString" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="MapperServiceTest.TestPrivateVehicleMapping (1)" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="ReferenceResolverTest.testResolveVehicle" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="sobek" />
       <shortenClasspath name="ARGS_FILE" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="org.rutebanken.sobek.autosys.*" />
+          <option name="PATTERN" value="org.rutebanken.sobek.repository.reference.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="org.rutebanken.sobek.autosys" />
-      <option name="MAIN_CLASS_NAME" value="org.rutebanken.sobek.autosys.MapperServiceTest" />
-      <option name="METHOD_NAME" value="TestPrivateVehicleMapping" />
+      <option name="PACKAGE_NAME" value="org.rutebanken.sobek.repository.reference" />
+      <option name="MAIN_CLASS_NAME" value="org.rutebanken.sobek.repository.reference.ReferenceResolverTest" />
+      <option name="METHOD_NAME" value="testResolveVehicle" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="MapperServiceTest.TestPrivateVehicleMapping" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="TagTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="sobek" />
       <shortenClasspath name="ARGS_FILE" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="org.rutebanken.sobek.autosys.mapping.*" />
+          <option name="PATTERN" value="org.rutebanken.sobek.model.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="org.rutebanken.sobek.service.autosys" />
-      <option name="MAIN_CLASS_NAME" value="org.rutebanken.sobek.service.autosys.MapperServiceTest" />
-      <option name="METHOD_NAME" value="TestPrivateVehicleMapping" />
-      <option name="TEST_OBJECT" value="method" />
+      <option name="PACKAGE_NAME" value="org.rutebanken.sobek.model" />
+      <option name="MAIN_CLASS_NAME" value="org.rutebanken.sobek.model.TagTest" />
+      <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -215,6 +228,15 @@
     <configuration default="true" type="JUnit" factoryName="JUnit">
       <shortenClasspath name="ARGS_FILE" />
       <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="autosys in sobek" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="sobek" />
+      <shortenClasspath name="ARGS_FILE" />
+      <option name="TEST_OBJECT" value="directory" />
+      <dir value="$PROJECT_DIR$/src/test/java/org/rutebanken/sobek/autosys" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -269,23 +291,23 @@
       </method>
     </configuration>
     <list>
-      <item itemvalue="Application.SobekApplication" />
-      <item itemvalue="HTTP Request.All in generated-requests" />
       <item itemvalue="JAR Application.Unnamed" />
       <item itemvalue="Java Scratch.Unnamed" />
       <item itemvalue="Java Scratch.Java GG" />
-      <item itemvalue="JUnit.MapperServiceTest.TestBusVehicleMapping" />
-      <item itemvalue="JUnit.MapperServiceTest.TestPrivateVehicleMapping" />
-      <item itemvalue="JUnit.MapperServiceTest.TestPrivateVehicleMapping (1)" />
+      <item itemvalue="JUnit.ExportJobTest" />
+      <item itemvalue="JUnit.IdMappingDtoCsvMapperTest.whenOptionalFieldsAreNull_printEmptyString" />
+      <item itemvalue="JUnit.ReferenceResolverTest.testResolveVehicle" />
+      <item itemvalue="JUnit.TagTest" />
+      <item itemvalue="JUnit.autosys in sobek" />
       <item itemvalue="Spring Boot.Sobek local" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="JUnit.MapperServiceTest.TestBusVehicleMapping" />
-        <item itemvalue="JUnit.MapperServiceTest.TestPrivateVehicleMapping (1)" />
-        <item itemvalue="JUnit.MapperServiceTest.TestPrivateVehicleMapping" />
-        <item itemvalue="HTTP Request.All in generated-requests" />
-        <item itemvalue="Application.SobekApplication" />
+        <item itemvalue="JUnit.ReferenceResolverTest.testResolveVehicle" />
+        <item itemvalue="JUnit.TagTest" />
+        <item itemvalue="JUnit.ExportJobTest" />
+        <item itemvalue="JUnit.IdMappingDtoCsvMapperTest.whenOptionalFieldsAreNull_printEmptyString" />
+        <item itemvalue="JUnit.autosys in sobek" />
       </list>
     </recent_temporary>
   </component>
@@ -321,7 +343,9 @@
       <workItem from="1763365545498" duration="8112000" />
       <workItem from="1763549848416" duration="1542000" />
       <workItem from="1763552114548" duration="54000" />
-      <workItem from="1763552185764" duration="1000000" />
+      <workItem from="1763552185764" duration="3374000" />
+      <workItem from="1763558825301" duration="4123000" />
+      <workItem from="1763624908800" duration="7817000" />
     </task>
     <task id="LOCAL−00001" summary="For demo/POC - service for getting data from Norwegian authorities based on car reg no + service for importing vehicle data (in progress) + service for fetching data with GraphQL (in progress)">
       <option name="closed" value="true" />
@@ -379,7 +403,35 @@
       <option name="presentableId" value="LOCAL−00008" />
       <updated>1763369020468</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL−00009" summary="Add Entur internal repo (for now)">
+      <option name="closed" value="true" />
+      <created>1763553421291</created>
+      <option name="number" value="LOCAL−00009" />
+      <option name="presentableId" value="LOCAL−00009" />
+      <updated>1763553421291</updated>
+    </task>
+    <task id="LOCAL−00010" summary="New build of netex-java-model">
+      <option name="closed" value="true" />
+      <created>1763560320105</created>
+      <option name="number" value="LOCAL−00010" />
+      <option name="presentableId" value="LOCAL−00010" />
+      <updated>1763560320105</updated>
+    </task>
+    <task id="LOCAL−00011" summary="Get settings for mvn">
+      <option name="closed" value="true" />
+      <created>1763560627383</created>
+      <option name="number" value="LOCAL−00011" />
+      <option name="presentableId" value="LOCAL−00011" />
+      <updated>1763560627383</updated>
+    </task>
+    <task id="LOCAL−00012" summary="Try to get mvn less verbose">
+      <option name="closed" value="true" />
+      <created>1763562187708</created>
+      <option name="number" value="LOCAL−00012" />
+      <option name="presentableId" value="LOCAL−00012" />
+      <updated>1763562187708</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -406,7 +458,11 @@
     <MESSAGE value="Change port number and fix Readme" />
     <MESSAGE value="Add Terraform files" />
     <MESSAGE value="Fix main branch name" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fix main branch name" />
+    <MESSAGE value="Add Entur internal repo (for now)" />
+    <MESSAGE value="New build of netex-java-model" />
+    <MESSAGE value="Get settings for mvn" />
+    <MESSAGE value="Try to get mvn less verbose" />
+    <option name="LAST_COMMIT_MESSAGE" value="Try to get mvn less verbose" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -435,6 +491,11 @@
           <url>file://$PROJECT_DIR$/src/main/java/org/rutebanken/sobek/exporter/StreamingPublicationDelivery.java</url>
           <line>852</line>
           <option name="timeStamp" value="21" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>jar://$MAVEN_REPOSITORY$/org/entur/autosys/0.0.2-SNAPSHOT/autosys-0.0.2-20251119.093211-1.jar!/org/entur/autosys/service/AutosysVehicleService.class</url>
+          <line>27</line>
+          <option name="timeStamp" value="24" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

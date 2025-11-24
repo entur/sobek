@@ -76,6 +76,8 @@ spec:
                 name: sobek-psql-credentials
             - secretRef:
                 name: auth-internal-credentials
+            - secretRef:
+                name: autosys-api-credentials
           resources:
             limits:
               memory: {{ .Values.resources.memLimit }}

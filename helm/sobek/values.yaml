@@ -36,3 +36,5 @@ ingress:
 secrets:
   sobek-psql-credentials:
     - SPRING_DATASOURCE_PASSWORD
+  autosys-api-credentials:
+    - AUTOSYS_API_APIKEY

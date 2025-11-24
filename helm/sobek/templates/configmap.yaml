@@ -8,14 +8,13 @@ metadata:
 data:
   application.properties: |-
     server.port={{ .Values.service.http.internalPort }}
-    nearbyStopsWithSameTypeFinder.limits={railStation:'200',airport:'3000'}
     tariffzoneLookupService.resetReferences=true
     publicationDeliveryStreamingOutput.validateAgainstSchema=true
     publicationDeliveryUnmarshaller.validateAgainstSchema=true
     netex.import.enabled.types=MERGE
     changelog.publish.enabled=true
     netex.id.valid.prefix.list={TopographicPlace:{'KVE','WOF','OSM','ENT','LAN'},TariffZone:{'*'},FareZone:{'*'},GroupOfTariffZones:{'*'}}
-    netex.profile.version=1.14:NO-NeTEx-stops:1.5
+    netex.profile.version=2.16:NO-NeTEx-vehicles:2.16
 
     # GCS properties
     blobstore.gcs.bucket.name={{.Values.configMap.gcsBucketName}}
@@ -83,12 +82,11 @@ data:
     logging.level.org.rutebanken.sobek.repository=DEBUG
     logging.level.org.rutebanken.sobek.repository.reference=WARN
     logging.level.org.rutebanken.sobek.importer.finder=INFO
-    logging.level.org.rutebanken.sobek.dtoassembling.disassembler.StopPlaceSearchDisassembler=WARN
     logging.level.org.rutebanken.sobek.rest.netex.publicationdelivery.PublicationDeliveryUnmarshaller=INFO
     logging.level.org.rutebanken.sobek.rest.netex.publicationdelivery=INFO
     logging.level.org.rutebanken.sobek.rest.netex.publicationdelivery.PublicationDeliveryStreamingOutput=INFO
     logging.level.org.springframework.orm.hibernate4.support=WARN
-    logging.level.org.hibernate.SQL=WARN
+    logging.level.org.hibernate.SQL=INFO
     logging.level.org.hibernate.tool.hbm2ddl=INFO
     logging.level.org.hibernate.type=WARN
     logging.level.org.hibernate.id.enhanced=INFO

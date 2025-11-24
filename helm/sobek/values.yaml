@@ -30,7 +30,7 @@ service:
 rbac:
   enabled: false
 ingress:
-  name: stop-places-v1-gcp2
+  name: vehicles-v1-gcp2
 
 
 secrets:

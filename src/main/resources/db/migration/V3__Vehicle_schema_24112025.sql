@@ -1500,15 +1500,6 @@ ALTER TABLE ONLY public.export_job
 
 
 --
--- TOC entry 4368 (class 2606 OID 19736)
--- Name: id_generator id_constraint; Type: CONSTRAINT; Schema: public; Owner: sobek
---
-
-ALTER TABLE ONLY public.id_generator
-    ADD CONSTRAINT id_constraint UNIQUE (table_name, id_value);
-
-
---
 -- TOC entry 4402 (class 2606 OID 19828)
 -- Name: installed_equipment_version_structure installed_equipment_version_structure_pkey; Type: CONSTRAINT; Schema: public; Owner: sobek
 --

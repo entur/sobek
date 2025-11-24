@@ -12,7 +12,7 @@ variable "db_zone" {
 
 variable "db_tier" {
   description = "Database instance tier"
-  default = "db-custom-1-3840"
+  default = "db-perf-optimized-N-4"
 }
 variable "db_availability" {
   description = "Database availability"
@@ -49,7 +49,7 @@ variable "db_version" {
 }
 
 variable "transaction_log_retention_days" {
-  default = "7"
+  default = "6"
 }
 variable "retained_backups" {
   default = "7"

@@ -1,2 +1,2 @@
 cloudsql_project="ent-sobek-dev"
-db_tier="db-custom-2-7680"
+db_tier="db-perf-optimized-N-4"

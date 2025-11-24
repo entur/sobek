@@ -6,9 +6,7 @@ sql:
 
 configMap:
   blobstoreProjectId: ent-sobek-prd
-  pubsubProjectId: ent-sobek-prd
-  pubsbuTopicName: ror.sobek.changelog
-  gcsBucketName: ror-sobek-gcp2-prd
+  gcsBucketName: ror-sobek-prd
 
 auth0:
   ror:
@@ -20,7 +18,6 @@ auth0:
     partner:
       url: https://partner.entur.org/
   client:
-    id: ga01hAU7XrM8cPOSuYXOocFoM8c1wB42
     url: https://internal.entur.org/oauth/token
     audience: https://ror.api.entur.io
 

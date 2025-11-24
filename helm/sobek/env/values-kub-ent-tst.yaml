@@ -6,9 +6,7 @@ sql:
 
 configMap:
   blobstoreProjectId: ent-sobek-tst
-  pubsubProjectId: ent-sobek-tst
-  pubsbuTopicName: ror.sobek.changelog
-  gcsBucketName: ror-sobek-gcp2-tst
+  gcsBucketName: ror-sobek-tst
 
 auth0:
   ror:
@@ -20,7 +18,6 @@ auth0:
     partner:
       url: https://partner.staging.entur.org/
   client:
-    id: 9x7HiPyzNWLZuHIaeTzI5QgGBv5hI9w7
     url: https://internal.staging.entur.org/oauth/token
     audience: https://ror.api.staging.entur.io
 

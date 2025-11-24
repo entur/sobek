@@ -1598,13 +1598,7 @@ ALTER TABLE ONLY public.persistable_polygon
     ADD CONSTRAINT persistable_polygon_pkey PRIMARY KEY (id);
 
 
---
--- TOC entry 4365 (class 2606 OID 19730)
--- Name: schema_version schema_version_pk; Type: CONSTRAINT; Schema: public; Owner: sobek
---
 
-ALTER TABLE ONLY public.schema_version
-    ADD CONSTRAINT schema_version_pk PRIMARY KEY (installed_rank);
 
 
 --
@@ -1955,13 +1949,6 @@ ALTER TABLE ONLY public.vehicle_type
 
 CREATE INDEX items_index ON public.value_items USING btree (items);
 
-
---
--- TOC entry 4366 (class 1259 OID 19731)
--- Name: schema_version_s_idx; Type: INDEX; Schema: public; Owner: sobek
---
-
-CREATE INDEX schema_version_s_idx ON public.schema_version USING btree (success);
 
 
 --

@@ -152,7 +152,7 @@ Supported extra profiles are
 |:-----------------------|------------------------------------------|
 | `local-disk-blobstore` | Similar to `local-blobstore`.            |
 | `in-memory-blobstore`  | Entirely in-memory based implementation. |
-| `s3-blobstore`         | AWS S3 implementation.                   |
+
 
 **Example: Activating `in-memory-blobstore` for local development**
 ```properties
@@ -186,11 +186,6 @@ COMPOSE_PROFILES=first,second docker compose up
 
 Starts up PostGIS server with settings matching the ones in [`application-local.properties`](./src/main/resources/application-local.properties).
 
-### `aws` profile
-
-Starts up [LocalStack](https://www.localstack.cloud/) meant for developing AWS specific features.
-
-See also [Synchronous NeTEx export with query params](#synchronous-netex-export-with-query-params).
 
 #### Run It!
 
@@ -284,14 +279,13 @@ spring.datasource.password=sobek
 
 #OAuth2 Resource Server
 spring.security.oauth2.resourceserver.jwt.issuer-uri=https:http://localhost:8082/realms/entur
-sobek.oauth2.resourceserver.auth0.ror.jwt.audience=abzu
+sobek.oauth2.resourceserver.auth0.ror.jwt.audience=hathor
 sobek.oauth2.resourceserver.auth0.ror.claim.namespace=role_assignments
 
 spring.cloud.gcp.pubsub.enabled=false
 
 aspect.enabled=true
 
-netex.id.valid.prefix.list={TopographicPlace:{'KVE','WOF','OSM','ENT','LAN'},TariffZone:{'*'},FareZone:{'*'},GroupOfTariffZones:{'*'}}
 
 server.port=1888
 
@@ -340,7 +334,7 @@ It's all initiated by an entity listener annotated with `PrePersist` on the clas
 
 
 ## Keycloak/Auth0
-Both Sobek and Abzu are set up to be used with Keycloak or Auth0.
+Both Sobek and Hathor are set up to be used with Keycloak or Auth0.
 A detailed guide on how to setup Keycloak can be found [here](./Keycloak_Setup_Guide.md).
 
 ## Validation for incoming and outgoing NeTEx publication delivery
@@ -394,8 +388,6 @@ curl https://api.dev.entur.io/vehicles/v1/netex/export
 ```
 curl https://api.dev.entur.io/vehicles/v1/netex/export/130116/content | zcat | xmllint --format - > export.xml
 ```
-
-See also https://rutebanken.atlassian.net/browse/NRP-924
 
 ## Truncate data in sobek database
 Clean existing data in postgresql (streamline if frequently used):
@@ -456,12 +448,4 @@ Migrations are executed when sobek is started.
 Create a new file according to the flyway documentation in the folder `resources/db/migrations`.
 Commit the migration together with code changes that requires this schema change. Follow the naming convention.
 
-
-## Sobek scripts
-Various queries and scripts related to sobek, has been collected here:
-https://github.com/entur/sobek-scripts
-
-
-## CircleCI
-Sobek is built using CircleCI. See the .circleci folder.
 

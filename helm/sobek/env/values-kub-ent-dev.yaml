@@ -1,0 +1,40 @@
+env: dev
+gcp2:
+  enabled: true
+sql:
+  instance: ent-sobek-dev:europe-west1:sobek-db-1=tcp:5432
+
+configMap:
+  blobstoreProjectId: ent-sobek-dev
+  pubsubProjectId: ent-sobek-dev
+  pubsbuTopicName: ror.sobek.changelog
+  gcsBucketName: ror-sobek-gcp2-dev
+
+auth0:
+  ror:
+    url: https://ror-entur-dev.eu.auth0.com/
+    audience: https://ror.api.dev.entur.io
+  entur:
+    internal:
+      url: https://internal.dev.entur.org/
+    partner:
+      url: https://partner.dev.entur.org/
+  client:
+      id: XDdnP2N0OkLAp1tw9aYWHQE4qtsHgxje
+      url: https://internal.dev.entur.org/oauth/token
+      audience: https://ror.api.dev.entur.io
+
+organisation:
+  service: http://baba.dev.entur.internal
+
+roleAssignmentExtractor: baba
+
+rbac:
+  enabled: true
+
+ingress:
+  enabled: true
+  domainName: .dev.entur.io
+
+autosys:
+  api-key:

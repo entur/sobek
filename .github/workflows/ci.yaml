@@ -13,6 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       TZ: Europe/Oslo
+      JFROG_USER: ${{ secrets.ARTIFACTORY_AUTH_USER }}
+      JFROG_PASS: ${{ secrets.ARTIFACTORY_AUTH_TOKEN }}
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 21

@@ -6,9 +6,6 @@ terraform {
 provider "google" {
   version = "~> 4.84.0"
 }
-provider "kubernetes" {
-  version = ">= 2.13.1"
-}
 # Create bucket
 resource "google_storage_bucket" "storage_bucket" {
   name               = "${var.bucket_instance_prefix}-${var.bucket_instance_suffix}"
@@ -31,10 +28,4 @@ resource "google_storage_bucket_object" "content_folder" {
   name          = "export/"
   content       = "Not really a directory, but it's empty."
   bucket        = google_storage_bucket.storage_bucket.name
-}
-# Create pubsub topic
-resource "google_pubsub_topic" "changelog" {
-  name   = "${var.labels.team}.${var.labels.app}.changelog"
-  project = var.pubsub_project
-  labels = var.labels
 }

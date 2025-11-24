@@ -1,16 +1,8 @@
-variable "pubsub_project" {
-  description = "GCP project of pubsub topic"
-}
-
 variable "storage_project" {
-  description = "GCP project of pubsub topic"
+  description = "GCP project of storage bucket"
 }
 variable "location" {
   description = "GCP bucket location"
-}
-
-variable "kube_namespace" {
-  description = "The Kubernetes namespace"
 }
 
 variable "labels" {
@@ -51,15 +43,4 @@ variable "versioning" {
 variable "log_bucket" {
   description = "The bucket's Access & Storage Logs configuration"
   default     = "false"
-}
-
-variable "bucket_policy_only" {
-  description = "Enables Bucket Policy Only access to a bucket"
-  default     = "false"
-}
-
-variable "prevent_destroy" {
-  description = "Prevent destruction of bucket"
-  type        = bool
-  default     = false
 }

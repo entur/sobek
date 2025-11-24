@@ -18,10 +18,6 @@ variable "db_availability" {
   description = "Database availability"
   default = "ZONAL"
 }
-variable "db_replica_availability" {
-  description = "Database replica availability"
-  default = "ZONAL"
-}
 
 variable "labels" {
   description = "Labels used in all resources"
@@ -40,11 +36,6 @@ variable "db_instance_name" {
   default = "sobek-db-1"
 }
 
-variable "db_instance_replica_name" {
-  description = "Database instance name"
-  default = "sobek-db-1-replica"
-}
-
 variable "ror-sobek-db-username" {
   description = "Sobek database username"
 }
@@ -54,7 +45,7 @@ variable "db_disk_size" {
 }
 variable "db_version" {
   description = "postgres version"
-  default = "POSTGRES_13"
+  default = "POSTGRES_17"
 }
 
 variable "transaction_log_retention_days" {

@@ -64,6 +64,8 @@ public class RegisterGraphQLSchema {
     private VehicleTypeObjectTypeCreator vehicleTypeObjectTypeCreator;
     @Autowired
     private DeckPlanObjectTypeCreator deckPlanObjectTypeCreator;
+    @Autowired
+    private VehicleObjectTypeCreator vehicleObjectTypeCreator;
 
     @Autowired
     DataFetcher vehicleTypeFetcher;
@@ -128,7 +130,8 @@ public class RegisterGraphQLSchema {
                 .build();
 
         GraphQLObjectType deckPlanObjectType = deckPlanObjectTypeCreator.create();
-        GraphQLObjectType vehicleTypeObjectType = vehicleTypeObjectTypeCreator.create(deckPlanObjectType);
+        GraphQLObjectType vehicleObjectType = vehicleObjectTypeCreator.create();
+        GraphQLObjectType vehicleTypeObjectType = vehicleTypeObjectTypeCreator.create(deckPlanObjectType, vehicleObjectType);
 
         GraphQLArgument allVersionsArgument = GraphQLArgument.newArgument()
                 .name(ALL_VERSIONS)

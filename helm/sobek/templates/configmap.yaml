@@ -9,8 +9,8 @@ data:
   application.properties: |-
     server.port={{ .Values.service.http.internalPort }}
     tariffzoneLookupService.resetReferences=true
-    publicationDeliveryStreamingOutput.validateAgainstSchema=true
-    publicationDeliveryUnmarshaller.validateAgainstSchema=true
+    publicationDeliveryStreamingOutput.validateAgainstSchema=false
+    publicationDeliveryUnmarshaller.validateAgainstSchema=false
     netex.import.enabled.types=MERGE
     changelog.publish.enabled=true
     netex.profile.version=1.12:NO-NeTEx-vehicle:1.4

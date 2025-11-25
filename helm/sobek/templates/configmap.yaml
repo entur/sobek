@@ -53,7 +53,7 @@ data:
 
 
     # Security config with auth0
-    authorization.enabled=true
+    authorization.enabled=false
     sobek.security.role.assignment.extractor={{ .Values.roleAssignmentExtractor }}
     sobek.user.permission.rest.service.url={{ .Values.organisation.service }}/services/organisations/users
 

@@ -13,7 +13,7 @@ data:
     publicationDeliveryUnmarshaller.validateAgainstSchema=true
     netex.import.enabled.types=MERGE
     changelog.publish.enabled=true
-    netex.profile.version=2.16:NO-NeTEx-vehicles:2.16
+    netex.profile.version=1.12:NO-NeTEx-vehicle:1.4
 
     # GCS properties
     blobstore.gcs.bucket.name={{.Values.configMap.gcsBucketName}}

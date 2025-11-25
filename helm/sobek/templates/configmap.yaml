@@ -14,6 +14,7 @@ data:
     netex.import.enabled.types=MERGE
     changelog.publish.enabled=true
     netex.profile.version=1.12:NO-NeTEx-vehicle:1.4
+    netex.validPrefix=NMR
 
     # GCS properties
     blobstore.gcs.bucket.name={{.Values.configMap.gcsBucketName}}

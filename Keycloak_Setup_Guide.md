@@ -190,7 +190,7 @@ Update dev.json file with the following configuration.
  "sobekEnv": "development",
  "netexPrefix": "NMR",
  "hostname": "materiell.dev.entur.org",
- "googleApiKey": "AIzaSyB_8bdt2skRkdsyQO19m_gqTzr0_2gqo8U",
+ "googleApiKey": "<your key here>",
  "claimsNamespace": "role_assignments",
  "preferredNameNamespace": "name",
  "oidcConfig": {

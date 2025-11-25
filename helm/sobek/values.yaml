@@ -30,7 +30,7 @@ service:
 rbac:
   enabled: false
 ingress:
-  name: vehicle-register-v1
+  name: vehicle-registry-v1
 
 
 secrets:

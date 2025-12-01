@@ -248,21 +248,18 @@ public class MapperService {
     private VehicleModelRefStructure createModelRef(Kjoretoydata vt, int index) {
         VehicleModelRefStructure vehicleModelRefStructure = new VehicleModelRefStructure();
         vehicleModelRefStructure.setRef(vehicleModelId(vt, index));
-        vehicleModelRefStructure.setVersion("1");
         return vehicleModelRefStructure;
     }
 
     private JAXBElement<? extends TransportTypeRefStructure> createVechicleTypeRef(Kjoretoydata vt, int index) {
         TransportTypeRefStructure transportTypeRefStructure = new TransportTypeRefStructure();
         transportTypeRefStructure.setRef(vehicleTypeId(vt, index));
-        transportTypeRefStructure.setVersion("1");
         return netexObjectFactory.createTransportTypeRef(transportTypeRefStructure);
     }
 
     private DeckPlanRefStructure createDeckPlanRef(Kjoretoydata vt, int index) {
         DeckPlanRefStructure deckPlanRefStructure  = new DeckPlanRefStructure();
         deckPlanRefStructure.setRef(deckPlanId(vt, index));
-        deckPlanRefStructure.setVersion("1");
         return deckPlanRefStructure;
     }
 

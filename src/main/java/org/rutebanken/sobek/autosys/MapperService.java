@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.entur.autosys.model.Kjoretoydata;
@@ -18,6 +19,7 @@ import org.rutebanken.sobek.exporter.params.ExportParams;
 import org.rutebanken.sobek.model.ResourceFrame;
 import org.rutebanken.sobek.model.vehicle.CompositeFrame;
 import org.rutebanken.sobek.netex.mapping.NetexMapper;
+import org.rutebanken.sobek.netex.util.KeyValuesHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -318,9 +320,32 @@ public class MapperService {
         }
 
         var motorOgDrivverk = tekniskeData.getMotorOgDrivverk();
-        if(motorOgDrivverk != null && motorOgDrivverk.getMotor() != null && !motorOgDrivverk.getMotor().isEmpty()) {
-            vehicleType.withPropulsionTypes(motorOgDrivverk.getMotor().stream().map(this::mapPropulsionType).toList());
+        if(motorOgDrivverk != null) {
+            if (motorOgDrivverk.getMaksimumHastighet() != null && !motorOgDrivverk.getMaksimumHastighet().isEmpty()) {
+                vehicleType.withMaximumVelocity(BigDecimal.valueOf(motorOgDrivverk.getMaksimumHastighet().getFirst()));
+            }
+            if (motorOgDrivverk.getMotor() != null && !motorOgDrivverk.getMotor().isEmpty()) {
+                vehicleType.withPropulsionTypes(motorOgDrivverk.getMotor().stream().map(this::mapPropulsionType).toList());
 
+                // Calculate sum of getMaksNettoEffekt from all drivstoff of all motor elements
+                Double totalMaksNettoEffekt = motorOgDrivverk.getMotor().stream()
+                    .filter(motor -> motor.getDrivstoff() != null)
+                    .flatMap(motor -> motor.getDrivstoff().stream())
+                    .map(TekniskeData.Drivstoff::getMaksNettoEffekt)
+                    .filter(Objects::nonNull)
+                        .reduce(0.0, Double::sum);
+                
+                if (totalMaksNettoEffekt > 0) {
+                    KeyValuesHelper.AddToKeyValues(vehicleType, "MaximumEngineEffectKW", totalMaksNettoEffekt.toString());
+                }
+            }
+            if(motorOgDrivverk.getHybridKategori() != null) {
+                if(motorOgDrivverk.getHybridKategori().getKodeVerdi().equals("LADBAR")) {
+                    KeyValuesHelper.AddToKeyValues(vehicleType, "HybridCategory", "Chargeable");
+                } else if(motorOgDrivverk.getHybridKategori().getKodeVerdi().equals("IKKE_LADBAR")) {
+                    KeyValuesHelper.AddToKeyValues(vehicleType, "HybridCategory", "NonChargeable");
+                }
+            }
         }
 
         if (tekniskeData.getKarosseriOgLasteplan() != null && tekniskeData.getKarosseriOgLasteplan().getKarosseritype() != null) {

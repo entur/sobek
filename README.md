@@ -279,8 +279,7 @@ spring.datasource.password=sobek
 
 #OAuth2 Resource Server
 spring.security.oauth2.resourceserver.jwt.issuer-uri=https:http://localhost:8082/realms/entur
-sobek.oauth2.resourceserver.auth0.ror.jwt.audience=hathor
-sobek.oauth2.resourceserver.auth0.ror.claim.namespace=role_assignments
+sobek.oauth2.resourceserver.auth0.entur.internal.jwt.audience=hathor
 
 spring.cloud.gcp.pubsub.enabled=false
 

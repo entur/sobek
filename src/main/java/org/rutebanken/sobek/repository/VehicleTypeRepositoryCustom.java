@@ -22,5 +22,7 @@ import java.util.List;
 public interface VehicleTypeRepositoryCustom extends DataManagedObjectStructureRepository<VehicleType> {
 
     List<VehicleType> findAllCurrent();
+
+    void moveToDeckPlan(Long fromDeckPlanId, Long toDeckPlanId);
 }
 

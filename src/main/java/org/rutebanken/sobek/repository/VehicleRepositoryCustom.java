@@ -18,5 +18,7 @@ package org.rutebanken.sobek.repository;
 import org.rutebanken.sobek.model.vehicle.Vehicle;
 
 public interface VehicleRepositoryCustom extends DataManagedObjectStructureRepository<Vehicle> {
+
+    void moveToTransportType(Long fromTransportTypeId, Long toTransportTypeId);
 }
 

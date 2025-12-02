@@ -16,22 +16,38 @@
 package org.rutebanken.sobek.versioning.save;
 
 
+import lombok.extern.java.Log;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
+import org.rutebanken.sobek.repository.VehicleRepository;
 import org.rutebanken.sobek.repository.VehicleTypeRepository;
 import org.springframework.stereotype.Component;
 
+import java.util.logging.Level;
+
 @Component
+@Log
 public class VehicleTypeVersionedSaverService {
 
     private final VehicleTypeRepository vehicleTypeRepository;
+    private final VehicleRepository vehicleRepository;
     private final DefaultMergingVersionedSaverService defaultVersionedSaverService;
 
-    public VehicleTypeVersionedSaverService(VehicleTypeRepository vehicleTypeRepository, DefaultMergingVersionedSaverService defaultVersionedSaverService) {
+    public VehicleTypeVersionedSaverService(VehicleTypeRepository vehicleTypeRepository, VehicleRepository vehicleRepository, DefaultMergingVersionedSaverService defaultVersionedSaverService) {
         this.vehicleTypeRepository = vehicleTypeRepository;
+        this.vehicleRepository = vehicleRepository;
         this.defaultVersionedSaverService = defaultVersionedSaverService;
     }
 
     public VehicleType saveNewVersion(VehicleType newVersion) {
-        return defaultVersionedSaverService.saveNewVersion(newVersion, vehicleTypeRepository);
+        var existingVersion = vehicleTypeRepository.findFirstByNetexIdOrderByVersionDesc(newVersion.getNetexId());
+        if (existingVersion != null) {
+            log.log(Level.FINE, "Found existing entity from netexId {}", existingVersion.getNetexId());
+        }
+
+        var saved = defaultVersionedSaverService.saveNewVersion(existingVersion, newVersion, vehicleTypeRepository);
+        if(existingVersion != null && !saved.getId().equals(existingVersion.getId())) {
+            vehicleRepository.moveToTransportType(existingVersion.getId(), saved.getId());
+        }
+        return saved;
     }
 }

@@ -54,4 +54,16 @@ public class VehicleRepositoryImpl implements VehicleRepositoryCustom {
             return null;
         }
     }
+
+
+    @Override
+    public void moveToTransportType(Long fromTransportTypeId, Long toTransportTypeId) {
+        Query query = entityManager.createNativeQuery("UPDATE vehicle SET transport_type_id = :toTransportTypeId WHERE transport_type_id = :fromTransportTypeId " +
+                " and (from_date is null or from_date <= now()) and (to_date is null or to_date >= now())");
+
+        query.setParameter("toTransportTypeId", toTransportTypeId);
+        query.setParameter("fromTransportTypeId", fromTransportTypeId);
+
+        query.executeUpdate();
+    }
 }

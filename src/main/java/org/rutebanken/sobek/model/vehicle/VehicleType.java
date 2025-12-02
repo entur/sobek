@@ -27,14 +27,7 @@ public class VehicleType extends VehicleType_VersionStructure {
                     this.getKeyValues().put(key, new Value(value.getItems().stream().toList()));
                 });
             }
-            if(vtExisting.getVehicles() != null) {
-                if(this.getVehicles() == null) {
-                    this.setVehicles(vtExisting.getVehicles().stream().toList());
-                } else {
-                    vtExisting.getVehicles().forEach(v -> this.getVehicles().add(v));
-                }
-                this.getVehicles().forEach(v -> v.setTransportType(this));
-            }
+
         }
     }
 }

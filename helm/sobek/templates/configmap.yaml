@@ -60,16 +60,11 @@ data:
 
     # OAuth2 Resource Server for Entur Partner tenant
     sobek.oauth2.resourceserver.auth0.entur.partner.jwt.issuer-uri={{ .Values.auth0.entur.partner.url }}
-    sobek.oauth2.resourceserver.auth0.entur.partner.jwt.audience={{ .Values.auth0.ror.audience }}
+    sobek.oauth2.resourceserver.auth0.entur.partner.jwt.audience={{ .Values.auth0.entur.partner.audience }}
 
     # OAuth2 Resource Server for Entur internal tenant
     sobek.oauth2.resourceserver.auth0.entur.internal.jwt.issuer-uri={{ .Values.auth0.entur.internal.url }}
-    sobek.oauth2.resourceserver.auth0.entur.internal.jwt.audience={{ .Values.auth0.ror.audience }}
-
-    # OAuth2 Resource Server for RoR tenant
-    sobek.oauth2.resourceserver.auth0.ror.jwt.issuer-uri={{ .Values.auth0.ror.url }}
-    sobek.oauth2.resourceserver.auth0.ror.jwt.audience={{ .Values.auth0.ror.audience }}
-    sobek.oauth2.resourceserver.auth0.ror.claim.namespace=https://ror.entur.io/
+    sobek.oauth2.resourceserver.auth0.entur.internal.jwt.audience={{ .Values.auth0.entur.internal.audience }}
 
     # OAuth Entur Internal client
     spring.security.oauth2.client.registration.internal.authorization-grant-type=client_credentials

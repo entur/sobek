@@ -9,14 +9,13 @@ configMap:
   gcsBucketName: ror-sobek-dev
 
 auth0:
-  ror:
-    url: https://ror-entur-dev.eu.auth0.com/
-    audience: https://ror.api.dev.entur.io
   entur:
     internal:
       url: https://internal.dev.entur.org/
+      audience: https://api.dev.entur.io,https://ror.api.dev.entur.io
     partner:
       url: https://partner.dev.entur.org/
+      audience: https://ror.api.dev.entur.io,https://api.dev.entur.io
   client:
       url: https://internal.dev.entur.org/oauth/token
       audience: https://ror.api.dev.entur.io

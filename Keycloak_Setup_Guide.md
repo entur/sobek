@@ -173,9 +173,8 @@ You need to configure your application to use Keycloak for authentication.
 ```properties
 authorization.enabled = true
 # Keycloak Configuration
-sobek.oauth2.resourceserver.auth0.ror.jwt.issuer-uri=http://localhost:8082/realms/entur
-sobek.oauth2.resourceserver.auth0.ror.jwt.audience=hathor
-sobek.oauth2.resourceserver.auth0.ror.claim.namespace=role_assignments
+sobek.oauth2.resourceserver.auth0.entur.internal.jwt.issuer-uri=http://localhost:8082/realms/entur
+sobek.oauth2.resourceserver.auth0.entur.internal.jwt.audience=hathor
 ```
 
 #### Configure Hathor

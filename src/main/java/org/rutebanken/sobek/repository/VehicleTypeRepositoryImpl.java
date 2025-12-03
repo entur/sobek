@@ -62,7 +62,7 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
     }
 
     public void moveToDeckPlan(Long fromDeckPlanId, Long toDeckPlanId) {
-        Query query = entityManager.createNativeQuery("UPDATE vehicle_type SET deck_plan_id = :toDeckPlanId WHERE transport_type_id = :fromDeckPlanId " +
+        Query query = entityManager.createNativeQuery("UPDATE vehicle_type SET deck_plan_id = :toDeckPlanId WHERE deck_plan_id = :fromDeckPlanId " +
                 " and (from_date is null or from_date <= now()) and (to_date is null or to_date >= now())");
 
         query.setParameter("toDeckPlanId", toDeckPlanId);

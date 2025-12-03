@@ -36,14 +36,10 @@ public class TransportType_VersionStructure extends DataManagedObjectStructure {
     private String euroClass;
     private Boolean reversingDirection;
     private Boolean selfPropelled;
-//    @Transient
-//    private List<PropulsionTypeEnumeration> propulsionTypes;
-    @Enumerated(EnumType.STRING)
-    private PropulsionTypeEnumeration propulsionType;
-//    @Transient
-//    private List<FuelTypeEnumeration> fuelTypes;
-    @Enumerated(EnumType.STRING)
-    private FuelTypeEnumeration fuelType;
+    @Convert(converter = PropulsionTypeListConverter.class)
+    private List<PropulsionTypeEnumeration> propulsionTypes;
+    @Convert(converter = FuelTypeListConverter.class)
+    private List<FuelTypeEnumeration> fuelTypes;
     @Enumerated(EnumType.STRING)
     private FuelTypeEnumeration typeOfFuel;
     private BigDecimal maximumRange;

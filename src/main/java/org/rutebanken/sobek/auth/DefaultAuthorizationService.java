@@ -35,7 +35,9 @@ public class DefaultAuthorizationService implements AuthorizationService {
         if(hasNoAuthentications()) {
             return false;
         }
-        return verifyCanEditAllEntities(roleAssignmentExtractor.getRoleAssignmentsForUser());
+        // For now, if the user is authenticated, we assume they can edit all entities.
+        return true;
+        // return verifyCanEditAllEntities(roleAssignmentExtractor.getRoleAssignmentsForUser());
     }
 
     boolean verifyCanEditAllEntities(List<RoleAssignment> roleAssignments) {
@@ -51,18 +53,24 @@ public class DefaultAuthorizationService implements AuthorizationService {
 
     @Override
     public boolean canEditEntities(Collection<? extends EntityStructure> entities) {
-        return dataScopedAuthorizationService.isAuthorized(ROLE_EDIT_STOPS, entities);
+        // For now, if the user is authenticated, we assume they can edit all entities.
+        return true;
+        //return dataScopedAuthorizationService.isAuthorized(ROLE_EDIT_STOPS, entities);
     }
 
 
     @Override
     public void verifyCanEditEntities(Collection<? extends EntityStructure> entities) {
-        dataScopedAuthorizationService.assertAuthorized(ROLE_EDIT_STOPS, entities);
+        // For now, if the user is authenticated, we assume they can edit all entities.
+        return;
+//        dataScopedAuthorizationService.assertAuthorized(ROLE_EDIT_STOPS, entities);
     }
 
     @Override
     public void verifyCanDeleteEntities(Collection<? extends EntityStructure> entities) {
-        dataScopedAuthorizationService.assertAuthorized(ROLE_DELETE_STOPS, entities);
+        // For now, if the user is authenticated, we assume they can edit all entities.
+        return;
+//        dataScopedAuthorizationService.assertAuthorized(ROLE_DELETE_STOPS, entities);
 
     }
 

@@ -54,13 +54,13 @@ public class ExportResource {
 
     @GET
     @Produces(MediaType.APPLICATION_XML + "; charset=UTF-8")
-    public Response exportStopPlaces(@BeanParam ExportParams exportParams) throws JAXBException, IOException, SAXException {
+    public Response exportVehicles(@BeanParam ExportParams exportParams) throws JAXBException, IOException, SAXException {
         logger.info("Exporting publication delivery. {}", exportParams);
 
 
         StreamingOutput streamingOutput = outputStream -> {
             try {
-                streamingPublicationDelivery.stream(exportParams, outputStream);
+                streamingPublicationDelivery.streamVehicles(exportParams, outputStream);
             } catch (Exception e) {
                 logger.warn("Could not stream site frame. {}", e.getMessage(), e);
                 throw new RuntimeException(e);

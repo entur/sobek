@@ -235,7 +235,7 @@ public class StreamingPublicationDelivery {
             List<org.rutebanken.netex.model.VehicleType> vehicleTypes = vehicleTypesInDb.stream().map(vt -> netexMapper.getFacade().map(vt, org.rutebanken.netex.model.VehicleType.class)).toList();
 
             List<JAXBElement<org.rutebanken.netex.model.VehicleType>> jaxbVehicleTypes = vehicleTypes.stream().map(vt -> new ObjectFactory().createVehicleType(vt)).toList();
-            setField(VehicleTypesInFrame_RelStructure.class, "transportType_DummyType", vehicleTypesInFrameRelStructure, jaxbVehicleTypes);
+            setField(VehicleTypesInFrame_RelStructure.class, "transportType_Dummy", vehicleTypesInFrameRelStructure, jaxbVehicleTypes);
             resourceFrame.setVehicleTypes(vehicleTypesInFrameRelStructure);
         } else {
             logger.info("No vehicle types to export");

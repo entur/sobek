@@ -111,7 +111,7 @@ public class ExportJobWorker implements Runnable {
     private void exportToLocalXmlFile(File localExportXmlFile) throws InterruptedException, IOException, XMLStreamException, SAXException, JAXBException {
         logger.info("Start streaming publication delivery to local file {}", localExportXmlFile);
         FileOutputStream fileOutputStream = new FileOutputStream(localExportXmlFile);
-        streamingPublicationDelivery.stream(exportJob.getExportParams(), fileOutputStream, IGNORE_PAGING);
+        streamingPublicationDelivery.streamVehicles(exportJob.getExportParams(), fileOutputStream);
     }
 
     private void uploadToGcp(File localExportFile) throws FileNotFoundException {

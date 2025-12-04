@@ -18,7 +18,7 @@ auth0:
       audience: https://ror.api.staging.entur.io,https://api.staging.entur.io
   client:
     url: https://internal.staging.entur.org/oauth/token
-    audience: https://ror.api.staging.entur.io
+    audience: https://api.staging.entur.io
 
 organisation:
   service: http://baba.tst.entur.internal

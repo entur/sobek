@@ -18,7 +18,7 @@ auth0:
       audience: https://ror.api.dev.entur.io,https://api.dev.entur.io
   client:
       url: https://internal.dev.entur.org/oauth/token
-      audience: https://ror.api.dev.entur.io
+      audience: https://api.dev.entur.io
 
 organisation:
   service: http://baba.dev.entur.internal

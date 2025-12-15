@@ -34,7 +34,7 @@ jobs:
 
       - name: Run maven build
         run: mvn -q verify -s .github/workflows/settings.xml -DskipTests=true
-      - uses: actions/upload-artifact@v4.6.2
+      - uses: actions/upload-artifact@v6.0.0
         with:
           path: target/*.jar
 #      - name: Sonar Scan

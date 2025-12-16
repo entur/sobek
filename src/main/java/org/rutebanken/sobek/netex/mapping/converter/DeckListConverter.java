@@ -42,7 +42,13 @@ public class DeckListConverter extends BidirectionalConverter<List<Deck>, Decks_
 
     @Override
     public List<Deck> convertFrom(Decks_RelStructure decksRelStructure, Type<List<Deck>> type, MappingContext mappingContext) {
-        return null;
+        if(decksRelStructure == null || decksRelStructure.getDeck() == null || decksRelStructure.getDeck().isEmpty()) {
+            return null;
+        }
+
+        return decksRelStructure.getDeck().stream()
+                .map(deck -> mapperFacade.map(deck, Deck.class))
+                .collect(Collectors.toList());
     }
 }
 

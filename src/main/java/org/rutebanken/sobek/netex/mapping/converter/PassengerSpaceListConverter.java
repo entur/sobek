@@ -20,6 +20,7 @@ import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 import org.rutebanken.netex.model.DeckSpaces_RelStructure;
 import org.rutebanken.netex.model.ObjectFactory;
+import org.rutebanken.sobek.model.vehicle.Deck;
 import org.rutebanken.sobek.model.vehicle.PassengerSpace;
 import org.springframework.stereotype.Component;
 
@@ -48,7 +49,13 @@ public class PassengerSpaceListConverter extends BidirectionalConverter<List<Pas
 
     @Override
     public List<PassengerSpace> convertFrom(DeckSpaces_RelStructure passengerSpacesRelStructure, Type<List<PassengerSpace>> type, MappingContext mappingContext) {
-        return null;
+        if(passengerSpacesRelStructure == null || passengerSpacesRelStructure.getDeckSpaceRefOrDeckSpace_Dummy() == null || passengerSpacesRelStructure.getDeckSpaceRefOrDeckSpace_Dummy().isEmpty()) {
+            return null;
+        }
+
+        return passengerSpacesRelStructure.getDeckSpaceRefOrDeckSpace_Dummy().stream()
+                .map(space -> mapperFacade.map(space, PassengerSpace.class))
+                .collect(Collectors.toList());
     }
 }
 

@@ -14,6 +14,7 @@ import java.util.List;
 @Getter
 @Setter
 public class PassengerSpace extends DeckSpace_VersionStructure {
+
     @Enumerated(EnumType.STRING)
     private PassengerSpaceTypeEnumeration passengerSpaceType;
     private Boolean standingAllowed;

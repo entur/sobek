@@ -15,16 +15,5 @@ public class PassengerEntranceMapper extends CustomMapper<PassengerEntrance, org
     public void mapBtoA(org.rutebanken.sobek.model.vehicle.PassengerEntrance sobekPassengerEntrance, PassengerEntrance netexPassengerEntrance, MappingContext context) {
         super.mapBtoA(sobekPassengerEntrance, netexPassengerEntrance, context);
 
-        if (sobekPassengerEntrance.getName() != null) {
-            netexPassengerEntrance.getName().withContent(sobekPassengerEntrance.getName().getValue());
-        }
-
-        if (sobekPassengerEntrance.getDescription() != null) {
-            netexPassengerEntrance.getDescription().withContent(sobekPassengerEntrance.getDescription().getValue());
-        }
-
-        if (sobekPassengerEntrance.getLabel() != null) {
-            netexPassengerEntrance.getLabel().withContent(sobekPassengerEntrance.getLabel().getValue());
-        }
     }
 }

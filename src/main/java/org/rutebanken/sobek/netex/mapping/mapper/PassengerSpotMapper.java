@@ -16,18 +16,6 @@ public class PassengerSpotMapper extends CustomMapper<PassengerSpot, org.ruteban
     public void mapBtoA(org.rutebanken.sobek.model.vehicle.PassengerSpot sobekPassengerSpot, PassengerSpot netexPassengerSpot, MappingContext context) {
         super.mapBtoA(sobekPassengerSpot, netexPassengerSpot, context);
 
-        if (sobekPassengerSpot.getName() != null) {
-            netexPassengerSpot.getName().withContent(sobekPassengerSpot.getName().getValue());
-        }
-
-        if (sobekPassengerSpot.getDescription() != null) {
-            netexPassengerSpot.getDescription().withContent(sobekPassengerSpot.getDescription().getValue());
-        }
-
-        if (sobekPassengerSpot.getLabel() != null) {
-            netexPassengerSpot.getLabel().withContent(sobekPassengerSpot.getLabel().getValue());
-        }
-
         if (sobekPassengerSpot.getSpotRowRef() != null) {
             netexPassengerSpot.withSpotRowRef(new SpotRowRefStructure().withRef(sobekPassengerSpot.getSpotRowRef()));
         }

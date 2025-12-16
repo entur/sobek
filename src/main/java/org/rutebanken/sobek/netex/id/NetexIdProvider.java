@@ -61,11 +61,11 @@ public class NetexIdProvider {
             logger.debug("Claimed ID {} contains valid prefix for claiming: {}", identifiedEntity.getNetexId(), prefix);
 
             if(netexIdHelper.isNsrId(identifiedEntity.getNetexId())) {
-                Long claimedId = netexIdHelper.extractIdPostfixNumeric(identifiedEntity.getNetexId());
+                String claimedId = netexIdHelper.extractIdPostfix(identifiedEntity.getNetexId());
 
                 String entityTypeName = key(identifiedEntity);
 
-                gaplessIdGenerator.getNextIdForEntity(entityTypeName, claimedId);
+                // !!!!gaplessIdGenerator.getNextIdForEntity(entityTypeName, claimedId);
             } else {
                 logger.trace("Accepting ID with prefix {}", prefix);
             }

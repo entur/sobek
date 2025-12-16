@@ -97,24 +97,6 @@ public class NetexIdHelper {
         return netexId.substring(0, netexId.indexOf(':'));
     }
 
-    public String stripLeadingZeros(String originalIdValue) {
-        try {
-            long numeric = extractIdPostfixNumeric(originalIdValue);
-            String type = extractIdType(originalIdValue);
-            String prefix = extractIdPrefix(originalIdValue);
-            if(numeric == 0L || Strings.isNullOrEmpty(type) || Strings.isNullOrEmpty(prefix)) {
-                logger.warn("Cannot parse original ID '{}' into preifx:type:number. Keeping value as is", originalIdValue);
-            }
-
-            logger.debug("Extracted prefix: {}, type: {} and numeric value: {}", prefix, type, numeric);
-            return prefix +":"+type+":"+String.valueOf(numeric);
-
-        } catch (IllegalArgumentException e) {
-            logger.debug("Cannot strip leading zeros from numeric ID in {}. Returning value as is. Message: {}", originalIdValue, e.getMessage());
-            return originalIdValue;
-        }
-    }
-
     public static boolean isNetexId(String string) {
         return NETEX_ID_PATTERN.matcher(string).matches();
     }

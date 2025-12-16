@@ -17,6 +17,7 @@ package org.rutebanken.sobek.rest.netex.publicationdelivery;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.BeanParam;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.NotAuthorizedException;
@@ -61,7 +62,7 @@ public class ImportResource {
 
     private final Set<ImportType> enabledImportTypes;
 
-    @Autowired
+    @Inject
     public ImportResource(PublicationDeliveryUnmarshaller publicationDeliveryUnmarshaller,
                                  PublicationDeliveryStreamingOutput publicationDeliveryStreamingOutput,
                                  PublicationDeliveryImporter publicationDeliveryImporter,

@@ -52,6 +52,7 @@ public class PublicationDeliveryImporter {
     private final VehicleImportHandler vehicleImportHandler;
     private final VehicleTypeImportHandler vehicleTypeImportHandler;
     private final DeckPlanImportHandler deckPlanImportHandler;
+    private final EquipmentImportHandler equipmentImportHandler;
     private final VehicleModelImportHandler vehicleModelImportHandler;
     private final BackgroundJobs backgroundJobs;
     private final AuthorizationService authorizationService;
@@ -60,7 +61,7 @@ public class PublicationDeliveryImporter {
     @Autowired
     public PublicationDeliveryImporter(PublicationDeliveryHelper publicationDeliveryHelper, NetexMapper netexMapper,
                                        PublicationDeliveryCreator publicationDeliveryCreator,
-                                       VehicleImportHandler vehicleImportHandler, VehicleTypeImportHandler vehicleTypeImportHandler, DeckPlanImportHandler deckPlanImportHandler, VehicleModelImportHandler vehicleModelImportHandler,
+                                       VehicleImportHandler vehicleImportHandler, VehicleTypeImportHandler vehicleTypeImportHandler, DeckPlanImportHandler deckPlanImportHandler, EquipmentImportHandler equipmentImportHandler, VehicleModelImportHandler vehicleModelImportHandler,
                                        BackgroundJobs backgroundJobs,
                                        AuthorizationService authorizationService,
                                        @Value("${authorization.enabled:true}") boolean authorizationEnabled) {
@@ -69,6 +70,7 @@ public class PublicationDeliveryImporter {
         this.vehicleImportHandler = vehicleImportHandler;
         this.vehicleTypeImportHandler = vehicleTypeImportHandler;
         this.deckPlanImportHandler = deckPlanImportHandler;
+        this.equipmentImportHandler = equipmentImportHandler;
         this.vehicleModelImportHandler = vehicleModelImportHandler;
         this.backgroundJobs = backgroundJobs;
         this.authorizationService = authorizationService;
@@ -107,6 +109,7 @@ public class PublicationDeliveryImporter {
         AtomicInteger vehicleTypeCounter = new AtomicInteger(0);
         AtomicInteger vehicleModelCounter = new AtomicInteger(0);
         AtomicInteger deckPlanCounter = new AtomicInteger(0);
+        AtomicInteger equipmentCounter = new AtomicInteger(0);
 
         // Currently only supporting one resource frame per publication delivery
         ResourceFrame netexResourceFrame = publicationDeliveryHelper.findResourceFrame(incomingPublicationDelivery);
@@ -124,6 +127,9 @@ public class PublicationDeliveryImporter {
                 logger.info("Publication delivery contains resource frame created at {}", netexResourceFrame.getCreated());
 
                 responseResourceFrame.withId(requestId + "-response").withVersion("1");
+                if(netexResourceFrame.getEquipments() != null) {
+                    equipmentImportHandler.handleEquipments(netexResourceFrame, importParams, equipmentCounter, responseResourceFrame);
+                }
                 if(netexResourceFrame.getDeckPlans() != null) {
                     deckPlanImportHandler.handleDeckPlans(netexResourceFrame, importParams, deckPlanCounter, responseResourceFrame);
                 }

@@ -174,4 +174,9 @@ public class PublicationDeliveryHelper {
         return netexResourceFrame.getDeckPlans() != null
                 && netexResourceFrame.getDeckPlans().getDeckPlan() != null;
     }
+
+    public boolean hasEquipments(ResourceFrame netexResourceFrame) {
+        return netexResourceFrame.getEquipments() != null
+                && netexResourceFrame.getEquipments().getEquipment() != null;
+    }
 }

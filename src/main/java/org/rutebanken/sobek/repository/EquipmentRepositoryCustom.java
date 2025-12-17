@@ -15,9 +15,8 @@
 
 package org.rutebanken.sobek.repository;
 
-import org.rutebanken.sobek.model.InstalledEquipment_VersionStructure;
+import org.rutebanken.sobek.model.vehicle.Equipment;
 
-public interface InstalledEquipmentRepository extends EntityInVersionRepository<InstalledEquipment_VersionStructure> {
-
+public interface EquipmentRepositoryCustom extends DataManagedObjectStructureRepository<Equipment> {
 }
 

@@ -33,7 +33,7 @@ import java.lang.reflect.Type;
 import java.util.Optional;
 
 @Provider
-@Produces("text/plain")
+@Produces({"text/plain", "application/xml"})
 public class ErrorResponseEntityMessageBodyWriter implements MessageBodyWriter<ErrorResponseEntity> {
 
     private static final Logger logger = LoggerFactory.getLogger(ErrorResponseEntityMessageBodyWriter.class);

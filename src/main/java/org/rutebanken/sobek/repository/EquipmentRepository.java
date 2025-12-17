@@ -13,14 +13,11 @@
  * limitations under the Licence.
  */
 
-package org.rutebanken.sobek.model;
+package org.rutebanken.sobek.repository;
 
-import jakarta.persistence.MappedSuperclass;
 import org.rutebanken.sobek.model.vehicle.Equipment;
 
-@MappedSuperclass
-public abstract class InstalledEquipment_VersionStructure
-        extends Equipment {
-
+public interface EquipmentRepository extends EquipmentRepositoryCustom, EntityInVersionRepository<Equipment> {
 
 }
+

@@ -15,6 +15,23 @@ jobs:
       TZ: Europe/Oslo
       JFROG_USER: ${{ secrets.ARTIFACTORY_AUTH_USER }}
       JFROG_PASS: ${{ secrets.ARTIFACTORY_AUTH_TOKEN }}
+      SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/testdb
+      SPRING_DATASOURCE_USERNAME: test
+      SPRING_DATASOURCE_PASSWORD: test
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: testdb
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U test -d testdb"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 21
@@ -33,9 +50,7 @@ jobs:
           sudo timedatectl set-timezone "Europe/Oslo"
           mvn --batch-mode test  -s .github/workflows/settings.xml
 
-
   image:
-    # only build and push the image when it's a commit to main in Entur's repository
     if: github.repository_owner == 'entur' && github.event_name == 'push'
     runs-on: ubuntu-latest
     needs: [ tests ]

@@ -15,20 +15,17 @@ jobs:
       TZ: Europe/Oslo
       JFROG_USER: ${{ secrets.ARTIFACTORY_AUTH_USER }}
       JFROG_PASS: ${{ secrets.ARTIFACTORY_AUTH_TOKEN }}
-      SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/testdb
-      SPRING_DATASOURCE_USERNAME: test
-      SPRING_DATASOURCE_PASSWORD: test
     services:
       postgres:
-        image: postgres:15
+        image: postgis/postgis:15-3.3
         env:
-          POSTGRES_USER: test
-          POSTGRES_PASSWORD: test
-          POSTGRES_DB: testdb
+          POSTGRES_USER: sobek
+          POSTGRES_PASSWORD: sobek
+          POSTGRES_DB: sobek
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U test -d testdb"
+          --health-cmd "pg_isready -U sobek -d sobek"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -48,7 +45,10 @@ jobs:
       - name: Run tests
         run: |
           sudo timedatectl set-timezone "Europe/Oslo"
-          mvn --batch-mode test  -s .github/workflows/settings.xml
+          mvn --batch-mode test -s .github/workflows/settings.xml \
+            -Dspring.datasource.url=jdbc:postgresql://localhost:5432/sobek \
+            -Dspring.datasource.username=sobek \
+            -Dspring.datasource.password=sobek
 
   image:
     if: github.repository_owner == 'entur' && github.event_name == 'push'

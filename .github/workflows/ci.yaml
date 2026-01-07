@@ -36,16 +36,27 @@ jobs:
         with:
           java-version: 21
           distribution: temurin
-          cache: maven
+
+      - name: Cache Maven repository
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
 
       - name: Copy maven settings
         run: |
           wget https://raw.githubusercontent.com/entur/ror-maven-settings/master/.m2/settings.xml -O .github/workflows/settings.xml
 
+      - name: Download dependencies
+        run: |
+          mvn --batch-mode dependency:go-offline -s .github/workflows/settings.xml
+
       - name: Run tests
         run: |
           sudo timedatectl set-timezone "Europe/Oslo"
-          mvn --batch-mode test -s .github/workflows/settings.xml \
+          mvn --batch-mode -T 1C test -s .github/workflows/settings.xml -o \
             -Dspring.datasource.url=jdbc:postgresql://localhost:5432/sobek \
             -Dspring.datasource.username=sobek \
             -Dspring.datasource.password=sobek
@@ -66,14 +77,22 @@ jobs:
         with:
           java-version: 21
           distribution: temurin
-          cache: maven
+
+      - name: Cache Maven repository
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
       - name: set variables
         run: |
           echo "GHA_DOCKER_PUSH_IMAGE_TAG=`date +%Y-%m-%dT%H-%M`" >> $GITHUB_ENV
 
       - name: Build container image with Jib, push to container repo
         run: |
-          mvn --batch-mode compile com.google.cloud.tools:jib-maven-plugin:build -Djib.to.tags=latest,${{ env.GHA_DOCKER_PUSH_IMAGE_TAG }}
+          mvn --batch-mode -T 1C compile com.google.cloud.tools:jib-maven-plugin:build -Djib.to.tags=latest,${{ env.GHA_DOCKER_PUSH_IMAGE_TAG }}
 
       - name: Tag default branch with the container image tag ${{ env.GHA_DOCKER_PUSH_IMAGE_TAG }}
         id: tag-version

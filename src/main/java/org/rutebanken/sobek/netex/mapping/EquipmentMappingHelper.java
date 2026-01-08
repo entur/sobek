@@ -22,10 +22,6 @@ import org.rutebanken.sobek.model.vehicle.Equipment;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-import java.util.stream.Stream;
-
-import static java.util.stream.Collectors.toSet;
-import static org.rutebanken.sobek.netex.mapping.mapper.NetexIdMapper.ORIGINAL_ID_KEY;
 
 @Component
 public class EquipmentMappingHelper {

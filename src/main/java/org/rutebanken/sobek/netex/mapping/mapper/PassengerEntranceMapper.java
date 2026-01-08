@@ -4,7 +4,6 @@ import ma.glasnost.orika.CustomMapper;
 import ma.glasnost.orika.MappingContext;
 import org.rutebanken.netex.model.PassengerEntrance;
 import org.rutebanken.sobek.netex.mapping.EquipmentMappingHelper;
-import org.springframework.stereotype.Component;
 
 public class PassengerEntranceMapper extends CustomMapper<PassengerEntrance, org.rutebanken.sobek.model.vehicle.PassengerEntrance> {
 

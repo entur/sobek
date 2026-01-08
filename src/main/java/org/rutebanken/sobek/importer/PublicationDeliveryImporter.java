@@ -17,7 +17,6 @@ package org.rutebanken.sobek.importer;
 
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
 import org.rutebanken.netex.model.ResourceFrame;
-import org.rutebanken.netex.model.SiteFrame;
 import org.rutebanken.sobek.auth.AuthorizationService;
 import org.rutebanken.sobek.exporter.PublicationDeliveryCreator;
 import org.rutebanken.sobek.importer.handler.*;
@@ -54,16 +53,14 @@ public class PublicationDeliveryImporter {
     private final DeckPlanImportHandler deckPlanImportHandler;
     private final EquipmentImportHandler equipmentImportHandler;
     private final VehicleModelImportHandler vehicleModelImportHandler;
-    private final BackgroundJobs backgroundJobs;
     private final AuthorizationService authorizationService;
     private final boolean authorizationEnabled;
     private final SchematicMapImportHandler schematicMapImportHandler;
 
     @Autowired
-    public PublicationDeliveryImporter(PublicationDeliveryHelper publicationDeliveryHelper, NetexMapper netexMapper,
+    public PublicationDeliveryImporter(PublicationDeliveryHelper publicationDeliveryHelper,
                                        PublicationDeliveryCreator publicationDeliveryCreator,
                                        VehicleImportHandler vehicleImportHandler, VehicleTypeImportHandler vehicleTypeImportHandler, DeckPlanImportHandler deckPlanImportHandler, EquipmentImportHandler equipmentImportHandler, VehicleModelImportHandler vehicleModelImportHandler,
-                                       BackgroundJobs backgroundJobs,
                                        AuthorizationService authorizationService,
                                        @Value("${authorization.enabled:true}") boolean authorizationEnabled, SchematicMapImportHandler schematicMapImportHandler) {
         this.publicationDeliveryHelper = publicationDeliveryHelper;
@@ -73,7 +70,6 @@ public class PublicationDeliveryImporter {
         this.deckPlanImportHandler = deckPlanImportHandler;
         this.equipmentImportHandler = equipmentImportHandler;
         this.vehicleModelImportHandler = vehicleModelImportHandler;
-        this.backgroundJobs = backgroundJobs;
         this.authorizationService = authorizationService;
         this.authorizationEnabled = authorizationEnabled;
         this.schematicMapImportHandler = schematicMapImportHandler;
@@ -84,7 +80,6 @@ public class PublicationDeliveryImporter {
         return importPublicationDelivery(incomingPublicationDelivery, null);
     }
 
-    @SuppressWarnings("unchecked")
     public PublicationDeliveryStructure importPublicationDelivery(PublicationDeliveryStructure incomingPublicationDelivery, ImportParams importParams) {
         if(authorizationEnabled && !authorizationService.canEditAllEntities()){
             throw new AccessDeniedException("Insufficient privileges for operation");

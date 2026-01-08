@@ -3,7 +3,6 @@ package org.rutebanken.sobek.model.vehicle;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
 import lombok.Setter;
-import org.rutebanken.sobek.model.AccessibilityAssessment;
 
 import java.math.BigInteger;
 

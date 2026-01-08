@@ -59,9 +59,9 @@ public class SpotAffinityMapper extends CustomMapper<SpotAffinity, org.rutebanke
 
         return switch (locatableSpotRefStructure) {
             case org.rutebanken.netex.model.PassengerSpotRefStructure passengerSpotRefStructure ->
-                    mapperFacade.map(locatableSpotRefStructure, org.rutebanken.sobek.model.vehicle.PassengerSpot.class);
+                    mapperFacade.map(passengerSpotRefStructure, org.rutebanken.sobek.model.vehicle.PassengerSpot.class);
             case org.rutebanken.netex.model.LuggageSpotRefStructure luggageSpotRefStructure ->
-                    mapperFacade.map(locatableSpotRefStructure, org.rutebanken.sobek.model.vehicle.LuggageSpot.class);
+                    mapperFacade.map(luggageSpotRefStructure, org.rutebanken.sobek.model.vehicle.LuggageSpot.class);
             default -> null;
         };
     }

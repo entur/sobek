@@ -44,7 +44,7 @@ public class DeckMapper extends CustomMapper<Deck, org.rutebanken.sobek.model.ve
                                 .filter(s -> s.getIncomingId()
                                                                 .equals(space.getParentDeckSpaceRefNotMapped())).
                                 findFirst()
-                                .ifPresent(s -> space.setParentDeckSpace(s));
+                                .ifPresent(space::setParentDeckSpace);
                     }
                 }
                 sobekDeck.setDeckSpaces(sobekDeckSpaces);

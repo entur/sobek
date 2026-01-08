@@ -3,7 +3,6 @@ package org.rutebanken.sobek.model.vehicle;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.rutebanken.netex.model.ActualVehicleEquipments_RelStructure;
 import org.rutebanken.sobek.model.EmbeddableMultilingualString;
 import org.rutebanken.sobek.model.Zone_VersionStructure;
 

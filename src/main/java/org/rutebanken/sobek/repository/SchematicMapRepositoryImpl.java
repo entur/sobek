@@ -14,8 +14,6 @@ import java.util.Set;
 @Repository
 public class SchematicMapRepositoryImpl implements SchematicMapRepositoryCustom {
 
-    private static final Logger logger = LoggerFactory.getLogger(SchematicMapRepositoryImpl.class);
-
     @PersistenceContext
     private EntityManager entityManager;
 

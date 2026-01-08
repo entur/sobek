@@ -97,12 +97,12 @@ public class PublicationDeliveryHelper {
 
         return Stream.of(dataManagedObject)
                 .filter(Objects::nonNull)
-                .map(object -> object.getKeyList())
+                .map(DataManagedObjectStructure::getKeyList)
                 .flatMap(keyList -> keyList.getKeyValue().stream())
                 .filter(keyValueStructure -> keyValueStructure.getKey().equals(ORIGINAL_ID_KEY))
-                .map(keyValue -> keyValue.getValue())
+                .map(KeyValueStructure::getValue)
                 .map(value -> value.split(","))
-                .flatMap(values -> Stream.of(values))
+                .flatMap(Stream::of)
                 .collect(toSet());
     }
 

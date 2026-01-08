@@ -1,7 +1,5 @@
 package org.rutebanken.sobek.model.vehicle;
 
-import jakarta.xml.bind.annotation.XmlEnumValue;
-
 public enum SpotAffinityTypeEnumeration {
     FACE_TO_FACE("faceToFace"),
     SIDE_BY_SIDE("sideBySide"),
@@ -15,7 +13,7 @@ public enum SpotAffinityTypeEnumeration {
 
     private final String value;
 
-    private SpotAffinityTypeEnumeration(String v) {
+    SpotAffinityTypeEnumeration(String v) {
         this.value = v;
     }
 

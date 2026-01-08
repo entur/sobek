@@ -5,8 +5,6 @@ import ma.glasnost.orika.CustomMapper;
 import ma.glasnost.orika.MappingContext;
 import org.rutebanken.netex.model.*;
 import org.rutebanken.sobek.model.vehicle.DeckSpace;
-import org.rutebanken.sobek.model.vehicle.Equipment;
-import org.rutebanken.sobek.model.vehicle.LocatableSpot;
 import org.rutebanken.sobek.netex.mapping.EquipmentMappingHelper;
 
 import java.util.List;

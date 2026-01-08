@@ -16,7 +16,9 @@
 package org.rutebanken.sobek.netex.mapping;
 
 import jakarta.xml.bind.JAXBElement;
+import ma.glasnost.orika.MapperFacade;
 import org.rutebanken.netex.model.*;
+import org.rutebanken.sobek.model.vehicle.Equipment;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -27,6 +29,12 @@ import static org.rutebanken.sobek.netex.mapping.mapper.NetexIdMapper.ORIGINAL_I
 
 @Component
 public class EquipmentMappingHelper {
+    private MapperFacade facade;
+
+    public void setFacade(MapperFacade facade) {
+        this.facade = facade;
+    }
+
     public JAXBElement<? extends org.rutebanken.netex.model.Equipment_VersionStructure> mapToJaxbEquipment(org.rutebanken.netex.model.Equipment_VersionStructure netexEquipment) {
         ObjectFactory objectFactory = new ObjectFactory();
 
@@ -41,4 +49,68 @@ public class EquipmentMappingHelper {
             default -> null;
         };
     }
+
+    public void mapActualEquipmentsNeTEx2Sobek(org.rutebanken.sobek.model.vehicle.OnboardSpace_VersionStructure sobekOnboardSpace, ActualVehicleEquipments_RelStructure actualVehicleEquipments) {
+        if(actualVehicleEquipments != null &&
+            actualVehicleEquipments.getActualVehicleEquipment() != null &&
+            !actualVehicleEquipments.getActualVehicleEquipment().isEmpty()) {
+
+            sobekOnboardSpace.setActualVehicleEquipments(
+                    actualVehicleEquipments.getActualVehicleEquipment().stream().map(this::mapActualEquipmentNeTEx2Sobek)
+                            .toList());
+        }
+    }
+
+    private Equipment mapActualEquipmentNeTEx2Sobek(ActualVehicleEquipment_VersionStructure actualVehicleEquipmentVersionStructure) {
+        if (actualVehicleEquipmentVersionStructure.getEquipmentRef() == null || actualVehicleEquipmentVersionStructure.getEquipmentRef().getValue() == null) {
+            return null;
+        }
+
+        Object refValue = actualVehicleEquipmentVersionStructure.getEquipmentRef().getValue();
+
+        return switch (refValue) {
+            case org.rutebanken.netex.model.SeatEquipmentRefStructure ref ->
+                    facade.map(ref, org.rutebanken.sobek.model.vehicle.SeatEquipment.class);
+            case org.rutebanken.netex.model.BedEquipmentRefStructure ref ->
+                    facade.map(ref, org.rutebanken.sobek.model.vehicle.BedEquipment.class);
+            case org.rutebanken.netex.model.AccessVehicleEquipmentRefStructure ref ->
+                    facade.map(ref, org.rutebanken.sobek.model.vehicle.AccessVehicleEquipment.class);
+            case org.rutebanken.netex.model.EntranceEquipmentRefStructure ref ->
+                    facade.map(ref, org.rutebanken.sobek.model.vehicle.EntranceEquipment.class);
+            case org.rutebanken.netex.model.LuggageSpotEquipmentRefStructure ref ->
+                    facade.map(ref, org.rutebanken.sobek.model.vehicle.LuggageSpotEquipment.class);
+            case org.rutebanken.netex.model.SpotEquipmentRefStructure ref ->
+                    facade.map(ref, org.rutebanken.sobek.model.vehicle.SpotEquipment.class);
+            case org.rutebanken.netex.model.StaircaseEquipmentRefStructure ref ->
+                    facade.map(ref, org.rutebanken.sobek.model.vehicle.StaircaseEquipment.class);
+            default -> null;
+        };
+    }
+
+    public void mapActualEquipmentsSobek2NeTEx(OnboardSpace_VersionStructure netexOnboardSpace, List<Equipment> sobekEquipments) {
+        if(sobekEquipments != null && !sobekEquipments.isEmpty()) {
+            ActualVehicleEquipments_RelStructure actualVehicleEquipments = new ActualVehicleEquipments_RelStructure();
+            actualVehicleEquipments.withActualVehicleEquipment(
+                    sobekEquipments.stream().map(e -> new ActualVehicleEquipment_VersionStructure().withEquipmentRef(createNeTExEquipmentRef(e)))
+                            .filter(Objects::nonNull)
+                            .toList());
+            netexOnboardSpace.setActualVehicleEquipments(actualVehicleEquipments);
+        }
+    }
+
+    private JAXBElement<? extends EquipmentRefStructure> createNeTExEquipmentRef(org.rutebanken.sobek.model.vehicle.Equipment equipment) {
+        ObjectFactory objectFactory = new ObjectFactory();
+        return switch (equipment) {
+            case org.rutebanken.sobek.model.vehicle.SeatEquipment seatEquipment -> objectFactory.createSeatEquipmentRef(new SeatEquipmentRefStructure().withRef(seatEquipment.getNetexId()));
+            case org.rutebanken.sobek.model.vehicle.BedEquipment bedEquipment -> objectFactory.createBedEquipmentRef(new BedEquipmentRefStructure().withRef(bedEquipment.getNetexId()));
+            case org.rutebanken.sobek.model.vehicle.AccessVehicleEquipment accessVehicleEquipment -> objectFactory.createAccessVehicleEquipmentRef(new AccessVehicleEquipmentRefStructure().withRef(accessVehicleEquipment.getNetexId()));
+            case org.rutebanken.sobek.model.vehicle.EntranceEquipment entranceEquipment -> objectFactory.createEntranceEquipmentRef(new EntranceEquipmentRefStructure().withRef(entranceEquipment.getNetexId()));
+            case org.rutebanken.sobek.model.vehicle.SpotEquipment spotEquipment -> objectFactory.createSpotEquipmentRef(new SpotEquipmentRefStructure().withRef(spotEquipment.getNetexId()));
+            case org.rutebanken.sobek.model.vehicle.LuggageSpotEquipment luggageSpotEquipment -> objectFactory.createLuggageSpotEquipmentRef(new LuggageSpotEquipmentRefStructure().withRef(luggageSpotEquipment.getNetexId()));
+            case org.rutebanken.sobek.model.vehicle.StaircaseEquipment staircaseEquipment -> objectFactory.createStaircaseEquipmentRef(new StaircaseEquipmentRefStructure().withRef(staircaseEquipment.getNetexId()));
+            default -> null;
+        };
+
+    }
+
 }

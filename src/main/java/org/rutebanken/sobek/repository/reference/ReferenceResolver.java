@@ -77,7 +77,7 @@ public class ReferenceResolver {
             netexId = ref;
         }
 
-        if (versionOfObjectRefStructure.getVersion() == null) {
+        if (versionOfObjectRefStructure.getVersion() == null || versionOfObjectRefStructure.getVersion().equals("any")) {
             return genericEntityInVersionRepository.findFirstByNetexIdOrderByVersionDesc(netexId, clazz);
         } else {
             long version = Long.valueOf(versionOfObjectRefStructure.getVersion());

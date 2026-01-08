@@ -57,6 +57,7 @@ public class PublicationDeliveryImporter {
     private final BackgroundJobs backgroundJobs;
     private final AuthorizationService authorizationService;
     private final boolean authorizationEnabled;
+    private final SchematicMapImportHandler schematicMapImportHandler;
 
     @Autowired
     public PublicationDeliveryImporter(PublicationDeliveryHelper publicationDeliveryHelper, NetexMapper netexMapper,
@@ -64,7 +65,7 @@ public class PublicationDeliveryImporter {
                                        VehicleImportHandler vehicleImportHandler, VehicleTypeImportHandler vehicleTypeImportHandler, DeckPlanImportHandler deckPlanImportHandler, EquipmentImportHandler equipmentImportHandler, VehicleModelImportHandler vehicleModelImportHandler,
                                        BackgroundJobs backgroundJobs,
                                        AuthorizationService authorizationService,
-                                       @Value("${authorization.enabled:true}") boolean authorizationEnabled) {
+                                       @Value("${authorization.enabled:true}") boolean authorizationEnabled, SchematicMapImportHandler schematicMapImportHandler) {
         this.publicationDeliveryHelper = publicationDeliveryHelper;
         this.publicationDeliveryCreator = publicationDeliveryCreator;
         this.vehicleImportHandler = vehicleImportHandler;
@@ -75,6 +76,7 @@ public class PublicationDeliveryImporter {
         this.backgroundJobs = backgroundJobs;
         this.authorizationService = authorizationService;
         this.authorizationEnabled = authorizationEnabled;
+        this.schematicMapImportHandler = schematicMapImportHandler;
     }
 
 
@@ -110,6 +112,7 @@ public class PublicationDeliveryImporter {
         AtomicInteger vehicleModelCounter = new AtomicInteger(0);
         AtomicInteger deckPlanCounter = new AtomicInteger(0);
         AtomicInteger equipmentCounter = new AtomicInteger(0);
+        AtomicInteger schematicMapCounter = new AtomicInteger(0);
 
         // Currently only supporting one resource frame per publication delivery
         ResourceFrame netexResourceFrame = publicationDeliveryHelper.findResourceFrame(incomingPublicationDelivery);
@@ -142,6 +145,8 @@ public class PublicationDeliveryImporter {
                 if(netexResourceFrame.getVehicles() != null) {
                     vehicleImportHandler.handleVehicles(netexResourceFrame, importParams, vehicleCounter, responseResourceFrame);
                 }
+                if(netexResourceFrame.getSchematicMaps() != null)
+                    schematicMapImportHandler.handleSchematicMaps(netexResourceFrame, importParams, schematicMapCounter, responseResourceFrame);
             } finally {
                 MDC.remove(IMPORT_CORRELATION_ID);
                 loggerTimer.cancel();

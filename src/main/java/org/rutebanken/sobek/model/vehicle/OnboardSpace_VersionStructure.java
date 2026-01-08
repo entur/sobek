@@ -1,18 +1,14 @@
 package org.rutebanken.sobek.model.vehicle;
 
-import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.AttributeOverrides;
-import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.rutebanken.netex.model.ActualVehicleEquipments_RelStructure;
 import org.rutebanken.sobek.model.EmbeddableMultilingualString;
 import org.rutebanken.sobek.model.Zone_VersionStructure;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @MappedSuperclass
 @Getter
@@ -32,6 +28,6 @@ public abstract class OnboardSpace_VersionStructure extends Zone_VersionStructur
     private BigDecimal height;
 
 //    private JAXBElement<? extends FacilitySetRefStructure> facilitySetRef;
-//    private ActualVehicleEquipments_RelStructure actualVehicleEquipments;
-
+    @OneToMany(cascade = CascadeType.MERGE, orphanRemoval = true)
+    protected List<Equipment> actualVehicleEquipments;
 }

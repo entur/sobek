@@ -13,7 +13,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-public class PassengerSpace extends DeckSpace_VersionStructure {
+public class PassengerSpace extends DeckSpace {
 
     @Enumerated(EnumType.STRING)
     private PassengerSpaceTypeEnumeration passengerSpaceType;
@@ -22,9 +22,13 @@ public class PassengerSpace extends DeckSpace_VersionStructure {
     @OneToMany(cascade = CascadeType.ALL)
     protected List<PassengerSpot> passengerSpots;
 
+    @OneToMany(cascade = CascadeType.ALL)
+    protected List<LuggageSpot> luggageSpots;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    protected List<SpotAffinity> spotAffinities;
+
     //TODO - TBD
-//    protected LuggageSpots_RelStructure luggageSpots;
 //    protected PassengerVehicleSpots_RelStructure passengerVehicleSpots;
-//    protected SpotAffinities_RelStructure spotAffinities;
 
 }

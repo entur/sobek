@@ -1,16 +1,153 @@
 ALTER TABLE passenger_spot
     DROP CONSTRAINT fk2pjm2pakaifla5yq7r1cxqhhc;
 
+ALTER TABLE passenger_space
+    DROP CONSTRAINT fk61o49ug408j3q1422s1apqfh7;
+
+ALTER TABLE deck_deck_spaces
+    DROP CONSTRAINT fk6xsy50t2659mj45rkw4qi5dcw;
+
 ALTER TABLE passenger_space_passenger_spots
     DROP CONSTRAINT fk7heqymvtxduigg4yh6p0i0bti;
+
+ALTER TABLE passenger_space_key_values
+    DROP CONSTRAINT fk81th26cygaxpmja0lay2orey7;
+
+ALTER TABLE passenger_space_deck_entrances
+    DROP CONSTRAINT fkgh0sitxlgx1tkayufteno2frk;
 
 ALTER TABLE passenger_spot_key_values
     DROP CONSTRAINT fkli3dtmouxlvsui6gosuq80ug3;
 
+ALTER TABLE passenger_space_deck_entrances
+    DROP CONSTRAINT fko4fvtqi0mmjt6kqda1boo8ygj;
+
+ALTER TABLE passenger_space_key_values
+    DROP CONSTRAINT fkpwfueeq07663oayvwjto7xcg3;
+
 ALTER TABLE passenger_spot_key_values
     DROP CONSTRAINT fksb8dp7sv2tk61e5y8jsn65nd7;
 
-CREATE SEQUENCE IF NOT EXISTS sequence_per_table_generator START WITH 1 INCREMENT BY 50;
+ALTER TABLE passenger_space_passenger_spots
+    DROP CONSTRAINT fksc7nrgo767gtltsu2b3t0igvp;
+
+CREATE TABLE deck_space
+(
+    id                   BIGINT      NOT NULL,
+    dtype                VARCHAR(31) NOT NULL,
+    covered              VARCHAR(255),
+    air_conditioned      BOOLEAN,
+    smoking_allowed      BOOLEAN,
+    total_capacity       DECIMAL,
+    parent_deck_space_id BIGINT,
+    public_use           BOOLEAN,
+    fare_class           VARCHAR(255),
+    orientation          VARCHAR(255),
+    width                DECIMAL,
+    length               DECIMAL,
+    height               DECIMAL,
+    centroid             BYTEA,
+    polygon_id           BIGINT,
+    version_comment      VARCHAR(255),
+    changed_by           VARCHAR(255),
+    created              TIMESTAMP WITHOUT TIME ZONE,
+    changed              TIMESTAMP WITHOUT TIME ZONE,
+    version              BIGINT      NOT NULL,
+    netex_id             VARCHAR(255),
+    label_value          VARCHAR(255),
+    label_lang           VARCHAR(5),
+    name_value           VARCHAR(255),
+    name_lang            VARCHAR(5),
+    description_value    VARCHAR(4000),
+    description_lang     VARCHAR(5),
+    private_code_value   VARCHAR(255),
+    private_code_type    VARCHAR(255),
+    from_date            TIMESTAMP WITHOUT TIME ZONE,
+    to_date              TIMESTAMP WITHOUT TIME ZONE,
+    passenger_space_type VARCHAR(255),
+    standing_allowed     BOOLEAN,
+    CONSTRAINT pk_deckspace PRIMARY KEY (id)
+);
+
+CREATE SEQUENCE deck_space_seq
+    START WITH 1
+    INCREMENT BY 10
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE deck_space_seq OWNER TO sobek;
+
+CREATE TABLE deck_space_capacity
+(
+    id                  BIGINT NOT NULL,
+    created             TIMESTAMP WITHOUT TIME ZONE,
+    changed             TIMESTAMP WITHOUT TIME ZONE,
+    version             BIGINT NOT NULL,
+    netex_id            VARCHAR(255),
+    locatable_spot_type SMALLINT,
+    capacity            DECIMAL,
+    from_date           TIMESTAMP WITHOUT TIME ZONE,
+    to_date             TIMESTAMP WITHOUT TIME ZONE,
+    name_value          VARCHAR(255),
+    name_lang           VARCHAR(5),
+    CONSTRAINT pk_deckspacecapacity PRIMARY KEY (id)
+);
+
+CREATE SEQUENCE deck_space_capacity_seq
+    START WITH 1
+    INCREMENT BY 10
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE deck_space_capacity_seq OWNER TO sobek;
+
+CREATE TABLE deck_space_actual_vehicle_equipments
+(
+    deck_space_id                BIGINT NOT NULL,
+    actual_vehicle_equipments_id BIGINT NOT NULL
+);
+
+CREATE TABLE deck_space_deck_space_capacities
+(
+    deck_space_id            BIGINT NOT NULL,
+    deck_space_capacities_id BIGINT NOT NULL
+);
+
+CREATE TABLE deck_space_deck_entrances
+(
+    deck_space_id     BIGINT NOT NULL,
+    deck_entrances_id BIGINT NOT NULL
+);
+
+CREATE TABLE deck_space_key_values
+(
+    deck_space_id  BIGINT       NOT NULL,
+    key_values_id  BIGINT       NOT NULL,
+    key_values_key VARCHAR(255) NOT NULL,
+    CONSTRAINT pk_deck_space_keyvalues PRIMARY KEY (deck_space_id, key_values_key)
+);
+
+CREATE TABLE deck_space_luggage_spots
+(
+    passenger_space_id BIGINT NOT NULL,
+    luggage_spots_id   BIGINT NOT NULL
+);
+
+CREATE TABLE deck_space_passenger_spots
+(
+    passenger_space_id BIGINT NOT NULL,
+    passenger_spots_id BIGINT NOT NULL
+);
+
+CREATE TABLE deck_space_spot_affinities
+(
+    passenger_space_id BIGINT NOT NULL,
+    spot_affinities_id BIGINT NOT NULL
+);
 
 CREATE TABLE deck_spot_columns
 (
@@ -219,24 +356,6 @@ CREATE TABLE passenger_entrance_actual_vehicle_equipments
     actual_vehicle_equipments_id BIGINT NOT NULL
 );
 
-CREATE TABLE passenger_space_actual_vehicle_equipments
-(
-    passenger_space_id           BIGINT NOT NULL,
-    actual_vehicle_equipments_id BIGINT NOT NULL
-);
-
-CREATE TABLE passenger_space_luggage_spots
-(
-    passenger_space_id BIGINT NOT NULL,
-    luggage_spots_id   BIGINT NOT NULL
-);
-
-CREATE TABLE passenger_space_spot_affinities
-(
-    passenger_space_id BIGINT NOT NULL,
-    spot_affinities_id BIGINT NOT NULL
-);
-
 CREATE TABLE spot_affinity
 (
     id                 BIGINT NOT NULL,
@@ -303,8 +422,99 @@ CREATE SEQUENCE spot_column_seq
     NO MAXVALUE
     CACHE 1;
 
-
 ALTER SEQUENCE spot_column_seq OWNER TO sobek;
+
+CREATE TABLE schematic_map
+(
+    id                  BIGINT NOT NULL,
+    version_comment     VARCHAR(255),
+    changed_by          VARCHAR(255),
+    created             TIMESTAMP WITHOUT TIME ZONE,
+    changed             TIMESTAMP WITHOUT TIME ZONE,
+    version             BIGINT NOT NULL,
+    netex_id            VARCHAR(255),
+    image_uri           VARCHAR(255),
+    depicted_object_ref VARCHAR(255),
+    from_date           TIMESTAMP WITHOUT TIME ZONE,
+    to_date             TIMESTAMP WITHOUT TIME ZONE,
+    name_value          VARCHAR(255),
+    name_lang           VARCHAR(5),
+    short_name_value    VARCHAR(255),
+    short_name_lang     VARCHAR(5),
+    CONSTRAINT pk_schematicmap PRIMARY KEY (id)
+);
+
+CREATE SEQUENCE schematic_map_seq
+    START WITH 1
+    INCREMENT BY 10
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE schematic_map_seq OWNER TO sobek;
+
+CREATE TABLE schematic_map_key_values
+(
+    schematic_map_id BIGINT       NOT NULL,
+    key_values_id    BIGINT       NOT NULL,
+    key_values_key   VARCHAR(255) NOT NULL,
+    CONSTRAINT pk_null_keyvalues PRIMARY KEY (schematic_map_id, key_values_key)
+);
+
+CREATE TABLE schematic_map_member
+(
+    id              BIGINT NOT NULL,
+    created         TIMESTAMP WITHOUT TIME ZONE,
+    changed         TIMESTAMP WITHOUT TIME ZONE,
+    version         BIGINT NOT NULL,
+    netex_id        VARCHAR(255),
+    hide            BOOLEAN,
+    display_as_icon BOOLEAN,
+    x               FLOAT,
+    y               FLOAT,
+    from_date       TIMESTAMP WITHOUT TIME ZONE,
+    to_date         TIMESTAMP WITHOUT TIME ZONE,
+    name_value      VARCHAR(255),
+    name_lang       VARCHAR(5),
+    CONSTRAINT pk_schematicmapmember PRIMARY KEY (id)
+);
+
+CREATE SEQUENCE schematic_map_member_seq
+    START WITH 1
+    INCREMENT BY 10
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE schematic_map_seq OWNER TO sobek;
+
+CREATE TABLE schematic_map_members
+(
+    schematic_map_id BIGINT NOT NULL,
+    members_id       BIGINT NOT NULL
+);
+
+
+ALTER TABLE deck_space_deck_space_capacities
+    ADD CONSTRAINT uc_deck_space_deck_space_capacities_deckspacecapacities UNIQUE (deck_space_capacities_id);
+
+ALTER TABLE deck_space_actual_vehicle_equipments
+    ADD CONSTRAINT uc_deck_space_actual_vehicle_equipments_actualvehicleequipments UNIQUE (actual_vehicle_equipments_id, deck_space_id);
+
+ALTER TABLE deck_space_deck_entrances
+    ADD CONSTRAINT uc_deck_space_deck_entrances_deckentrances UNIQUE (deck_entrances_id, deck_space_id);
+
+ALTER TABLE deck_space_key_values
+    ADD CONSTRAINT uc_deck_space_key_values_keyvalues UNIQUE (key_values_id);
+
+ALTER TABLE deck_space_luggage_spots
+    ADD CONSTRAINT uc_deck_space_luggage_spots_luggagespots UNIQUE (luggage_spots_id, passenger_space_id);
+
+ALTER TABLE deck_space_passenger_spots
+    ADD CONSTRAINT uc_deck_space_passenger_spots_passengerspots UNIQUE (passenger_spots_id, passenger_space_id);
+
+ALTER TABLE deck_space_spot_affinities
+    ADD CONSTRAINT uc_deck_space_spot_affinities_spotaffinities UNIQUE (spot_affinities_id, passenger_space_id);
 
 ALTER TABLE deck_spot_columns
     ADD CONSTRAINT uc_deck_spot_columns_spotcolumns UNIQUE (spot_columns_id);
@@ -318,20 +528,23 @@ ALTER TABLE locatable_spot_key_values
 ALTER TABLE locatable_spot_actual_vehicle_equipments
     ADD CONSTRAINT uc_locatablespotactualvehicleequipments_actualvehicleequipments UNIQUE (actual_vehicle_equipments_id, locatable_spot_id);
 
-ALTER TABLE passenger_space_luggage_spots
-    ADD CONSTRAINT uc_passenger_space_luggage_spots_luggagespots UNIQUE (luggage_spots_id);
-
-ALTER TABLE passenger_space_spot_affinities
-    ADD CONSTRAINT uc_passenger_space_spot_affinities_spotaffinities UNIQUE (spot_affinities_id);
-
 ALTER TABLE passenger_entrance_actual_vehicle_equipments
     ADD CONSTRAINT uc_passengerentranceactualvehicleequipm_actualvehicleequipments UNIQUE (actual_vehicle_equipments_id, passenger_entrance_id);
 
-ALTER TABLE passenger_space_actual_vehicle_equipments
-    ADD CONSTRAINT uc_passengerspaceactualvehicleequipment_actualvehicleequipments UNIQUE (actual_vehicle_equipments_id, passenger_space_id);
-
 ALTER TABLE spot_affinity_key_values
     ADD CONSTRAINT uc_spot_affinity_key_values_keyvalues UNIQUE (key_values_id);
+
+ALTER TABLE deck_space_deck_space_capacities
+    ADD CONSTRAINT fk_decspadecspacap_on_deck_space FOREIGN KEY (deck_space_id) REFERENCES deck_space (id);
+
+ALTER TABLE deck_space_deck_space_capacities
+    ADD CONSTRAINT fk_decspadecspacap_on_deck_space_capacity FOREIGN KEY (deck_space_capacities_id) REFERENCES deck_space_capacity (id);
+
+ALTER TABLE deck_space
+    ADD CONSTRAINT FK_DECKSPACE_ON_PARENTDECKSPACE FOREIGN KEY (parent_deck_space_id) REFERENCES deck_space (id);
+
+ALTER TABLE deck_space
+    ADD CONSTRAINT FK_DECKSPACE_ON_POLYGON FOREIGN KEY (polygon_id) REFERENCES persistable_polygon (id);
 
 ALTER TABLE locatable_spot
     ADD CONSTRAINT FK_LOCATABLESPOT_ON_POLYGON FOREIGN KEY (polygon_id) REFERENCES persistable_polygon (id);
@@ -341,6 +554,45 @@ ALTER TABLE locatable_spot
 
 ALTER TABLE locatable_spot
     ADD CONSTRAINT FK_LOCATABLESPOT_ON_SPOTROW FOREIGN KEY (spot_row_id) REFERENCES spot_row (id);
+
+ALTER TABLE deck_deck_spaces
+    ADD CONSTRAINT fk_decdecspa_on_passenger_space FOREIGN KEY (deck_spaces_id) REFERENCES deck_space (id);
+
+ALTER TABLE deck_space_actual_vehicle_equipments
+    ADD CONSTRAINT fk_decspaactvehequ_on_deck_space FOREIGN KEY (deck_space_id) REFERENCES deck_space (id);
+
+ALTER TABLE deck_space_actual_vehicle_equipments
+    ADD CONSTRAINT fk_decspaactvehequ_on_equipment FOREIGN KEY (actual_vehicle_equipments_id) REFERENCES equipment (id);
+
+ALTER TABLE deck_space_deck_entrances
+    ADD CONSTRAINT fk_decspadecent_on_deck_space FOREIGN KEY (deck_space_id) REFERENCES deck_space (id);
+
+ALTER TABLE deck_space_deck_entrances
+    ADD CONSTRAINT fk_decspadecent_on_passenger_entrance FOREIGN KEY (deck_entrances_id) REFERENCES passenger_entrance (id);
+
+ALTER TABLE deck_space_key_values
+    ADD CONSTRAINT fk_decspakeyval_on_deck_space FOREIGN KEY (deck_space_id) REFERENCES deck_space (id);
+
+ALTER TABLE deck_space_key_values
+    ADD CONSTRAINT fk_decspakeyval_on_value FOREIGN KEY (key_values_id) REFERENCES value (id);
+
+ALTER TABLE deck_space_luggage_spots
+    ADD CONSTRAINT fk_decspalugspo_on_luggage_spot FOREIGN KEY (luggage_spots_id) REFERENCES locatable_spot (id);
+
+ALTER TABLE deck_space_luggage_spots
+    ADD CONSTRAINT fk_decspalugspo_on_passenger_space FOREIGN KEY (passenger_space_id) REFERENCES deck_space (id);
+
+ALTER TABLE deck_space_passenger_spots
+    ADD CONSTRAINT fk_decspapasspo_on_passenger_space FOREIGN KEY (passenger_space_id) REFERENCES deck_space (id);
+
+ALTER TABLE deck_space_passenger_spots
+    ADD CONSTRAINT fk_decspapasspo_on_passenger_spot FOREIGN KEY (passenger_spots_id) REFERENCES locatable_spot (id);
+
+ALTER TABLE deck_space_spot_affinities
+    ADD CONSTRAINT fk_decspaspoaff_on_passenger_space FOREIGN KEY (passenger_space_id) REFERENCES deck_space (id);
+
+ALTER TABLE deck_space_spot_affinities
+    ADD CONSTRAINT fk_decspaspoaff_on_spot_affinity FOREIGN KEY (spot_affinities_id) REFERENCES spot_affinity (id);
 
 ALTER TABLE deck_spot_columns
     ADD CONSTRAINT fk_decspocol_on_deck FOREIGN KEY (deck_id) REFERENCES deck (id);
@@ -372,27 +624,6 @@ ALTER TABLE passenger_entrance_actual_vehicle_equipments
 ALTER TABLE passenger_entrance_actual_vehicle_equipments
     ADD CONSTRAINT fk_pasentactvehequ_on_passenger_entrance FOREIGN KEY (passenger_entrance_id) REFERENCES passenger_entrance (id);
 
-ALTER TABLE passenger_space_actual_vehicle_equipments
-    ADD CONSTRAINT fk_passpaactvehequ_on_equipment FOREIGN KEY (actual_vehicle_equipments_id) REFERENCES equipment (id);
-
-ALTER TABLE passenger_space_actual_vehicle_equipments
-    ADD CONSTRAINT fk_passpaactvehequ_on_passenger_space FOREIGN KEY (passenger_space_id) REFERENCES passenger_space (id);
-
-ALTER TABLE passenger_space_luggage_spots
-    ADD CONSTRAINT fk_passpalugspo_on_luggage_spot FOREIGN KEY (luggage_spots_id) REFERENCES locatable_spot (id);
-
-ALTER TABLE passenger_space_luggage_spots
-    ADD CONSTRAINT fk_passpalugspo_on_passenger_space FOREIGN KEY (passenger_space_id) REFERENCES passenger_space (id);
-
-ALTER TABLE passenger_space_passenger_spots
-    ADD CONSTRAINT fk_passpapasspo_on_passenger_spot FOREIGN KEY (passenger_spots_id) REFERENCES locatable_spot (id);
-
-ALTER TABLE passenger_space_spot_affinities
-    ADD CONSTRAINT fk_passpaspoaff_on_passenger_space FOREIGN KEY (passenger_space_id) REFERENCES passenger_space (id);
-
-ALTER TABLE passenger_space_spot_affinities
-    ADD CONSTRAINT fk_passpaspoaff_on_spot_affinity FOREIGN KEY (spot_affinities_id) REFERENCES spot_affinity (id);
-
 ALTER TABLE spot_affinity_key_values
     ADD CONSTRAINT fk_spoaffkeyval_on_spot_affinity FOREIGN KEY (spot_affinity_id) REFERENCES spot_affinity (id);
 
@@ -406,6 +637,14 @@ ALTER TABLE spot_affinity_member
     ADD CONSTRAINT fk_spoaffmem_on_spot_affinity FOREIGN KEY (spot_affinity_id) REFERENCES spot_affinity (id);
 
 DROP TABLE installed_equipment_version_structure CASCADE;
+
+DROP TABLE passenger_space CASCADE;
+
+DROP TABLE passenger_space_deck_entrances CASCADE;
+
+DROP TABLE passenger_space_key_values CASCADE;
+
+DROP TABLE passenger_space_passenger_spots CASCADE;
 
 DROP TABLE passenger_spot CASCADE;
 

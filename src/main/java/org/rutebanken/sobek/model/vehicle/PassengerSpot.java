@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 @Entity
 @Getter
 @Setter
-public class PassengerSpot extends LocatableSpot_VersionStructure {
+public class PassengerSpot extends LocatableSpot {
     
     @Enumerated(EnumType.STRING)
     private TableTypeEnumeration tableType;

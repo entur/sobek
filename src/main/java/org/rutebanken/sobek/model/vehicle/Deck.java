@@ -42,10 +42,11 @@ public class Deck extends Zone_VersionStructure {
     @OneToMany(cascade = CascadeType.ALL)
     private List<SpotRow> spotRows;
 
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<SpotColumn> spotColumns;
 
     // TODO - TBD
 //    protected DeckLevelRefStructure deckLevelRef;
-//    protected SpotColumns_RelStructure spotColumns;
 //    protected DeckPathJunctionRefs_RelStructure deckPathJunctions;
 //    protected DeckPathLinkRefs_RelStructure deckPathLinks;
 //    protected DeckNavigationPaths_RelStructure deckNavigationPaths;

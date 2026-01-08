@@ -1,10 +1,6 @@
 package org.rutebanken.sobek.model.vehicle;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.rutebanken.sobek.model.CoveredEnumeration;
@@ -26,13 +22,22 @@ public abstract class DeckSpace_VersionStructure extends DeckComponent_VersionSt
     @OneToMany(cascade = CascadeType.ALL)
     protected List<PassengerEntrance> deckEntrances;
 
+    @ManyToOne
+    protected DeckSpace parentDeckSpace;
+
+    @Transient
+    private String parentDeckSpaceRefNotMapped;
+    @Transient
+    private String incomingId;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    protected List<DeckSpaceCapacity> deckSpaceCapacities;
+
     // TODO - TBD
 //    protected TypeOfDeckSpaceProfileRefStructure typeOfDeckSpaceRef;
-//    protected DeckSpaceRefStructure parentDeckSpaceRef;
 //    protected DeckEntranceCouples_RelStructure deckEntranceCouples;
 //    protected DeckEntranceUsages_RelStructure deckEntranceUsages;
 //    protected DeckWindows_RelStructure deckWindows;
 
-//    protected DeckSpaceCapacities_RelStructure deckSpaceCapacities;
 
 }

@@ -14,9 +14,5 @@ public class SpotRowMapper extends CustomMapper<SpotRow, org.rutebanken.sobek.mo
     @Override
     public void mapBtoA(org.rutebanken.sobek.model.vehicle.SpotRow sobekSpotRow, SpotRow netexSpotRow, MappingContext context) {
         super.mapBtoA(sobekSpotRow, netexSpotRow, context);
-
-        if (sobekSpotRow.getLabel() != null) {
-            netexSpotRow.getLabel().withContent(sobekSpotRow.getLabel().getValue());
-        }
     }
 }

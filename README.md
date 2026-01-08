@@ -2,7 +2,7 @@
 Module also known as the backend for Vehicle Register ("nasjonalt materiellregister - nmr")
 
 It is used nationally in Norway, and other places.
-Sobek is created with technologies like Spring Boot, Hibernate, Postgis, Jersey and Jackson. It is based on the same technology stack as Sobek, see https://github.com/entur/sobek
+Sobek is created with technologies like Spring Boot, Hibernate, Postgis, Jersey and Jackson. It is based on the same technology stack as Tiamat, see https://github.com/entur/tiamat
 
 ## Core functionality
 ### NeTEx imports

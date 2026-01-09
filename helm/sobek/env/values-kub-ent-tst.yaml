@@ -12,10 +12,10 @@ auth0:
   entur:
     internal:
       url: https://internal.staging.entur.org/
-      audience: https://api.staging.entur.io,https://ror.api.staging.entur.io
+      audience: https://api.staging.entur.io
     partner:
       url: https://partner.staging.entur.org/
-      audience: https://ror.api.staging.entur.io,https://api.staging.entur.io
+      audience: https://api.staging.entur.io
   client:
     url: https://internal.staging.entur.org/oauth/token
     audience: https://api.staging.entur.io

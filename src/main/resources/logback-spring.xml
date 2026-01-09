@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed under the EUPL, Version 1.2 or – as soon they will be approved by
+  ~ the European Commission - subsequent versions of the EUPL (the "Licence");
+  ~ You may not use this work except in compliance with the Licence.
+  ~ You may obtain a copy of the Licence at:
+  ~
+  ~   https://joinup.ec.europa.eu/software/page/eupl
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the Licence is distributed on an "AS IS" basis,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the Licence for the specific language governing permissions and
+  ~ limitations under the Licence.
+  -->
+
+<configuration>
+    <!-- Pretty printing for local development -->
+    <springProfile name="local">
+        <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+        <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+
+        <logger name="org.rutebanken.sobek" level="DEBUG"/>
+        <logger name="org.hibernate.id" level="DEBUG"/>
+
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
+
+    <!-- JSON structured logging for CI/CD and production -->
+    <springProfile name="!local">
+        <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+                <providers>
+                    <pattern>
+                        <pattern>
+                            {
+                                "serviceContext": {
+                                    "service": "sobek"
+                                },
+                                "eventTime": "%date{\"yyyy-MM-dd'T'HH:mm:ss.SSS'000000Z'\", \"UTC\"}",
+                                "thread": "%thread",
+                                "message": "%message\n%ex{full}",
+                                "severity": "%level",
+                                "reportLocation": {
+                                    "filePath": "%logger",
+                                    "lineNumber": "%line",
+                                    "functionName": "%method"
+                                },
+                                "operation": {
+                                    "id": "%X{importCorrelationId}"
+                                }
+                            }
+                        </pattern>
+                    </pattern>
+                </providers>
+            </encoder>
+        </appender>
+
+        <logger name="com" level="INFO"/>
+        <logger name="no" level="INFO"/>
+        <logger name="org" level="INFO"/>
+        <logger name="org.apache" level="INFO"/>
+        <logger name="org.hibernate.id" level="DEBUG"/>
+
+        <root level="INFO">
+            <appender-ref ref="console"/>
+        </root>
+    </springProfile>
+</configuration>

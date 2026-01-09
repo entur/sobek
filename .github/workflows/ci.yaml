@@ -32,7 +32,7 @@ jobs:
       - name: Run tests
         run: |
           sudo timedatectl set-timezone "Europe/Oslo"
-          mvn --batch-mode test  -s .github/workflows/settings.xml -DAUTOSYS_API_APIKEY=$AUTOSYS_API_APIKEY
+          mvn --batch-mode test  -s .github/workflows/settings.xml -DAUTOSYS_API_APIKEY=${{env.AUTOSYS_API_APIKEY}}
 
 
   image:

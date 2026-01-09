@@ -15,6 +15,7 @@ jobs:
       TZ: Europe/Oslo
       JFROG_USER: ${{ secrets.ARTIFACTORY_AUTH_USER }}
       JFROG_PASS: ${{ secrets.ARTIFACTORY_AUTH_TOKEN }}
+      AUTOSYS_API_APIKEY: ${{ secrets.AUTOSYS_API_APIKEY }}
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 21
@@ -31,7 +32,7 @@ jobs:
       - name: Run tests
         run: |
           sudo timedatectl set-timezone "Europe/Oslo"
-          mvn --batch-mode test  -s .github/workflows/settings.xml
+          mvn --batch-mode test  -s .github/workflows/settings.xml -DAUTOSYS_API_APIKEY=$AUTOSYS_API_APIKEY
 
 
   image:

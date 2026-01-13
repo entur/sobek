@@ -17,6 +17,7 @@ package org.rutebanken.sobek.config;
 
 import org.rutebanken.sobek.exporter.*;
 import org.rutebanken.sobek.netex.id.NetexIdHelper;
+import org.rutebanken.sobek.netex.mapping.EquipmentMappingHelper;
 import org.rutebanken.sobek.netex.mapping.NetexMapper;
 import org.rutebanken.sobek.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +47,7 @@ public class StreamingPublicationDeliveryConfig {
     private VehicleEquipmentProfileRepository vehicleEquipmentProfileRepository;
 
     @Autowired
-    private InstalledEquipmentRepository installedEquipmentRepository;
+    private EquipmentRepository equipmentRepository;
 
     @Autowired
     private PublicationDeliveryCreator publicationDeliveryCreator;
@@ -66,6 +67,9 @@ public class StreamingPublicationDeliveryConfig {
     @Autowired
     private NetexIdHelper netexIdHelper;
 
+    @Autowired
+    private EquipmentMappingHelper equipmentMappingHelper;
+
     @Value("${asyncNetexExport.validateAgainstSchema:false}")
     private boolean validateAsyncExport;
 
@@ -83,8 +87,8 @@ public class StreamingPublicationDeliveryConfig {
     }
 
     private StreamingPublicationDelivery createStreamingPublicationDelivery(boolean validate) throws IOException, SAXException {
-        return new StreamingPublicationDelivery(vehicleRepository, vehicleTypeRepository, vehicleModelRepository, deckPlanRepository, vehicleEquipmentProfileRepository, installedEquipmentRepository, publicationDeliveryCreator,
-                sobekServiceFrameExporter,sobekResourceFrameExporter, sobekComositeFrameExporter, netexMapper
+        return new StreamingPublicationDelivery(vehicleRepository, vehicleTypeRepository, vehicleModelRepository, deckPlanRepository, vehicleEquipmentProfileRepository, equipmentRepository, publicationDeliveryCreator,
+                sobekServiceFrameExporter, equipmentMappingHelper, sobekResourceFrameExporter, sobekComositeFrameExporter, netexMapper
                  /* TODO validate,*/ );
     }
 }

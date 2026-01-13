@@ -97,12 +97,12 @@ public class PublicationDeliveryHelper {
 
         return Stream.of(dataManagedObject)
                 .filter(Objects::nonNull)
-                .map(object -> object.getKeyList())
+                .map(DataManagedObjectStructure::getKeyList)
                 .flatMap(keyList -> keyList.getKeyValue().stream())
                 .filter(keyValueStructure -> keyValueStructure.getKey().equals(ORIGINAL_ID_KEY))
-                .map(keyValue -> keyValue.getValue())
+                .map(KeyValueStructure::getValue)
                 .map(value -> value.split(","))
-                .flatMap(values -> Stream.of(values))
+                .flatMap(Stream::of)
                 .collect(toSet());
     }
 
@@ -153,7 +153,8 @@ public class PublicationDeliveryHelper {
 
     public boolean hasVehicles(ResourceFrame netexResourceFrame) {
         return netexResourceFrame.getVehicles() != null
-                && netexResourceFrame.getVehicles().getVehicle() != null;
+                && netexResourceFrame.getVehicles().getVehicle() != null
+                && !netexResourceFrame.getVehicles().getVehicle().isEmpty();
     }
 
     public int numberOfVehicles(ResourceFrame netexResourceFrame) {
@@ -162,16 +163,31 @@ public class PublicationDeliveryHelper {
 
     public boolean hasVehicleTypes(ResourceFrame netexResourceFrame) {
         return netexResourceFrame.getVehicleTypes() != null
-                && netexResourceFrame.getVehicleTypes().getTransportType_Dummy() != null;
+                && netexResourceFrame.getVehicleTypes().getTransportType_Dummy() != null
+                && !netexResourceFrame.getVehicleTypes().getTransportType_Dummy().isEmpty();
     }
 
     public boolean hasVehicleModels(ResourceFrame netexResourceFrame) {
         return netexResourceFrame.getVehicleModels() != null
-                && netexResourceFrame.getVehicleModels().getVehicleModel() != null;
+                && netexResourceFrame.getVehicleModels().getVehicleModel() != null
+                && !netexResourceFrame.getVehicleModels().getVehicleModel().isEmpty();
     }
 
     public boolean hasDeckPlans(ResourceFrame netexResourceFrame) {
         return netexResourceFrame.getDeckPlans() != null
-                && netexResourceFrame.getDeckPlans().getDeckPlan() != null;
+                && netexResourceFrame.getDeckPlans().getDeckPlan() != null
+                && !netexResourceFrame.getDeckPlans().getDeckPlan().isEmpty();
+    }
+
+    public boolean hasEquipments(ResourceFrame netexResourceFrame) {
+        return netexResourceFrame.getEquipments() != null
+                && netexResourceFrame.getEquipments().getEquipment() != null
+                && !netexResourceFrame.getEquipments().getEquipment().isEmpty();
+    }
+
+    public boolean hasSchematicMaps(ResourceFrame netexResourceFrame) {
+        return netexResourceFrame.getSchematicMaps() != null
+                && netexResourceFrame.getSchematicMaps().getSchematicMap() != null
+                && !netexResourceFrame.getSchematicMaps().getSchematicMap().isEmpty();
     }
 }

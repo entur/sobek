@@ -25,11 +25,8 @@ import org.hibernate.internal.SessionImpl;
 import org.rutebanken.netex.model.DeckPlans_RelStructure;
 import org.rutebanken.netex.model.EquipmentsInFrame_RelStructure;
 import org.rutebanken.netex.model.Frames_RelStructure;
-import org.rutebanken.netex.model.InstalledEquipment_VersionStructure;
 import org.rutebanken.netex.model.ObjectFactory;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
-import org.rutebanken.netex.model.SanitaryEquipment;
-import org.rutebanken.netex.model.TicketingEquipment;
 import org.rutebanken.netex.model.VehicleEquipmentProfilesInFrame_RelStructure;
 import org.rutebanken.netex.model.VehicleModelsInFrame_RelStructure;
 import org.rutebanken.netex.model.VehicleTypesInFrame_RelStructure;
@@ -42,21 +39,10 @@ import org.rutebanken.sobek.exporter.eviction.SessionEntitiesEvictor;
 import org.rutebanken.sobek.exporter.params.ExportParams;
 import org.rutebanken.sobek.model.ResourceFrame;
 import org.rutebanken.sobek.model.ServiceFrame;
-import org.rutebanken.sobek.model.vehicle.CompositeFrame;
-import org.rutebanken.sobek.model.vehicle.DeckPlan;
-import org.rutebanken.sobek.model.vehicle.Vehicle;
-import org.rutebanken.sobek.model.vehicle.VehicleEquipmentProfile;
-import org.rutebanken.sobek.model.vehicle.VehicleEquipmentProfileMember;
-import org.rutebanken.sobek.model.vehicle.VehicleModel;
-import org.rutebanken.sobek.model.vehicle.VehicleType;
-import org.rutebanken.sobek.netex.id.NetexIdHelper;
+import org.rutebanken.sobek.model.vehicle.*;
+import org.rutebanken.sobek.netex.mapping.EquipmentMappingHelper;
 import org.rutebanken.sobek.netex.mapping.NetexMapper;
-import org.rutebanken.sobek.repository.DeckPlanRepository;
-import org.rutebanken.sobek.repository.InstalledEquipmentRepository;
-import org.rutebanken.sobek.repository.VehicleEquipmentProfileRepository;
-import org.rutebanken.sobek.repository.VehicleModelRepository;
-import org.rutebanken.sobek.repository.VehicleRepository;
-import org.rutebanken.sobek.repository.VehicleTypeRepository;
+import org.rutebanken.sobek.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,10 +79,12 @@ public class StreamingPublicationDelivery {
     private final VehicleModelRepository vehicleModelRepository;
     private final DeckPlanRepository deckPlanRepository;
     private final VehicleEquipmentProfileRepository vehicleEquipmentProfileRepository;
-    private final InstalledEquipmentRepository installedEquipmentRepository;
+    private final EquipmentRepository equipmentRepository;
     private final PublicationDeliveryCreator publicationDeliveryCreator;
     private final SobekServiceFrameExporter sobekServiceFrameExporter;
-    
+
+    private final EquipmentMappingHelper equipmentMappingHelper;
+
     private final SobekResourceFrameExporter sobekResourceFrameExporter;
     private final NetexMapper netexMapper;
     private final SobekComositeFrameExporter sobekComositeFrameExporter;
@@ -116,9 +104,9 @@ public class StreamingPublicationDelivery {
                                         VehicleModelRepository vehicleModelRepository,
                                         DeckPlanRepository deckPlanRepository,
                                         VehicleEquipmentProfileRepository vehicleEquipmentProfileRepository,
-                                        InstalledEquipmentRepository installedEquipmentRepository,
+                                        EquipmentRepository equipmentRepository,
                                         PublicationDeliveryCreator publicationDeliveryCreator,
-                                        SobekServiceFrameExporter sobekServiceFrameExporter,
+                                        SobekServiceFrameExporter sobekServiceFrameExporter, EquipmentMappingHelper equipmentMappingHelper,
                                         SobekResourceFrameExporter sobekResourceFrameExporter,
                                         SobekComositeFrameExporter sobekComositeFrameExporter,
                                         NetexMapper netexMapper
@@ -129,9 +117,10 @@ public class StreamingPublicationDelivery {
         this.vehicleModelRepository = vehicleModelRepository;
         this.deckPlanRepository = deckPlanRepository;
         this.vehicleEquipmentProfileRepository = vehicleEquipmentProfileRepository;
-        this.installedEquipmentRepository = installedEquipmentRepository;
+        this.equipmentRepository = equipmentRepository;
         this.publicationDeliveryCreator = publicationDeliveryCreator;
         this.sobekServiceFrameExporter = sobekServiceFrameExporter;
+        this.equipmentMappingHelper = equipmentMappingHelper;
         this.sobekResourceFrameExporter = sobekResourceFrameExporter;
         this.sobekComositeFrameExporter = sobekComositeFrameExporter;
         this.netexMapper = netexMapper;
@@ -212,7 +201,7 @@ public class StreamingPublicationDelivery {
 
             VehiclesInFrame_RelStructure vehiclesInFrame_relStructure = new VehiclesInFrame_RelStructure();
 
-            List<org.rutebanken.netex.model.Vehicle> vehicles = new NetexMappingIteratorList<>(() -> new NetexMappingIterator<>(netexMapper, vehiclesInDb.iterator(),
+            List<org.rutebanken.netex.model.Vehicle> vehicles = new NetexMappingIteratorList<>(() -> new NetexMappingIterator<Vehicle, org.rutebanken.netex.model.Vehicle>(netexMapper, vehiclesInDb.iterator(),
                     org.rutebanken.netex.model.Vehicle.class, mappedVehicleCount, evicter));
 
             setField(VehiclesInFrame_RelStructure.class, "vehicle", vehiclesInFrame_relStructure, vehicles);
@@ -295,16 +284,16 @@ public class StreamingPublicationDelivery {
             setField(VehicleEquipmentProfilesInFrame_RelStructure.class, "vehicleEquipmentProfileOrRechargingEquipmentProfile", vehicleEquipmentProfilesInFrameRelStructure, equipmentProfiles);
             resourceFrame.setVehicleEquipmentProfiles(vehicleEquipmentProfilesInFrameRelStructure);
 
-            List<org.rutebanken.sobek.model.InstalledEquipment_VersionStructure> equipmentsInDb = equipmentProfilesInDb.stream()
+            List<org.rutebanken.sobek.model.vehicle.Equipment> equipmentsInDb = equipmentProfilesInDb.stream()
                     .flatMap(ep -> ep.getVehicleEquipmentProfileMembers().stream())
                             .map(VehicleEquipmentProfileMember::getEquipmentRef)
-                                    .flatMap(ref -> installedEquipmentRepository.findByNetexId(ref).stream()).toList(); //TODO - optimize :)
+                                    .flatMap(ref -> equipmentRepository.findByNetexId(ref).stream()).toList(); //TODO - optimize :)
 
             EquipmentsInFrame_RelStructure equipmentsInFrameRelStructure = new EquipmentsInFrame_RelStructure();
 
-            List<? extends JAXBElement<? extends InstalledEquipment_VersionStructure>> netexEquipment =
-                    equipmentsInDb.stream().map(e -> netexMapper.getFacade().map(e, InstalledEquipment_VersionStructure.class))
-                            .map(this::mapToJaxbInstalledEquipment)
+            List<? extends JAXBElement<? extends org.rutebanken.netex.model.Equipment_VersionStructure>> netexEquipment =
+                    equipmentsInDb.stream().map(e -> netexMapper.getFacade().map(e, org.rutebanken.netex.model.Equipment_VersionStructure.class))
+                            .map(equipmentMappingHelper::mapToJaxbEquipment)
                             .toList();
 
             setField(EquipmentsInFrame_RelStructure.class, "equipment", equipmentsInFrameRelStructure, netexEquipment);
@@ -313,16 +302,6 @@ public class StreamingPublicationDelivery {
         } else {
             logger.info("No vehicle equipment profiles to export");
         }
-    }
-
-    public JAXBElement<? extends InstalledEquipment_VersionStructure> mapToJaxbInstalledEquipment(org.rutebanken.netex.model.InstalledEquipment_VersionStructure netexEquipment) {
-        ObjectFactory objectFactory = new ObjectFactory();
-
-        return switch (netexEquipment) {
-            case SanitaryEquipment sanitaryEquipment -> objectFactory.createSanitaryEquipment(sanitaryEquipment);
-            case TicketingEquipment ticketingEquipment -> objectFactory.createTicketingEquipment(ticketingEquipment);
-            default -> null;
-        };
     }
 
     public void stream(ExportParams exportParams, OutputStream outputStream) throws JAXBException, XMLStreamException, IOException, InterruptedException, SAXException {

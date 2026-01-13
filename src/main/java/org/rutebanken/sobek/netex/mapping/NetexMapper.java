@@ -36,7 +36,7 @@ public class NetexMapper {
     @Autowired
     public NetexMapper(List<Converter> converters, KeyListToKeyValuesMapMapper keyListToKeyValuesMapMapper,
                        DataManagedObjectStructureMapper dataManagedObjectStructureMapper,
-                       PublicationDeliveryHelper publicationDeliveryHelper,
+                       EntityInVersionStructureMapper entityInVersionStructureMapper,
                        AccessibilityAssessmentMapper accessibilityAssessmentMapper) {
 
         logger.info("Setting up netexMapper with DI");
@@ -71,6 +71,41 @@ public class NetexMapper {
                 .byDefault()
                 .register();
 
+        mapperFactory.classMap(SeatEquipment.class, org.rutebanken.sobek.model.vehicle.SeatEquipment.class)
+                .customize(new SeatEquipmentMapper())
+                .byDefault()
+                .register();
+
+        mapperFactory.classMap(SpotEquipment.class, org.rutebanken.sobek.model.vehicle.SpotEquipment.class)
+                .customize(new SpotEquipmentMapper())
+                .byDefault()
+                .register();
+
+        mapperFactory.classMap(StaircaseEquipment.class, org.rutebanken.sobek.model.vehicle.StaircaseEquipment.class)
+                .customize(new StaircaseEquipmentMapper())
+                .byDefault()
+                .register();
+
+        mapperFactory.classMap(BedEquipment.class, org.rutebanken.sobek.model.vehicle.BedEquipment.class)
+                .customize(new BedEquipmentMapper())
+                .byDefault()
+                .register();
+
+        mapperFactory.classMap(AccessVehicleEquipment.class, org.rutebanken.sobek.model.vehicle.AccessVehicleEquipment.class)
+                .customize(new AccessVehicleEquipmentMapper())
+                .byDefault()
+                .register();
+
+        mapperFactory.classMap(EntranceEquipment.class, org.rutebanken.sobek.model.vehicle.EntranceEquipment.class)
+                .customize(new EntranceEquipmentMapper())
+                .byDefault()
+                .register();
+
+        mapperFactory.classMap(LuggageSpotEquipment.class, org.rutebanken.sobek.model.vehicle.LuggageSpotEquipment.class)
+                .customize(new LuggageSpotEquipmentMapper())
+                .byDefault()
+                .register();
+
         mapperFactory.classMap(VehicleModel.class, org.rutebanken.sobek.model.vehicle.VehicleModel.class)
                 .exclude("transportTypeRef")
                 .customize(new VehicleModelMapper())
@@ -96,24 +131,62 @@ public class NetexMapper {
                 .byDefault()
                 .register();
 
+        mapperFactory.classMap(DeckSpaceCapacity.class, org.rutebanken.sobek.model.vehicle.DeckSpaceCapacity.class)
+                .customize(new DeckSpaceCapacityMapper())
+                .byDefault()
+                .register();
+
         mapperFactory.classMap(PassengerSpace.class, org.rutebanken.sobek.model.vehicle.PassengerSpace.class)
+                .exclude("actualVehicleEquipments")
                 .customize(new PassengerSpaceMapper())
                 .byDefault()
                 .register();
 
         mapperFactory.classMap(PassengerEntrance.class, org.rutebanken.sobek.model.vehicle.PassengerEntrance.class)
+                .exclude("actualVehicleEquipments")
                 .customize(new PassengerEntranceMapper())
                 .byDefault()
                 .register();
 
         mapperFactory.classMap(PassengerSpot.class, org.rutebanken.sobek.model.vehicle.PassengerSpot.class)
                 .exclude("spotRowRef")
+                .exclude("spotColumnRef")
+                .exclude("actualVehicleEquipments")
                 .customize(new PassengerSpotMapper())
+                .byDefault()
+                .register();
+
+        mapperFactory.classMap(LuggageSpot.class, org.rutebanken.sobek.model.vehicle.LuggageSpot.class)
+                .exclude("spotRowRef")
+                .exclude("spotColumnRef")
+                .exclude("actualVehicleEquipments")
+                .customize(new LuggageSpotMapper())
+                .byDefault()
+                .register();
+
+        mapperFactory.classMap(SpotAffinity.class, org.rutebanken.sobek.model.vehicle.SpotAffinity.class)
+                .exclude("members")
+                .customize(new SpotAffinityMapper())
+                .byDefault()
+                .register();
+
+        mapperFactory.classMap(SchematicMap.class, org.rutebanken.sobek.model.vehicle.SchematicMap.class)
+                .customize(new SchematicMapMapper())
+                .byDefault()
+                .register();
+
+        mapperFactory.classMap(SchematicMapMember_VersionedChildStructure.class, org.rutebanken.sobek.model.vehicle.SchematicMapMember.class)
+                .customize(new SchematicMapMemberMapper())
                 .byDefault()
                 .register();
 
         mapperFactory.classMap(SpotRow.class, org.rutebanken.sobek.model.vehicle.SpotRow.class)
                 .customize(new SpotRowMapper())
+                .byDefault()
+                .register();
+
+        mapperFactory.classMap(SpotColumn.class, org.rutebanken.sobek.model.vehicle.SpotColumn.class)
+                .customize(new SpotColumnMapper())
                 .byDefault()
                 .register();
 
@@ -160,6 +233,13 @@ public class NetexMapper {
                 .byDefault()
                 .register();
 
+        mapperFactory.classMap(EntityInVersionStructure.class, org.rutebanken.sobek.model.EntityInVersionStructure.class)
+                .customize(entityInVersionStructureMapper)
+                .exclude("id")
+                .exclude("version")
+                .byDefault()
+                .register();
+
         facade = mapperFactory.getMapperFacade();
     }
 
@@ -183,6 +263,14 @@ public class NetexMapper {
 
     public CompositeFrame mapToNetexModel(org.rutebanken.sobek.model.vehicle.CompositeFrame sobekCompositeFrame) {
         return facade.map(sobekCompositeFrame, CompositeFrame.class);
+    }
+
+    public SchematicMap mapToNetexModel(org.rutebanken.sobek.model.vehicle.SchematicMap sobekSchematicMap) {
+        return facade.map(sobekSchematicMap, SchematicMap.class);
+    }
+
+    public org.rutebanken.sobek.model.vehicle.SchematicMap mapToSobekModel(SchematicMap sobekSchematicMap) {
+        return facade.map(sobekSchematicMap, org.rutebanken.sobek.model.vehicle.SchematicMap.class);
     }
 
     public Vehicle mapToNetexModel(org.rutebanken.sobek.model.vehicle.Vehicle sobekVehicle) {
@@ -215,6 +303,94 @@ public class NetexMapper {
 
     public org.rutebanken.sobek.model.vehicle.VehicleModel mapToSobekModel(VehicleModel vehicleModel) {
         return facade.map(vehicleModel, org.rutebanken.sobek.model.vehicle.VehicleModel.class);
+    }
+
+    public PassengerEntrance mapToNetexModel(org.rutebanken.sobek.model.vehicle.PassengerEntrance sobekModel) {
+        return facade.map(sobekModel, PassengerEntrance.class);
+    }
+
+    public org.rutebanken.sobek.model.vehicle.PassengerEntrance mapToSobekModel(PassengerEntrance netexModel) {
+        return facade.map(netexModel, org.rutebanken.sobek.model.vehicle.PassengerEntrance.class);
+    }
+
+    public PassengerSpot mapToNetexModel(org.rutebanken.sobek.model.vehicle.PassengerSpot sobekModel) {
+        return facade.map(sobekModel, PassengerSpot.class);
+    }
+
+    public org.rutebanken.sobek.model.vehicle.PassengerSpot mapToSobekModel(PassengerSpot netexModel) {
+        return facade.map(netexModel, org.rutebanken.sobek.model.vehicle.PassengerSpot.class);
+    }
+
+    public PassengerSpace mapToNetexModel(org.rutebanken.sobek.model.vehicle.PassengerSpace sobekModel) {
+        return facade.map(sobekModel, PassengerSpace.class);
+    }
+
+    public org.rutebanken.sobek.model.vehicle.PassengerSpace mapToSobekModel(PassengerSpace netexModel) {
+        return facade.map(netexModel, org.rutebanken.sobek.model.vehicle.PassengerSpace.class);
+    }
+
+    public LuggageSpot mapToNetexModel(org.rutebanken.sobek.model.vehicle.LuggageSpot sobekModel) {
+        return facade.map(sobekModel, LuggageSpot.class);
+    }
+
+    public org.rutebanken.sobek.model.vehicle.LuggageSpot mapToSobekModel(LuggageSpot netexModel) {
+        return facade.map(netexModel, org.rutebanken.sobek.model.vehicle.LuggageSpot.class);
+    }
+
+    public Equipment_VersionStructure mapToNetexModel(org.rutebanken.sobek.model.vehicle.Equipment sobekEquipment) {
+        return facade.map(sobekEquipment, Equipment_VersionStructure.class);
+    }
+
+    public org.rutebanken.sobek.model.vehicle.Equipment mapToSobekModel(Equipment_VersionStructure netexEquipment) {
+        return facade.map(netexEquipment, org.rutebanken.sobek.model.vehicle.Equipment.class);
+    }
+
+    public SeatEquipment mapToNetexModel(org.rutebanken.sobek.model.vehicle.SeatEquipment sobekEquipment) {
+        return facade.map(sobekEquipment, SeatEquipment.class);
+    }
+
+    public org.rutebanken.sobek.model.vehicle.SeatEquipment mapToSobekModel(SeatEquipment netexEquipment) {
+        return facade.map(netexEquipment, org.rutebanken.sobek.model.vehicle.SeatEquipment.class);
+    }
+
+    public SpotEquipment mapToNetexModel(org.rutebanken.sobek.model.vehicle.SpotEquipment sobekEquipment) {
+        return facade.map(sobekEquipment, SpotEquipment.class);
+    }
+
+    public org.rutebanken.sobek.model.vehicle.SpotEquipment mapToSobekModel(SpotEquipment netexEquipment) {
+        return facade.map(netexEquipment, org.rutebanken.sobek.model.vehicle.SpotEquipment.class);
+    }
+
+    public LuggageSpotEquipment mapToNetexModel(org.rutebanken.sobek.model.vehicle.LuggageSpotEquipment sobekEquipment) {
+        return facade.map(sobekEquipment, LuggageSpotEquipment.class);
+    }
+
+    public org.rutebanken.sobek.model.vehicle.LuggageSpotEquipment mapToSobekModel(LuggageSpotEquipment netexEquipment) {
+        return facade.map(netexEquipment, org.rutebanken.sobek.model.vehicle.LuggageSpotEquipment.class);
+    }
+
+    public AccessVehicleEquipment mapToNetexModel(org.rutebanken.sobek.model.vehicle.AccessVehicleEquipment sobekEquipment) {
+        return facade.map(sobekEquipment, AccessVehicleEquipment.class);
+    }
+
+    public org.rutebanken.sobek.model.vehicle.AccessVehicleEquipment mapToSobekModel(AccessVehicleEquipment netexEquipment) {
+        return facade.map(netexEquipment, org.rutebanken.sobek.model.vehicle.AccessVehicleEquipment.class);
+    }
+
+    public BedEquipment mapToNetexModel(org.rutebanken.sobek.model.vehicle.BedEquipment sobekEquipment) {
+        return facade.map(sobekEquipment, BedEquipment.class);
+    }
+
+    public org.rutebanken.sobek.model.vehicle.BedEquipment mapToSobekModel(BedEquipment netexEquipment) {
+        return facade.map(netexEquipment, org.rutebanken.sobek.model.vehicle.BedEquipment.class);
+    }
+
+    public EntranceEquipment mapToNetexModel(org.rutebanken.sobek.model.vehicle.EntranceEquipment sobekEquipment) {
+        return facade.map(sobekEquipment, EntranceEquipment.class);
+    }
+
+    public org.rutebanken.sobek.model.vehicle.EntranceEquipment mapToSobekModel(EntranceEquipment netexEquipment) {
+        return facade.map(netexEquipment, org.rutebanken.sobek.model.vehicle.EntranceEquipment.class);
     }
 
     public MapperFacade getFacade() {

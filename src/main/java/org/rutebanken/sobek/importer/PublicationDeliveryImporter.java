@@ -17,15 +17,12 @@ package org.rutebanken.sobek.importer;
 
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
 import org.rutebanken.netex.model.ResourceFrame;
-import org.rutebanken.netex.model.SiteFrame;
 import org.rutebanken.sobek.auth.AuthorizationService;
 import org.rutebanken.sobek.exporter.PublicationDeliveryCreator;
 import org.rutebanken.sobek.importer.handler.*;
 import org.rutebanken.sobek.importer.log.ImportLogger;
 import org.rutebanken.sobek.importer.log.ImportLoggerTask;
-import org.rutebanken.sobek.netex.mapping.NetexMapper;
 import org.rutebanken.sobek.netex.mapping.PublicationDeliveryHelper;
-import org.rutebanken.sobek.service.batch.BackgroundJobs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -52,27 +49,28 @@ public class PublicationDeliveryImporter {
     private final VehicleImportHandler vehicleImportHandler;
     private final VehicleTypeImportHandler vehicleTypeImportHandler;
     private final DeckPlanImportHandler deckPlanImportHandler;
+    private final EquipmentImportHandler equipmentImportHandler;
     private final VehicleModelImportHandler vehicleModelImportHandler;
-    private final BackgroundJobs backgroundJobs;
     private final AuthorizationService authorizationService;
     private final boolean authorizationEnabled;
+    private final SchematicMapImportHandler schematicMapImportHandler;
 
     @Autowired
-    public PublicationDeliveryImporter(PublicationDeliveryHelper publicationDeliveryHelper, NetexMapper netexMapper,
+    public PublicationDeliveryImporter(PublicationDeliveryHelper publicationDeliveryHelper,
                                        PublicationDeliveryCreator publicationDeliveryCreator,
-                                       VehicleImportHandler vehicleImportHandler, VehicleTypeImportHandler vehicleTypeImportHandler, DeckPlanImportHandler deckPlanImportHandler, VehicleModelImportHandler vehicleModelImportHandler,
-                                       BackgroundJobs backgroundJobs,
+                                       VehicleImportHandler vehicleImportHandler, VehicleTypeImportHandler vehicleTypeImportHandler, DeckPlanImportHandler deckPlanImportHandler, EquipmentImportHandler equipmentImportHandler, VehicleModelImportHandler vehicleModelImportHandler,
                                        AuthorizationService authorizationService,
-                                       @Value("${authorization.enabled:true}") boolean authorizationEnabled) {
+                                       @Value("${authorization.enabled:true}") boolean authorizationEnabled, SchematicMapImportHandler schematicMapImportHandler) {
         this.publicationDeliveryHelper = publicationDeliveryHelper;
         this.publicationDeliveryCreator = publicationDeliveryCreator;
         this.vehicleImportHandler = vehicleImportHandler;
         this.vehicleTypeImportHandler = vehicleTypeImportHandler;
         this.deckPlanImportHandler = deckPlanImportHandler;
+        this.equipmentImportHandler = equipmentImportHandler;
         this.vehicleModelImportHandler = vehicleModelImportHandler;
-        this.backgroundJobs = backgroundJobs;
         this.authorizationService = authorizationService;
         this.authorizationEnabled = authorizationEnabled;
+        this.schematicMapImportHandler = schematicMapImportHandler;
     }
 
 
@@ -80,7 +78,6 @@ public class PublicationDeliveryImporter {
         return importPublicationDelivery(incomingPublicationDelivery, null);
     }
 
-    @SuppressWarnings("unchecked")
     public PublicationDeliveryStructure importPublicationDelivery(PublicationDeliveryStructure incomingPublicationDelivery, ImportParams importParams) {
         if(authorizationEnabled && !authorizationService.canEditAllEntities()){
             throw new AccessDeniedException("Insufficient privileges for operation");
@@ -107,6 +104,8 @@ public class PublicationDeliveryImporter {
         AtomicInteger vehicleTypeCounter = new AtomicInteger(0);
         AtomicInteger vehicleModelCounter = new AtomicInteger(0);
         AtomicInteger deckPlanCounter = new AtomicInteger(0);
+        AtomicInteger equipmentCounter = new AtomicInteger(0);
+        AtomicInteger schematicMapCounter = new AtomicInteger(0);
 
         // Currently only supporting one resource frame per publication delivery
         ResourceFrame netexResourceFrame = publicationDeliveryHelper.findResourceFrame(incomingPublicationDelivery);
@@ -124,6 +123,9 @@ public class PublicationDeliveryImporter {
                 logger.info("Publication delivery contains resource frame created at {}", netexResourceFrame.getCreated());
 
                 responseResourceFrame.withId(requestId + "-response").withVersion("1");
+                if(netexResourceFrame.getEquipments() != null) {
+                    equipmentImportHandler.handleEquipments(netexResourceFrame, importParams, equipmentCounter, responseResourceFrame);
+                }
                 if(netexResourceFrame.getDeckPlans() != null) {
                     deckPlanImportHandler.handleDeckPlans(netexResourceFrame, importParams, deckPlanCounter, responseResourceFrame);
                 }
@@ -136,6 +138,8 @@ public class PublicationDeliveryImporter {
                 if(netexResourceFrame.getVehicles() != null) {
                     vehicleImportHandler.handleVehicles(netexResourceFrame, importParams, vehicleCounter, responseResourceFrame);
                 }
+                if(netexResourceFrame.getSchematicMaps() != null)
+                    schematicMapImportHandler.handleSchematicMaps(netexResourceFrame, importParams, schematicMapCounter, responseResourceFrame);
             } finally {
                 MDC.remove(IMPORT_CORRELATION_ID);
                 loggerTimer.cancel();

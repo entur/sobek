@@ -15,11 +15,12 @@
 
 package org.rutebanken.sobek.model;
 
-import jakarta.persistence.Entity;
+import jakarta.persistence.MappedSuperclass;
+import org.rutebanken.sobek.model.vehicle.Equipment;
 
-@Entity
+@MappedSuperclass
 public abstract class InstalledEquipment_VersionStructure
-        extends Equipment_VersionStructure {
+        extends Equipment {
 
 
 }

@@ -22,103 +22,48 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Transient;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @MappedSuperclass
 public abstract class Equipment_VersionStructure
-        extends EntityInVersionStructure {
+        extends DataManagedObjectStructure {
 
-    @Transient
-    protected MultilingualStringEntity name;
+    @AttributeOverrides({
+            @AttributeOverride(name = "value", column = @Column(name = "name_value")),
+            @AttributeOverride(name = "lang", column = @Column(name = "name_lang", length = 5))
+    })
+    @Embedded
+    private EmbeddableMultilingualString name;
 
     @AttributeOverrides({
             @AttributeOverride(name = "value", column = @Column(name = "private_code_value")),
             @AttributeOverride(name = "type", column = @Column(name = "private_code_type"))
     })
     @Embedded
-    protected PrivateCodeStructure privateCode;
+    private PrivateCodeStructure privateCode;
     @Transient
-    protected PrivateCodeStructure publicCode;
+    private PrivateCodeStructure publicCode;
     @Transient
-    protected String image;
+    private String image;
     @Transient
-    protected TypeOfEquipmentRefStructure typeOfEquipmentRef;
-    @Transient
-    protected MultilingualStringEntity description;
-    @Transient
-    protected MultilingualStringEntity note;
-    protected Boolean outOfService;
+    private TypeOfEquipmentRefStructure typeOfEquipmentRef;
 
-    public MultilingualStringEntity getName() {
-        return name;
-    }
+    @AttributeOverrides({
+            @AttributeOverride(name = "value", column = @Column(name = "description_value")),
+            @AttributeOverride(name = "lang", column = @Column(name = "description_lang"))
+    })
+    @Embedded
+    private EmbeddableMultilingualString description;
 
-    public void setName(MultilingualStringEntity value) {
-        this.name = value;
-    }
+    @AttributeOverrides({
+            @AttributeOverride(name = "value", column = @Column(name = "note_value")),
+            @AttributeOverride(name = "lang", column = @Column(name = "note_lang"))
+    })
+    @Embedded
+    private EmbeddableMultilingualString note;
 
-    public PrivateCodeStructure getPrivateCode() {
-        return privateCode;
-    }
-
-    public void setPrivateCode(PrivateCodeStructure value) {
-        this.privateCode = value;
-    }
-
-    public PrivateCodeStructure getPublicCode() {
-        return publicCode;
-    }
-
-    public void setPublicCode(PrivateCodeStructure value) {
-        this.publicCode = value;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String value) {
-        this.image = value;
-    }
-
-    public TypeOfEquipmentRefStructure getTypeOfEquipmentRef() {
-        return typeOfEquipmentRef;
-    }
-
-    public void setTypeOfEquipmentRef(TypeOfEquipmentRefStructure value) {
-        this.typeOfEquipmentRef = value;
-    }
-
-    public MultilingualStringEntity getDescription() {
-        return description;
-    }
-
-    public void setDescription(MultilingualStringEntity value) {
-        this.description = value;
-    }
-
-    public MultilingualStringEntity getNote() {
-        return note;
-    }
-
-    public void setNote(MultilingualStringEntity value) {
-        this.note = value;
-    }
-
-    public Boolean isOutOfService() {
-        return outOfService;
-    }
-
-    public void setOutOfService(Boolean value) {
-        this.outOfService = value;
-    }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("netexId", netexId)
-                .add("version", version)
-                .add("name", name)
-                .add("created", created)
-                .toString();
-    }
+    private Boolean outOfService;
 }

@@ -439,5 +439,46 @@ Vehicle model structure is documented in:
 
 ---
 
-**Last Updated**: December 2024
+## Future Improvements
+
+### Test Logging: Pretty Logs for Local Development
+
+Currently, `mvn test` produces the same log format regardless of environment. A future improvement would be to:
+
+- Add Janino as a **test-scoped** dependency
+- Update `logback-test.xml` to check for the `CI` environment variable (set automatically by GitHub Actions)
+- Local `mvn test` → pretty console logs (better developer experience)
+- CI pipeline → JSON structured logs (for log aggregation and coverage tools)
+
+**Implementation approach:**
+```xml
+<!-- logback-test.xml -->
+<if condition='isDefined("CI")'>
+    <then><!-- JSON logs for CI --></then>
+    <else><!-- Pretty logs for local --></else>
+</if>
+```
+
+This keeps CI compatibility while improving local development experience.
+
+---
+
+## Developer Notes
+
+### IntelliJ IDEA and Profile Drift
+
+Some developers use IntelliJ IDEA with custom run configurations that may include IDE-specific profiles or settings. Be aware of potential "drift" between:
+
+- **pom.xml** `spring-boot-maven-plugin` default profiles (`local,local-blobstore,local-changelog`)
+- **IntelliJ run configurations** which may have different or additional profiles set
+- **application-*.properties** files that may be created for local overrides
+
+When troubleshooting profile-related issues:
+1. Check both Maven and IDE run configurations
+2. Verify which `application-*.properties` files exist locally (some may be gitignored)
+3. Use `--debug` or check startup logs for "The following profiles are active:" message
+
+---
+
+**Last Updated**: January 2025
 **Claude.ai Context**: This document provides comprehensive project context for AI assistants like Claude to understand and work with the Sobek codebase.

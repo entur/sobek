@@ -15,7 +15,6 @@
 
 package org.rutebanken.sobek.netex.id;
 
-import org.rutebanken.sobek.general.JPAUtils;
 import org.rutebanken.sobek.model.identification.IdentifiedEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

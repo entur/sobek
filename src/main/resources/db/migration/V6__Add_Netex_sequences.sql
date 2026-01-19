@@ -196,4 +196,4 @@ CREATE SEQUENCE IF NOT EXISTS netex_spot_affinity_seq
 
 ALTER SEQUENCE netex_spot_affinity_seq OWNER TO sobek;
 
-drop table id_generator;
+drop table IF EXISTS id_generator;

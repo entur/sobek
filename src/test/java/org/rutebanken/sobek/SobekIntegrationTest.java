@@ -15,14 +15,12 @@
 
 package org.rutebanken.sobek;
 
-import com.hazelcast.core.HazelcastInstance;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
-import org.rutebanken.sobek.netex.id.GeneratedIdState;
 import org.rutebanken.sobek.repository.TagRepository;
 import org.rutebanken.sobek.versioning.VersionCreator;
 import org.slf4j.Logger;
@@ -36,8 +34,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.rutebanken.sobek.netex.id.GaplessIdGeneratorService.INITIAL_LAST_ID;
-
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT, classes = SobekTestApplication.class)
 @ActiveProfiles({"test","gcs-blobstore"})
@@ -47,12 +43,6 @@ import static org.rutebanken.sobek.netex.id.GaplessIdGeneratorService.INITIAL_LA
 public abstract class SobekIntegrationTest {
 
     private static Logger logger = LoggerFactory.getLogger(SobekIntegrationTest.class);
-
-    @Autowired
-    protected HazelcastInstance hazelcastInstance;
-
-    @Autowired
-    protected GeneratedIdState generatedIdState;
 
     @Autowired
     protected EntityManagerFactory entityManagerFactory;

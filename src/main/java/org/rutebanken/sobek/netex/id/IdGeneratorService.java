@@ -46,7 +46,7 @@ public class IdGeneratorService {
      * @return the generated long value
      */
     public long getNextIdForEntity(Class<?> entityType) {
-        logger.debug("Will fetch new ID from id_generator table for {}", entityType.getSimpleName());
+        logger.debug("Will fetch new ID from database sequence for {}", entityType.getSimpleName());
 
         try (EntityManager em = entityManagerFactory.createEntityManager()) {
             String entityTypeName = JPAUtils.getTableName(em, entityType);

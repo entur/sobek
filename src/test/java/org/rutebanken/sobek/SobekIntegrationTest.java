@@ -74,12 +74,6 @@ public abstract class SobekIntegrationTest {
         EntityTransaction transaction = entityManager.getTransaction();
         transaction.begin();
 
-        generatedIdState.getRegisteredEntityNames().forEach(entityName -> {
-            hazelcastInstance.getQueue(entityName).clear();
-            generatedIdState.setLastIdForEntity(entityName, INITIAL_LAST_ID);
-            generatedIdState.getClaimedIdListForEntity(entityName).clear();
-        });
-
         int updated = entityManager.createNativeQuery("DELETE FROM id_generator").executeUpdate();
         logger.debug("Cleared id generator table. deleted: {}", updated);
         transaction.commit();

@@ -41,7 +41,7 @@ public class NetexIdAssigner {
 
     public void assignNetexId(IdentifiedEntity identifiedEntity) {
 
-        if(identifiedEntity.getNetexId() == null || netexIdHelper.isNmrId(identifiedEntity.getNetexId())) {
+        if (identifiedEntity.getNetexId() == null) {
             String netexId = netexIdProvider.getGeneratedId(identifiedEntity);
             identifiedEntity.setNetexId(netexId);
             logger.trace("Assigned ID {} to entity", netexId);

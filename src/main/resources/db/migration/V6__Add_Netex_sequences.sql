@@ -195,3 +195,5 @@ CREATE SEQUENCE IF NOT EXISTS netex_spot_affinity_seq
     CACHE 1;
 
 ALTER SEQUENCE netex_spot_affinity_seq OWNER TO sobek;
+
+drop table id_generator;

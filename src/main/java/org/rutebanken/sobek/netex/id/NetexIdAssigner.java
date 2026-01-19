@@ -31,16 +31,17 @@ public class NetexIdAssigner {
 
     private static final Logger logger = LoggerFactory.getLogger(NetexIdAssigner.class);
 
-    private NetexIdProvider netexIdProvider;
+    private final NetexIdProvider netexIdProvider;
+    private final NetexIdHelper netexIdHelper;
 
-    @Autowired
-    public NetexIdAssigner(NetexIdProvider netexIdProvider) {
+    public NetexIdAssigner(NetexIdProvider netexIdProvider, NetexIdHelper netexIdHelper) {
         this.netexIdProvider = netexIdProvider;
+        this.netexIdHelper = netexIdHelper;
     }
 
     public void assignNetexId(IdentifiedEntity identifiedEntity) {
 
-        if(identifiedEntity.getNetexId() == null) {
+        if(identifiedEntity.getNetexId() == null || netexIdHelper.isNmrId(identifiedEntity.getNetexId())) {
             String netexId = netexIdProvider.getGeneratedId(identifiedEntity);
             identifiedEntity.setNetexId(netexId);
             logger.trace("Assigned ID {} to entity", netexId);

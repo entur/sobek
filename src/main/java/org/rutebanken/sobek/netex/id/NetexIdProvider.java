@@ -15,6 +15,7 @@
 
 package org.rutebanken.sobek.netex.id;
 
+import org.rutebanken.sobek.general.JPAUtils;
 import org.rutebanken.sobek.model.identification.IdentifiedEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +24,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * Provides generated NetexIDs for IdentifiedEntities when saved.
- * It uses the {@link GaplessIdGeneratorService} to retrieve the incremented number in the ID.
+ * It uses the {@link IdGeneratorService} to retrieve the incremented number in the ID.
  * If the ID is explicity set, the valid prefix list is checked.
  * If the prefix matches it will try to use the claimed ID.
  */
@@ -32,25 +33,24 @@ public class NetexIdProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(NetexIdProvider.class);
 
-    private final GaplessIdGeneratorService gaplessIdGenerator;
+    private final IdGeneratorService idGenerator;
 
     private final ValidPrefixList validPrefixList;
 
     private final NetexIdHelper netexIdHelper;
 
     @Autowired
-    public NetexIdProvider(GaplessIdGeneratorService gaplessIdGenerator, ValidPrefixList validPrefixList, NetexIdHelper netexIdHelper) {
-        this.gaplessIdGenerator = gaplessIdGenerator;
+    public NetexIdProvider(IdGeneratorService idGenerator, ValidPrefixList validPrefixList, NetexIdHelper netexIdHelper) {
+        this.idGenerator = idGenerator;
         this.validPrefixList = validPrefixList;
         this.netexIdHelper = netexIdHelper;
     }
 
     public String getGeneratedId(IdentifiedEntity identifiedEntity) {
-        String entityTypeName = key(identifiedEntity);
 
-        long longId = gaplessIdGenerator.getNextIdForEntity(entityTypeName);
+        long longId = idGenerator.getNextIdForEntity(identifiedEntity.getClass());
 
-        return netexIdHelper.getNetexId(entityTypeName, longId);
+        return netexIdHelper.getNetexId(identifiedEntity, longId);
     }
 
     public void claimId(IdentifiedEntity identifiedEntity) {
@@ -59,25 +59,7 @@ public class NetexIdProvider {
 
         if(validPrefixList.isValidPrefixForType(prefix, identifiedEntity.getClass())) {
             logger.debug("Claimed ID {} contains valid prefix for claiming: {}", identifiedEntity.getNetexId(), prefix);
-
-            if(netexIdHelper.isNsrId(identifiedEntity.getNetexId())) {
-                String claimedId = netexIdHelper.extractIdPostfix(identifiedEntity.getNetexId());
-
-                String entityTypeName = key(identifiedEntity);
-
-                // !!!!gaplessIdGenerator.getNextIdForEntity(entityTypeName, claimedId);
-            } else {
-                logger.trace("Accepting ID with prefix {}", prefix);
-            }
-
-            // Because IDs might end with non-numbers we cannot support claiming for any ID other than NSR.
-        } else {
-            logger.warn("Detected non NSR ID: {} with prefix {}", identifiedEntity.getNetexId(), prefix);
+            logger.trace("Accepting ID with prefix {}", prefix);
         }
     }
-
-    private String key(IdentifiedEntity identifiedEntity) {
-        return identifiedEntity.getClass().getSimpleName();
-    }
-
 }

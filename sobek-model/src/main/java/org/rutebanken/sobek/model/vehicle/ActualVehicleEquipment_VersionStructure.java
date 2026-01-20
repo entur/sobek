@@ -1,0 +1,17 @@
+package org.rutebanken.sobek.model.vehicle;
+
+import jakarta.persistence.MappedSuperclass;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.math.BigInteger;
+
+@Getter
+@Setter
+@MappedSuperclass
+public class ActualVehicleEquipment_VersionStructure extends PassengerEquipment_VersionStructure {
+    private BigInteger units;
+//    private JAXBElement<? extends org.rutebanken.netex.model.VehicleTypeRefStructure> vehicleTypeRef;
+//    private JAXBElement<? extends EquipmentRefStructure> equipmentRef;
+//    private AccessibilityAssessment accessibilityAssessment;
+}

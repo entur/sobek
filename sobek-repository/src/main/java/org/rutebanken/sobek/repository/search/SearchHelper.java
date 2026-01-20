@@ -18,7 +18,7 @@ package org.rutebanken.sobek.repository.search;
 
 import org.hibernate.engine.jdbc.internal.BasicFormatterImpl;
 import org.hibernate.query.NativeQuery;
-import org.rutebanken.sobek.exporter.params.SearchObject;
+//import org.rutebanken.sobek.exporter.params.SearchObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -79,9 +79,9 @@ public class SearchHelper {
         }
     }
 
-    public void logIfLoggable(String generatedSql, Map<String, Object> parameters, SearchObject searchObject, Logger relevantLogger) {
-        if (relevantLogger.isInfoEnabled()) {
-            relevantLogger.info("sql: {}\nparams: {}\nSearch object: {}", generatedSql, parameters.toString(), searchObject.toString());
-        }
-    }
+//    public void logIfLoggable(String generatedSql, Map<String, Object> parameters, SearchObject searchObject, Logger relevantLogger) {
+//        if (relevantLogger.isInfoEnabled()) {
+//            relevantLogger.info("sql: {}\nparams: {}\nSearch object: {}", generatedSql, parameters.toString(), searchObject.toString());
+//        }
+//    }
 }

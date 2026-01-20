@@ -15,7 +15,6 @@
 
 package org.rutebanken.sobek.rest.netex.publicationdelivery;
 
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.ws.rs.BeanParam;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -34,19 +33,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.InputStream;
 import java.util.Collection;
 
-import static org.rutebanken.sobek.rest.netex.publicationdelivery.AsyncExportResource.ASYNC_JOB_PATH;
+import static rutebanken.sobek.model.job.ExportJobPath.ASYNC_JOB_PATH;
 
 /**
  * Export publication delivery data to google cloud storage. Some parts like stops and parking asynchronously
  */
-@Tag(name="asyncExport", description = "Async export resource")
+//@Tag(name="asyncExport", description = "Async export resource")
 @Produces(MediaType.APPLICATION_XML + "; charset=UTF-8")
 @Path("/netex/" + ASYNC_JOB_PATH)
 public class AsyncExportResource {
 
     private static final Logger logger = LoggerFactory.getLogger(AsyncExportResource.class);
-
-    public static final String ASYNC_JOB_PATH = "export";
 
     private final AsyncPublicationDeliveryExporter asyncPublicationDeliveryExporter;
 

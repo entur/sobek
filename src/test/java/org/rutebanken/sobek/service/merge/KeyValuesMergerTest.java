@@ -36,19 +36,19 @@ public class KeyValuesMergerTest {
 
         Map<String, Value> fromKeyValues = new HashMap<>();
 
-        fromKeyValues.put(NetexIdMapper.ORIGINAL_ID_KEY, new Value(fromOriginalId));
+        fromKeyValues.put(CustomKeyValueTypes.ORIGINAL_ID_KEY, new Value(fromOriginalId));
         fromKeyValues.put(testKey, new Value(testValue));
 
         Map<String, Value> toKeyValues = new HashMap<>();
-        toKeyValues.put(NetexIdMapper.ORIGINAL_ID_KEY, new Value(fromOriginalId, toOriginalId));
+        toKeyValues.put(CustomKeyValueTypes.ORIGINAL_ID_KEY, new Value(fromOriginalId, toOriginalId));
         toKeyValues.put(otherTestKey, new Value(testValue));
 
         new KeyValuesMerger().mergeKeyValues(fromKeyValues, toKeyValues);
 
         assertThat(toKeyValues).hasSize(3);
-        assertThat(toKeyValues.get(NetexIdMapper.ORIGINAL_ID_KEY)).isNotNull();
-        assertThat(toKeyValues.get(NetexIdMapper.ORIGINAL_ID_KEY).getItems()).hasSize(2);
-        assertThat(toKeyValues.get(NetexIdMapper.ORIGINAL_ID_KEY).getItems()).contains(fromOriginalId, toOriginalId);
+        assertThat(toKeyValues.get(CustomKeyValueTypes.ORIGINAL_ID_KEY)).isNotNull();
+        assertThat(toKeyValues.get(CustomKeyValueTypes.ORIGINAL_ID_KEY).getItems()).hasSize(2);
+        assertThat(toKeyValues.get(CustomKeyValueTypes.ORIGINAL_ID_KEY).getItems()).contains(fromOriginalId, toOriginalId);
         assertThat(toKeyValues.get(testKey).getItems()).contains(testValue);
         assertThat(toKeyValues.get(otherTestKey).getItems()).contains(testValue);
 

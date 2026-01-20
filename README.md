@@ -155,7 +155,7 @@ Supported extra profiles are
 spring.profiles.active=local,rutebanken-blobstore,in-memory-blobstore,local-changelog
 ```
 
-See the [`RutebankenBlobStoreServiceConfiguration`](./src/main/java/org/rutebanken/sobek/config/RutebankenBlobStoreConfiguration.java)
+See the [`RutebankenBlobStoreServiceConfiguration`](sobek-api/src/main/java/org/rutebanken/sobek/config/RutebankenBlobStoreConfiguration.java)
 class for configuration keys and additional information.
 
 ##### Changelog

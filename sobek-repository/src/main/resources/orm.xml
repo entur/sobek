@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings xmlns="https://jakarta.ee/xml/ns/persistence/orm"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence/orm
+                 https://jakarta.ee/xml/ns/persistence/orm/orm_3_0.xsd"
+                 version="3.0">
+
+    <entity-mappings>
+        <entity class="org.rutebanken.sobek.model.identification.IdentifiedEntity">
+            <entity-listeners>
+                <entity-listener class="org.rutebanken.sobek.repository.listener.IdentifiedEntityListener"/>
+            </entity-listeners>
+        </entity>
+    </entity-mappings>
+</entity-mappings>

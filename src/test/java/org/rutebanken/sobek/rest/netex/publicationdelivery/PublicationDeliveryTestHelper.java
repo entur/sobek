@@ -61,9 +61,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static jakarta.xml.bind.JAXBContext.newInstance;
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.rutebanken.sobek.netex.mapping.mapper.NetexIdMapper.ORIGINAL_ID_KEY;
+import static org.rutebanken.sobek.netex.mapping.mapper.CustomKeyValueTypes.ORIGINAL_ID_KEY;
 
 @Component
 public class PublicationDeliveryTestHelper {

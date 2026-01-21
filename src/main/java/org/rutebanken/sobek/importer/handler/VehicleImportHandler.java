@@ -15,17 +15,14 @@
 
 package org.rutebanken.sobek.importer.handler;
 
-import com.hazelcast.core.HazelcastInstance;
 import org.rutebanken.netex.model.*;
 import org.rutebanken.sobek.importer.ImportParams;
 import org.rutebanken.sobek.importer.VehicleImporter;
-import org.rutebanken.sobek.importer.VehicleTypeImporter;
 import org.rutebanken.sobek.importer.converter.VehicleIdConverter;
 import org.rutebanken.sobek.netex.mapping.NetexMapper;
 import org.rutebanken.sobek.netex.mapping.PublicationDeliveryHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -35,11 +32,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class VehicleImportHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(VehicleImportHandler.class);
-
-    /**
-     * Hazelcast lock key for stop place import.
-     */
-    private static final String VEHICLE_IMPORT_LOCK_KEY = "VEHICLE_IMPORT_LOCK_KEY";
 
     private final PublicationDeliveryHelper publicationDeliveryHelper;
     private final NetexMapper netexMapper;

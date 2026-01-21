@@ -24,7 +24,6 @@
 - **GraphQL** (graphql-java 20.9) - Primary API interface
 
 ### Key Dependencies
-- **Hazelcast 5.2.5** - Distributed caching and memory grid for multi-instance coordination
 - **NeTEx Java Model 2.0.16** - NeTEx format support
 - **GeoTools 30.2** - Geospatial operations
 - **JTS Core 1.20.0** - Geometry operations
@@ -84,7 +83,6 @@ org.rutebanken.sobek/
 - GraphiQL UI available for development
 
 #### 3. ID Generation & Mapping
-- Gap-less ID generation for NeTEx entities
 - Configurable via `netex.validPrefix` property
 - Tracks old-to-new ID mappings in database
 - Uses Hazelcast for distributed coordination (GaplessIdGeneratorService)
@@ -97,10 +95,7 @@ org.rutebanken.sobek/
 - Audit trail for compliance
 
 #### 5. Multi-Instance Support
-- Uses Hazelcast for distributed coordination
 - Can run multiple instances in Kubernetes
-- Shared state management via memory grid
-- Distributed caching with Hazelcast second-level cache
 
 #### 6. Authentication & Authorization
 - OAuth2/OIDC support (Keycloak/Auth0)

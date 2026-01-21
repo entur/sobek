@@ -15,20 +15,16 @@
 
 package org.rutebanken.sobek;
 
-import org.rutebanken.sobek.model.vehicle.DeckPlan;
-import org.rutebanken.sobek.model.vehicle.Vehicle;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+
 @SpringBootApplication
 @Configuration
 @EnableTransactionManagement
-@EnableCaching
 @EntityScan("org.rutebanken.sobek.*")
 @ComponentScan(basePackages = { "org.entur", "org.rutebanken.sobek"})
 public class SobekApplication {

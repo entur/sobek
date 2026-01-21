@@ -27,10 +27,6 @@ There are also graphql processes (named functions) which allows functionality li
 A frontend for Sobek is available. It's name is Hathor.
 See https://github.com/entur/hathor
 
-### Supports running multiple instances
-Sobek uses Hazelcast memory grid to communicate with other instances in kubernetes.
-This means that you can run multiple instances.
-
 ### Mapping of IDs
 After import vehicles and assigning new IDs to vehicles, sobek keeps olds IDs in a mapping table.
 The mapping table between old and new IDs is available through the GraphQL API and a REST endpoint.
@@ -202,7 +198,7 @@ To run Sobek with Docker compose, you need to have a docker-compose.yml file. In
 docker compose up
 ```
 
-This will start Sobek with PostgreSQL and Hazelcast. and you can access Sobek on http://localhost:1888 and the database on http://localhost:5433 
+This will start Sobek with PostgreSQL. and you can access Sobek on http://localhost:1888 and the database on http://localhost:5433 
 and graphiql on http://localhost:8780/services/vehicles/graphql , At start up sobek copy empty schema to the database. Spring properties are set in application.properties.
 Security is disabled in this setup.
 
@@ -230,15 +226,8 @@ server.compression.mime-types=application/json,application/xml,text/html,text/xm
 
 spring.jpa.hibernate.id.new_generator_mappings=true
 spring.jpa.hibernate.use-new-id-generator-mappings=true
-spring.jpa.properties.hibernate.cache.use_second_level_cache=false
-spring.jpa.properties.hibernate.cache.use_query_cache=false
-spring.jpa.properties.hibernate.cache.use_minimal_puts=false
-spring.jpa.properties.hibernate.cache.region.factory_class=org.rutebanken.sobek.hazelcast.SobekHazelcastCacheRegionFactory
 
 netex.import.enabled.types=MERGE,INITIAL,ID_MATCH,MATCH
-
-hazelcast.performance.monitoring.enabled=true
-hazelcast.performance.monitoring.delay.seconds=2
 
 management.endpoints.web.exposure.include=info,env,metrics
 management.endpoints.prometheus.enabled=true
@@ -319,18 +308,9 @@ See also http://stackoverflow.com/a/26514779
 
 ## ID Generation
 ### Background
-During the implementation of Sobek was desirable to produce NeTEx IDs for vehicles more or less gap less.
-The reason for this implementation was legacy systems with restrictions of maximum number of digits.
-
-### Configure ID generation
-It is possible to control whether IDs should be generated outside Sobek or not. See the class ValidPrefixList.
-Setting the property `netex.validPrefix` tells Sobek to generate IDs for new entities.
-Please note that it is not possible to do an initial import (see ImportType) multiple times with the same IDs.
-
-### How its all connected
-It's all initiated by an entity listener annotated with `PrePersist` on the class `IdentifiedEntity` called `IdentifiedEntityListener`.
-`NetexIdAssigner` determines if the entity already has an ID or not. `NetexIdProvider` either return a new ID or handles explicity claimed IDs if the configured prefix matches. See `ValidPrefixList` for the configuration of valid prefixes, and prefixes for IDs generated elsewhere. The `GaplessIdGeneratorService` uses Hazelcast to sync state between instances and avoid conflicts.
-
+For objects with codespace other than NMR, Sobek expects that the ID is unique and respects IDs generated elsewhere.
+For objects with codespace NMR, Sobek generates IDs itself.
+For objects without ID, Sobek generates IDs itself and puts them in the NMR codespace.
 
 ## Keycloak/Auth0
 Both Sobek and Hathor are set up to be used with Keycloak or Auth0.

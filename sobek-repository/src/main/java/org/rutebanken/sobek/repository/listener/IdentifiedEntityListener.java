@@ -15,15 +15,20 @@ package org.rutebanken.sobek.repository.listener;
  */
 
 import jakarta.persistence.PrePersist;
-import org.rutebanken.sobek.config.ApplicationContextProvider;
 import org.rutebanken.sobek.model.identification.IdentifiedEntity;
 
 public class IdentifiedEntityListener {
+
+    private final NetexIdAssigner netexIdAssigner;
+
+    public IdentifiedEntityListener(NetexIdAssigner netexIdAssigner) {
+        this.netexIdAssigner = netexIdAssigner;
+    }
 
 
     @PrePersist
     public void assignNetexId(IdentifiedEntity identifiedEntity) {
         // This class is not managed by Spring
-        ApplicationContextProvider.getNetexIdAssigner().assignNetexId(identifiedEntity);
+        netexIdAssigner.assignNetexId(identifiedEntity);
     }
 }

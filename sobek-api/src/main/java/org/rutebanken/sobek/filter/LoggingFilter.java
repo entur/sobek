@@ -24,7 +24,7 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.rutebanken.sobek.auth.UsernameFetcher;
-import org.rutebanken.sobek.service.metrics.PrometheusMetricsService;
+import org.rutebanken.sobek.metrics.PrometheusMetricsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

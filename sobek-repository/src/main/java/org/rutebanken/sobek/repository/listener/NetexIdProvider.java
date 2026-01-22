@@ -13,9 +13,11 @@
  * limitations under the Licence.
  */
 
-package org.rutebanken.sobek.netex.id;
+package org.rutebanken.sobek.repository.listener;
 
 import org.rutebanken.sobek.model.identification.IdentifiedEntity;
+import org.rutebanken.sobek.netex.id.NetexIdHelper;
+import org.rutebanken.sobek.netex.id.ValidPrefixList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

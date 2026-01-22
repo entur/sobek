@@ -15,20 +15,20 @@
 
 package org.rutebanken.sobek.repository.reference;
 
-import com.google.common.collect.Sets;
-import org.apache.commons.lang3.StringUtils;
+import org.rutebanken.sobek.model.CustomKeyValueTypes;
 import org.rutebanken.sobek.model.DataManagedObjectStructure;
 import org.rutebanken.sobek.model.VersionOfObjectRefStructure;
 import org.rutebanken.sobek.netex.id.NetexIdHelper;
 import org.rutebanken.sobek.netex.id.TypeFromIdResolver;
 import org.rutebanken.sobek.netex.id.ValidPrefixList;
-import org.rutebanken.sobek.netex.mapping.mapper.NetexIdMapper;
 import org.rutebanken.sobek.repository.generic.GenericEntityInVersionRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -60,9 +60,9 @@ public class ReferenceResolver {
         assertNotNull(versionOfObjectRefStructure, "ref", versionOfObjectRefStructure.getRef());
 
         String ref = versionOfObjectRefStructure.getRef();
-        if (StringUtils.countMatches(ref, ":") != 2) {
+        long colonCount = ref.chars().filter(ch -> ch == ':').count();
+        if (colonCount != 2) {
             throw new IllegalArgumentException("Expected two number of colons in ref. Got: '" + ref + "'");
-
         }
         String memberClass = netexIdHelper.extractIdType(ref);
 
@@ -71,7 +71,7 @@ public class ReferenceResolver {
         final String netexId;
         if (!validPrefixList.isValidPrefixForType(prefix, memberClass)) {
             logger.debug("Detected ID without valid prefix: {} and type {}. Will try to find it from original ID: {}.", prefix, memberClass, ref);
-            Set<String> valuesArgument = Sets.newHashSet(ref);
+            Set<String> valuesArgument = new HashSet<>(Collections.singleton(ref));
             netexId = genericEntityInVersionRepository.findByKeyValue(CustomKeyValueTypes.ORIGINAL_ID_KEY, valuesArgument, clazz);
         } else {
             netexId = ref;
@@ -93,9 +93,9 @@ public class ReferenceResolver {
         assertNotNull(versionOfObjectRefStructure, "ref", versionOfObjectRefStructure.getRef());
 
         String ref = versionOfObjectRefStructure.getRef();
-        if (StringUtils.countMatches(ref, ":") != 2) {
+        long colonCount = ref.chars().filter(ch -> ch == ':').count();
+        if (colonCount != 2) {
             throw new IllegalArgumentException("Expected two number of colons in ref. Got: '" + ref + "'");
-
         }
         String memberClass = netexIdHelper.extractIdType(ref);
 
@@ -106,7 +106,7 @@ public class ReferenceResolver {
         final String netexId;
         if (!validPrefixList.isValidPrefixForType(prefix, memberClass)) {
             logger.debug("Detected ID without valid prefix: {} and type {}. Will try to find it from original ID: {}.", prefix, memberClass, ref);
-            Set<String> valuesArgument = Sets.newHashSet(ref);
+            Set<String> valuesArgument = new HashSet<>(Collections.singleton(ref));
             netexId = genericEntityInVersionRepository.findByKeyValue(CustomKeyValueTypes.ORIGINAL_ID_KEY, valuesArgument, clazz);
         } else {
             netexId = ref;

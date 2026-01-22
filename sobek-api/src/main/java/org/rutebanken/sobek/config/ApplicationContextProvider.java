@@ -15,7 +15,7 @@
 
 package org.rutebanken.sobek.config;
 
-import org.rutebanken.sobek.netex.id.NetexIdAssigner;
+import org.rutebanken.sobek.repository.listener.NetexIdAssigner;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;

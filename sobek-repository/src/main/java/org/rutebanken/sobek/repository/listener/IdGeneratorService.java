@@ -13,7 +13,7 @@
  * limitations under the Licence.
  */
 
-package org.rutebanken.sobek.netex.id;
+package org.rutebanken.sobek.repository.listener;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;

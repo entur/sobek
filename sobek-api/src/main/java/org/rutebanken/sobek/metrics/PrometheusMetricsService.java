@@ -1,4 +1,4 @@
-package org.rutebanken.sobek.service.metrics;
+package org.rutebanken.sobek.metrics;
 
 import io.micrometer.core.instrument.ImmutableTag;
 import io.micrometer.core.instrument.Tag;

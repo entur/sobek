@@ -17,8 +17,8 @@ package org.rutebanken.sobek.exporter;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.rutebanken.sobek.exporter.async.ExportJobWorker;
-import org.rutebanken.sobek.exporter.params.ExportParams;
 import org.rutebanken.sobek.model.job.ExportJob;
+import org.rutebanken.sobek.model.job.ExportParams;
 import org.rutebanken.sobek.model.job.JobStatus;
 import org.rutebanken.sobek.netex.validation.NetexXmlReferenceValidator;
 import org.rutebanken.sobek.repository.ExportJobRepository;
@@ -42,7 +42,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static java.util.stream.Collectors.toList;
-import static org.rutebanken.sobek.rest.netex.publicationdelivery.AsyncExportResource.ASYNC_JOB_PATH;
+import static rutebanken.sobek.model.job.ExportJobPath.ASYNC_JOB_PATH;
 
 @Service
 public class AsyncPublicationDeliveryExporter {

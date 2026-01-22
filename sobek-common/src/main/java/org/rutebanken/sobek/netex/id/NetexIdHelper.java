@@ -15,7 +15,6 @@
 
 package org.rutebanken.sobek.netex.id;
 
-import org.apache.commons.lang3.StringUtils;
 import org.rutebanken.sobek.model.identification.IdentifiedEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +52,8 @@ public class NetexIdHelper {
             return false;
         }
 
-        if(StringUtils.countMatches(netexId, ":") != 2) {
+        long colonCount = netexId.chars().filter(ch -> ch == ':').count();
+        if (colonCount != 2) {
             logger.warn("Expected number of colons is two. {}", netexId);
             return false;
         }
@@ -89,7 +89,8 @@ public class NetexIdHelper {
     }
 
     public String extractIdPrefix(String netexId) {
-        if(StringUtils.countMatches(netexId, ":") != 2) {
+        long colonCount = netexId.chars().filter(ch -> ch == ':').count();
+        if (colonCount != 2) {
             throw new IllegalArgumentException("Number of colons in ID is not two: " + netexId);
         }
 

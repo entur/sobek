@@ -15,10 +15,10 @@
 
 package org.rutebanken.sobek.importer.converter;
 
+import org.rutebanken.sobek.model.CustomKeyValueTypes;
 import org.rutebanken.sobek.model.DataManagedObjectStructure;
 import org.rutebanken.sobek.netex.id.NetexIdHelper;
 import org.rutebanken.sobek.netex.id.ValidPrefixList;
-import org.rutebanken.sobek.netex.mapping.mapper.NetexIdMapper;
 import org.rutebanken.sobek.repository.generic.GenericEntityInVersionRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -47,5 +47,9 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.rutebanken.sobek</groupId>
+            <artifactId>sobek-common</artifactId>
+        </dependency>
     </dependencies>
 </project>

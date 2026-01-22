@@ -21,7 +21,6 @@ import graphql.schema.GraphQLInputObjectType;
 import graphql.schema.GraphQLList;
 import graphql.schema.GraphQLNonNull;
 import graphql.schema.GraphQLObjectType;
-import org.rutebanken.sobek.exporter.params.ExportParams;
 import org.rutebanken.sobek.model.GenderLimitationEnumeration;
 import org.rutebanken.sobek.model.ModificationEnumeration;
 import org.rutebanken.sobek.model.NameTypeEnumeration;

@@ -30,6 +30,8 @@ import org.springframework.stereotype.Component;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.rutebanken.sobek.model.CustomKeyValueTypes.MERGED_ID_KEY;
+import static org.rutebanken.sobek.model.CustomKeyValueTypes.ORIGINAL_ID_KEY;
 import static org.rutebanken.sobek.netex.mapping.mapper.DataManagedObjectStructureMapper.CHANGED_BY;
 import static org.rutebanken.sobek.netex.mapping.mapper.DataManagedObjectStructureMapper.VERSION_COMMENT;
 

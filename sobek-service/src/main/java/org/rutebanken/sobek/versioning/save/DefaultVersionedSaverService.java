@@ -21,7 +21,7 @@ import org.rutebanken.sobek.diff.SobekObjectDiffer;
 import org.rutebanken.sobek.model.DataManagedObjectStructure;
 import org.rutebanken.sobek.model.EntityInVersionStructure;
 import org.rutebanken.sobek.repository.EntityInVersionRepository;
-import org.rutebanken.sobek.service.metrics.PrometheusMetricsService;
+//import org.rutebanken.sobek.service.metrics.PrometheusMetricsService;
 import org.rutebanken.sobek.versioning.ValidityUpdater;
 import org.rutebanken.sobek.versioning.VersionIncrementor;
 import org.rutebanken.sobek.versioning.validate.VersionValidator;
@@ -52,8 +52,8 @@ public class DefaultVersionedSaverService {
     @Autowired
     private VersionIncrementor versionIncrementor;
 
-    @Autowired
-    private PrometheusMetricsService prometheusMetricsService;
+//    @Autowired
+//    private PrometheusMetricsService prometheusMetricsService;
 
     @Autowired
     private AuthorizationService authorizationService;
@@ -111,7 +111,7 @@ public class DefaultVersionedSaverService {
         if(existingVersion != null) {
             sobekObjectDiffer.logDifference(existingVersion, newVersion);
         }
-        prometheusMetricsService.registerEntitySaved(newVersion.getClass(),1L);
+        //prometheusMetricsService.registerEntitySaved(newVersion.getClass(),1L);
         return newVersion;
     }
 

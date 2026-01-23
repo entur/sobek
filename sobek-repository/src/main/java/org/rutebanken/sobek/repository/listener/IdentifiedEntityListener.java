@@ -16,15 +16,18 @@ package org.rutebanken.sobek.repository.listener;
 
 import jakarta.persistence.PrePersist;
 import org.rutebanken.sobek.model.identification.IdentifiedEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class IdentifiedEntityListener {
 
-    private final NetexIdAssigner netexIdAssigner;
+    private static NetexIdAssigner netexIdAssigner;
 
-    public IdentifiedEntityListener(NetexIdAssigner netexIdAssigner) {
-        this.netexIdAssigner = netexIdAssigner;
+    @Autowired
+    public void setNetexIdAssigner(NetexIdAssigner netexIdAssigner) {
+        IdentifiedEntityListener.netexIdAssigner = netexIdAssigner;
     }
-
 
     @PrePersist
     public void assignNetexId(IdentifiedEntity identifiedEntity) {

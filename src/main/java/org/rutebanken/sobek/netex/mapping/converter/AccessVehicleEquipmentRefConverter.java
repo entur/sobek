@@ -49,7 +49,7 @@ public class AccessVehicleEquipmentRefConverter extends BidirectionalConverter<A
         if(accessVehicleEquipment != null) {
             return accessVehicleEquipment;
         }
-        throw new NetexMappingException("Cannot find deck plan from ref: " +accessVehicleEquipmentRefStructure.getRef());
+        throw new NetexMappingException("Cannot find access vehicle equipment from ref: " +accessVehicleEquipmentRefStructure.getRef());
     }
 
     @Override
@@ -59,7 +59,7 @@ public class AccessVehicleEquipmentRefConverter extends BidirectionalConverter<A
                 .withRef(accessVehicleEquipment.getNetexId())
                 .withVersion(String.valueOf(accessVehicleEquipment.getVersion()));
 
-        logger.debug("Mapped luggage spot equipment ref structure: {}", accessVehicleEquipmentRefStructure);
+        logger.debug("Mapped access vehicle equipment ref structure: {}", accessVehicleEquipmentRefStructure);
 
         return accessVehicleEquipmentRefStructure;
     }

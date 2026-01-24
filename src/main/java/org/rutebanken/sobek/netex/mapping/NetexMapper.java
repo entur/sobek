@@ -200,12 +200,12 @@ public class NetexMapper {
                 .byDefault()
                 .register();
 
-        mapperFactory.classMap(InstalledEquipment_VersionStructure.class, org.rutebanken.sobek.model.InstalledEquipment_VersionStructure.class)
-                .fieldBToA("netexId", "id")
-                .fieldAToB("id", "netexId")
-                .byDefault()
-                .register();
-
+//        mapperFactory.classMap(InstalledEquipment_VersionStructure.class, org.rutebanken.sobek.model.InstalledEquipment_VersionStructure.class)
+//                .fieldBToA("netexId", "id")
+//                .fieldAToB("id", "netexId")
+//                .byDefault()
+//                .register();
+//
         mapperFactory.classMap(SanitaryEquipment.class, org.rutebanken.sobek.model.SanitaryEquipment.class)
                 .fieldBToA("netexId", "id")
                 .fieldAToB("id", "netexId")

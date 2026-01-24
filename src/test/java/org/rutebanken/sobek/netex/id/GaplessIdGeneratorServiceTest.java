@@ -15,7 +15,6 @@
 
 package org.rutebanken.sobek.netex.id;
 
-import com.hazelcast.collection.IQueue;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
@@ -28,14 +27,10 @@ import org.rutebanken.sobek.repository.VehicleRepository;
 import org.rutebanken.sobek.repository.VehicleTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static junit.framework.TestCase.assertEquals;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.rutebanken.sobek.netex.id.GaplessIdGeneratorService.LOW_LEVEL_AVAILABLE_IDS;
 
 public class GaplessIdGeneratorServiceTest extends SobekIntegrationTest {
 
@@ -67,27 +62,6 @@ public class GaplessIdGeneratorServiceTest extends SobekIntegrationTest {
         long actual = selectSingleInsertedId(VehicleType.class.getSimpleName(), wantedId);
 
         assertThat(actual).describedAs("Expecting to find the ID in the id_generator table").isEqualTo(wantedId);
-    }
-
-    @Test
-    public void multipleExplicitIdMustBeInsertedIntoHelperTable() {
-
-        long wantedId1 = 12L;
-        insertVehicleType(wantedId1, new VehicleType());
-
-        // first one will be inserted as level is low
-
-        long wantedId2 = 10L;
-        insertVehicleType(wantedId2, new VehicleType());
-
-        // second with not be inserted because level is not low - insertion
-
-        long actualWantedId1 = selectSingleInsertedId(VehicleType.class.getSimpleName(), wantedId1);
-        assertThat(actualWantedId1).describedAs("Expecting to find the ID in the id_generator table").isEqualTo(wantedId1);
-
-        // We cannot check that the second value was insterted, because the first call will, because of the low level create new available IDs.
-        // But, we can check that the second claimed ID is not available anymore
-        assertThat(generatedIdState.getQueueForEntity(VehicleType.class.getSimpleName())).doesNotContain(wantedId2);
     }
 
     private long selectSingleInsertedId(String tableName, long expectedId) {
@@ -125,30 +99,14 @@ public class GaplessIdGeneratorServiceTest extends SobekIntegrationTest {
     @Test
     public void testIdGeneration() {
 
-        final String testEntityName = "testEntityName";
-        int fetchSize = LOW_LEVEL_AVAILABLE_IDS;
-        GaplessIdGeneratorService gaplessIdGeneratorService = new GaplessIdGeneratorService(entityManagerFactory, hazelcastInstance, generatedIdState, fetchSize);
-        long actual = gaplessIdGeneratorService.getNextIdForEntity(testEntityName);
+        IdGeneratorService idGeneratorService = new IdGeneratorService(entityManagerFactory);
+        long actual = idGeneratorService.getNextIdForEntity(Vehicle.class);
 
         assertThat(actual).as("generated id is last id plus one").isEqualTo(1L);
-
-        IQueue lastIds = generatedIdState.getQueueForEntity(testEntityName);
-        assertThat(lastIds).as("Last ids for " + testEntityName + " is fetch size minus one used").hasSize(fetchSize - 1);
-
-        long lastId = generatedIdState.getLastIdForEntity(testEntityName);
-        assertThat(lastId).as("last id for entity after generation same as max value in last ids").isEqualTo(Collections.max(lastIds));
-
-        // Verify claiming
-        long explicityClaimed = gaplessIdGeneratorService.getNextIdForEntity(testEntityName, 3L);
-        assertThat(explicityClaimed).isEqualTo(3L);
-
-        // Verify hole filled
-        long nextGenerated = gaplessIdGeneratorService.getNextIdForEntity(testEntityName);
-        assertThat(nextGenerated).isEqualTo(2L);
     }
 
     /**
-     * Was implemented under the supsicion that {@link GaplessIdGeneratorService} caused a bug.
+     * Was implemented under the supsicion that {@link IdGeneratorService} caused a bug.
      * But it was instead a matter of keeping the attached returned entity from save (in case the entity was merged)
      * See NRP-1171
      */
@@ -179,54 +137,4 @@ public class GaplessIdGeneratorServiceTest extends SobekIntegrationTest {
 
         assertEquals(id, vehicle.getNetexId());
     }
-
-    @Test
-    public void claimIds() {
-
-        String entityName = "testEntityName2";
-
-        int fetchSize = LOW_LEVEL_AVAILABLE_IDS;
-        GaplessIdGeneratorService gaplessIdGeneratorService = new GaplessIdGeneratorService(entityManagerFactory, hazelcastInstance, generatedIdState, fetchSize);
-
-        /**
-         * Offset to not claim ids that will be present in the available ids queue.
-         */
-        int offset = LOW_LEVEL_AVAILABLE_IDS + fetchSize;
-
-        Set<Long> claimedIds = new HashSet<>();
-
-        for (int excplicityClaimedId = offset; excplicityClaimedId < offset + 10; excplicityClaimedId++) {
-            System.out.println("adding explicity claimed id " + excplicityClaimedId);
-            claimedIds.add(gaplessIdGeneratorService.getNextIdForEntity(entityName, excplicityClaimedId));
-        }
-
-        assertThat(generatedIdState.getQueueForEntity(entityName)).as("available ids for entity after claiming").doesNotContainAnyElementsOf(claimedIds);
-
-        gaplessIdGeneratorService.persistClaimedIds();
-
-        assertThat(generatedIdState.getQueueForEntity(entityName)).as("available ids for entity after writing claimed ids").doesNotContainAnyElementsOf(claimedIds);
-
-        for (long excpectedId : claimedIds) {
-            long actual = selectSingleInsertedId(entityName, excpectedId);
-
-            assertThat(actual).as("Claimed ID found in the ID generator table+").isEqualTo(excpectedId);
-        }
-
-        assertThat(generatedIdState.getClaimedIdListForEntity(entityName)).as("claimed ids for entity after writing").doesNotContainAnyElementsOf(claimedIds);
-    }
-
-    @Test
-    public void ignoreDuplicateIdsOnInsert() {
-        String entityName = "testEntityName2";
-        int fetchSize = LOW_LEVEL_AVAILABLE_IDS;
-        GaplessIdGeneratorService gaplessIdGeneratorService = new GaplessIdGeneratorService(entityManagerFactory, hazelcastInstance, generatedIdState, fetchSize);
-        Set<Long> claimedIds = new HashSet<>();
-        claimedIds.add(gaplessIdGeneratorService.getNextIdForEntity(entityName, 10L));
-        gaplessIdGeneratorService.persistClaimedIds();
-        claimedIds.add(gaplessIdGeneratorService.getNextIdForEntity(entityName, 10L));
-        gaplessIdGeneratorService.persistClaimedIds();
-        assertThat(claimedIds.size()).isEqualTo(1);
-
-    }
-
 }

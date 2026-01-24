@@ -48,7 +48,7 @@ public class NetexIdHelper {
         return getNetexId(type, id);
     }
 
-    public boolean isNsrId(String netexId) {
+    public boolean isNmrId(String netexId) {
         if(!netexId.contains(validPrefixList.getValidNetexPrefix())) {
             logger.debug("The netexId: {} does not start with {}", netexId, validPrefixList.getValidNetexPrefix());
             return false;

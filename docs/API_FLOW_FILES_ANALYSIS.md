@@ -229,37 +229,112 @@ External API bridge to Norwegian government vehicle registry (Statens vegvesen).
 
 ---
 
-## Shared Infrastructure (Not Counted Above)
+## Dead/Orphan Code (Tiamat Leftovers)
 
-These files are used by multiple flows and are not solely attributable to any single flow:
+Code inherited from the Tiamat fork that references StopPlace/Quay domain and is not used in Sobek's Vehicle domain.
 
-### Export Shared Classes
-- `StreamingPublicationDelivery.java` - Sync export, async export
-- `PublicationDeliveryCreator.java` - Sync export, autosys, import (response)
-- `SobekResourceFrameExporter.java` - Sync export, autosys
-- `SobekComositeFrameExporter.java` - Sync export, autosys
-- `SobekServiceFrameExporter.java` - Sync export, autosys
-- `PublicationDeliveryStreamingOutput.java` - Multiple flows
-- `ExportParams.java` - All export flows, autosys, GraphQL
+### Summary
 
-### NeTEx Mapping (Orika)
-- `netex/mapping/*.java` - Used by import, sync export, async export, autosys
+| Category | Files | LOC |
+|----------|------:|----:|
+| Dead Main Code | 5 | 495 |
+| Dead Test Code | 3 | 386 |
+| **Total Dead Code** | **8** | **881** |
 
-### Cross-Cutting Concerns (excluded from analysis)
-- Authentication/Authorization
-- Versioning infrastructure
-- Repository layer (shared)
-- Configuration classes
+### src/main/java - Dead Code (5 files, 495 LOC)
+
+| File | Path | LOC | Issue |
+|------|------|----:|-------|
+| `EntityQueueProcessor.java` | `rest/.../async/` | 73 | Async import infrastructure for StopPlace; unused |
+| `PublicationDeliveryPartialUnmarshaller.java` | `rest/.../async/` | 148 | References StopPlace, TopographicPlace; unused |
+| `RunnableUnmarshaller.java` | `rest/.../async/` | 128 | Part of async import; unused |
+| `TypesEventFilter.java` | `rest/.../async/` | 75 | Filters "stopPlaces", "parkings"; unused |
+| `UnmarshalResult.java` | `rest/.../async/` | 71 | Part of async import; unused |
+
+### src/test/java - Dead Code (3 files, 386 LOC)
+
+| File | Path | LOC | Issue |
+|------|------|----:|-------|
+| `NetexReferenceRemovingIteratorTest.java` | `exporter/async/` | 108 | Tests commented out; tests non-existent class; references StopPlace |
+| `PathLinkImportTest.java` | `rest/.../publicationdelivery/` | 114 | Tests PathLink (Tiamat navigation); not in Sobek domain |
+| `PublicationDeliveryPartialUnmarshallerTest.java` | `rest/.../async/` | 164 | Tests dead main code |
+
+### Files with Tiamat References (potential cleanup)
+
+These files contain references to Tiamat concepts but may still be partially used:
+
+| File | References | Status |
+|------|------------|--------|
+| `GraphQLNames.java` | Constants for StopPlace queries | May have dead constants |
+| `ImportType.java` | Comments mention StopPlace matching | Documentation only |
+| `ImportLoggerTask.java` | Logs mention TopographicPlace | Log message only |
+| `ExportParams.java` | StopPlace-related query params | May have dead fields |
+| `VersionIncrementor.java` | Quay reference in comments | Documentation only |
 
 ---
 
-## Dead/Orphan Code Identified
+## Shared/Common Infrastructure
 
-| File | Location | Issue |
-|------|----------|-------|
-| `NetexReferenceRemovingIteratorTest.java` | `test/.../exporter/async/` | Tests commented out; references `StopPlace` (Tiamat); main class doesn't exist |
-| `rest/.../async/EntityQueueProcessor.java` | `rest/netex/publicationdelivery/async/` | Async import infrastructure (5 files) - appears unused |
-| `rest/.../async/PublicationDeliveryPartialUnmarshaller.java` | `rest/netex/publicationdelivery/async/` | References `StopPlace` (Tiamat domain) |
+Code used by multiple flows - the foundation that all API flows depend on.
+
+### Summary
+
+| Package | Files | LOC | Used By |
+|---------|------:|----:|---------|
+| `model/` | 193 | 7,171 | All flows |
+| `netex/mapping/` | 71 | 4,699 | Import, Sync Export, Async Export, Autosys |
+| `repository/` | 28 | 1,183 | All flows |
+| `versioning/` | 15 | 1,095 | Import (primary), all writes |
+| `exporter/` (shared) | 7 | 735 | Sync Export, Async Export, Autosys |
+| `netex/id/` | - | 451 | Import, Export |
+| `netex/validation/` | - | 173 | Import, Export |
+| `config/` | 8 | 665 | All flows |
+| `service/` | 10 | 607 | All flows |
+| `auth/` | 7 | 519 | All flows |
+| `diff/` | 6 | 528 | Versioning, comparison features |
+| `changelog/` | 7 | 315 | All write operations |
+| `exporter/params/` | 2 | 176 | All export flows |
+| `dtoassembling/` | 4 | 144 | REST responses |
+| `filter/` | 1 | 108 | Export filtering |
+| `exporter/eviction/` | 2 | 107 | Export memory management |
+| `rest/` (shared) | 2 | 134 | Multiple REST flows |
+| `general/` | 2 | 93 | Utilities |
+| `jersey/` | 1 | 80 | REST configuration |
+| `time/` | 1 | 56 | Timezone handling |
+| `geo/` | 1 | 44 | Geographic utilities |
+| **Total Shared** | **~368** | **~18,883** | |
+
+### Shared Exporter Classes (7 files, 735 LOC)
+
+These are used by sync export, async export, and autosys flows:
+
+| File | LOC | Used By |
+|------|----:|---------|
+| `StreamingPublicationDelivery.java` | 384 | Sync export, Async export |
+| `PublicationDeliveryCreator.java` | 93 | All export flows, Autosys |
+| `SobekServiceFrameExporter.java` | 73 | All export flows |
+| `SobekComositeFrameExporter.java` | 68 | All export flows |
+| `SobekResourceFrameExporter.java` | 62 | All export flows, Autosys |
+| `PublicationDeliveryStructurePage.java` | 48 | Pagination |
+| `SobekPublicationDeliveryExportException.java` | 7 | Error handling |
+
+### Shared REST Classes (2 files, 134 LOC)
+
+| File | LOC | Used By |
+|------|----:|---------|
+| `PublicationDeliveryStreamingOutput.java` | 96 | Sync export, Autosys, Import response |
+| `DtoMappingSemaphore.java` | 38 | DTO assembly |
+
+---
+
+## Code Distribution Overview
+
+| Category | Files | LOC | % of Total |
+|----------|------:|----:|----------:|
+| Flow-Specific Code | 85 | 6,857 | 26% |
+| Shared Infrastructure | ~368 | ~18,883 | 71% |
+| Dead/Orphan Code | 8 | 881 | 3% |
+| **Total** | **~461** | **~26,621** | 100% |
 
 ---
 

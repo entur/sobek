@@ -434,6 +434,30 @@ Vehicle model structure is documented in:
 
 ---
 
+## Documentation (docs/)
+
+Technical analysis documents in the `docs/` directory:
+
+| Document | Description |
+|----------|-------------|
+| **[API_FLOW_ARCHITECTURE.md](docs/API_FLOW_ARCHITECTURE.md)** | Reverse-engineered architectural overview of Sobek's 6 API flows with Mermaid diagrams. Covers Jersey REST (sync/async export, import), GraphQL, and Autosys integration. Documents heavy dependencies (Orika, JAXB, netex-java-model) per flow. |
+| **[API_FLOW_FILES_ANALYSIS.md](docs/API_FLOW_FILES_ANALYSIS.md)** | LOC analysis of files per API flow. Flow-specific: 6,857 LOC (76 files). Shared infrastructure: ~18,883 LOC (~368 files). Dead/orphan code (Tiamat leftovers): 881 LOC (8 files). |
+| **[annotation-summary.md](docs/annotation-summary.md)** | Inventory of all annotations in src/main/java with counts and startup/runtime classification. Covers Spring, JPA, Jersey, GraphQL, JAXB annotations. |
+| **[SIMPLIFICATION_SUMMARY.md](docs/SIMPLIFICATION_SUMMARY.md)** | Overview of two major simplification initiatives: Orika→MapStruct migration (~5,665 LOC) and Hazelcast/GaplessID removal (~1,270 LOC). Combined: ~100 files, ~6,900 LOC. |
+| **[ORIKA_TO_MAPSTRUCT_MIGRATION.md](docs/ORIKA_TO_MAPSTRUCT_MIGRATION.md)** | Detailed migration plan for replacing deprecated Orika with compile-time MapStruct. Lists 37 converters, 26 mappers, 6 core classes. Includes complexity ratings and migration order. |
+| **[HAZELCAST_GAPLESSID_REMOVAL.md](docs/HAZELCAST_GAPLESSID_REMOVAL.md)** | Analysis for removing Hazelcast distributed state and GaplessID generation. Lists 14 files to remove completely, 10 files to modify. Goal: make endpoints stateless. |
+
+### Code Distribution (from API_FLOW_FILES_ANALYSIS.md)
+
+| Category | Files | LOC | % |
+|----------|------:|----:|--:|
+| Flow-Specific Code | 85 | 6,857 | 26% |
+| Shared Infrastructure | ~368 | ~18,883 | 71% |
+| Dead/Orphan Code | 8 | 881 | 3% |
+| **Total** | **~461** | **~26,621** | 100% |
+
+---
+
 ## Future Improvements
 
 ### Test Logging: Pretty Logs for Local Development

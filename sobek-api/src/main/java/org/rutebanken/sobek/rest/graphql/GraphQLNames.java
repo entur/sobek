@@ -18,8 +18,8 @@ package org.rutebanken.sobek.rest.graphql;
 import org.rutebanken.sobek.rest.graphql.scalars.DateScalar;
 
 
-import static org.rutebanken.sobek.netex.mapping.mapper.NetexIdMapper.MERGED_ID_KEY;
-import static org.rutebanken.sobek.netex.mapping.mapper.CustomKeyValueTypes.ORIGINAL_ID_KEY;
+import static org.rutebanken.sobek.model.CustomKeyValueTypes.MERGED_ID_KEY;
+import static org.rutebanken.sobek.model.CustomKeyValueTypes.ORIGINAL_ID_KEY;
 import static org.rutebanken.sobek.rest.graphql.RegisterGraphQLSchema.DEFAULT_PAGE_VALUE;
 import static org.rutebanken.sobek.rest.graphql.RegisterGraphQLSchema.DEFAULT_SIZE_VALUE;
 import static org.rutebanken.sobek.rest.graphql.scalars.DateScalar.DATE_TIME_PATTERN;

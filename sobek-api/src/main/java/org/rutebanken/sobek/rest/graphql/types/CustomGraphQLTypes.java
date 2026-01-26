@@ -25,6 +25,7 @@ import org.rutebanken.sobek.model.GenderLimitationEnumeration;
 import org.rutebanken.sobek.model.ModificationEnumeration;
 import org.rutebanken.sobek.model.NameTypeEnumeration;
 import org.rutebanken.sobek.model.SignContentEnumeration;
+import org.rutebanken.sobek.model.job.ExportParams;
 
 import java.lang.reflect.Method;
 

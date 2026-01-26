@@ -22,6 +22,7 @@ import jakarta.xml.bind.JAXBException;
 import org.entur.autosys.model.GetKjoretoyResponse;
 import org.entur.autosys.service.AutosysVehicleService;
 import org.rutebanken.sobek.autosys.MapperService;
+import org.rutebanken.sobek.model.job.ExportParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

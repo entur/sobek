@@ -100,7 +100,7 @@ public class PassengerSpaceMapper extends CustomMapper<PassengerSpace, org.ruteb
 
     private DeckSpaceRefStructure mapToNeTEx(DeckSpace space) {
         return switch (space) {
-            case org.rutebanken.sobek.model.vehicle.PassengerSpace passengerSpace -> new PassengerSpaceRefStructure().withRef(passengerSpace.getNetexId());
+            case org.rutebanken.sobek.model.vehicle.PassengerSpace passengerSpace -> new DeckSpaceRefStructure().withRef(passengerSpace.getNetexId());
             default -> null;
         };
     }

@@ -21,6 +21,7 @@ import org.rutebanken.sobek.diff.SobekObjectDiffer;
 import org.rutebanken.sobek.model.DataManagedObjectStructure;
 import org.rutebanken.sobek.model.EntityInVersionStructure;
 import org.rutebanken.sobek.repository.EntityInVersionRepository;
+import org.rutebanken.sobek.repository.listener.NetexIdAssigner;
 import org.rutebanken.sobek.versioning.ValidityUpdater;
 import org.rutebanken.sobek.versioning.VersionIncrementor;
 import org.rutebanken.sobek.versioning.validate.VersionValidator;
@@ -51,6 +52,8 @@ public class DefaultMergingVersionedSaverService {
     @Autowired
     private VersionIncrementor versionIncrementor;
 
+    private final NetexIdAssigner netexIdAssigner;
+
 //    @Autowired
 //    private PrometheusMetricsService prometheusMetricsService;
 
@@ -59,6 +62,10 @@ public class DefaultMergingVersionedSaverService {
 
     @Autowired
     private VersionValidator versionValidator;
+
+    public DefaultMergingVersionedSaverService(NetexIdAssigner netexIdAssigner) {
+        this.netexIdAssigner = netexIdAssigner;
+    }
 
     public <T extends EntityInVersionStructure> T saveNewVersion(T newVersion, EntityInVersionRepository<T> entityInVersionRepository) {
         return saveNewVersion(null, newVersion, Instant.now(), entityInVersionRepository);
@@ -75,7 +82,9 @@ public class DefaultMergingVersionedSaverService {
         Instant newVersionValidFrom = validityUpdater.updateValidBetween(existingVersion, newVersion, defaultValidFrom);
 
         if(existingVersion == null) {
-            if (newVersion.getNetexId() != null) {
+            if (newVersion.getNetexId() == null) {
+                netexIdAssigner.assignNetexId(newVersion);
+            } else {
                 existingVersion = entityInVersionRepository.findFirstByNetexIdOrderByVersionDesc(newVersion.getNetexId());
                 if (existingVersion != null) {
                     logger.debug("Found existing entity from netexId {}", existingVersion.getNetexId());

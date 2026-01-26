@@ -14,6 +14,7 @@ public class PassengerSpaceMapper extends CustomMapper<PassengerSpace, org.ruteb
     @Override
     public void mapAtoB(PassengerSpace netexPassengerSpace, org.rutebanken.sobek.model.vehicle.PassengerSpace sobekPassengerSpace, MappingContext context) {
         super.mapAtoB(netexPassengerSpace, sobekPassengerSpace, context);
+        context.setProperty("currentSobekPassengerSpace", sobekPassengerSpace);
 
         sobekPassengerSpace.setIncomingId(netexPassengerSpace.getId());
         if(netexPassengerSpace.getParentDeckSpaceRef() != null &&

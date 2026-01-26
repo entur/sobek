@@ -17,16 +17,15 @@ public class SpotAffinityMapper extends CustomMapper<SpotAffinity, org.rutebanke
         if(netexSpotAffinity.getMembers() != null &&
                 netexSpotAffinity.getMembers().getLocatableSpotRef() != null &&
                 !netexSpotAffinity.getMembers().getLocatableSpotRef().isEmpty()) {
-            org.rutebanken.sobek.model.vehicle.Deck deck = (org.rutebanken.sobek.model.vehicle.Deck) context.getProperty("currentSobekDeck");
-            if (deck != null && deck.getSpotColumns() != null) {
+            org.rutebanken.sobek.model.vehicle.PassengerSpace passengerSpace = (org.rutebanken.sobek.model.vehicle.PassengerSpace) context.getProperty("currentSobekPassengerSpace");
+            if (passengerSpace != null && passengerSpace.getPassengerSpots() != null) {
                 var rawMembers = netexSpotAffinity.getMembers().getLocatableSpotRef().stream().map(JAXBElement::getValue).toList();
-                List<LocatableSpot> sobekSpots = rawMembers.stream().map(this::mapNeTEx2Sobek).toList();
+                List<LocatableSpot> sobekSpots = rawMembers.stream().map(n -> mapNeTEx2Sobek(n, passengerSpace.getPassengerSpots(), passengerSpace.getLuggageSpots())).toList();
                 if(!sobekSpots.isEmpty()) {
                     sobekSpotAffinity.setMembers(sobekSpots);
                 }
             }
         }
-
     }
 
     @Override
@@ -52,17 +51,24 @@ public class SpotAffinityMapper extends CustomMapper<SpotAffinity, org.rutebanke
         };
     }
 
-    private LocatableSpot mapNeTEx2Sobek(LocatableSpotRefStructure locatableSpotRefStructure) {
+    private LocatableSpot mapNeTEx2Sobek(LocatableSpotRefStructure locatableSpotRefStructure, List<org.rutebanken.sobek.model.vehicle.PassengerSpot> passengerSpots, List<org.rutebanken.sobek.model.vehicle.LuggageSpot> luggageSpots) {
         if (locatableSpotRefStructure.getRef() == null || locatableSpotRefStructure.getRef().isEmpty()) {
             return null;
         }
 
-        return switch (locatableSpotRefStructure) {
+        var locatableSpots = switch (locatableSpotRefStructure) {
             case org.rutebanken.netex.model.PassengerSpotRefStructure passengerSpotRefStructure ->
-                    mapperFacade.map(passengerSpotRefStructure, org.rutebanken.sobek.model.vehicle.PassengerSpot.class);
+                    passengerSpots;
             case org.rutebanken.netex.model.LuggageSpotRefStructure luggageSpotRefStructure ->
-                    mapperFacade.map(luggageSpotRefStructure, org.rutebanken.sobek.model.vehicle.LuggageSpot.class);
+                    luggageSpots;
             default -> null;
         };
+        if(locatableSpots == null) {
+            return null;
+        }
+        return locatableSpots.stream()
+                .filter(spot -> spot.getNetexId().equals(locatableSpotRefStructure.getRef()))
+                .findFirst()
+                .orElse(null);
     }
 }

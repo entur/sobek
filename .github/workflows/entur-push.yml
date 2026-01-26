@@ -36,7 +36,7 @@ jobs:
         run: mvn -q verify -s .github/workflows/settings.xml -DskipTests=true
       - uses: actions/upload-artifact@v4.6.2
         with:
-          path: target/*.jar
+          path: sobek-api/target/*.jar
 #      - name: Sonar Scan
 #        if: github.repository_owner == 'entur' && github.ref == 'refs/heads/main'
 #        env:

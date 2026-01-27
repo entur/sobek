@@ -28,7 +28,7 @@ import org.rutebanken.sobek.netex.id.ValidPrefixList;
 import java.util.HashMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.rutebanken.sobek.netex.mapping.mapper.NetexIdMapper.ORIGINAL_ID_KEY;
+import static org.rutebanken.sobek.netex.mapping.mapper.CustomKeyValueTypes.ORIGINAL_ID_KEY;
 
 public class NetexIdMapperTest {
 

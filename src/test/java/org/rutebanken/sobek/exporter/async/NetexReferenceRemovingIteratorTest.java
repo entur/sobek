@@ -15,16 +15,7 @@
 
 package org.rutebanken.sobek.exporter.async;
 
-import org.junit.Test;
-import org.rutebanken.netex.model.StopPlace;
-import org.rutebanken.netex.model.TariffZoneRef;
-import org.rutebanken.netex.model.TariffZoneRefs_RelStructure;
-import org.rutebanken.netex.model.TopographicPlaceRefStructure;
 import org.rutebanken.sobek.exporter.params.ExportParams;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

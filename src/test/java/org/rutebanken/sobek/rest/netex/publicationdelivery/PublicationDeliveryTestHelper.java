@@ -61,9 +61,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static jakarta.xml.bind.JAXBContext.newInstance;
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.rutebanken.sobek.netex.mapping.mapper.NetexIdMapper.ORIGINAL_ID_KEY;
+import static org.rutebanken.sobek.netex.mapping.mapper.CustomKeyValueTypes.ORIGINAL_ID_KEY;
 
 @Component
 public class PublicationDeliveryTestHelper {
@@ -251,21 +250,6 @@ public class PublicationDeliveryTestHelper {
         return fromResponse(response);
     }
 
-    public PublicationDeliveryStructure postAndReturnPublicationDelivery(String publicationDeliveryXml) throws JAXBException, IOException, SAXException {
-        return postAndReturnPublicationDelivery(publicationDeliveryXml, null);
-    }
-
-    public PublicationDeliveryStructure postAndReturnPublicationDelivery(String publicationDeliveryXml, ImportParams importParams) throws JAXBException, IOException, SAXException {
-
-        InputStream stream = new ByteArrayInputStream(publicationDeliveryXml.getBytes(StandardCharsets.UTF_8));
-
-        Response response = importResource.importPublicationDelivery(stream, importParams);
-
-        assertThat(response.getStatus()).isEqualTo(200);
-
-        return fromResponse(response);
-    }
-
     public PublicationDeliveryStructure fromString(String xml) throws IOException, JAXBException {
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
         unmarshaller.setEventHandler(new jakarta.xml.bind.helpers.DefaultValidationEventHandler());
@@ -284,19 +268,6 @@ public class PublicationDeliveryTestHelper {
         output.write(outputStream);
 
         return fromString(outputStream.toString());
-    }
-
-    public Response postPublicationDelivery(PublicationDeliveryStructure publicationDeliveryStructure, ImportParams importParams) throws JAXBException, IOException, SAXException {
-        Marshaller marshaller = jaxbContext.createMarshaller();
-
-        JAXBElement<PublicationDeliveryStructure> jaxPublicationDelivery = new ObjectFactory().createPublicationDelivery(publicationDeliveryStructure);
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        marshaller.marshal(jaxPublicationDelivery, outputStream);
-        InputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
-
-        return importResource.importPublicationDelivery(inputStream, importParams);
     }
 
     public SiteFrame findSiteFrame(PublicationDeliveryStructure publicationDelivery) {

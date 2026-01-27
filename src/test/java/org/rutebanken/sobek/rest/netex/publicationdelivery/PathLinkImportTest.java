@@ -15,27 +15,9 @@
 
 package org.rutebanken.sobek.rest.netex.publicationdelivery;
 
-import net.opengis.gml._3.DirectPositionListType;
-import net.opengis.gml._3.LineStringType;
 import org.junit.Ignore;
-import org.junit.Test;
-import org.rutebanken.netex.model.LocationStructure;
-import org.rutebanken.netex.model.PathDirectionEnumeration;
-import org.rutebanken.netex.model.PathLink;
-import org.rutebanken.netex.model.PathLinkEndStructure;
-import org.rutebanken.netex.model.PlaceRefStructure;
-import org.rutebanken.netex.model.PublicationDeliveryStructure;
-import org.rutebanken.netex.model.SimplePoint_VersionStructure;
-import org.rutebanken.netex.model.StopPlace;
-import org.rutebanken.netex.model.TransferDurationStructure;
 import org.rutebanken.sobek.SobekIntegrationTest;
 import org.rutebanken.sobek.config.GeometryFactoryConfig;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.time.Duration;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

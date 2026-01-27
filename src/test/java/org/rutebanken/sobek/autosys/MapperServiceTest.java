@@ -10,7 +10,6 @@ import org.entur.autosys.service.AutosysVehicleService;
 import org.junit.Test;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
 import org.rutebanken.sobek.SobekIntegrationTest;
-import org.rutebanken.sobek.autosys.MapperService;
 import org.rutebanken.sobek.exporter.params.ExportParams;
 import org.rutebanken.sobek.rest.netex.publicationdelivery.PublicationDeliveryStreamingOutput;
 import org.springframework.beans.factory.annotation.Autowired;

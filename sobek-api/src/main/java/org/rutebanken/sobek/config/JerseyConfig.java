@@ -78,7 +78,7 @@ public class JerseyConfig {
         publicResources.add(VehicleImportResource.class);
         publicResources.add(AutosysAPIResource.class);
         publicResources.add(AsyncExportResource.class);
-        publicResources.add(ExportResource.class);
+        publicResources.add(VehicleExportResource.class);
         publicResources.add(GraphQLResource.class);
 
         publicResources.add(GeneralExceptionMapper.class);

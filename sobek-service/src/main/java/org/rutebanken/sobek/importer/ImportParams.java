@@ -15,13 +15,14 @@
 
 package org.rutebanken.sobek.importer;
 
-//import jakarta.ws.rs.QueryParam;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class ImportParams {
 
-    //@QueryParam(value = "importType")
-    public ImportType importType = ImportType.MERGE;
+    private ImportType importType = ImportType.MERGE;
 
-    //@QueryParam(value = "skipOutput")
-    public boolean skipOutput = false;
+    private boolean skipOutput = false;
 }

@@ -23,9 +23,9 @@ import jakarta.ws.rs.core.Response;
 import jakarta.xml.bind.JAXBException;
 import org.rutebanken.helper.organisation.NotAuthenticatedException;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
-import org.rutebanken.sobek.importer.ImportParams;
 import org.rutebanken.sobek.importer.ImportType;
 import org.rutebanken.sobek.importer.PublicationDeliveryImporter;
+import org.rutebanken.sobek.rest.ParameterDto.ImportParametersDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,14 +68,10 @@ public class VehicleImportResource {
         this.enabledImportTypes = enabledImportTypes;
     }
 
-    public Response importPublicationDelivery(InputStream inputStream) throws IOException, JAXBException, SAXException {
-        return importPublicationDelivery(inputStream, null);
-    }
-
     @POST
     @Consumes(MediaType.APPLICATION_XML)
     @Produces(MediaType.APPLICATION_XML + "; charset=UTF-8")
-    public Response importPublicationDelivery(@Parameter(hidden = true) InputStream inputStream, @BeanParam ImportParams importParams) throws IOException, JAXBException, SAXException {
+    public Response importPublicationDelivery(@Parameter(hidden = true) InputStream inputStream, @BeanParam ImportParametersDto importParams) throws IOException, JAXBException, SAXException {
         logger.info("Received Netex publication delivery, starting to parse...");
         ImportType effectiveImportType = safeGetImportType(importParams);
         if (!enabledImportTypes.contains(effectiveImportType)) {
@@ -87,8 +83,8 @@ public class VehicleImportResource {
         PublicationDeliveryStructure incomingPublicationDelivery = publicationDeliveryUnmarshaller.unmarshal(inputStream);
         try {
             PublicationDeliveryStructure responsePublicationDelivery;
-            responsePublicationDelivery = publicationDeliveryImporter.importPublicationDelivery(incomingPublicationDelivery, importParams);
-            if (importParams != null && importParams.skipOutput) {
+            responsePublicationDelivery = publicationDeliveryImporter.importPublicationDelivery(incomingPublicationDelivery, importParams.toImportParams());
+            if (importParams.skipOutput) {
                 return Response.ok().build();
             } else {
                 return Response.ok(publicationDeliveryStreamingOutput.stream(responsePublicationDelivery)).build();
@@ -107,11 +103,11 @@ public class VehicleImportResource {
     /**
      * Return specified ImportType or default value if not set.
      */
-    private ImportType safeGetImportType(ImportParams importParams) {
+    private ImportType safeGetImportType(ImportParametersDto importParams) {
         if (importParams == null || importParams.importType == null) {
-            return new ImportParams().importType;
+            return ImportType.valueOf(new ImportParametersDto().importType);
         }
-        return importParams.importType;
+        return ImportType.valueOf(importParams.importType);
     }
 
 }

@@ -9,7 +9,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.StreamingOutput;
 import lombok.extern.slf4j.Slf4j;
 import org.rutebanken.sobek.exporter.StreamingPublicationDelivery;
-import org.rutebanken.sobek.model.job.ExportParams;
+import org.rutebanken.sobek.rest.ParameterDto.ExportParametersDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -26,13 +26,13 @@ public class VehicleExportResource {
 
     @GET
     @Produces(MediaType.APPLICATION_XML + "; charset=UTF-8")
-    public Response getVehicleNetex(@BeanParam ExportParams exportParams) {
+    public Response getVehicleNetex(@BeanParam ExportParametersDto exportParams) {
         log.info("Exporting publication delivery. {}", exportParams);
 
 
         StreamingOutput streamingOutput = outputStream -> {
             try {
-                streamingPublicationDelivery.streamVehicles(exportParams, outputStream);
+                streamingPublicationDelivery.streamVehicles(exportParams.toExportParams(), outputStream);
             } catch (Exception e) {
                 log.warn("Could not stream composite frame. {}", e.getMessage(), e);
                 throw new RuntimeException(e);

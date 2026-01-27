@@ -33,7 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.InputStream;
 import java.util.Collection;
 
-import static rutebanken.sobek.model.job.ExportJobPath.ASYNC_JOB_PATH;
+import static org.rutebanken.sobek.model.job.ExportJobPath.ASYNC_JOB_PATH;
 
 /**
  * Export publication delivery data to google cloud storage. Some parts like stops and parking asynchronously

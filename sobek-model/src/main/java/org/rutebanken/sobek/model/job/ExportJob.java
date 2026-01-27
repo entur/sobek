@@ -25,7 +25,7 @@ import lombok.ToString;
 
 import java.time.Instant;
 
-import static rutebanken.sobek.model.job.ExportJobPath.ASYNC_JOB_PATH;
+import static org.rutebanken.sobek.model.job.ExportJobPath.ASYNC_JOB_PATH;
 
 @Entity
 //@XmlRootElement

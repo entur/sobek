@@ -42,7 +42,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static java.util.stream.Collectors.toList;
-import static rutebanken.sobek.model.job.ExportJobPath.ASYNC_JOB_PATH;
+import static org.rutebanken.sobek.model.job.ExportJobPath.ASYNC_JOB_PATH;
 
 @Service
 public class AsyncPublicationDeliveryExporter {

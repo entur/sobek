@@ -15,6 +15,8 @@
 
 package org.rutebanken.sobek.model;
 
+import jakarta.xml.bind.JAXBElement;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
@@ -25,8 +27,8 @@ public class PointOnLink_VersionedChildStructure
     protected MultilingualStringEntity name;
     protected LinkRefStructure linkRef;
     protected BigDecimal distanceFromStart;
-//    protected JAXBElement<? extends PointRefStructure> pointRef;
-//    protected JAXBElement<? extends Point> point;
+    protected JAXBElement<? extends PointRefStructure> pointRef;
+    protected JAXBElement<? extends Point> point;
     protected BigInteger order;
 
     public MultilingualStringEntity getName() {
@@ -53,21 +55,21 @@ public class PointOnLink_VersionedChildStructure
         this.distanceFromStart = value;
     }
 
-//    public JAXBElement<? extends PointRefStructure> getPointRef() {
-//        return pointRef;
-//    }
-//
-//    public void setPointRef(JAXBElement<? extends PointRefStructure> value) {
-//        this.pointRef = value;
-//    }
-//
-//    public JAXBElement<? extends Point> getPoint() {
-//        return point;
-//    }
-//
-//    public void setPoint(JAXBElement<? extends Point> value) {
-//        this.point = value;
-//    }
+    public JAXBElement<? extends PointRefStructure> getPointRef() {
+        return pointRef;
+    }
+
+    public void setPointRef(JAXBElement<? extends PointRefStructure> value) {
+        this.pointRef = value;
+    }
+
+    public JAXBElement<? extends Point> getPoint() {
+        return point;
+    }
+
+    public void setPoint(JAXBElement<? extends Point> value) {
+        this.point = value;
+    }
 
     public BigInteger getOrder() {
         return order;

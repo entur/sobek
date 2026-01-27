@@ -6,6 +6,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Transient;
+import jakarta.xml.bind.JAXBElement;
 import java.math.BigDecimal;
 
 import lombok.Getter;
@@ -41,8 +42,8 @@ public class VehicleModel_VersionStructure extends DataManagedObjectStructure {
     private BigDecimal fullCharge;
     @Transient
     private VehicleEquipmentProfileRefs_RelStructure equipmentProfiles;
-//    @Transient
-//    private JAXBElement<? extends VehicleModelProfileRefStructure> vehicleModelProfileRef;
+    @Transient
+    private JAXBElement<? extends VehicleModelProfileRefStructure> vehicleModelProfileRef;
 //    private ContactStructure customerServiceContactDetails;
 
 }

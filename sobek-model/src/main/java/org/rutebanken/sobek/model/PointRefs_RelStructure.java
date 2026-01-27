@@ -15,7 +15,7 @@
 
 package org.rutebanken.sobek.model;
 
-//import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,13 +24,13 @@ import java.util.List;
 public class PointRefs_RelStructure
         extends OneToManyRelationshipStructure {
 
-//    protected List<JAXBElement<? extends PointRefStructure>> pointRef;
-//
-//    public List<JAXBElement<? extends PointRefStructure>> getPointRef() {
-//        if (pointRef == null) {
-//            pointRef = new ArrayList<>();
-//        }
-//        return this.pointRef;
-//    }
+    protected List<JAXBElement<? extends PointRefStructure>> pointRef;
+
+    public List<JAXBElement<? extends PointRefStructure>> getPointRef() {
+        if (pointRef == null) {
+            pointRef = new ArrayList<>();
+        }
+        return this.pointRef;
+    }
 
 }

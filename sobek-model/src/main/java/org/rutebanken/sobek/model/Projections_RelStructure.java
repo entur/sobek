@@ -15,7 +15,7 @@
 
 package org.rutebanken.sobek.model;
 
-//import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,13 +24,13 @@ import java.util.List;
 public class Projections_RelStructure
         extends ContainmentAggregationStructure {
 
-//    protected List<JAXBElement<?>> projectionRefOrProjection;
-//
-//    public List<JAXBElement<?>> getProjectionRefOrProjection() {
-//        if (projectionRefOrProjection == null) {
-//            projectionRefOrProjection = new ArrayList<>();
-//        }
-//        return this.projectionRefOrProjection;
-//    }
+    protected List<JAXBElement<?>> projectionRefOrProjection;
+
+    public List<JAXBElement<?>> getProjectionRefOrProjection() {
+        if (projectionRefOrProjection == null) {
+            projectionRefOrProjection = new ArrayList<>();
+        }
+        return this.projectionRefOrProjection;
+    }
 
 }

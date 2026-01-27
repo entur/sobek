@@ -1,6 +1,7 @@
 package org.rutebanken.sobek.model.vehicle;
 
 import jakarta.persistence.*;
+import jakarta.xml.bind.JAXBElement;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -37,8 +38,8 @@ public class Vehicle_VersionStructure extends DataManagedObjectStructure {
     private String operationalNumber;
     @Embedded
     private PrivateCodeStructure privateCode;
-//    @Transient
-//    private JAXBElement<? extends TransportOrganisationRefStructure> transportOrganisationRef;
+    @Transient
+    private JAXBElement<? extends TransportOrganisationRefStructure> transportOrganisationRef;
     @Transient
     private ContactRefStructure contactRef;
 
@@ -54,8 +55,8 @@ public class Vehicle_VersionStructure extends DataManagedObjectStructure {
 
     @Transient
     private VehicleEquipmentProfileRefs_RelStructure equipmentProfiles;
-//    @Transient
-//    private JAXBElement<? extends VehicleModelProfileRefStructure> vehicleModelProfileRef;
+    @Transient
+    private JAXBElement<? extends VehicleModelProfileRefStructure> vehicleModelProfileRef;
     @Transient
     private Equipments_RelStructure actualVehicleEquipments;
     private Boolean monitored;

@@ -15,6 +15,8 @@
 
 package org.rutebanken.sobek.model;
 
+import jakarta.xml.bind.JAXBElement;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,13 +24,13 @@ import java.util.List;
 public class Equipments_RelStructure
         extends ContainmentAggregationStructure {
 
-//    protected List<JAXBElement<?>> equipmentRefOrEquipment;
-//
-//    public List<JAXBElement<?>> getEquipmentRefOrEquipment() {
-//        if (equipmentRefOrEquipment == null) {
-//            equipmentRefOrEquipment = new ArrayList<>();
-//        }
-//        return this.equipmentRefOrEquipment;
-//    }
+    protected List<JAXBElement<?>> equipmentRefOrEquipment;
+
+    public List<JAXBElement<?>> getEquipmentRefOrEquipment() {
+        if (equipmentRefOrEquipment == null) {
+            equipmentRefOrEquipment = new ArrayList<>();
+        }
+        return this.equipmentRefOrEquipment;
+    }
 
 }

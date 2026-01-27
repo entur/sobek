@@ -12,16 +12,16 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class PassengerEntrance extends org.rutebanken.sobek.model.vehicle.DeckComponent_VersionStructure {
+public class PassengerEntrance extends DeckComponent_VersionStructure {
     @Enumerated(EnumType.STRING)
-    private org.rutebanken.sobek.model.vehicle.VehicleSideEnumeration vehicleSide;
+    private VehicleSideEnumeration vehicleSide;
 
     private BigDecimal distanceFromFront;
     private BigInteger sequenceFromFront;
     private BigDecimal heightFromGround;
 
     @Enumerated(EnumType.STRING)
-    private org.rutebanken.sobek.model.vehicle.DeckEntranceTypeEnumeration deckEntranceType;
+    private DeckEntranceTypeEnumeration deckEntranceType;
     private Boolean hasDoor;
     private Boolean isAutomatic;
     private Boolean isEmergencyExit;

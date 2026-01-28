@@ -33,12 +33,6 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- Spring Boot Starter Data JPA -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
-
         <!-- Spring Boot Starter Security (if using Keycloak) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -106,12 +100,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.entur.ror.helpers</groupId>
-            <artifactId>permission-store-proxy</artifactId>
-            <version>${entur.helpers.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-jetty</artifactId>
         </dependency>
@@ -149,6 +137,10 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <mainClass>org.rutebanken.sobek.SobekApplication</mainClass>
+                    <jvmArguments>--add-opens java.base/java.lang=ALL-UNNAMED</jvmArguments>
+                    <profiles>
+                        <profile>local,local-blobstore,local-changelog</profile>
+                    </profiles>
                 </configuration>
                 <executions>
                     <execution>

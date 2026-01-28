@@ -51,7 +51,6 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <scope>provided</scope>
         </dependency>
 
         <!-- Jackson for JSON annotations (optional) -->

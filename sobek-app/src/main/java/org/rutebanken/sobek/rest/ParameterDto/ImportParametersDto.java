@@ -14,7 +14,11 @@ public class ImportParametersDto {
 
     public ImportParams toImportParams() {
         var ret = new ImportParams();
-        ret.setImportType(ImportType.valueOf(this.importType));
+        if(importType == null) {
+            ret.setImportType(ImportType.MERGE);
+        } else {
+            ret.setImportType(ImportType.valueOf(this.importType));
+        }
         ret.setSkipOutput(skipOutput);
         return ret;
     }

@@ -33,18 +33,6 @@
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
 
-        <!-- Spring Context -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-        </dependency>
-
-        <!-- Spring TX -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-tx</artifactId>
-        </dependency>
-
         <!-- NeTEx Java Model -->
         <dependency>
             <groupId>org.entur</groupId>
@@ -57,23 +45,10 @@
             <artifactId>orika-core</artifactId>
         </dependency>
 
-        <!-- Apache Commons -->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-        </dependency>
-
-        <!-- Guava -->
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-        </dependency>
-
         <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <scope>provided</scope>
         </dependency>
 
         <!-- SLF4J -->

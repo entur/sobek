@@ -19,6 +19,7 @@ package org.rutebanken.sobek.auth;
 import org.entur.oauth2.multiissuer.MultiIssuerAuthenticationManagerResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -43,6 +44,9 @@ public class SobekSecurityConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(SobekSecurityConfig.class);
 
+    @Value("${authorization.enabled:true}")
+    private boolean authorizationEnabled;
+
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -58,11 +62,18 @@ public class SobekSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http,
                                            MultiIssuerAuthenticationManagerResolver multiIssuerAuthenticationManagerResolver) throws Exception {
-        logger.info("Configuring HttpSecurity");
         http.cors(withDefaults())
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(request -> request.anyRequest().authenticated())
-                .oauth2ResourceServer(configurer -> configurer.authenticationManagerResolver(multiIssuerAuthenticationManagerResolver));
+                .csrf(AbstractHttpConfigurer::disable);
+
+        if (authorizationEnabled) {
+            logger.info("Authorization enabled: requiring authentication for all requests");
+            http.authorizeHttpRequests(request -> request.anyRequest().authenticated())
+                    .oauth2ResourceServer(configurer -> configurer.authenticationManagerResolver(multiIssuerAuthenticationManagerResolver));
+        } else {
+            logger.info("Authorization disabled: permitting all requests without authentication");
+            http.authorizeHttpRequests(request -> request.anyRequest().permitAll());
+        }
+
         return http.build();
     }
 

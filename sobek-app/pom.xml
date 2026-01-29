@@ -10,7 +10,7 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>sobek-api</artifactId>
+    <artifactId>sobek-app</artifactId>
     <packaging>jar</packaging>
 
     <name>Sobek API</name>

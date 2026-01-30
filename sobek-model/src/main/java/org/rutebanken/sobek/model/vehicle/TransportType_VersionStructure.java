@@ -1,5 +1,6 @@
 package org.rutebanken.sobek.model.vehicle;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -49,6 +50,7 @@ public class TransportType_VersionStructure extends DataManagedObjectStructure {
     @Transient
     private DeckPlanRefStructure deckPlanRef;
     @ManyToOne
+    @JsonIgnore
     private org.rutebanken.sobek.model.vehicle.DeckPlan deckPlan;
 
 

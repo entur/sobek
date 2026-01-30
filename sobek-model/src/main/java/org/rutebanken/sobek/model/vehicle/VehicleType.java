@@ -1,5 +1,6 @@
 package org.rutebanken.sobek.model.vehicle;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,6 +18,7 @@ public class VehicleType extends VehicleType_VersionStructure {
     private PassengerCapacity passengerCapacity;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "transportType")
+    @JsonIgnore
     private List<Vehicle> vehicles;
 
     @Override

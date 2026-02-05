@@ -17,9 +17,13 @@ package org.rutebanken.sobek.config;
 
 import org.rutebanken.sobek.exporter.*;
 import org.rutebanken.sobek.netex.id.NetexIdHelper;
-import org.rutebanken.sobek.netex.mapping.EquipmentMappingHelper;
 import org.rutebanken.sobek.netex.mapping.NetexMapper;
+import org.rutebanken.sobek.netex.mapping.mapstruct.DeckPlanMapper;
+import org.rutebanken.sobek.netex.mapping.mapstruct.VehicleMapper;
+import org.rutebanken.sobek.netex.mapping.mapstruct.VehicleModelMapper;
+import org.rutebanken.sobek.netex.mapping.mapstruct.VehicleTypeMapper;
 import org.rutebanken.sobek.repository.*;
+import org.rutebanken.sobek.repository.reference.ReferenceResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -68,7 +72,22 @@ public class StreamingPublicationDeliveryConfig {
     private NetexIdHelper netexIdHelper;
 
     @Autowired
-    private EquipmentMappingHelper equipmentMappingHelper;
+    private ReferenceResolver referenceResolver;
+
+    @Autowired
+    private VehicleMapper vehicleMapper;
+
+    @Autowired
+    private DeckPlanMapper deckPlanMapper;
+
+    @Autowired
+    private VehicleModelMapper vehicleModelMapper;
+
+    @Autowired
+    private VehicleTypeMapper vehicleTypeMapper;
+
+    //@Autowired
+    //private EquipmentMappingHelper equipmentMappingHelper;
 
     @Value("${asyncNetexExport.validateAgainstSchema:false}")
     private boolean validateAsyncExport;
@@ -88,7 +107,7 @@ public class StreamingPublicationDeliveryConfig {
 
     private StreamingPublicationDelivery createStreamingPublicationDelivery(boolean validate) throws IOException, SAXException {
         return new StreamingPublicationDelivery(vehicleRepository, vehicleTypeRepository, vehicleModelRepository, deckPlanRepository, vehicleEquipmentProfileRepository, equipmentRepository, publicationDeliveryCreator,
-                sobekServiceFrameExporter, equipmentMappingHelper, sobekResourceFrameExporter, sobekComositeFrameExporter, netexMapper
+                sobekServiceFrameExporter, vehicleTypeMapper, vehicleMapper, deckPlanMapper, vehicleModelMapper, referenceResolver, sobekResourceFrameExporter, sobekComositeFrameExporter, netexMapper
                  /* TODO validate,*/ );
     }
 }

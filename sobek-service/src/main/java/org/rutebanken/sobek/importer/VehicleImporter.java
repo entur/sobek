@@ -16,8 +16,8 @@
 package org.rutebanken.sobek.importer;
 
 import org.rutebanken.sobek.model.vehicle.Vehicle;
-import org.rutebanken.sobek.netex.mapping.NetexMapper;
-import org.rutebanken.sobek.repository.VehicleRepository;
+import org.rutebanken.sobek.netex.mapping.context.MappingContext;
+import org.rutebanken.sobek.netex.mapping.mapstruct.VehicleMapper;
 import org.rutebanken.sobek.versioning.save.VehicleVersionedSaverService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,17 +37,17 @@ public class VehicleImporter {
 
     private static final Logger logger = LoggerFactory.getLogger(VehicleImporter.class);
 
-    private final NetexMapper netexMapper;
-
-    private final VehicleRepository vehicleRepository;
+    private final VehicleMapper vehicleMapper;
 
     private final VehicleVersionedSaverService vehicleVersionedSaverService;
 
+    private final MappingContext context;
+
     @Autowired
-    public VehicleImporter(NetexMapper netexMapper, VehicleRepository vehicleRepository, VehicleVersionedSaverService vehicleVersionedSaverService) {
-        this.netexMapper = netexMapper;
-        this.vehicleRepository = vehicleRepository;
+    public VehicleImporter(VehicleMapper vehicleMapper, VehicleVersionedSaverService vehicleVersionedSaverService, MappingContext context) {
+        this.vehicleMapper = vehicleMapper;
         this.vehicleVersionedSaverService = vehicleVersionedSaverService;
+        this.context = context;
     }
 
     public List<org.rutebanken.netex.model.Vehicle> importVehicles(List<Vehicle> vehicles, AtomicInteger vehiclesCounter) {
@@ -61,7 +61,7 @@ public class VehicleImporter {
             result.add(importVehicle(incomingVehicle, vehiclesCounter));
         }
 
-        return result.stream().map(vehicle -> netexMapper.mapToNetexModel(vehicle)).collect(toList());
+        return result.stream().map(vehicle -> vehicleMapper.mapToNetex(vehicle, context)).collect(toList());
 
     }
 

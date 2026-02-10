@@ -34,7 +34,8 @@ import org.rutebanken.netex.model.*;
 import org.rutebanken.sobek.importer.ImportParams;
 import org.rutebanken.sobek.importer.VehicleModelImporter;
 import org.rutebanken.sobek.importer.converter.VehicleModelIdConverter;
-import org.rutebanken.sobek.netex.mapping.NetexMapper;
+import org.rutebanken.sobek.netex.mapping.context.MappingContext;
+import org.rutebanken.sobek.netex.mapping.mapstruct.VehicleModelMapper;
 import org.rutebanken.sobek.netex.mapping.PublicationDeliveryHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,18 +51,20 @@ public class VehicleModelImportHandler {
 
     private final PublicationDeliveryHelper publicationDeliveryHelper;
 
-    private final NetexMapper netexMapper;
+    private final VehicleModelMapper vehicleModelMapper;
 
     private final VehicleModelImporter vehicleModelImporter;
     private final VehicleModelIdConverter vehicleModelIdConverter;
+    private final MappingContext mappingContext;
 
     public VehicleModelImportHandler(PublicationDeliveryHelper publicationDeliveryHelper,
-                                     NetexMapper netexMapper,
-                                     VehicleModelImporter vehicleModelImporter, VehicleModelIdConverter vehicleModelIdConverter) {
+                                     VehicleModelMapper vehicleModelMapper,
+                                     VehicleModelImporter vehicleModelImporter, VehicleModelIdConverter vehicleModelIdConverter, MappingContext mappingContext) {
         this.publicationDeliveryHelper = publicationDeliveryHelper;
-        this.netexMapper = netexMapper;
+        this.vehicleModelMapper = vehicleModelMapper;
         this.vehicleModelImporter = vehicleModelImporter;
         this.vehicleModelIdConverter = vehicleModelIdConverter;
+        this.mappingContext = mappingContext;
     }
 
     public void handleVehicleModels(ResourceFrame netexResourceFrame, ImportParams importParams, AtomicInteger vehicleModelsCounter, ResourceFrame responseResourceframe) {
@@ -76,9 +79,8 @@ public class VehicleModelImportHandler {
                     .toList();
 
             logger.info("About to map {} vehicle models to internal model", netexResourceFrame.getVehicleModels().getVehicleModel().size());
-            List<org.rutebanken.sobek.model.vehicle.VehicleModel> mappedVehicleModels = netexMapper.getFacade()
-                    .mapAsList(originalWithMappedIds,
-                            org.rutebanken.sobek.model.vehicle.VehicleModel.class);
+            List<org.rutebanken.sobek.model.vehicle.VehicleModel> mappedVehicleModels = vehicleModelMapper
+                    .mapAsList(originalWithMappedIds, mappingContext);
             logger.info("Mapped {} vehicle models to internal model", mappedVehicleModels.size());
             List<VehicleModel> importedVehicleModels = vehicleModelImporter.importVehicleModels(mappedVehicleModels, vehicleModelsCounter);
 

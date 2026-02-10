@@ -18,26 +18,26 @@ package org.rutebanken.sobek.model;
 public class VersionFrame_VersionStructure
         extends DataManagedObjectStructure {
 
-    protected MultilingualStringEntity name;
-    protected MultilingualStringEntity description;
+    protected EmbeddableMultilingualString name;
+    protected EmbeddableMultilingualString description;
     protected TypeOfFrameRefStructure typeOfFrameRef;
     protected VersionRefStructure baselineVersionFrameRef;
     protected VersionFrameDefaultsStructure frameDefaults;
     protected Versions_RelStructure versions;
 
-    public MultilingualStringEntity getName() {
+    public EmbeddableMultilingualString getName() {
         return name;
     }
 
-    public void setName(MultilingualStringEntity value) {
+    public void setName(EmbeddableMultilingualString value) {
         this.name = value;
     }
 
-    public MultilingualStringEntity getDescription() {
+    public EmbeddableMultilingualString getDescription() {
         return description;
     }
 
-    public void setDescription(MultilingualStringEntity value) {
+    public void setDescription(EmbeddableMultilingualString value) {
         this.description = value;
     }
 

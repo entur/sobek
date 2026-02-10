@@ -18,16 +18,16 @@ package org.rutebanken.sobek.model;
 public class Point
         extends DataManagedObjectStructure {
 
-    protected MultilingualStringEntity name;
+    protected EmbeddableMultilingualString name;
     protected String pointNumber;
     protected TypeOfPointRefs_RelStructure types;
     protected Projections_RelStructure projections;
 
-    public MultilingualStringEntity getName() {
+    public EmbeddableMultilingualString getName() {
         return name;
     }
 
-    public void setName(MultilingualStringEntity value) {
+    public void setName(EmbeddableMultilingualString value) {
         this.name = value;
     }
 

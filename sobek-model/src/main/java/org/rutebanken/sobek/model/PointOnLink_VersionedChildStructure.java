@@ -24,18 +24,18 @@ import java.math.BigInteger;
 public class PointOnLink_VersionedChildStructure
         extends VersionedChildStructure {
 
-    protected MultilingualStringEntity name;
+    protected EmbeddableMultilingualString name;
     protected LinkRefStructure linkRef;
     protected BigDecimal distanceFromStart;
     protected JAXBElement<? extends PointRefStructure> pointRef;
     protected JAXBElement<? extends Point> point;
     protected BigInteger order;
 
-    public MultilingualStringEntity getName() {
+    public EmbeddableMultilingualString getName() {
         return name;
     }
 
-    public void setName(MultilingualStringEntity value) {
+    public void setName(EmbeddableMultilingualString value) {
         this.name = value;
     }
 

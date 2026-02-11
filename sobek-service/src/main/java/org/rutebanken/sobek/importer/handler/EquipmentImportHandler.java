@@ -35,14 +35,15 @@ import org.rutebanken.netex.model.*;
 import org.rutebanken.sobek.importer.EquipmentImporter;
 import org.rutebanken.sobek.importer.ImportParams;
 import org.rutebanken.sobek.importer.converter.EquipmentIdConverter;
-import org.rutebanken.sobek.netex.mapping.EquipmentMappingHelper;
-import org.rutebanken.sobek.netex.mapping.NetexMapper;
+import org.rutebanken.sobek.netex.mapping.context.MappingContext;
+import org.rutebanken.sobek.netex.mapping.mapstruct.equipment.EquipmentMapper;
 import org.rutebanken.sobek.netex.mapping.PublicationDeliveryHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -53,20 +54,20 @@ public class EquipmentImportHandler {
 
     private final PublicationDeliveryHelper publicationDeliveryHelper;
 
-    private final NetexMapper netexMapper;
+    private final EquipmentMapper equipmentMapper;
 
     private final EquipmentImporter equipmentImporter;
     private final EquipmentIdConverter equipmentIdConverter;
-    private final EquipmentMappingHelper equipmentMappingHelper;
+    private final MappingContext mappingContext;
 
     public EquipmentImportHandler(PublicationDeliveryHelper publicationDeliveryHelper,
-                                  NetexMapper netexMapper,
-                                  EquipmentImporter equipmentImporter, EquipmentIdConverter equipmentIdConverter, EquipmentMappingHelper equipmentMappingHelper) {
+                                  EquipmentMapper equipmentMapper,
+                                  EquipmentImporter equipmentImporter, EquipmentIdConverter equipmentIdConverter, MappingContext mappingContext) {
         this.publicationDeliveryHelper = publicationDeliveryHelper;
-        this.netexMapper = netexMapper;
+        this.equipmentMapper = equipmentMapper;
         this.equipmentImporter = equipmentImporter;
         this.equipmentIdConverter = equipmentIdConverter;
-        this.equipmentMappingHelper = equipmentMappingHelper;
+        this.mappingContext = mappingContext;
     }
 
     public void handleEquipments(ResourceFrame netexResourceFrame, ImportParams importParams, AtomicInteger equipmentsCounter, ResourceFrame responseResourceframe) {
@@ -83,14 +84,15 @@ public class EquipmentImportHandler {
 
             logger.info("About to map {} equipments to internal model", netexResourceFrame.getEquipments().getEquipment().size());
             List<org.rutebanken.sobek.model.vehicle.Equipment> mappedEquipments = originalWithMappedIds
-                    .map(netexMapper::mapToSobekModel)
+                    .map(e -> equipmentMapper.mapToSobekManual(e, mappingContext))
+                    .filter(Objects::nonNull)
                     .collect(Collectors.toList());
             logger.info("Mapped {} equipments to internal model", mappedEquipments.size());
 
             List<Equipment_VersionStructure> importedEquipments = equipmentImporter.importEquipments(mappedEquipments, equipmentsCounter);
 
             List<JAXBElement<? extends Equipment_VersionStructure>> equipmentElements = importedEquipments.stream()
-                    .map(equipmentMappingHelper::mapToJaxbEquipment)
+                    .map(e -> equipmentMapper.mapToNetexJaxbEquipment(e, mappingContext))
                     .collect(java.util.stream.Collectors.toList());
 
             responseResourceframe.withEquipments(

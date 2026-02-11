@@ -36,7 +36,8 @@ import org.rutebanken.netex.model.SchematicMapsInFrame_RelStructure;
 import org.rutebanken.sobek.importer.SchematicMapImporter;
 import org.rutebanken.sobek.importer.ImportParams;
 import org.rutebanken.sobek.importer.converter.SchematicMapIdConverter;
-import org.rutebanken.sobek.netex.mapping.NetexMapper;
+import org.rutebanken.sobek.netex.mapping.context.MappingContext;
+import org.rutebanken.sobek.netex.mapping.mapstruct.SchematicMapMapper;
 import org.rutebanken.sobek.netex.mapping.PublicationDeliveryHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,18 +53,20 @@ public class SchematicMapImportHandler {
 
     private final PublicationDeliveryHelper publicationDeliveryHelper;
 
-    private final NetexMapper netexMapper;
+    private final SchematicMapMapper schematicMapMapper;
 
     private final SchematicMapImporter schematicMapImporter;
     private final SchematicMapIdConverter schematicMapIdConverter;
+    private final MappingContext context;
 
     public SchematicMapImportHandler(PublicationDeliveryHelper publicationDeliveryHelper,
-                                     NetexMapper netexMapper,
-                                     SchematicMapImporter schematicMapImporter, SchematicMapIdConverter schematicMapIdConverter) {
+                                     SchematicMapMapper schematicMapMapper,
+                                     SchematicMapImporter schematicMapImporter, SchematicMapIdConverter schematicMapIdConverter, MappingContext context) {
         this.publicationDeliveryHelper = publicationDeliveryHelper;
-        this.netexMapper = netexMapper;
+        this.schematicMapMapper = schematicMapMapper;
         this.schematicMapImporter = schematicMapImporter;
         this.schematicMapIdConverter = schematicMapIdConverter;
+        this.context = context;
     }
 
     public void handleSchematicMaps(ResourceFrame netexResourceFrame, ImportParams importParams, AtomicInteger schematicMapsCounter, ResourceFrame responseResourceframe) {
@@ -78,9 +81,9 @@ public class SchematicMapImportHandler {
                     .toList();
 
             logger.info("About to map {} deck plans to internal model", netexResourceFrame.getSchematicMaps().getSchematicMap().size());
-            List<org.rutebanken.sobek.model.vehicle.SchematicMap> mappedSchematicMaps = netexMapper.getFacade()
+            List<org.rutebanken.sobek.model.vehicle.SchematicMap> mappedSchematicMaps = schematicMapMapper
                     .mapAsList(originalWithMappedIds,
-                            org.rutebanken.sobek.model.vehicle.SchematicMap.class);
+                            context);
             logger.info("Mapped {} deck plans to internal model", mappedSchematicMaps.size());
             List<SchematicMap> importedSchematicMaps = schematicMapImporter.importSchematicMaps(mappedSchematicMaps, schematicMapsCounter);
 

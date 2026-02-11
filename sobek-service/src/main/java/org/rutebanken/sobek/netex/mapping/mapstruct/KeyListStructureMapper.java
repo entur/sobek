@@ -2,18 +2,21 @@ package org.rutebanken.sobek.netex.mapping.mapstruct;
 
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
+import org.mapstruct.Named;
 import org.rutebanken.netex.model.KeyListStructure;
 import org.rutebanken.netex.model.KeyValueStructure;
 import org.rutebanken.sobek.model.Value;
+import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@Mapper()
+@Mapper(config = SobekMapperConfig.class)
 public interface KeyListStructureMapper {
+    @Named("mapKeyListToSobek")
     default Map<String, Value> mapToSobek(
-            org.rutebanken.netex.model.KeyListStructure source,
+            KeyListStructure source,
             @Context MappingContext context
     ) {
         if(source != null && source.getKeyValue() != null && !source.getKeyValue().isEmpty()) {
@@ -26,6 +29,7 @@ public interface KeyListStructureMapper {
         return null;
     };
 
+    @Named("mapKeyListToNetex")
     default KeyListStructure mapToNetex(
             Map<String, Value> source,
             @Context MappingContext context

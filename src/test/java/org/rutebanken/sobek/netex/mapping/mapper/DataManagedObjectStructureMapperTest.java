@@ -15,7 +15,6 @@
 
 package org.rutebanken.sobek.netex.mapping.mapper;
 
-import ma.glasnost.orika.MappingContext;
 import org.junit.Test;
 import org.rutebanken.netex.model.KeyListStructure;
 import org.rutebanken.netex.model.KeyValueStructure;
@@ -23,7 +22,6 @@ import org.rutebanken.sobek.model.vehicle.Vehicle;
 import org.rutebanken.sobek.netex.id.NetexIdHelper;
 import org.rutebanken.sobek.netex.id.ValidPrefixList;
 import org.rutebanken.sobek.netex.mapping.PublicationDeliveryHelper;
-import org.rutebanken.sobek.repository.TagRepository;
 
 import java.util.HashMap;
 
@@ -35,13 +33,10 @@ import static org.rutebanken.sobek.netex.mapping.mapper.DataManagedObjectStructu
 
 public class DataManagedObjectStructureMapperTest {
 
-    private TagRepository tagRepository = mock(TagRepository.class);
-    private TagKeyValuesMapper tagKeyValuesMapper = new TagKeyValuesMapper(tagRepository);
-
     private ValidPrefixList validPrefixList = new ValidPrefixList("NSR", new HashMap<>());
     private NetexIdHelper netexIdHelper = new NetexIdHelper(validPrefixList);
 
-    private DataManagedObjectStructureMapper dataManagedObjectStructureMapper = new DataManagedObjectStructureMapper(tagRepository, new NetexIdMapper(validPrefixList, netexIdHelper), tagKeyValuesMapper);
+    private DataManagedObjectStructureMapper dataManagedObjectStructureMapper = new DataManagedObjectStructureMapper(new NetexIdMapper(validPrefixList, netexIdHelper));
 
     private PublicationDeliveryHelper publicationDeliveryHelper = new PublicationDeliveryHelper();
 

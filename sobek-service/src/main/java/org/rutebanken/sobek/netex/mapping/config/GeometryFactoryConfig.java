@@ -13,7 +13,7 @@
  * limitations under the Licence.
  */
 
-package org.rutebanken.sobek.config;
+package org.rutebanken.sobek.netex.mapping.config;
 
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.PrecisionModel;

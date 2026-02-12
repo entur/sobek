@@ -39,12 +39,6 @@
             <artifactId>netex-java-model</artifactId>
         </dependency>
 
-<!--        &lt;!&ndash; Orika Mapper &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>ma.glasnost.orika</groupId>-->
-<!--            <artifactId>orika-core</artifactId>-->
-<!--        </dependency>-->
-
         <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -137,6 +131,13 @@
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
+        </dependency>
+
+<!--        In memory database for unit tests-->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

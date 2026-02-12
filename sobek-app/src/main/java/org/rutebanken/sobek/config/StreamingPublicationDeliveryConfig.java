@@ -17,11 +17,10 @@ package org.rutebanken.sobek.config;
 
 import org.rutebanken.sobek.exporter.*;
 import org.rutebanken.sobek.netex.id.NetexIdHelper;
-import org.rutebanken.sobek.netex.mapping.NetexMapper;
-import org.rutebanken.sobek.netex.mapping.mapstruct.DeckPlanMapper;
-import org.rutebanken.sobek.netex.mapping.mapstruct.VehicleMapper;
-import org.rutebanken.sobek.netex.mapping.mapstruct.VehicleModelMapper;
-import org.rutebanken.sobek.netex.mapping.mapstruct.VehicleTypeMapper;
+import org.rutebanken.sobek.netex.mapping.context.MappingContext;
+import org.rutebanken.sobek.netex.mapping.mapstruct.*;
+import org.rutebanken.sobek.netex.mapping.mapstruct.deckplan.DeckPlanMapper;
+import org.rutebanken.sobek.netex.mapping.mapstruct.equipment.EquipmentMapper;
 import org.rutebanken.sobek.repository.*;
 import org.rutebanken.sobek.repository.reference.ReferenceResolver;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,9 +65,6 @@ public class StreamingPublicationDeliveryConfig {
     private SobekComositeFrameExporter sobekComositeFrameExporter;
 
     @Autowired
-    private NetexMapper netexMapper;
-
-    @Autowired
     private NetexIdHelper netexIdHelper;
 
     @Autowired
@@ -86,14 +82,17 @@ public class StreamingPublicationDeliveryConfig {
     @Autowired
     private VehicleTypeMapper vehicleTypeMapper;
 
-    //@Autowired
-    //private EquipmentMappingHelper equipmentMappingHelper;
+    @Autowired
+    private EquipmentMapper equipmentMapper;
 
     @Value("${asyncNetexExport.validateAgainstSchema:false}")
     private boolean validateAsyncExport;
 
     @Value("${syncNetexExport.validateAgainstSchema:true}")
     private boolean validateSyncExport;
+
+    @Autowired
+    private MappingContext mappingContext;
 
 //    @Bean("asyncStreamingPublicationDelivery") TODO
 //    public StreamingPublicationDelivery asyncStreamingPublicationDelivery() throws IOException, SAXException {
@@ -107,7 +106,7 @@ public class StreamingPublicationDeliveryConfig {
 
     private StreamingPublicationDelivery createStreamingPublicationDelivery(boolean validate) throws IOException, SAXException {
         return new StreamingPublicationDelivery(vehicleRepository, vehicleTypeRepository, vehicleModelRepository, deckPlanRepository, vehicleEquipmentProfileRepository, equipmentRepository, publicationDeliveryCreator,
-                sobekServiceFrameExporter, vehicleTypeMapper, vehicleMapper, deckPlanMapper, vehicleModelMapper, referenceResolver, sobekResourceFrameExporter, sobekComositeFrameExporter, netexMapper
+                sobekServiceFrameExporter, vehicleTypeMapper, equipmentMapper, vehicleMapper, deckPlanMapper, vehicleModelMapper, referenceResolver, mappingContext, sobekResourceFrameExporter, sobekComositeFrameExporter
                  /* TODO validate,*/ );
     }
 }

@@ -22,27 +22,23 @@ import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
 import org.hibernate.internal.SessionImpl;
-import org.rutebanken.netex.model.DeckPlans_RelStructure;
-import org.rutebanken.netex.model.EquipmentsInFrame_RelStructure;
+import org.rutebanken.netex.model.*;
 import org.rutebanken.netex.model.Frames_RelStructure;
-import org.rutebanken.netex.model.ObjectFactory;
-import org.rutebanken.netex.model.PublicationDeliveryStructure;
-import org.rutebanken.netex.model.VehicleEquipmentProfilesInFrame_RelStructure;
-import org.rutebanken.netex.model.VehicleModelsInFrame_RelStructure;
-import org.rutebanken.netex.model.VehicleTypesInFrame_RelStructure;
-import org.rutebanken.netex.model.VehiclesInFrame_RelStructure;
 import org.rutebanken.netex.validation.NeTExValidator;
-import org.rutebanken.sobek.exporter.async.NetexMappingIterator;
-import org.rutebanken.sobek.exporter.async.NetexMappingIteratorList;
 import org.rutebanken.sobek.exporter.eviction.EntitiesEvictor;
 import org.rutebanken.sobek.exporter.eviction.SessionEntitiesEvictor;
-import org.rutebanken.sobek.model.ResourceFrame;
-import org.rutebanken.sobek.model.ServiceFrame;
 import org.rutebanken.sobek.model.job.ExportParams;
 import org.rutebanken.sobek.model.vehicle.*;
-import org.rutebanken.sobek.netex.mapping.EquipmentMappingHelper;
-import org.rutebanken.sobek.netex.mapping.NetexMapper;
+import org.rutebanken.sobek.model.vehicle.DeckPlan;
+import org.rutebanken.sobek.model.vehicle.Vehicle;
+import org.rutebanken.sobek.model.vehicle.VehicleModel;
+import org.rutebanken.sobek.model.vehicle.VehicleType;
+import org.rutebanken.sobek.netex.mapping.context.MappingContext;
+import org.rutebanken.sobek.netex.mapping.mapstruct.*;
+import org.rutebanken.sobek.netex.mapping.mapstruct.deckplan.DeckPlanMapper;
+import org.rutebanken.sobek.netex.mapping.mapstruct.equipment.EquipmentMapper;
 import org.rutebanken.sobek.repository.*;
+import org.rutebanken.sobek.repository.reference.ReferenceResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,11 +78,15 @@ public class StreamingPublicationDelivery {
     private final EquipmentRepository equipmentRepository;
     private final PublicationDeliveryCreator publicationDeliveryCreator;
     private final SobekServiceFrameExporter sobekServiceFrameExporter;
+    private final VehicleTypeMapper vehicleTypeMapper;
+    private final EquipmentMapper equipmentMapper;
+    private final VehicleMapper vehicleMapper;
+    private final DeckPlanMapper deckPlanMapper;
+    private final VehicleModelMapper vehicleModelMapper;
 
-    private final EquipmentMappingHelper equipmentMappingHelper;
+    private final MappingContext mappingContext;
 
     private final SobekResourceFrameExporter sobekResourceFrameExporter;
-    private final NetexMapper netexMapper;
     private final SobekComositeFrameExporter sobekComositeFrameExporter;
     private NeTExValidator neTExValidator; //TODO
     /**
@@ -106,10 +106,15 @@ public class StreamingPublicationDelivery {
                                         VehicleEquipmentProfileRepository vehicleEquipmentProfileRepository,
                                         EquipmentRepository equipmentRepository,
                                         PublicationDeliveryCreator publicationDeliveryCreator,
-                                        SobekServiceFrameExporter sobekServiceFrameExporter, EquipmentMappingHelper equipmentMappingHelper,
+                                        SobekServiceFrameExporter sobekServiceFrameExporter,
+                                        VehicleTypeMapper vehicleTypeMapper,
+                                        EquipmentMapper equipmentMapper,
+                                        VehicleMapper vehicleMapper,
+                                        DeckPlanMapper deckPlanMapper,
+                                        VehicleModelMapper vehicleModelMapper,
+                                        ReferenceResolver referenceResolver, MappingContext mappingContext,
                                         SobekResourceFrameExporter sobekResourceFrameExporter,
-                                        SobekComositeFrameExporter sobekComositeFrameExporter,
-                                        NetexMapper netexMapper
+                                        SobekComositeFrameExporter sobekComositeFrameExporter
 //                          TODO              @Value("${asyncNetexExport.validateAgainstSchema:false}") boolean validateAgainstSchema,
                                         ) throws IOException, SAXException {
         this.vehicleRepository = vehicleRepository;
@@ -120,10 +125,14 @@ public class StreamingPublicationDelivery {
         this.equipmentRepository = equipmentRepository;
         this.publicationDeliveryCreator = publicationDeliveryCreator;
         this.sobekServiceFrameExporter = sobekServiceFrameExporter;
-        this.equipmentMappingHelper = equipmentMappingHelper;
+        this.vehicleTypeMapper = vehicleTypeMapper;
+        this.equipmentMapper = equipmentMapper;
+        this.vehicleMapper = vehicleMapper;
+        this.deckPlanMapper = deckPlanMapper;
+        this.vehicleModelMapper = vehicleModelMapper;
+        this.mappingContext = mappingContext;
         this.sobekResourceFrameExporter = sobekResourceFrameExporter;
         this.sobekComositeFrameExporter = sobekComositeFrameExporter;
-        this.netexMapper = netexMapper;
         this.validateAgainstSchema = false; //TODO  validateAgainstSchema;
     }
 
@@ -141,9 +150,6 @@ public class StreamingPublicationDelivery {
 
     public void streamVehicles(ExportParams exportParams, OutputStream outputStream) throws JAXBException, XMLStreamException, IOException, InterruptedException, SAXException {
 
-        final CompositeFrame compositeFrame = sobekComositeFrameExporter.createSobekCompositeFrame("Composite frame " + exportParams);
-        final ResourceFrame resourceFrame = sobekResourceFrameExporter.createSobekResourceFrame("Resource frame"+ exportParams);
-
         AtomicInteger mappedVehicleCount = new AtomicInteger();
         AtomicInteger mappedVehicleTypeCount = new AtomicInteger();
         AtomicInteger mappedVehicleModelCount = new AtomicInteger();
@@ -158,11 +164,10 @@ public class StreamingPublicationDelivery {
         // The primary ID represents a stop place with a certain version
 
 
-        logger.info("Mapping composite frame to netex model");
-        org.rutebanken.netex.model.CompositeFrame netexCompositeFrame = netexMapper.mapToNetexModel(compositeFrame);
+        org.rutebanken.netex.model.CompositeFrame netexCompositeFrame = sobekComositeFrameExporter.createCompositeFrame("Composite frame " + exportParams);
 
         logger.info("Mapping resource frame to netex model");
-        final org.rutebanken.netex.model.ResourceFrame netexResourceFrame = netexMapper.mapToNetexModel(resourceFrame);
+        final org.rutebanken.netex.model.ResourceFrame netexResourceFrame = sobekResourceFrameExporter.createResourceFrame("Resource frame"+ exportParams);
 
         Frames_RelStructure framesRelStructure = new Frames_RelStructure();
         framesRelStructure.withCommonFrame(new ObjectFactory().createResourceFrame(netexResourceFrame));
@@ -201,8 +206,7 @@ public class StreamingPublicationDelivery {
 
             VehiclesInFrame_RelStructure vehiclesInFrame_relStructure = new VehiclesInFrame_RelStructure();
 
-            List<org.rutebanken.netex.model.Vehicle> vehicles = new NetexMappingIteratorList<>(() -> new NetexMappingIterator<Vehicle, org.rutebanken.netex.model.Vehicle>(netexMapper, vehiclesInDb.iterator(),
-                    org.rutebanken.netex.model.Vehicle.class, mappedVehicleCount, evicter));
+            List<org.rutebanken.netex.model.Vehicle> vehicles = vehiclesInDb.stream().map(v -> vehicleMapper.mapToNetex(v, mappingContext)).toList();
 
             setField(VehiclesInFrame_RelStructure.class, "vehicle", vehiclesInFrame_relStructure, vehicles);
             resourceFrame.setVehicles(vehiclesInFrame_relStructure);
@@ -221,7 +225,7 @@ public class StreamingPublicationDelivery {
             logger.info("There are vehicle types to export");
 
             VehicleTypesInFrame_RelStructure vehicleTypesInFrameRelStructure = new VehicleTypesInFrame_RelStructure();
-            List<org.rutebanken.netex.model.VehicleType> vehicleTypes = vehicleTypesInDb.stream().map(vt -> netexMapper.getFacade().map(vt, org.rutebanken.netex.model.VehicleType.class)).toList();
+            List<org.rutebanken.netex.model.VehicleType> vehicleTypes = vehicleTypesInDb.stream().map(vt -> vehicleTypeMapper.mapToNetex(vt, mappingContext)).toList();
 
             List<JAXBElement<org.rutebanken.netex.model.VehicleType>> jaxbVehicleTypes = vehicleTypes.stream().map(vt -> new ObjectFactory().createVehicleType(vt)).toList();
             setField(VehicleTypesInFrame_RelStructure.class, "transportType_Dummy", vehicleTypesInFrameRelStructure, jaxbVehicleTypes);
@@ -241,7 +245,7 @@ public class StreamingPublicationDelivery {
             logger.info("There are vehicle models to export");
 
             VehicleModelsInFrame_RelStructure vehicleModelsInFrameRelStructure = new VehicleModelsInFrame_RelStructure();
-            List<org.rutebanken.netex.model.VehicleModel> vehicleModels = vehicleModelsInDb.stream().map(vt -> netexMapper.getFacade().map(vt, org.rutebanken.netex.model.VehicleModel.class)).toList();
+            List<org.rutebanken.netex.model.VehicleModel> vehicleModels = vehicleModelsInDb.stream().map(vt -> vehicleModelMapper.mapToNetex(vt, mappingContext)).toList();
 
             setField(VehicleModelsInFrame_RelStructure.class, "vehicleModel", vehicleModelsInFrameRelStructure, vehicleModels);
             resourceFrame.setVehicleModels(vehicleModelsInFrameRelStructure);
@@ -261,7 +265,7 @@ public class StreamingPublicationDelivery {
 
             DeckPlans_RelStructure deckPlansRelStructure = new DeckPlans_RelStructure();
 
-            List<org.rutebanken.netex.model.DeckPlan> deckPlans = deckPlansInDb.stream().map(vt -> netexMapper.getFacade().map(vt, org.rutebanken.netex.model.DeckPlan.class)).toList();
+            List<org.rutebanken.netex.model.DeckPlan> deckPlans = deckPlansInDb.stream().map(vt -> deckPlanMapper.mapToNetex(vt, mappingContext)).toList();
 
             setField(DeckPlans_RelStructure.class, "deckPlan", deckPlansRelStructure, deckPlans);
             resourceFrame.setDeckPlans(deckPlansRelStructure);
@@ -272,35 +276,18 @@ public class StreamingPublicationDelivery {
 
     private void prepareEquipments(org.rutebanken.netex.model.ResourceFrame resourceFrame) {
 
-        List<VehicleEquipmentProfile> equipmentProfilesInDb = vehicleEquipmentProfileRepository.findAll();
+        List<Equipment> equipmentsInDb = equipmentRepository.findAll();
 
-        if (!equipmentProfilesInDb.isEmpty()) {
-            logger.info("There are vehicle equipment profiles to export");
-
-            VehicleEquipmentProfilesInFrame_RelStructure vehicleEquipmentProfilesInFrameRelStructure = new VehicleEquipmentProfilesInFrame_RelStructure();
-
-            List<org.rutebanken.netex.model.VehicleEquipmentProfile> equipmentProfiles = equipmentProfilesInDb.stream().map(vt -> netexMapper.getFacade().map(vt, org.rutebanken.netex.model.VehicleEquipmentProfile.class)).toList();
-
-            setField(VehicleEquipmentProfilesInFrame_RelStructure.class, "vehicleEquipmentProfileOrRechargingEquipmentProfile", vehicleEquipmentProfilesInFrameRelStructure, equipmentProfiles);
-            resourceFrame.setVehicleEquipmentProfiles(vehicleEquipmentProfilesInFrameRelStructure);
-
-            List<org.rutebanken.sobek.model.vehicle.Equipment> equipmentsInDb = equipmentProfilesInDb.stream()
-                    .flatMap(ep -> ep.getVehicleEquipmentProfileMembers().stream())
-                            .map(VehicleEquipmentProfileMember::getEquipmentRef)
-                                    .flatMap(ref -> equipmentRepository.findByNetexId(ref).stream()).toList(); //TODO - optimize :)
+        if (!equipmentsInDb.isEmpty()) {
+            logger.info("There are equipments to export");
 
             EquipmentsInFrame_RelStructure equipmentsInFrameRelStructure = new EquipmentsInFrame_RelStructure();
 
-            List<? extends JAXBElement<? extends org.rutebanken.netex.model.Equipment_VersionStructure>> netexEquipment =
-                    equipmentsInDb.stream().map(e -> netexMapper.getFacade().map(e, org.rutebanken.netex.model.Equipment_VersionStructure.class))
-                            .map(equipmentMappingHelper::mapToJaxbEquipment)
-                            .toList();
-
-            setField(EquipmentsInFrame_RelStructure.class, "equipment", equipmentsInFrameRelStructure, netexEquipment);
+            List<org.rutebanken.netex.model.Equipment_VersionStructure> equipments = equipmentsInDb.stream().map(vt -> equipmentMapper.mapToNetexManual(vt, mappingContext)).toList();
+            setField(Equipments_RelStructure.class, "equipments", equipmentsInFrameRelStructure, equipments);
             resourceFrame.setEquipments(equipmentsInFrameRelStructure);
-
         } else {
-            logger.info("No vehicle equipment profiles to export");
+            logger.info("No equipments to export");
         }
     }
 
@@ -310,9 +297,7 @@ public class StreamingPublicationDelivery {
 
     public void stream(ExportParams exportParams, OutputStream outputStream, boolean ignorePaging) throws JAXBException, XMLStreamException, IOException, InterruptedException, SAXException {
 
-        final ServiceFrame serviceFrame = sobekServiceFrameExporter.createSobekServiceFrame("Service frame " + exportParams);
-
-        final ResourceFrame resourceFrame = sobekResourceFrameExporter.createSobekResourceFrame("Resource frame"+ exportParams);
+        final ResourceFrame netexResourceFrame = sobekResourceFrameExporter.createResourceFrame("Resource frame"+ exportParams);
 
 
         EntitiesEvictor entitiesEvictor = instantiateEvictor();
@@ -323,15 +308,8 @@ public class StreamingPublicationDelivery {
         // To avoid marshalling empty parking element and to be able to gather relevant topographic places
         // The primary ID represents a stop place with a certain version
 
-        logger.info("Mapping service frame to netex model");
-        final org.rutebanken.netex.model.ServiceFrame netexServiceFrame = netexMapper.mapToNetexModel(serviceFrame);
-
-        logger.info("Mapping resource frame to netex model");
-        final org.rutebanken.netex.model.ResourceFrame netexResourceFrame = netexMapper.mapToNetexModel(resourceFrame);
-
-
         PublicationDeliveryStructure publicationDeliveryStructure;
-        publicationDeliveryStructure = publicationDeliveryCreator.createPublicationDelivery(netexServiceFrame, netexResourceFrame);
+        publicationDeliveryStructure = publicationDeliveryCreator.createPublicationDelivery(netexResourceFrame);
 
 
         Marshaller marshaller = createMarshaller();

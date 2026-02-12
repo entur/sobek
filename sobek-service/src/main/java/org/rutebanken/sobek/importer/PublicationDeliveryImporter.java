@@ -23,6 +23,7 @@ import org.rutebanken.sobek.importer.handler.*;
 import org.rutebanken.sobek.importer.log.ImportLogger;
 import org.rutebanken.sobek.importer.log.ImportLoggerTask;
 import org.rutebanken.sobek.netex.mapping.PublicationDeliveryHelper;
+import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -33,8 +34,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Timer;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import static org.rutebanken.sobek.netex.mapping.NetexMappingContextThreadLocal.updateMappingContext;
 
 @Service
 public class PublicationDeliveryImporter {
@@ -54,13 +53,14 @@ public class PublicationDeliveryImporter {
     private final AuthorizationService authorizationService;
     private final boolean authorizationEnabled;
     private final SchematicMapImportHandler schematicMapImportHandler;
+    private final MappingContext mappingContext;
 
     @Autowired
     public PublicationDeliveryImporter(PublicationDeliveryHelper publicationDeliveryHelper,
                                        PublicationDeliveryCreator publicationDeliveryCreator,
                                        VehicleImportHandler vehicleImportHandler, VehicleTypeImportHandler vehicleTypeImportHandler, DeckPlanImportHandler deckPlanImportHandler, EquipmentImportHandler equipmentImportHandler, VehicleModelImportHandler vehicleModelImportHandler,
                                        AuthorizationService authorizationService,
-                                       @Value("${authorization.enabled:true}") boolean authorizationEnabled, SchematicMapImportHandler schematicMapImportHandler) {
+                                       @Value("${authorization.enabled:true}") boolean authorizationEnabled, SchematicMapImportHandler schematicMapImportHandler, MappingContext mappingContext) {
         this.publicationDeliveryHelper = publicationDeliveryHelper;
         this.publicationDeliveryCreator = publicationDeliveryCreator;
         this.vehicleImportHandler = vehicleImportHandler;
@@ -71,6 +71,7 @@ public class PublicationDeliveryImporter {
         this.authorizationService = authorizationService;
         this.authorizationEnabled = authorizationEnabled;
         this.schematicMapImportHandler = schematicMapImportHandler;
+        this.mappingContext = mappingContext;
     }
 
 
@@ -110,7 +111,7 @@ public class PublicationDeliveryImporter {
         // Currently only supporting one resource frame per publication delivery
         ResourceFrame netexResourceFrame = publicationDeliveryHelper.findResourceFrame(incomingPublicationDelivery);
 
-        updateMappingContext(incomingPublicationDelivery);
+        mappingContext.updateMappingContext(incomingPublicationDelivery);
 
         ResourceFrame responseResourceFrame = null;
         if(netexResourceFrame != null) {

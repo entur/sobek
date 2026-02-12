@@ -14,10 +14,7 @@ import org.rutebanken.netex.model.*;
 import org.rutebanken.sobek.exporter.PublicationDeliveryCreator;
 import org.rutebanken.sobek.exporter.SobekComositeFrameExporter;
 import org.rutebanken.sobek.exporter.SobekResourceFrameExporter;
-import org.rutebanken.sobek.model.ResourceFrame;
 import org.rutebanken.sobek.model.job.ExportParams;
-import org.rutebanken.sobek.model.vehicle.CompositeFrame;
-import org.rutebanken.sobek.netex.mapping.NetexMapper;
 import org.rutebanken.sobek.netex.util.KeyValuesHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,33 +33,26 @@ public class MapperService {
     private final SobekResourceFrameExporter sobekResourceFrameExporter;
     private final SobekComositeFrameExporter sobekComositeFrameExporter;
     private final PublicationDeliveryCreator publicationDeliveryCreator;
-    private final NetexMapper netexMapper;
     private static final ObjectFactory netexObjectFactory = new ObjectFactory();
 
     public MapperService(PublicationDeliveryCreator publicationDeliveryCreator,
                                             SobekResourceFrameExporter sobekResourceFrameExporter,
-                                            SobekComositeFrameExporter sobekComositeFrameExporter,
-                                            NetexMapper netexMapper) {
+                                            SobekComositeFrameExporter sobekComositeFrameExporter) {
         this.publicationDeliveryCreator = publicationDeliveryCreator;
         this.sobekResourceFrameExporter = sobekResourceFrameExporter;
         this.sobekComositeFrameExporter = sobekComositeFrameExporter;
-        this.netexMapper = netexMapper;
     }
 
     public PublicationDeliveryStructure exportPublicationDeliveryWithAutosysVehicle(ExportParams exportParams, List<Kjoretoydata> kjoretoyList) {
         logger.info("Preparing publication delivery export");
 
-        final CompositeFrame compositeFrame = sobekComositeFrameExporter.createSobekCompositeFrame("Composite frame " + exportParams);
-        final ResourceFrame resourceFrame = sobekResourceFrameExporter.createSobekResourceFrame("Resource frame " + exportParams);
+        final CompositeFrame netexCompositeFrame = sobekComositeFrameExporter.createCompositeFrame("Composite frame " + exportParams);
+        final ResourceFrame netexResourceFrame = sobekResourceFrameExporter.createResourceFrame("Resource frame " + exportParams);
 
         AtomicInteger mappedVehicleCount = new AtomicInteger();
         AtomicInteger mappedVehicleTypeCount = new AtomicInteger();
         AtomicInteger mappedVehicleModelCount = new AtomicInteger();
         AtomicInteger mappedDeckPlanCount = new AtomicInteger();
-        logger.info("Mapping resource frame to netex model");
-        final org.rutebanken.netex.model.ResourceFrame netexResourceFrame = netexMapper.mapToNetexModel(resourceFrame);
-        logger.info("Mapping composite frame to netex model");
-        org.rutebanken.netex.model.CompositeFrame netexCompositeFrame = netexMapper.mapToNetexModel(compositeFrame);
 
         Frames_RelStructure framesRelStructure = new Frames_RelStructure();
         framesRelStructure.withCommonFrame(new ObjectFactory().createResourceFrame(netexResourceFrame));
@@ -75,7 +65,6 @@ public class MapperService {
         prepareVehicles(exportParams, kjoretoyList, mappedVehicleCount, netexResourceFrame);
 
         return publicationDeliveryCreator.createPublicationDelivery(netexCompositeFrame);
-
     }
 
     private void prepareDeckPlans(ExportParams exportParams, List<Kjoretoydata> kjoretoyList, AtomicInteger mappedDeckPlanCount, org.rutebanken.netex.model.ResourceFrame netexResourceFrame) {

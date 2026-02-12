@@ -13,39 +13,37 @@
  * limitations under the Licence.
  */
 
-package org.rutebanken.sobek.netex.mapping.converter;
+package org.rutebanken.sobek.netex.mapping.mapstruct;
 
-import ma.glasnost.orika.MappingContext;
-import ma.glasnost.orika.metadata.TypeBuilder;
 import net.opengis.gml._3.AbstractRingPropertyType;
 import net.opengis.gml._3.DirectPositionListType;
 import net.opengis.gml._3.LinearRingType;
 import net.opengis.gml._3.ObjectFactory;
 import net.opengis.gml._3.PolygonType;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.impl.CoordinateArraySequence;
-import org.rutebanken.sobek.config.GeometryFactoryConfig;
-import org.rutebanken.sobek.geo.DoubleValuesToCoordinateSequence;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
+@SpringBootTest
 public class PolygonConverterTest {
 
     private static final net.opengis.gml._3.ObjectFactory openGisObjectFactory = new ObjectFactory();
 
-    private GeometryFactory geometryFactory = new GeometryFactoryConfig().geometryFactory();
-    private final DoubleValuesToCoordinateSequence doubleValuesToCoordinateSequence = new DoubleValuesToCoordinateSequence();
-    private PolygonConverter polygonConverter = new PolygonConverter(geometryFactory, doubleValuesToCoordinateSequence);
+    @Autowired
+    private PolygonMapper polygonConverter;
+    @Autowired
+    private GeometryFactory geometryFactory;
 
     @Test
     public void convertFrom() throws Exception {
@@ -69,11 +67,11 @@ public class PolygonConverterTest {
                 .withExterior(new AbstractRingPropertyType()
                         .withAbstractRing(openGisObjectFactory.createLinearRing(linearRing)));
 
-        Polygon polygon = polygonConverter.convertFrom(polygonType, new TypeBuilder<Polygon>() {
-        }.build(), new MappingContext(new HashMap<>()));
+        Polygon polygon = polygonConverter.polygonTypeToPolygon(polygonType);
 
-        assertThat(polygon).isExactlyInstanceOf(Polygon.class).isNotNull();
-        assertThat(polygon.getExteriorRing().getCoordinates()).hasSize(values.size() / 2);
+        assertNotNull(polygon);
+        assertInstanceOf(Polygon.class, polygon);
+        assertEquals(values.size() / 2, polygon.getExteriorRing().getCoordinates().length);
         assertCoordinatesMatch(polygon.getExteriorRing(), values, "Exterior ring");
     }
 
@@ -100,14 +98,13 @@ public class PolygonConverterTest {
                         .withAbstractRing(openGisObjectFactory.createLinearRing(linearRing)))
                 .withInterior(new AbstractRingPropertyType().withAbstractRing(openGisObjectFactory.createLinearRing(linearRing)));
 
-        Polygon polygon = polygonConverter.convertFrom(polygonType, new TypeBuilder<Polygon>() {
-        }.build(), new MappingContext(new HashMap<>()));
+        Polygon polygon = polygonConverter.polygonTypeToPolygon(polygonType);
 
-        assertThat(polygon).isNotNull();
-        assertThat(polygon.getExteriorRing().getCoordinates()).hasSize(values.size() / 2);
-        assertThat(polygon.getNumInteriorRing()).isEqualTo(1);
+        assertNotNull(polygon);
+        assertEquals(values.size() / 2, polygon.getExteriorRing().getCoordinates().length);
+        assertEquals(1, polygon.getNumInteriorRing());
         assertCoordinatesMatch(polygon.getExteriorRing(), values, "Exterior ring");
-        assertInteriorRingsMatch(polygon, Arrays.asList(values));
+        assertInteriorRingsMatch(polygon, List.of(values));
     }
 
     @Test
@@ -122,13 +119,13 @@ public class PolygonConverterTest {
         LinearRing linearRing = new LinearRing(new CoordinateArraySequence(coordinates), geometryFactory);
         Polygon polygon = new Polygon(linearRing, null, geometryFactory);
 
-        PolygonType actual = polygonConverter.convertTo(polygon, new TypeBuilder<PolygonType>() {
-        }.build(), new MappingContext(new HashMap<>()));
-        assertThat(actual).isNotNull();
-        assertThat(actual.getId()).isNotEmpty();
+        PolygonType actual = polygonConverter.polygonToPolygonType(polygon);
+        assertNotNull(actual);
+        assertNotNull(actual.getId());
+        assertFalse(actual.getId().isBlank());
 
         List<Double> values = polygonConverter.extractValues(actual.getExterior());
-        assertThat(values).hasSize(coordinates.length * 2);
+        assertEquals(coordinates.length * 2, values.size());
 
 
         // Sobek is storing polygons with X, Y
@@ -136,8 +133,8 @@ public class PolygonConverterTest {
         // Expect Y, X when converting to PolygonType (Netex)
         int counter = 0;
         for(Coordinate coordinate : coordinates) {
-            assertThat(values.get(counter++).doubleValue()).isEqualTo(coordinate.y);
-            assertThat(values.get(counter++).doubleValue()).isEqualTo(coordinate.x);
+            assertEquals(coordinate.y, values.get(counter++).doubleValue());
+            assertEquals(coordinate.x, values.get(counter++).doubleValue());
         }
     }
 
@@ -154,23 +151,22 @@ public class PolygonConverterTest {
         LinearRing[] holes = new LinearRing[] { new LinearRing(new CoordinateArraySequence(coordinates), geometryFactory)};
         Polygon polygon = new Polygon(linearRing, holes, geometryFactory);
 
-        PolygonType actual = polygonConverter.convertTo(polygon, new TypeBuilder<PolygonType>() {
-        }.build(), new MappingContext(new HashMap<>()));
-        assertThat(actual).isNotNull();
+        PolygonType actual = polygonConverter.polygonToPolygonType(polygon);
+        assertNotNull(actual);
 
         List<Double> actualDoublevalues = polygonConverter.extractValues(actual.getExterior());
-        assertThat(actualDoublevalues).hasSize(coordinates.length * 2);
+        assertEquals(coordinates.length * 2, actualDoublevalues.size());
 
         List<Double> actualHoleDoubleValues = polygonConverter.extractValues(actual.getInterior().getFirst());
-        assertThat(actualHoleDoubleValues).hasSize(coordinates.length * 2);
+        assertEquals(coordinates.length * 2, actualHoleDoubleValues.size());
 
     }
 
     private void assertCoordinatesMatch(LineString actual, List<Double> expectedExteriorValues, String description) {
         int counter = 0;
         for (Coordinate coordinate : actual.getCoordinates()) {
-            assertThat(coordinate.y).as(description + " x coordinate").isEqualTo(expectedExteriorValues.get(counter++));
-            assertThat(coordinate.x).as(description + " y coordinate").isEqualTo(expectedExteriorValues.get(counter++));
+            assertEquals(expectedExteriorValues.get(counter++), coordinate.y, description + " x coordinate");
+            assertEquals(expectedExteriorValues.get(counter++), coordinate.x, description + " y coordinate");
         }
     }
 

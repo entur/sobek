@@ -27,6 +27,8 @@ class VehicleModelMapperTest {
 
     @Autowired
     private VehicleModelMapper mapper;
+    @Autowired
+    private KeyListStructureMapper keyListStructureMapper;
 
     @Mock
     ReferenceResolver referenceResolver;
@@ -49,6 +51,7 @@ class VehicleModelMapperTest {
         when(referenceResolver.resolve(any(),any(),eq(VehicleType.class))).thenReturn(mockVehicleType);
         when(referenceResolver.resolve(any(),any(),eq(org.rutebanken.sobek.model.vehicle.VehicleModel.class))).thenReturn(mockVehicleModel);
         context.setReferenceResolver(referenceResolver);
+        context.setKeyListStructureMapper(keyListStructureMapper);
     }
 
     @Test

@@ -15,13 +15,15 @@
 
 package org.rutebanken.sobek.netex.id;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.HashMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 
+@SpringBootTest
 public class NetexIdHelperTest {
 
 

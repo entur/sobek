@@ -6,6 +6,7 @@ import org.rutebanken.netex.model.Deck;
 import org.rutebanken.netex.model.MultilingualString;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.rutebanken.sobek.netex.mapping.mapstruct.deckplan.DeckMapper;
+import org.rutebanken.sobek.netex.mapping.mapstruct.deckplan.DeckSpaceMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -16,11 +17,15 @@ public class DeckMapperTest {
     @Autowired
     DeckMapper mapper;
 
+    @Autowired
+    DeckSpaceMapper deckSpaceMapper;
+
     private MappingContext context;
 
     @BeforeEach
     void setUp() {
         context = new MappingContext();
+        context.setDeckSpaceMapper(deckSpaceMapper);
     }
 
     @Test

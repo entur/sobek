@@ -16,6 +16,7 @@ import org.rutebanken.sobek.model.Value;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.rutebanken.sobek.netex.mapping.mapstruct.DataManagedObjectStructureMapper.CHANGED_BY;
 import static org.rutebanken.sobek.netex.mapping.mapstruct.DataManagedObjectStructureMapper.VERSION_COMMENT;
 
@@ -393,4 +394,17 @@ public class DataManagedObjectStructureMapperTest {
 
         assertThat(sobekVehicle.getVersionComment()).isEqualTo(comment);
     }
+
+
+    @Test
+    public void mappingChangedByToNetex() {
+
+        org.rutebanken.sobek.model.vehicle.Vehicle sobekVehicle = new org.rutebanken.sobek.model.vehicle.Vehicle();
+        sobekVehicle.setChangedBy("me");
+
+        org.rutebanken.netex.model.Vehicle netexVehicle = new org.rutebanken.netex.model.Vehicle();
+        mapper.mapToNetex(sobekVehicle, netexVehicle, context);
+        assertNull(publicationDeliveryHelper.getValueByKey(netexVehicle, CHANGED_BY));
+    }
+
 }

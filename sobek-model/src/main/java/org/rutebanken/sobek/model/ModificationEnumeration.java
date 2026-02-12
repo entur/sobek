@@ -23,7 +23,9 @@ public enum ModificationEnumeration {
     DELETE("delete"),
 
     REVISE("revise"),
-    DELTA("delta");
+    DELTA("delta"),
+    UNCHANGED("unchanged");
+
     private final String value;
 
     ModificationEnumeration(String v) {

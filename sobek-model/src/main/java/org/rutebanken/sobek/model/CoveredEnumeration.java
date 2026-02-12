@@ -21,7 +21,10 @@ public enum CoveredEnumeration {
     OUTDOORS("outdoors"),
     COVERED("covered"),
     MIXED("mixed"),
-    UNKNOWN("unknown");
+    UNKNOWN("unknown"),
+    TRUE("true"),
+    FALSE("false");
+
     private final String value;
 
     CoveredEnumeration(String v) {

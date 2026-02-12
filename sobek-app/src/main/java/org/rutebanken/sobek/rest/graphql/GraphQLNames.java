@@ -77,27 +77,6 @@ public class GraphQLNames {
     public static final String OUTPUT_TYPE_TAG = "Tag";
     public static final String INPUT_TYPE_TAG = "Tag" + INPUT_TYPE_POSTFIX;
 
-    public static final String TAG = "tag";
-    public static final String TAG_DESCRIPTION = "A tag for an entity like StopPlace";
-    public static final String TAG_ID_REFERENCE = "idReference";
-    public static final String TAG_ID_REFERENCE_DESCRIPTION = "A reference to a netex ID. For instance: NSR:StopPlace:1. Types supported: StopPlace";
-
-
-    public static final String TAGS = "tags";
-    public static final String TAGS_DESCRIPTION = "Fetches already used tags by name distinctively";
-    public static final String TAGS_ARG_DESCRIPTION = "Only return StopPlaces reffered to by the tag names provided. Values should not start with #";
-    public static final String TAG_COMMENT = "comment";
-    public static final String TAG_NAME = "name";
-    public static final String TAG_NAME_DESCRIPTION = "Tag name";
-    public static final String TAG_COMMENT_DESCRIPTION = "A comment for this tag on this entity";
-    public static final String TAG_REMOVED_DESCRIPTION = "When this tag was removed. If set, the tag is removed from entity it references in field '" + TAG_ID_REFERENCE + "'";
-    public static final String TAG_REMOVED_BY_USER_DESCRIPTION = "Removed by username. Only set if tag has been removed";
-
-    public static final String WITH_TAGS = "withTags";
-    public static final String WITH_TAGS_ARG_DESCRIPTION = "If set to true, only stop places with valid tags are returned. If false, filter does not apply.";
-
-    public static final String REMOVE_TAG = "removeTag";
-    public static final String CREATE_TAG = "createTag";
 
     public static final String ID = "id";
     public static final String IDS = "ids";

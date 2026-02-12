@@ -16,7 +16,7 @@
 package org.rutebanken.sobek.importer;
 
 import org.rutebanken.sobek.model.vehicle.DeckPlan;
-import org.rutebanken.sobek.netex.mapping.mapstruct.DeckPlanMapper;
+import org.rutebanken.sobek.netex.mapping.mapstruct.deckplan.DeckPlanMapper;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.rutebanken.sobek.versioning.save.DeckPlanVersionedSaverService;
 import org.slf4j.Logger;

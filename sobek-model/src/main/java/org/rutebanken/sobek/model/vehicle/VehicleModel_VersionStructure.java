@@ -1,11 +1,6 @@
 package org.rutebanken.sobek.model.vehicle;
 
-import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.AttributeOverrides;
-import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.Transient;
+import jakarta.persistence.*;
 import jakarta.xml.bind.JAXBElement;
 import java.math.BigDecimal;
 
@@ -37,9 +32,12 @@ public class VehicleModel_VersionStructure extends DataManagedObjectStructure {
     @Embedded
     private EmbeddableMultilingualString manufacturer;
 
-    private String transportTypeRef;
+    @ManyToOne
+    private VehicleType transportType;
+
     private BigDecimal range;
     private BigDecimal fullCharge;
+
     @Transient
     private VehicleEquipmentProfileRefs_RelStructure equipmentProfiles;
     @Transient

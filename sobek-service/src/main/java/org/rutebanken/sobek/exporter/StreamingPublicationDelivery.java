@@ -38,7 +38,6 @@ import org.rutebanken.sobek.netex.mapping.mapstruct.*;
 import org.rutebanken.sobek.netex.mapping.mapstruct.deckplan.DeckPlanMapper;
 import org.rutebanken.sobek.netex.mapping.mapstruct.equipment.EquipmentMapper;
 import org.rutebanken.sobek.repository.*;
-import org.rutebanken.sobek.repository.reference.ReferenceResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -112,7 +111,7 @@ public class StreamingPublicationDelivery {
                                         VehicleMapper vehicleMapper,
                                         DeckPlanMapper deckPlanMapper,
                                         VehicleModelMapper vehicleModelMapper,
-                                        ReferenceResolver referenceResolver, MappingContext mappingContext,
+                                        MappingContext mappingContext,
                                         SobekResourceFrameExporter sobekResourceFrameExporter,
                                         SobekComositeFrameExporter sobekComositeFrameExporter
 //                          TODO              @Value("${asyncNetexExport.validateAgainstSchema:false}") boolean validateAgainstSchema,

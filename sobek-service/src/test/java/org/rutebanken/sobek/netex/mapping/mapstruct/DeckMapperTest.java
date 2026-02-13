@@ -30,7 +30,7 @@ public class DeckMapperTest {
 
     @Test
     void testDeckMapperIsInjected() {
-        assert mapper != null;
+        assertNotNull(mapper);
     }
 
     @Test
@@ -42,7 +42,7 @@ public class DeckMapperTest {
 
         var sobekDeck = mapper.mapToSobek(deck, context);
 
-        assert sobekDeck != null;
+        assertNotNull(sobekDeck);
         assertEquals("Test Deck", sobekDeck.getDescription().getValue());
     }
 }

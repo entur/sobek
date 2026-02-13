@@ -16,13 +16,11 @@
 package org.rutebanken.sobek.config;
 
 import org.rutebanken.sobek.exporter.*;
-import org.rutebanken.sobek.netex.id.NetexIdHelper;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.rutebanken.sobek.netex.mapping.mapstruct.*;
 import org.rutebanken.sobek.netex.mapping.mapstruct.deckplan.DeckPlanMapper;
 import org.rutebanken.sobek.netex.mapping.mapstruct.equipment.EquipmentMapper;
 import org.rutebanken.sobek.repository.*;
-import org.rutebanken.sobek.repository.reference.ReferenceResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -65,12 +63,6 @@ public class StreamingPublicationDeliveryConfig {
     private SobekComositeFrameExporter sobekComositeFrameExporter;
 
     @Autowired
-    private NetexIdHelper netexIdHelper;
-
-    @Autowired
-    private ReferenceResolver referenceResolver;
-
-    @Autowired
     private VehicleMapper vehicleMapper;
 
     @Autowired
@@ -106,7 +98,7 @@ public class StreamingPublicationDeliveryConfig {
 
     private StreamingPublicationDelivery createStreamingPublicationDelivery(boolean validate) throws IOException, SAXException {
         return new StreamingPublicationDelivery(vehicleRepository, vehicleTypeRepository, vehicleModelRepository, deckPlanRepository, vehicleEquipmentProfileRepository, equipmentRepository, publicationDeliveryCreator,
-                sobekServiceFrameExporter, vehicleTypeMapper, equipmentMapper, vehicleMapper, deckPlanMapper, vehicleModelMapper, referenceResolver, mappingContext, sobekResourceFrameExporter, sobekComositeFrameExporter
+                sobekServiceFrameExporter, vehicleTypeMapper, equipmentMapper, vehicleMapper, deckPlanMapper, vehicleModelMapper, mappingContext, sobekResourceFrameExporter, sobekComositeFrameExporter
                  /* TODO validate,*/ );
     }
 }

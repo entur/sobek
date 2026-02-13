@@ -51,7 +51,7 @@ public interface SpotAffinityMapper {
         org.rutebanken.sobek.model.vehicle.PassengerSpace passengerSpace = (org.rutebanken.sobek.model.vehicle.PassengerSpace) context.getCurrentSobekDeckSpace(); // TODO: Type check
         if (passengerSpace != null && passengerSpace.getPassengerSpots() != null) {
             var rawMembers = source.getMembers().getLocatableSpotRef().stream().map(JAXBElement::getValue).toList();
-            List<LocatableSpot> sobekSpots = rawMembers.stream().map(n -> mapNeTEx2Sobek(n, passengerSpace.getPassengerSpots(), passengerSpace.getLuggageSpots())).toList();
+            List<LocatableSpot> sobekSpots = rawMembers.stream().map(n -> mapNetexRef2Sobek(n, passengerSpace.getPassengerSpots(), passengerSpace.getLuggageSpots())).toList();
             if(!sobekSpots.isEmpty()) {
                 target.setMembers(sobekSpots);
             }
@@ -69,7 +69,7 @@ public interface SpotAffinityMapper {
         if(sobekMembers != null && !sobekMembers.isEmpty()) {
             LocatableSpotRefs_RelStructure members = new LocatableSpotRefs_RelStructure();
             members.getLocatableSpotRef().addAll(sobekMembers.stream()
-                    .map(this::mapToNeTEx)
+                    .map(this::mapToNetexRef)
                     .filter(Objects::nonNull)
                     .toList());
             target.setMembers(members);
@@ -96,7 +96,7 @@ public interface SpotAffinityMapper {
                         .collect(Collectors.toList()));
     }
 
-    default LocatableSpot mapNeTEx2Sobek(LocatableSpotRefStructure locatableSpotRefStructure, List<org.rutebanken.sobek.model.vehicle.PassengerSpot> passengerSpots, List<org.rutebanken.sobek.model.vehicle.LuggageSpot> luggageSpots) {
+    default LocatableSpot mapNetexRef2Sobek(LocatableSpotRefStructure locatableSpotRefStructure, List<org.rutebanken.sobek.model.vehicle.PassengerSpot> passengerSpots, List<org.rutebanken.sobek.model.vehicle.LuggageSpot> luggageSpots) {
         if (locatableSpotRefStructure.getRef() == null || locatableSpotRefStructure.getRef().isEmpty()) {
             return null;
         }
@@ -116,7 +116,7 @@ public interface SpotAffinityMapper {
                 .findFirst()
                 .orElse(null);
     }
-    default JAXBElement<? extends LocatableSpotRefStructure> mapToNeTEx(LocatableSpot spot) {
+    default JAXBElement<? extends LocatableSpotRefStructure> mapToNetexRef(LocatableSpot spot) {
         ObjectFactory objectFactory = new ObjectFactory();
         return switch (spot) {
             case org.rutebanken.sobek.model.vehicle.PassengerSpot passengerSpot -> objectFactory.createPassengerSpotRef(new PassengerSpotRefStructure().withRef(passengerSpot.getNetexId()));

@@ -16,7 +16,8 @@
 package org.rutebanken.sobek.importer;
 
 import org.rutebanken.sobek.model.vehicle.Equipment;
-import org.rutebanken.sobek.netex.mapping.NetexMapper;
+import org.rutebanken.sobek.netex.mapping.context.MappingContext;
+import org.rutebanken.sobek.netex.mapping.mapstruct.equipment.EquipmentMapper;
 import org.rutebanken.sobek.versioning.save.EquipmentVersionedSaverService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,14 +37,16 @@ public class EquipmentImporter {
 
     private static final Logger logger = LoggerFactory.getLogger(EquipmentImporter.class);
 
-    private final NetexMapper netexMapper;
+    private final EquipmentMapper equipmentMapper;
 
     private final EquipmentVersionedSaverService equipmentVersionedSaverService;
+    private final MappingContext mappingContext;
 
     @Autowired
-    public EquipmentImporter(NetexMapper netexMapper, EquipmentVersionedSaverService equipmentVersionedSaverService) {
-        this.netexMapper = netexMapper;
+    public EquipmentImporter(EquipmentMapper equipmentMapper, EquipmentVersionedSaverService equipmentVersionedSaverService, MappingContext mappingContext) {
+        this.equipmentMapper = equipmentMapper;
         this.equipmentVersionedSaverService = equipmentVersionedSaverService;
+        this.mappingContext = mappingContext;
     }
 
     public List<org.rutebanken.netex.model.Equipment_VersionStructure> importEquipments(List<Equipment> equipments, AtomicInteger equipmentsCounter) {
@@ -51,14 +54,12 @@ public class EquipmentImporter {
         logger.info("Importing {} incoming equipment", equipments.size());
 
         List<Equipment> result = new ArrayList<>();
-
         logger.info("Importing deck plans");
         for (Equipment incomingEquipment : equipments) {
             result.add(importEquipment(incomingEquipment, equipmentsCounter));
         }
 
-        return result.stream().map(equipment -> netexMapper.mapToNetexModel(equipment)).collect(toList());
-
+        return result.stream().map(e -> equipmentMapper.mapToNetexManual(e, mappingContext)).collect(toList());
     }
 
     private Equipment importEquipment(Equipment incomingEquipment, AtomicInteger equipmentsCounter) {

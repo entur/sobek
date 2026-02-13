@@ -15,11 +15,7 @@
 
 package org.rutebanken.sobek.exporter;
 
-import org.rutebanken.sobek.model.LocaleStructure;
-import org.rutebanken.sobek.model.MultilingualStringEntity;
-import org.rutebanken.sobek.model.ResourceFrame;
-import org.rutebanken.sobek.model.ServiceFrame;
-import org.rutebanken.sobek.model.VersionFrameDefaultsStructure;
+import org.rutebanken.sobek.model.*;
 import org.rutebanken.sobek.netex.id.NetexIdHelper;
 import org.rutebanken.sobek.time.ExportTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +40,7 @@ public class SobekServiceFrameExporter {
 
     public ServiceFrame createSobekServiceFrame(String description) {
         ServiceFrame serviceFrame= new ServiceFrame();
-        serviceFrame.setDescription(new MultilingualStringEntity(description));
+        serviceFrame.setDescription(new EmbeddableMultilingualString(description));
         setFrameDefaultLocale(serviceFrame);
         serviceFrame.setVersion(1L);
         serviceFrame.setNetexId(netexIdHelper.getNetexId(serviceFrame, serviceFrame.hashCode()));
@@ -54,7 +50,7 @@ public class SobekServiceFrameExporter {
 
     public ResourceFrame createSobekResourceFrame(String description){
         ResourceFrame resourceFrame = new ResourceFrame();
-        resourceFrame.setDescription(new MultilingualStringEntity(description));
+        resourceFrame.setDescription(new EmbeddableMultilingualString(description));
         resourceFrame.setVersion(1L);
         resourceFrame.setNetexId(netexIdHelper.getNetexId(resourceFrame,resourceFrame.hashCode()));
 

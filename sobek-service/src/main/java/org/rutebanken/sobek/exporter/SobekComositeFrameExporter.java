@@ -16,8 +16,9 @@
 package org.rutebanken.sobek.exporter;
 
 import lombok.extern.slf4j.Slf4j;
-import org.rutebanken.sobek.model.*;
-import org.rutebanken.sobek.model.vehicle.CompositeFrame;
+import org.rutebanken.netex.model.CompositeFrame;
+import org.rutebanken.netex.model.LocaleStructure;
+import org.rutebanken.netex.model.VersionFrameDefaultsStructure;
 import org.rutebanken.sobek.netex.id.NetexIdHelper;
 import org.rutebanken.sobek.time.ExportTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,13 +46,13 @@ public class SobekComositeFrameExporter {
     }
 
 
-    public CompositeFrame createSobekCompositeFrame(String description) {
+    public CompositeFrame createCompositeFrame(String description) {
         CompositeFrame compositeFrame = new CompositeFrame();
         setFrameDefaultLocale(compositeFrame);
-        compositeFrame.setDescription(new MultilingualStringEntity(description));
+        compositeFrame.setDescription(new org.rutebanken.netex.model.MultilingualString().withContent(description));
         // siteFrame.setCreated(Instant.now()); // Disabled because of OffsetDateTimeInstantConverter issues during test
-        compositeFrame.setVersion(1L);
-        compositeFrame.setNetexId(netexIdHelper.getNetexId(compositeFrame, compositeFrame.hashCode()));
+        compositeFrame.setVersion("1");
+        compositeFrame.setId(netexIdHelper.getNetexId("CompositeFrame", compositeFrame.hashCode()));
         return compositeFrame;
     }
 

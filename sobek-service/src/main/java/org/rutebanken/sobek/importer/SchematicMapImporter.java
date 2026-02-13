@@ -16,8 +16,8 @@
 package org.rutebanken.sobek.importer;
 
 import org.rutebanken.sobek.model.vehicle.SchematicMap;
-import org.rutebanken.sobek.netex.mapping.NetexMapper;
-import org.rutebanken.sobek.repository.SchematicMapRepository;
+import org.rutebanken.sobek.netex.mapping.mapstruct.SchematicMapMapper;
+import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.rutebanken.sobek.versioning.save.SchematicMapVersionedSaverService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,17 +37,17 @@ public class SchematicMapImporter {
 
     private static final Logger logger = LoggerFactory.getLogger(SchematicMapImporter.class);
 
-    private final NetexMapper netexMapper;
-
-    private final SchematicMapRepository schematicMapRepository;
+    private final SchematicMapMapper schematicMapMapper;
 
     private final SchematicMapVersionedSaverService schematicMapVersionedSaverService;
 
+    private final MappingContext context;
+
     @Autowired
-    public SchematicMapImporter(NetexMapper netexMapper, SchematicMapRepository schematicMapRepository, SchematicMapVersionedSaverService schematicMapVersionedSaverService) {
-        this.netexMapper = netexMapper;
-        this.schematicMapRepository = schematicMapRepository;
+    public SchematicMapImporter(SchematicMapMapper schematicMapMapper, SchematicMapVersionedSaverService schematicMapVersionedSaverService, MappingContext context) {
+        this.schematicMapMapper = schematicMapMapper;
         this.schematicMapVersionedSaverService = schematicMapVersionedSaverService;
+        this.context = context;
     }
 
     public List<org.rutebanken.netex.model.SchematicMap> importSchematicMaps(List<SchematicMap> schematicMaps, AtomicInteger schematicMapsCounter) {
@@ -61,8 +61,7 @@ public class SchematicMapImporter {
             result.add(importSchematicMap(incomingSchematicMap, schematicMapsCounter));
         }
 
-        return result.stream().map(schematicMap -> netexMapper.mapToNetexModel(schematicMap)).collect(toList());
-
+        return result.stream().map(schematicMap -> schematicMapMapper.mapToNetex(schematicMap, context)).collect(toList());
     }
 
     private SchematicMap importSchematicMap(SchematicMap incomingSchematicMap, AtomicInteger schematicMapsCounter) {

@@ -45,7 +45,7 @@ public class AccessibilityAssessment_VersionedChildStructure
     protected List<AccessibilityLimitation> limitations;
 
     @Transient
-    protected MultilingualStringEntity comment;
+    protected EmbeddableMultilingualString comment;
 
     public LimitationStatusEnumeration getMobilityImpairedAccess() {
         return mobilityImpairedAccess;
@@ -63,11 +63,11 @@ public class AccessibilityAssessment_VersionedChildStructure
         this.limitations = value;
     }
 
-    public MultilingualStringEntity getComment() {
+    public EmbeddableMultilingualString getComment() {
         return comment;
     }
 
-    public void setComment(MultilingualStringEntity value) {
+    public void setComment(EmbeddableMultilingualString value) {
         this.comment = value;
     }
 }

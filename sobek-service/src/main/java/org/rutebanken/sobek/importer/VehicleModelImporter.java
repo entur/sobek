@@ -16,8 +16,8 @@
 package org.rutebanken.sobek.importer;
 
 import org.rutebanken.sobek.model.vehicle.VehicleModel;
-import org.rutebanken.sobek.netex.mapping.NetexMapper;
-import org.rutebanken.sobek.repository.VehicleModelRepository;
+import org.rutebanken.sobek.netex.mapping.context.MappingContext;
+import org.rutebanken.sobek.netex.mapping.mapstruct.VehicleModelMapper;
 import org.rutebanken.sobek.versioning.save.VehicleModelVersionedSaverService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,17 +37,17 @@ public class VehicleModelImporter {
 
     private static final Logger logger = LoggerFactory.getLogger(VehicleModelImporter.class);
 
-    private final NetexMapper netexMapper;
-
-    private final VehicleModelRepository vehicleModelRepository;
+    private final VehicleModelMapper vehicleModelMapper;
 
     private final VehicleModelVersionedSaverService vehicleModelVersionedSaverService;
 
+    private final MappingContext mappingContext;
+
     @Autowired
-    public VehicleModelImporter(NetexMapper netexMapper, VehicleModelRepository vehicleModelRepository, VehicleModelVersionedSaverService vehicleModelVersionedSaverService) {
-        this.netexMapper = netexMapper;
-        this.vehicleModelRepository = vehicleModelRepository;
+    public VehicleModelImporter(VehicleModelMapper vehicleModelMapper, VehicleModelVersionedSaverService vehicleModelVersionedSaverService, MappingContext mappingContext) {
+        this.vehicleModelMapper = vehicleModelMapper;
         this.vehicleModelVersionedSaverService = vehicleModelVersionedSaverService;
+        this.mappingContext = mappingContext;
     }
 
     public List<org.rutebanken.netex.model.VehicleModel> importVehicleModels(List<VehicleModel> vehicleModels, AtomicInteger vehicleModelsCounter) {
@@ -61,7 +61,7 @@ public class VehicleModelImporter {
             result.add(importVehicleModel(incomingVehicleModel, vehicleModelsCounter));
         }
 
-        return result.stream().map(vehicleModel -> netexMapper.mapToNetexModel(vehicleModel)).collect(toList());
+        return result.stream().map(vm -> vehicleModelMapper.mapToNetex(vm, mappingContext)).collect(toList());
 
     }
 

@@ -21,7 +21,6 @@ import jakarta.persistence.EntityTransaction;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.runner.RunWith;
-import org.rutebanken.sobek.repository.TagRepository;
 import org.rutebanken.sobek.versioning.VersionCreator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,9 +47,6 @@ public abstract class SobekIntegrationTest {
     protected EntityManagerFactory entityManagerFactory;
 
     @Autowired
-    private TagRepository tagRepository;
-
-    @Autowired
     protected VersionCreator versionCreator;
 
     @Value("${local.server.port}")
@@ -60,9 +56,6 @@ public abstract class SobekIntegrationTest {
     @After
     public void clearRepositories() {
         clearIdGeneration();
-
-        tagRepository.deleteAll();
-        tagRepository.flush();
     }
 
     /**

@@ -15,7 +15,12 @@
 
 package org.rutebanken.sobek.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.io.Serializable;
 
@@ -23,7 +28,16 @@ import java.io.Serializable;
  * MultilingualString is extended to make it possible to embed.
  */
 @Embeddable
-public class EmbeddableMultilingualString extends MultilingualString implements Serializable {
+@Getter
+@Setter
+@EqualsAndHashCode(callSuper = false)
+@ToString
+public class EmbeddableMultilingualString implements Serializable {
+    protected String value;
+
+    @Column(length = 5)
+    protected String lang;
+
     public EmbeddableMultilingualString() {
     }
 

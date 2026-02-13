@@ -26,8 +26,6 @@ public abstract class DeckSpace_VersionStructure extends DeckComponent_VersionSt
     protected DeckSpace parentDeckSpace;
 
     @Transient
-    private String parentDeckSpaceRefNotMapped;
-    @Transient
     private String incomingId;
 
     @OneToMany(cascade = CascadeType.ALL)

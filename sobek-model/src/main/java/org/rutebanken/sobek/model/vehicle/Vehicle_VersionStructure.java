@@ -38,25 +38,25 @@ public class Vehicle_VersionStructure extends DataManagedObjectStructure {
     private String operationalNumber;
     @Embedded
     private PrivateCodeStructure privateCode;
-    @Transient
-    private JAXBElement<? extends TransportOrganisationRefStructure> transportOrganisationRef;
-    @Transient
-    private ContactRefStructure contactRef;
+    //@Transient
+    //private JAXBElement<? extends TransportOrganisationRefStructure> transportOrganisationRef;
+    //@Transient
+    //private ContactRefStructure contactRef;
 
     @ManyToOne
     private VehicleType transportType;
     @Transient
-    private TransportTypeRefStructure transportTypeRef;
+    private String transportTypeRef;
 
     @ManyToOne
     private VehicleModel vehicleModel;
     @Transient
-    private VehicleModelRefStructure vehicleModelRef;
+    private String vehicleModelRef;
 
     @Transient
     private VehicleEquipmentProfileRefs_RelStructure equipmentProfiles;
-    @Transient
-    private JAXBElement<? extends VehicleModelProfileRefStructure> vehicleModelProfileRef;
+    //@Transient
+    //private JAXBElement<? extends VehicleModelProfileRefStructure> vehicleModelProfileRef;
     @Transient
     private Equipments_RelStructure actualVehicleEquipments;
     private Boolean monitored;

@@ -54,12 +54,17 @@ public class ReferenceResolver {
     private NetexIdHelper netexIdHelper;
 
     public <T extends DataManagedObjectStructure> T resolve(VersionOfObjectRefStructure versionOfObjectRefStructure, Class<T> clazz) {
+        return resolve(versionOfObjectRefStructure.getRef(), versionOfObjectRefStructure.getVersion(), clazz);
+    }
 
-        logger.debug("Received reference: {}", versionOfObjectRefStructure);
+    public <T extends DataManagedObjectStructure> T resolve(String ref, String refVersion, Class<T> clazz) {
 
-        assertNotNull(versionOfObjectRefStructure, "ref", versionOfObjectRefStructure.getRef());
+        logger.debug("Received reference: {} {}", ref, refVersion);
 
-        String ref = versionOfObjectRefStructure.getRef();
+        if (ref == null) {
+            throw new IllegalArgumentException("ref value cannot be null: ");
+        }
+
         long colonCount = ref.chars().filter(ch -> ch == ':').count();
         if (colonCount != 2) {
             throw new IllegalArgumentException("Expected two number of colons in ref. Got: '" + ref + "'");
@@ -77,22 +82,27 @@ public class ReferenceResolver {
             netexId = ref;
         }
 
-        if (versionOfObjectRefStructure.getVersion() == null || versionOfObjectRefStructure.getVersion().equals("any")) {
+        if (refVersion == null || refVersion.equals("any")) {
             return genericEntityInVersionRepository.findFirstByNetexIdOrderByVersionDesc(netexId, clazz);
         } else {
-            long version = Long.parseLong(versionOfObjectRefStructure.getVersion());
+            long version = Long.parseLong(refVersion);
             return genericEntityInVersionRepository.findFirstByNetexIdAndVersion(netexId, version, clazz);
         }
 
     }
 
     public <T extends DataManagedObjectStructure> T resolve(VersionOfObjectRefStructure versionOfObjectRefStructure) {
+        return resolve(versionOfObjectRefStructure.getRef(), versionOfObjectRefStructure.getVersion());
+    }
 
-        logger.debug("Received reference: {}", versionOfObjectRefStructure);
+    public <T extends DataManagedObjectStructure> T resolve(String ref, String refVersion) {
+        logger.debug("Received reference: {} {}", ref, refVersion);
 
-        assertNotNull(versionOfObjectRefStructure, "ref", versionOfObjectRefStructure.getRef());
+        if (ref == null) {
+            throw new IllegalArgumentException("ref value cannot be null: ");
+        }
 
-        String ref = versionOfObjectRefStructure.getRef();
+
         long colonCount = ref.chars().filter(ch -> ch == ':').count();
         if (colonCount != 2) {
             throw new IllegalArgumentException("Expected two number of colons in ref. Got: '" + ref + "'");
@@ -112,18 +122,12 @@ public class ReferenceResolver {
             netexId = ref;
         }
 
-        if (versionOfObjectRefStructure.getVersion() == null) {
+        if (refVersion == null || refVersion.equals("any")) {
             return genericEntityInVersionRepository.findFirstByNetexIdOrderByVersionDesc(netexId, clazz);
         } else {
-            long version = Long.parseLong(versionOfObjectRefStructure.getVersion());
+            long version = Long.parseLong(refVersion);
             return genericEntityInVersionRepository.findFirstByNetexIdAndVersion(netexId, version, clazz);
         }
 
-    }
-
-    private void assertNotNull(VersionOfObjectRefStructure versionOfObjectRefStructure, String name, String fieldValue) {
-        if (fieldValue == null) {
-            throw new IllegalArgumentException(name + " value cannot be null: " + versionOfObjectRefStructure);
-        }
     }
 }

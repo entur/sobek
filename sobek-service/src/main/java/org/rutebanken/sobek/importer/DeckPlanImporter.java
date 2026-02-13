@@ -16,8 +16,8 @@
 package org.rutebanken.sobek.importer;
 
 import org.rutebanken.sobek.model.vehicle.DeckPlan;
-import org.rutebanken.sobek.netex.mapping.NetexMapper;
-import org.rutebanken.sobek.repository.DeckPlanRepository;
+import org.rutebanken.sobek.netex.mapping.mapstruct.deckplan.DeckPlanMapper;
+import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.rutebanken.sobek.versioning.save.DeckPlanVersionedSaverService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,21 +37,19 @@ public class DeckPlanImporter {
 
     private static final Logger logger = LoggerFactory.getLogger(DeckPlanImporter.class);
 
-    private final NetexMapper netexMapper;
-
-    private final DeckPlanRepository deckPlanRepository;
+    private final DeckPlanMapper deckPlanMapper;
+    private final MappingContext context;
 
     private final DeckPlanVersionedSaverService deckPlanVersionedSaverService;
 
     @Autowired
-    public DeckPlanImporter(NetexMapper netexMapper, DeckPlanRepository deckPlanRepository, DeckPlanVersionedSaverService deckPlanVersionedSaverService) {
-        this.netexMapper = netexMapper;
-        this.deckPlanRepository = deckPlanRepository;
+    public DeckPlanImporter(DeckPlanMapper deckPlanMapper, MappingContext context, DeckPlanVersionedSaverService deckPlanVersionedSaverService) {
+        this.deckPlanMapper = deckPlanMapper;
+        this.context = context;
         this.deckPlanVersionedSaverService = deckPlanVersionedSaverService;
     }
 
     public List<org.rutebanken.netex.model.DeckPlan> importDeckPlans(List<DeckPlan> deckPlans, AtomicInteger deckPlansCounter) {
-
         logger.info("Importing {} incoming deck plans", deckPlans.size());
 
         List<DeckPlan> result = new ArrayList<>();
@@ -61,7 +59,7 @@ public class DeckPlanImporter {
             result.add(importDeckPlan(incomingDeckPlan, deckPlansCounter));
         }
 
-        return result.stream().map(deckPlan -> netexMapper.mapToNetexModel(deckPlan)).collect(toList());
+        return result.stream().map(deckPlan -> deckPlanMapper.mapToNetex(deckPlan, context)).collect(toList());
 
     }
 

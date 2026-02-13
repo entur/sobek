@@ -16,9 +16,10 @@
 package org.rutebanken.sobek.config;
 
 import org.rutebanken.sobek.exporter.*;
-import org.rutebanken.sobek.netex.id.NetexIdHelper;
-import org.rutebanken.sobek.netex.mapping.EquipmentMappingHelper;
-import org.rutebanken.sobek.netex.mapping.NetexMapper;
+import org.rutebanken.sobek.netex.mapping.context.MappingContext;
+import org.rutebanken.sobek.netex.mapping.mapstruct.*;
+import org.rutebanken.sobek.netex.mapping.mapstruct.deckplan.DeckPlanMapper;
+import org.rutebanken.sobek.netex.mapping.mapstruct.equipment.EquipmentMapper;
 import org.rutebanken.sobek.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -62,19 +63,28 @@ public class StreamingPublicationDeliveryConfig {
     private SobekComositeFrameExporter sobekComositeFrameExporter;
 
     @Autowired
-    private NetexMapper netexMapper;
+    private VehicleMapper vehicleMapper;
 
     @Autowired
-    private NetexIdHelper netexIdHelper;
+    private DeckPlanMapper deckPlanMapper;
 
     @Autowired
-    private EquipmentMappingHelper equipmentMappingHelper;
+    private VehicleModelMapper vehicleModelMapper;
+
+    @Autowired
+    private VehicleTypeMapper vehicleTypeMapper;
+
+    @Autowired
+    private EquipmentMapper equipmentMapper;
 
     @Value("${asyncNetexExport.validateAgainstSchema:false}")
     private boolean validateAsyncExport;
 
     @Value("${syncNetexExport.validateAgainstSchema:true}")
     private boolean validateSyncExport;
+
+    @Autowired
+    private MappingContext mappingContext;
 
 //    @Bean("asyncStreamingPublicationDelivery") TODO
 //    public StreamingPublicationDelivery asyncStreamingPublicationDelivery() throws IOException, SAXException {
@@ -88,7 +98,7 @@ public class StreamingPublicationDeliveryConfig {
 
     private StreamingPublicationDelivery createStreamingPublicationDelivery(boolean validate) throws IOException, SAXException {
         return new StreamingPublicationDelivery(vehicleRepository, vehicleTypeRepository, vehicleModelRepository, deckPlanRepository, vehicleEquipmentProfileRepository, equipmentRepository, publicationDeliveryCreator,
-                sobekServiceFrameExporter, equipmentMappingHelper, sobekResourceFrameExporter, sobekComositeFrameExporter, netexMapper
+                sobekServiceFrameExporter, vehicleTypeMapper, equipmentMapper, vehicleMapper, deckPlanMapper, vehicleModelMapper, mappingContext, sobekResourceFrameExporter, sobekComositeFrameExporter
                  /* TODO validate,*/ );
     }
 }

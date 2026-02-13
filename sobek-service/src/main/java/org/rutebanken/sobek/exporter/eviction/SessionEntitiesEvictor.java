@@ -18,7 +18,6 @@ package org.rutebanken.sobek.exporter.eviction;
 import com.google.common.collect.Sets;
 import org.hibernate.engine.spi.EntityKey;
 import org.hibernate.internal.SessionImpl;
-import org.rutebanken.sobek.model.tag.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +34,6 @@ public class SessionEntitiesEvictor implements EntitiesEvictor {
      * Usually we would use CascadeType DETACH but entities like Tag is not related other than a reference string.
      */
     private static final Set<String> evictionClasses = Sets.newHashSet(
-            Tag.class.getName()
     );
 
 

@@ -34,8 +34,9 @@ import org.rutebanken.netex.model.*;
 import org.rutebanken.sobek.importer.DeckPlanImporter;
 import org.rutebanken.sobek.importer.ImportParams;
 import org.rutebanken.sobek.importer.converter.DeckPlanIdConverter;
-import org.rutebanken.sobek.netex.mapping.NetexMapper;
 import org.rutebanken.sobek.netex.mapping.PublicationDeliveryHelper;
+import org.rutebanken.sobek.netex.mapping.context.MappingContext;
+import org.rutebanken.sobek.netex.mapping.mapstruct.deckplan.DeckPlanMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -50,16 +51,18 @@ public class DeckPlanImportHandler {
 
     private final PublicationDeliveryHelper publicationDeliveryHelper;
 
-    private final NetexMapper netexMapper;
+    private final DeckPlanMapper deckPlanMapper;
+    private final MappingContext context;
 
     private final DeckPlanImporter deckPlanImporter;
     private final DeckPlanIdConverter deckPlanIdConverter;
 
     public DeckPlanImportHandler(PublicationDeliveryHelper publicationDeliveryHelper,
-                                 NetexMapper netexMapper,
+                                 DeckPlanMapper deckPlanMapper, MappingContext context,
                                  DeckPlanImporter deckPlanImporter, DeckPlanIdConverter deckPlanIdConverter) {
         this.publicationDeliveryHelper = publicationDeliveryHelper;
-        this.netexMapper = netexMapper;
+        this.deckPlanMapper = deckPlanMapper;
+        this.context = context;
         this.deckPlanImporter = deckPlanImporter;
         this.deckPlanIdConverter = deckPlanIdConverter;
     }
@@ -76,9 +79,9 @@ public class DeckPlanImportHandler {
                     .toList();
 
             logger.info("About to map {} deck plans to internal model", netexResourceFrame.getDeckPlans().getDeckPlan().size());
-            List<org.rutebanken.sobek.model.vehicle.DeckPlan> mappedDeckPlans = netexMapper.getFacade()
+            List<org.rutebanken.sobek.model.vehicle.DeckPlan> mappedDeckPlans = deckPlanMapper
                     .mapAsList(originalWithMappedIds,
-                            org.rutebanken.sobek.model.vehicle.DeckPlan.class);
+                            context);
             logger.info("Mapped {} deck plans to internal model", mappedDeckPlans.size());
             List<DeckPlan> importedDeckPlans = deckPlanImporter.importDeckPlans(mappedDeckPlans, deckPlansCounter);
 

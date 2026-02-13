@@ -29,7 +29,7 @@ public abstract class SignEquipment_VersionStructure
     protected BigDecimal heightFromFloor;
 
     @Transient
-    protected MultilingualStringEntity placement;
+    protected EmbeddableMultilingualString placement;
     protected String brandGraphic;
     protected String signGraphic;
     protected Boolean machineReadable;
@@ -58,11 +58,11 @@ public abstract class SignEquipment_VersionStructure
         this.heightFromFloor = value;
     }
 
-    public MultilingualStringEntity getPlacement() {
+    public EmbeddableMultilingualString getPlacement() {
         return placement;
     }
 
-    public void setPlacement(MultilingualStringEntity value) {
+    public void setPlacement(EmbeddableMultilingualString value) {
         this.placement = value;
     }
 

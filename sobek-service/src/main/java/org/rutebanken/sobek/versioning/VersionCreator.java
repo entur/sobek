@@ -15,13 +15,6 @@
 
 package org.rutebanken.sobek.versioning;
 
-import ma.glasnost.orika.CustomConverter;
-import ma.glasnost.orika.MapperFacade;
-import ma.glasnost.orika.MapperFactory;
-import ma.glasnost.orika.MappingContext;
-import ma.glasnost.orika.converter.builtin.PassThroughConverter;
-import ma.glasnost.orika.impl.DefaultMapperFactory;
-import ma.glasnost.orika.metadata.Type;
 import org.locationtech.jts.geom.Point;
 import org.rutebanken.sobek.model.EntityInVersionStructure;
 import org.slf4j.Logger;
@@ -50,28 +43,13 @@ public class VersionCreator {
 
     private final VersionIncrementor versionIncrementor;
 
-    private final MapperFacade defaultMapperFacade;
+    //private final MapperFacade defaultMapperFacade;
 
     @Autowired
     public VersionCreator(VersionIncrementor versionIncrementor) {
         this.versionIncrementor = versionIncrementor;
 
-        MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
 
-
-        mapperFactory.getConverterFactory()
-                .registerConverter(new PassThroughConverter(Point.class));
-
-        mapperFactory.getConverterFactory()
-                .registerConverter(new CustomConverter<Instant, Instant>() {
-                    @Override
-                    public Instant convert(Instant instant, Type<? extends Instant> type, MappingContext mappingContext) {
-                        return Instant.from(instant);
-                    }
-                });
-
-
-        defaultMapperFacade = mapperFactory.getMapperFacade();
     }
 
     /**
@@ -85,7 +63,7 @@ public class VersionCreator {
     public <T extends EntityInVersionStructure> T createCopy(EntityInVersionStructure entityInVersionStructure, Class<T> type) {
         logger.debug("Create new version for entity: {}", entityInVersionStructure);
 
-        EntityInVersionStructure copy = defaultMapperFacade.map(entityInVersionStructure, type);
+        EntityInVersionStructure copy = null; //defaultMapperFacade.map(entityInVersionStructure, type);
         logger.debug("Created copy of entity: {}", copy);
 
         return type.cast(copy);

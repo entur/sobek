@@ -141,9 +141,13 @@ This starts PostGIS at `localhost:37433`
 
 2. **Run Application**:
 ```bash
-mvn spring-boot:run
+mvn clean install -DskipTests && mvn -pl sobek-app spring-boot:run
 ```
 Application available at: `http://localhost:37999`
+
+> **Multi-module note**: `spring-boot:run` must target `sobek-app` via `-pl`. The preceding
+> `install` builds and installs sibling modules (`sobek-model`, `sobek-common`, `sobek-repository`,
+> `sobek-service`) to the local Maven repo. Re-run `install` after changing code in those modules.
 
 **IntelliJ**: Right-click `SobekApplication.java` → Run
 - Configure profiles: `local,local-blobstore,local-changelog`

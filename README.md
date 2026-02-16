@@ -189,7 +189,13 @@ Starts up PostGIS server with settings matching the ones in [`application-local.
 configurations, choose the correct configuration (Spring Boot -> App), and add a comma separated list of desired 
 profiles (e.g. `local,local-blobstore,activemq`) to Active profiles. Save the configuration.
 
-**Command line**: `mvn spring-boot:run`
+**Command line**:
+```bash
+mvn clean install -DskipTests && mvn -pl sobek-app spring-boot:run
+```
+Note: This is a multi-module project. The `install` step is needed to build dependency modules
+(`sobek-model`, `sobek-service`, etc.) before running the app module. After the initial build,
+you only need to re-run `install` when you change code outside `sobek-app`.
 
 ## Run Sobek with Docker compose
 To run Sobek with Docker compose, you need to have a docker-compose.yml file. In docker-compose folder you will find a compose.yml file.:

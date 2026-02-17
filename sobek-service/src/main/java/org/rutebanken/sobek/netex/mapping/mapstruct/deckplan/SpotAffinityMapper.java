@@ -53,8 +53,10 @@ public interface SpotAffinityMapper {
                 !source.getMembers().getLocatableSpotRef().isEmpty()) {
             org.rutebanken.sobek.model.vehicle.PassengerSpace passengerSpace = (org.rutebanken.sobek.model.vehicle.PassengerSpace) context.getCurrentSobekDeckSpace(); // TODO: Type check
             if (passengerSpace != null && passengerSpace.getPassengerSpots() != null) {
-                var rawMembers = source.getMembers().getLocatableSpotRef().stream().map(JAXBElement::getValue).toList();
-                List<LocatableSpot> sobekSpots = rawMembers.stream().map(n -> mapNetexRef2Sobek(n, passengerSpace.getPassengerSpots(), passengerSpace.getLuggageSpots())).toList();
+                List<LocatableSpot> sobekSpots = source.getMembers().getLocatableSpotRef().stream()
+                        .map(JAXBElement::getValue)
+                        .map(n -> mapNetexRef2Sobek(n, passengerSpace.getPassengerSpots(), passengerSpace.getLuggageSpots()))
+                        .toList();
                 if(!sobekSpots.isEmpty()) {
                     target.setMembers(sobekSpots);
                 }

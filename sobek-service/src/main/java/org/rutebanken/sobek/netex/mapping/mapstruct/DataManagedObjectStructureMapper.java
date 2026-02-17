@@ -52,7 +52,7 @@ public interface DataManagedObjectStructureMapper {
      */
     Map<String, Function<org.rutebanken.sobek.model.DataManagedObjectStructure, String>> sobekEntityGetFunctions =
             new ImmutableMap.Builder<String, Function<org.rutebanken.sobek.model.DataManagedObjectStructure, String>>()
-                    /**
+                    /*
                      * Disabled as this is a system field that should not be part of export.
                      */
                     //.put(CHANGED_BY, org.rutebanken.sobek.model.DataManagedObjectStructure::getChangedBy)
@@ -98,7 +98,7 @@ public interface DataManagedObjectStructureMapper {
         if (netexEntity.getKeyList() != null && netexEntity.getKeyList().getKeyValue() != null) {
             sobekEntity.getKeyValues().clear();
             if (!netexEntity.getKeyList().getKeyValue().isEmpty()) {
-                Map mappedKeyValues = context.getKeyListStructureMapper().mapToSobek(netexEntity.getKeyList(), context);
+                Map<String, org.rutebanken.sobek.model.Value> mappedKeyValues = context.getKeyListStructureMapper().mapToSobek(netexEntity.getKeyList(), context);
                 if (mappedKeyValues != null) {
                     sobekEntity.getKeyValues().putAll(mappedKeyValues);
                 }
@@ -106,7 +106,7 @@ public interface DataManagedObjectStructureMapper {
                     logger.debug("Copy key values to sobek model {}", sobekEntity.getNetexId());
                     if (sobekEntitySetFunctions.containsKey(keyValueStructure.getKey())) {
                         sobekEntitySetFunctions.get(keyValueStructure.getKey()).accept(keyValueStructure.getValue(), sobekEntity);
-                        sobekEntity.getKeyValues().remove(keyValueStructure.getValue());
+                        sobekEntity.getKeyValues().remove(keyValueStructure.getKey());
                     }
                 });
             }

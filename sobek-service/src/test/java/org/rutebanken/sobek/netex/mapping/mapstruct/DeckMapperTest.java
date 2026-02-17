@@ -4,6 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.rutebanken.netex.model.Deck;
 import org.rutebanken.netex.model.MultilingualString;
+import org.rutebanken.sobek.netex.id.NetexIdHelper;
+import org.rutebanken.sobek.netex.id.ValidPrefixList;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.rutebanken.sobek.netex.mapping.mapstruct.deckplan.DeckMapper;
 import org.rutebanken.sobek.netex.mapping.mapstruct.deckplan.DeckSpaceMapper;
@@ -19,13 +21,24 @@ public class DeckMapperTest {
 
     @Autowired
     DeckSpaceMapper deckSpaceMapper;
+    @Autowired
+    private NetexIdHelper netexIdHelper;
+    @Autowired
+    private ValidPrefixList validPrefixList;
+    @Autowired
+    DataManagedObjectStructureMapper dataManagedObjectStructureMapper;
+
 
     private MappingContext context;
+
 
     @BeforeEach
     void setUp() {
         context = new MappingContext();
         context.setDeckSpaceMapper(deckSpaceMapper);
+        context.setNetexIdHelper(netexIdHelper);
+        context.setValidPrefixList(validPrefixList);
+        context.setDataManagedObjectStructureMapper(dataManagedObjectStructureMapper);
     }
 
     @Test
@@ -36,7 +49,7 @@ public class DeckMapperTest {
     @Test
     void testMapToSobek() {
         Deck deck = new Deck();
-        deck.setId("D:1");
+        deck.setId("NMR:Deck:1");
         deck.setVersion("1");
         deck.setDescription(new MultilingualString().withContent("Test Deck"));
 

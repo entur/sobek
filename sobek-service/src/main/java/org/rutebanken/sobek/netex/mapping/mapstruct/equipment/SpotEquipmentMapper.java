@@ -1,10 +1,13 @@
 
 package org.rutebanken.sobek.netex.mapping.mapstruct.equipment;
 
+import org.mapstruct.AfterMapping;
+import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.rutebanken.netex.model.SpotEquipment;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
+import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.rutebanken.sobek.netex.mapping.mapstruct.DataManagedObjectStructureMapper;
 
 /**
@@ -24,7 +27,8 @@ public interface SpotEquipmentMapper {
      */
     @DataManagedObjectStructureMapper.ToSobekMappings
     org.rutebanken.sobek.model.vehicle.SpotEquipment mapToSobek(
-            SpotEquipment source
+            SpotEquipment source,
+            @Context MappingContext context
     );
 
     /**
@@ -32,7 +36,8 @@ public interface SpotEquipmentMapper {
      */
     @DataManagedObjectStructureMapper.ToNetexMappings
     SpotEquipment mapToNetex(
-            org.rutebanken.sobek.model.vehicle.SpotEquipment source
+            org.rutebanken.sobek.model.vehicle.SpotEquipment source,
+            @Context MappingContext context
     );
 
     /**
@@ -41,6 +46,28 @@ public interface SpotEquipmentMapper {
     @DataManagedObjectStructureMapper.ToSobekMappings
     void updateSobekFromNetex(
             SpotEquipment source,
-            @MappingTarget org.rutebanken.sobek.model.vehicle.SpotEquipment target
+            @MappingTarget org.rutebanken.sobek.model.vehicle.SpotEquipment target,
+            @Context MappingContext context
     );
+
+    @AfterMapping
+    default void afterMapToSobek(
+            SpotEquipment source,
+            @MappingTarget org.rutebanken.sobek.model.vehicle.SpotEquipment target,
+            @Context MappingContext context
+    ) {
+        if (target != null) {
+            context.getDataManagedObjectStructureMapper().afterMappingToSobek(source, target, context);
+        }
+    }
+    @AfterMapping
+    default void afterMapToNetex(
+            org.rutebanken.sobek.model.vehicle.SpotEquipment source,
+            @MappingTarget SpotEquipment target,
+            @Context MappingContext context
+    ) {
+        if (target != null) {
+            context.getDataManagedObjectStructureMapper().afterMappingToNetex(source, target, context);
+        }
+    }
 }

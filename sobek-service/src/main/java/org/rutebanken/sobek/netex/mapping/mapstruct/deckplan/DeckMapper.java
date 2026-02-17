@@ -63,13 +63,23 @@ public interface DeckMapper {
     );
 
     @AfterMapping
-    default void afterMapToSobek(Deck source, @MappingTarget org.rutebanken.sobek.model.vehicle.Deck target, @Context MappingContext context) {
+    default void afterMapToSobek(Deck source,
+                                 @MappingTarget org.rutebanken.sobek.model.vehicle.Deck target,
+                                 @Context MappingContext context) {
+        if(target != null) {
+            context.getDataManagedObjectStructureMapper().afterMappingToSobek(source, target, context);
+        }
         context.setCurrentSobekDeck(target);
         target.setDeckSpaces(context.getDeckSpaceMapper().mapNetexRelStructureToSobekList(source.getDeckSpaces(), context));
     }
 
     @AfterMapping
-    default void afterMapToNetex(org.rutebanken.sobek.model.vehicle.Deck source, @MappingTarget Deck target, @Context MappingContext context) {
+    default void afterMapToNetex(org.rutebanken.sobek.model.vehicle.Deck source,
+                                 @MappingTarget Deck target,
+                                 @Context MappingContext context) {
+        if(target != null) {
+            context.getDataManagedObjectStructureMapper().afterMappingToNetex(source, target, context);
+        }
         target.setDeckSpaces(context.getDeckSpaceMapper().mapSobekListToNetexRelStructure(source.getDeckSpaces(), context));
     }
 

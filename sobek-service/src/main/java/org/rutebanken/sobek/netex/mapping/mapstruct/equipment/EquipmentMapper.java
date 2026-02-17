@@ -46,31 +46,52 @@ public interface EquipmentMapper {
             return null;
         }
         return switch (source) {
-            case org.rutebanken.sobek.model.vehicle.AccessVehicleEquipment accessVehicleEquipment -> context.getAccessVehicleEquipmentMapper().mapToNetex(accessVehicleEquipment);
-            case org.rutebanken.sobek.model.vehicle.BedEquipment bedEquipment -> context.getBedEquipmentMapper().mapToNetex(bedEquipment);
-            case org.rutebanken.sobek.model.vehicle.EntranceEquipment entranceEquipment -> context.getEntranceEquipmentMapper().mapToNetex(entranceEquipment);
-            case org.rutebanken.sobek.model.vehicle.LuggageSpotEquipment luggageSpotEquipment -> context.getLuggageSpotEquipmentMapper().mapToNetex(luggageSpotEquipment);
-            case org.rutebanken.sobek.model.vehicle.SeatEquipment seatEquipment -> context.getSeatEquipmentMapper().mapToNetex(seatEquipment);
-            case org.rutebanken.sobek.model.vehicle.SpotEquipment spotEquipment -> context.getSpotEquipmentMapper().mapToNetex(spotEquipment);
-            case org.rutebanken.sobek.model.vehicle.StaircaseEquipment staircaseEquipment -> context.getStaircaseEquipmentMapper().mapToNetex(staircaseEquipment);
+            case org.rutebanken.sobek.model.vehicle.AccessVehicleEquipment accessVehicleEquipment -> context.getAccessVehicleEquipmentMapper().mapToNetex(accessVehicleEquipment, context);
+            case org.rutebanken.sobek.model.vehicle.BedEquipment bedEquipment -> context.getBedEquipmentMapper().mapToNetex(bedEquipment, context);
+            case org.rutebanken.sobek.model.vehicle.EntranceEquipment entranceEquipment -> context.getEntranceEquipmentMapper().mapToNetex(entranceEquipment, context);
+            case org.rutebanken.sobek.model.vehicle.LuggageSpotEquipment luggageSpotEquipment -> context.getLuggageSpotEquipmentMapper().mapToNetex(luggageSpotEquipment, context);
+            case org.rutebanken.sobek.model.vehicle.SeatEquipment seatEquipment -> context.getSeatEquipmentMapper().mapToNetex(seatEquipment, context);
+            case org.rutebanken.sobek.model.vehicle.SpotEquipment spotEquipment -> context.getSpotEquipmentMapper().mapToNetex(spotEquipment, context);
+            case org.rutebanken.sobek.model.vehicle.StaircaseEquipment staircaseEquipment -> context.getStaircaseEquipmentMapper().mapToNetex(staircaseEquipment, context);
             default -> null;
         };
     };
 
-    @DataManagedObjectStructureMapper.ToNetexMappings
+    @DataManagedObjectStructureMapper.ToSobekMappings
     default org.rutebanken.sobek.model.vehicle.Equipment mapToSobekManual(
             Equipment_VersionStructure source,
             @Context MappingContext context
     ) {
         return switch (source) {
-            case AccessVehicleEquipment accessVehicleEquipment -> context.getAccessVehicleEquipmentMapper().mapToSobek(accessVehicleEquipment);
-            case BedEquipment bedEquipment -> context.getBedEquipmentMapper().mapToSobek(bedEquipment);
-            case EntranceEquipment entranceEquipment -> context.getEntranceEquipmentMapper().mapToSobek(entranceEquipment);
-            case LuggageSpotEquipment luggageSpotEquipment -> context.getLuggageSpotEquipmentMapper().mapToSobek(luggageSpotEquipment);
-            case SeatEquipment seatEquipment -> context.getSeatEquipmentMapper().mapToSobek(seatEquipment);
-            case SpotEquipment spotEquipment -> context.getSpotEquipmentMapper().mapToSobek(spotEquipment);
-            case StaircaseEquipment staircaseEquipment -> context.getStaircaseEquipmentMapper().mapToSobek(staircaseEquipment);
+            case AccessVehicleEquipment accessVehicleEquipment -> context.getAccessVehicleEquipmentMapper().mapToSobek(accessVehicleEquipment, context);
+            case BedEquipment bedEquipment -> context.getBedEquipmentMapper().mapToSobek(bedEquipment, context);
+            case EntranceEquipment entranceEquipment -> context.getEntranceEquipmentMapper().mapToSobek(entranceEquipment, context);
+            case LuggageSpotEquipment luggageSpotEquipment -> context.getLuggageSpotEquipmentMapper().mapToSobek(luggageSpotEquipment, context);
+            case SeatEquipment seatEquipment -> context.getSeatEquipmentMapper().mapToSobek(seatEquipment, context);
+            case SpotEquipment spotEquipment -> context.getSpotEquipmentMapper().mapToSobek(spotEquipment, context);
+            case StaircaseEquipment staircaseEquipment -> context.getStaircaseEquipmentMapper().mapToSobek(staircaseEquipment, context);
             default -> null;
         };
     };
+
+    @AfterMapping
+    default void afterMapToSobek(
+            Equipment_VersionStructure source,
+            @MappingTarget org.rutebanken.sobek.model.vehicle.Equipment target,
+            @Context MappingContext context
+    ) {
+        if (target != null) {
+            context.getDataManagedObjectStructureMapper().afterMappingToSobek(source, target, context);
+        }
+    }
+    @AfterMapping
+    default void afterMapToNetex(
+            org.rutebanken.sobek.model.vehicle.Equipment source,
+            @MappingTarget Equipment_VersionStructure target,
+            @Context MappingContext context
+    ) {
+        if (target != null) {
+            context.getDataManagedObjectStructureMapper().afterMappingToNetex(source, target, context);
+        }
+    }
 }

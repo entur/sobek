@@ -65,8 +65,6 @@ public class GroupOfEntitiesMapper {
         if (input.get(KEY_VALUES) != null) {
             List<Map> keyValues = (List) input.get(KEY_VALUES);
 
-            entity.getKeyValues().clear();
-
             keyValues.forEach(inputMap-> {
                 String key = (String)inputMap.get(KEY);
                 List<String> values = (List<String>)inputMap.get(VALUES);

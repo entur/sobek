@@ -1,10 +1,7 @@
 
 package org.rutebanken.sobek.netex.mapping.mapstruct.deckplan;
 
-import org.mapstruct.Context;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
+import org.mapstruct.*;
 import org.rutebanken.netex.model.LuggageSpot;
 import org.rutebanken.netex.model.LuggageSpots_RelStructure;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
@@ -63,6 +60,27 @@ public interface LuggageSpotMapper {
             @MappingTarget org.rutebanken.sobek.model.vehicle.LuggageSpot target,
             @Context MappingContext context
     );
+
+    @AfterMapping
+    default void afterMapToSobek(
+            LuggageSpot source,
+            @MappingTarget org.rutebanken.sobek.model.vehicle.LuggageSpot target,
+            @Context MappingContext context
+    ) {
+        if (target != null) {
+            context.getDataManagedObjectStructureMapper().afterMappingToSobek(source, target, context);
+        }
+    }
+    @AfterMapping
+    default void afterMapToNetex(
+            org.rutebanken.sobek.model.vehicle.LuggageSpot source,
+            @MappingTarget LuggageSpot target,
+            @Context MappingContext context
+    ) {
+        if (target != null) {
+            context.getDataManagedObjectStructureMapper().afterMappingToNetex(source, target, context);
+        }
+    }
 
     /**
      * Maps a list of LuggageSpots from Sobek to NeTEx RelStructure.

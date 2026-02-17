@@ -9,6 +9,8 @@ import org.rutebanken.netex.model.TransportTypeRefStructure;
 import org.rutebanken.netex.model.VehicleModel;
 import org.rutebanken.sobek.model.EmbeddableMultilingualString;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
+import org.rutebanken.sobek.netex.id.NetexIdHelper;
+import org.rutebanken.sobek.netex.id.ValidPrefixList;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.rutebanken.sobek.repository.reference.ReferenceResolver;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,12 @@ class VehicleModelMapperTest {
     private VehicleModelMapper mapper;
     @Autowired
     private KeyListStructureMapper keyListStructureMapper;
+    @Autowired
+    private NetexIdHelper netexIdHelper;
+    @Autowired
+    private ValidPrefixList validPrefixList;
+    @Autowired
+    private DataManagedObjectStructureMapper dataManagedObjectStructureMapper;
 
     @Mock
     ReferenceResolver referenceResolver;
@@ -41,10 +49,10 @@ class VehicleModelMapperTest {
     void setUp() {
         // Create mock resolver
         org.rutebanken.sobek.model.vehicle.VehicleModel mockVehicleModel = new org.rutebanken.sobek.model.vehicle.VehicleModel();
-        mockVehicleModel.setNetexId("VM:Model:1");
+        mockVehicleModel.setNetexId("NMR:VehicleModel:1");
 
         VehicleType mockVehicleType = new VehicleType();
-        mockVehicleType.setNetexId("VT:Bus:1");
+        mockVehicleType.setNetexId("NMR:VehicleType:1");
 
         context = new MappingContext();
         ReferenceResolver referenceResolver = mock(ReferenceResolver.class);
@@ -52,6 +60,9 @@ class VehicleModelMapperTest {
         when(referenceResolver.resolve(any(),any(),eq(org.rutebanken.sobek.model.vehicle.VehicleModel.class))).thenReturn(mockVehicleModel);
         context.setReferenceResolver(referenceResolver);
         context.setKeyListStructureMapper(keyListStructureMapper);
+        context.setNetexIdHelper(netexIdHelper);
+        context.setValidPrefixList(validPrefixList);
+        context.setDataManagedObjectStructureMapper(dataManagedObjectStructureMapper);
     }
 
     @Test
@@ -63,11 +74,11 @@ class VehicleModelMapperTest {
     void testMapToSobek() {
         // Given
         VehicleModel netexModel = new VehicleModel();
-        netexModel.setId("VM:1");
+        netexModel.setId("NMR:VehicleModel:1");
         netexModel.setVersion("1");
 
         TransportTypeRefStructure transportTypeRef = new TransportTypeRefStructure()
-                .withRef("TT:Bus:1");
+                .withRef("NMR:VehicleType:1");
         JAXBElement<TransportTypeRefStructure> jaxbRef =
                 objectFactory.createTransportTypeRef(transportTypeRef);
         netexModel.setTransportTypeRef(jaxbRef);
@@ -82,7 +93,7 @@ class VehicleModelMapperTest {
         assertNotNull(sobekModel);
         assertEquals(1, sobekModel.getVersion());
         assertNotNull(sobekModel.getTransportType());
-        assertEquals("VT:Bus:1", sobekModel.getTransportType().getNetexId());
+        assertEquals("NMR:VehicleType:1", sobekModel.getTransportType().getNetexId());
         assertEquals(new BigDecimal("500.0"), sobekModel.getRange());
     }
 
@@ -93,7 +104,7 @@ class VehicleModelMapperTest {
                 new org.rutebanken.sobek.model.vehicle.VehicleModel();
         sobekModel.setVersion(1);
         org.rutebanken.sobek.model.vehicle.VehicleType vehicleType = new org.rutebanken.sobek.model.vehicle.VehicleType();
-        vehicleType.setNetexId("TT:Bus:1");
+        vehicleType.setNetexId("NMR:VehicleType:1");
         sobekModel.setTransportType(vehicleType);
         sobekModel.setRange(new BigDecimal("500.0"));
 
@@ -104,7 +115,7 @@ class VehicleModelMapperTest {
         assertNotNull(netexModel);
         assertEquals("1", netexModel.getVersion());
         assertNotNull(netexModel.getTransportTypeRef());
-        assertEquals("TT:Bus:1", netexModel.getTransportTypeRef().getValue().getRef());
+        assertEquals("NMR:VehicleType:1", netexModel.getTransportTypeRef().getValue().getRef());
         assertEquals(new BigDecimal("500.0"), netexModel.getRange());
     }
 
@@ -115,7 +126,7 @@ class VehicleModelMapperTest {
                 new org.rutebanken.sobek.model.vehicle.VehicleModel();
         originalSobek.setVersion(1);
         org.rutebanken.sobek.model.vehicle.VehicleType vehicleType = new org.rutebanken.sobek.model.vehicle.VehicleType();
-        vehicleType.setNetexId("TT:Bus:1");
+        vehicleType.setNetexId("NMR:VehicleType:1");
         originalSobek.setTransportType(vehicleType);
         originalSobek.setFullCharge(new BigDecimal("100.0"));
         originalSobek.setDescription(new EmbeddableMultilingualString("Description ABC", "nor"));

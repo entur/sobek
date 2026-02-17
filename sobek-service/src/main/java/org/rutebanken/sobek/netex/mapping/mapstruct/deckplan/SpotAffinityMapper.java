@@ -45,18 +45,21 @@ public interface SpotAffinityMapper {
             @MappingTarget org.rutebanken.sobek.model.vehicle.SpotAffinity target,
             @Context MappingContext context
     ) {
-    if(source.getMembers() != null &&
-            source.getMembers().getLocatableSpotRef() != null &&
-            !source.getMembers().getLocatableSpotRef().isEmpty()) {
-        org.rutebanken.sobek.model.vehicle.PassengerSpace passengerSpace = (org.rutebanken.sobek.model.vehicle.PassengerSpace) context.getCurrentSobekDeckSpace(); // TODO: Type check
-        if (passengerSpace != null && passengerSpace.getPassengerSpots() != null) {
-            var rawMembers = source.getMembers().getLocatableSpotRef().stream().map(JAXBElement::getValue).toList();
-            List<LocatableSpot> sobekSpots = rawMembers.stream().map(n -> mapNetexRef2Sobek(n, passengerSpace.getPassengerSpots(), passengerSpace.getLuggageSpots())).toList();
-            if(!sobekSpots.isEmpty()) {
-                target.setMembers(sobekSpots);
+        if(target != null) {
+            context.getDataManagedObjectStructureMapper().afterMappingToSobek(source, target, context);
+        }
+        if(source.getMembers() != null &&
+                source.getMembers().getLocatableSpotRef() != null &&
+                !source.getMembers().getLocatableSpotRef().isEmpty()) {
+            org.rutebanken.sobek.model.vehicle.PassengerSpace passengerSpace = (org.rutebanken.sobek.model.vehicle.PassengerSpace) context.getCurrentSobekDeckSpace(); // TODO: Type check
+            if (passengerSpace != null && passengerSpace.getPassengerSpots() != null) {
+                var rawMembers = source.getMembers().getLocatableSpotRef().stream().map(JAXBElement::getValue).toList();
+                List<LocatableSpot> sobekSpots = rawMembers.stream().map(n -> mapNetexRef2Sobek(n, passengerSpace.getPassengerSpots(), passengerSpace.getLuggageSpots())).toList();
+                if(!sobekSpots.isEmpty()) {
+                    target.setMembers(sobekSpots);
+                }
             }
         }
-    }
     }
 
     @AfterMapping
@@ -65,6 +68,9 @@ public interface SpotAffinityMapper {
             @MappingTarget SpotAffinity target,
             @Context MappingContext context
     ) {
+        if(target != null) {
+            context.getDataManagedObjectStructureMapper().afterMappingToNetex(source, target, context);
+        }
         var sobekMembers = source.getMembers();
         if(sobekMembers != null && !sobekMembers.isEmpty()) {
             LocatableSpotRefs_RelStructure members = new LocatableSpotRefs_RelStructure();

@@ -1,12 +1,14 @@
 
 package org.rutebanken.sobek.netex.mapping.mapstruct;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.primitives.Longs;
 import org.mapstruct.*;
 import org.rutebanken.netex.model.DataManagedObjectStructure;
 import org.rutebanken.netex.model.KeyListStructure;
 import org.rutebanken.netex.model.KeyValueStructure;
+import org.rutebanken.sobek.netex.id.NetexIdHelper;
 import org.rutebanken.sobek.netex.mapping.NetexMappingException;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
@@ -16,6 +18,8 @@ import org.slf4j.LoggerFactory;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+
+import static org.rutebanken.sobek.model.CustomKeyValueTypes.ORIGINAL_ID_KEY;
 
 /**
  * MapStruct mapper for DataManagedObjectStructure.
@@ -95,11 +99,22 @@ public interface DataManagedObjectStructureMapper {
             sobekEntity.getKeyValues().clear();
             sobekEntity.getKeyValues().putAll(context.getKeyListStructureMapper().mapToSobek(netexEntity.getKeyList(), context));
             netexEntity.getKeyList().getKeyValue().forEach(keyValueStructure -> {
+                logger.debug("Copy key values to sobek model {}", sobekEntity.getNetexId());
                 if (sobekEntitySetFunctions.containsKey(keyValueStructure.getKey())) {
                     sobekEntitySetFunctions.get(keyValueStructure.getKey()).accept(keyValueStructure.getValue(), sobekEntity);
                     sobekEntity.getKeyValues().remove(keyValueStructure.getValue());
                 }
             });
+        }
+        if(netexEntity.getId() == null) {
+            sobekEntity.setNetexId(null);
+        } else if(context.getValidPrefixList().isValidPrefixForType(context.getNetexIdHelper().extractIdPrefix(netexEntity.getId()), sobekEntity.getClass())) {
+            logger.debug("Detected ID with valid prefix: {}. ", netexEntity.getId());
+            sobekEntity.setNetexId(netexEntity.getId().trim());
+        } else {
+            logger.debug("Received ID {}. Will map it as key value ", netexEntity.getId());
+            moveOriginalIdToKeyValueList(sobekEntity, netexEntity.getId(), context.getNetexIdHelper());
+            sobekEntity.setNetexId(null);
         }
     }
 
@@ -153,8 +168,8 @@ public interface DataManagedObjectStructureMapper {
     }
 
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "netexId", source = "id")
+    @Mapping(target = "id", ignore = true) // Handle in AfterMapping
+    @Mapping(target = "netexId", ignore = true) // Handle in AfterMapping
     @Mapping(target = "version", source = "version", qualifiedByName = "versionToSobekDMO")
     @Mapping(target = "keyValues", ignore = true) // Handle in AfterMapping
     @interface ToSobekMappings {
@@ -165,5 +180,31 @@ public interface DataManagedObjectStructureMapper {
     @interface ToNetexMappings {
     }
 
+    private void addKeyValueAvoidEmpty(org.rutebanken.sobek.model.DataManagedObjectStructure sobekEntity, final String key, final String value, boolean ignoreEmptyPostfix, NetexIdHelper netexIdHelper) {
 
+        String keytoAdd = key.trim();
+        String valueToAdd = value.trim();
+
+        if(ignoreEmptyPostfix) {
+            if(Strings.isNullOrEmpty(netexIdHelper.extractIdPostfix(valueToAdd))) {
+                logger.debug("Ignoring empty postfix for key value: key {} and value '{}'", keytoAdd, valueToAdd);
+                return;
+            }
+        }
+
+
+        if(!Strings.isNullOrEmpty(keytoAdd) && !Strings.isNullOrEmpty(valueToAdd)) {
+            logger.trace("Adding key {} and value {}", keytoAdd, valueToAdd);
+            sobekEntity.getOrCreateValues(keytoAdd).add(valueToAdd);
+        }
+    }
+
+    /**
+     * Writes netex ID to keyval in internal Tiamat model
+     * @param dataManagedObjectStructure to set the keyval on (tiamat model)
+     * @param netexId The id to add to values, using the key #{ORIGINAL_ID_KEY}
+     */
+    default void moveOriginalIdToKeyValueList(org.rutebanken.sobek.model.DataManagedObjectStructure dataManagedObjectStructure, String netexId, NetexIdHelper netexIdHelper) {
+        addKeyValueAvoidEmpty(dataManagedObjectStructure, ORIGINAL_ID_KEY, netexId, true, netexIdHelper);
+    }
 }

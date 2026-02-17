@@ -20,9 +20,9 @@ import java.util.List;
 @Mapper(
         config = SobekMapperConfig.class,
         uses = {
-                VehicleTypeMapper.class,
-                VehicleModelMapper.class,
                 DataManagedObjectStructureMapper.class,
+                VehicleTypeMapper.class,
+                VehicleModelMapper.class
         }
 )
 public interface VehicleMapper {
@@ -93,6 +93,9 @@ public interface VehicleMapper {
             @MappingTarget org.rutebanken.sobek.model.vehicle.Vehicle target,
             @Context MappingContext context
     ) {
+        if (target != null) {
+            context.getDataManagedObjectStructureMapper().afterMappingToSobek(source, target, context);
+        }
         // Extract and resolve TransportTypeRef if present
         if (source.getTransportTypeRef() != null && source.getTransportTypeRef().getValue() != null) {
             TransportTypeRefStructure transportTypeRefStructure = source.getTransportTypeRef().getValue();
@@ -134,6 +137,10 @@ public interface VehicleMapper {
             @MappingTarget Vehicle target,
             @Context MappingContext context
     ) {
+        if (target != null) {
+            context.getDataManagedObjectStructureMapper().afterMappingToNetex(source, target, context);
+        }
+
         // Handle TransportType -> TransportTypeRef wrapping
         if (source.getTransportType() != null && source.getTransportType().getNetexId() != null) {
             // Create reference from actual entity

@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.rutebanken.netex.model.KeyListStructure;
 import org.rutebanken.netex.model.KeyValueStructure;
 import org.rutebanken.netex.model.VehicleType;
+import org.rutebanken.sobek.netex.id.NetexIdHelper;
+import org.rutebanken.sobek.netex.id.ValidPrefixList;
 import org.rutebanken.sobek.netex.mapping.PublicationDeliveryHelper;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +18,9 @@ import org.rutebanken.sobek.model.Value;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.rutebanken.sobek.model.CustomKeyValueTypes.ORIGINAL_ID_KEY;
 import static org.rutebanken.sobek.netex.mapping.mapstruct.DataManagedObjectStructureMapper.CHANGED_BY;
 import static org.rutebanken.sobek.netex.mapping.mapstruct.DataManagedObjectStructureMapper.VERSION_COMMENT;
 
@@ -29,6 +33,10 @@ public class DataManagedObjectStructureMapperTest {
 
     @Autowired
     private DataManagedObjectStructureMapper mapper;
+    @Autowired
+    private NetexIdHelper netexIdHelper;
+    @Autowired
+    private ValidPrefixList validPrefixList;
 
     private PublicationDeliveryHelper publicationDeliveryHelper = new PublicationDeliveryHelper();
 
@@ -41,13 +49,15 @@ public class DataManagedObjectStructureMapperTest {
     void setUp() {
         context = new MappingContext();
         context.setKeyListStructureMapper(keyListStructureMapper);
+        context.setNetexIdHelper(netexIdHelper);
+        context.setValidPrefixList(validPrefixList);
     }
 
     @Test
     void testMapToSobek_BasicProperties() {
         // Given
         org.rutebanken.netex.model.VehicleType netexEntity = new org.rutebanken.netex.model.VehicleType();
-        netexEntity.setId("TEST:VehicleType:123");
+        netexEntity.setId("NMR:VehicleType:123");
         netexEntity.setVersion("1");
 
         // When
@@ -56,7 +66,7 @@ public class DataManagedObjectStructureMapperTest {
 
         // Then
         assertThat(sobekEntity).isNotNull();
-        assertThat(sobekEntity.getNetexId()).isEqualTo("TEST:VehicleType:123");
+        assertThat(sobekEntity.getNetexId()).isEqualTo("NMR:VehicleType:123");
         assertThat(sobekEntity.getVersion()).isEqualTo(1L);
     }
 
@@ -64,7 +74,7 @@ public class DataManagedObjectStructureMapperTest {
     void testMapToSobek_WithVersionAny() {
         // Given
         org.rutebanken.netex.model.VehicleType netexEntity = new org.rutebanken.netex.model.VehicleType();
-        netexEntity.setId("TEST:VehicleType:123");
+        netexEntity.setId("NMR:VehicleType:123");
         netexEntity.setVersion("any");
 
         // When
@@ -80,7 +90,7 @@ public class DataManagedObjectStructureMapperTest {
     void testMapToSobek_WithChangedBy() {
         // Given
         org.rutebanken.netex.model.VehicleType netexEntity = new org.rutebanken.netex.model.VehicleType();
-        netexEntity.setId("TEST:VehicleType:123");
+        netexEntity.setId("NMR:VehicleType:123");
         netexEntity.setVersion("1");
 
         KeyListStructure keyList = new KeyListStructure();
@@ -104,7 +114,7 @@ public class DataManagedObjectStructureMapperTest {
     void testMapToSobek_WithVersionComment() {
         // Given
         org.rutebanken.netex.model.VehicleType netexEntity = new org.rutebanken.netex.model.VehicleType();
-        netexEntity.setId("TEST:VehicleType:123");
+        netexEntity.setId("NMR:VehicleType:123");
         netexEntity.setVersion("1");
 
         KeyListStructure keyList = new KeyListStructure();
@@ -128,7 +138,7 @@ public class DataManagedObjectStructureMapperTest {
     void testMapToNetex_BasicProperties() {
         // Given
         org.rutebanken.sobek.model.vehicle.VehicleType sobekEntity = new org.rutebanken.sobek.model.vehicle.VehicleType();
-        sobekEntity.setNetexId("TEST:VehicleType:456");
+        sobekEntity.setNetexId("NMR:VehicleType:456");
         sobekEntity.setVersion(2L);
 
         // When
@@ -137,7 +147,7 @@ public class DataManagedObjectStructureMapperTest {
 
         // Then
         assertThat(netexEntity).isNotNull();
-        assertThat(netexEntity.getId()).isEqualTo("TEST:VehicleType:456");
+        assertThat(netexEntity.getId()).isEqualTo("NMR:VehicleType:456");
         assertThat(netexEntity.getVersion()).isEqualTo("2");
     }
 
@@ -145,7 +155,7 @@ public class DataManagedObjectStructureMapperTest {
     void testMapToNetex_WithVersionComment() {
         // Given
         org.rutebanken.sobek.model.vehicle.VehicleType sobekEntity = new org.rutebanken.sobek.model.vehicle.VehicleType();
-        sobekEntity.setNetexId("TEST:VehicleType:456");
+        sobekEntity.setNetexId("NMR:VehicleType:456");
         sobekEntity.setVersion(2L);
         sobekEntity.setVersionComment("Updated version");
 
@@ -168,7 +178,7 @@ public class DataManagedObjectStructureMapperTest {
     void testMapToNetex_WithoutVersionComment_EmptyKeyList() {
         // Given
         org.rutebanken.sobek.model.vehicle.VehicleType sobekEntity = new org.rutebanken.sobek.model.vehicle.VehicleType();
-        sobekEntity.setNetexId("TEST:VehicleType:456");
+        sobekEntity.setNetexId("NMR:VehicleType:456");
         sobekEntity.setVersion(2L);
         sobekEntity.setVersionComment(null);
 
@@ -186,7 +196,7 @@ public class DataManagedObjectStructureMapperTest {
     void testMapToNetex_ChangedByNotIncluded() {
         // Given
         org.rutebanken.sobek.model.vehicle.VehicleType sobekEntity = new org.rutebanken.sobek.model.vehicle.VehicleType();
-        sobekEntity.setNetexId("TEST:VehicleType:456");
+        sobekEntity.setNetexId("NMR:VehicleType:456");
         sobekEntity.setVersion(2L);
         sobekEntity.setChangedBy("testuser@example.com");
 
@@ -207,7 +217,7 @@ public class DataManagedObjectStructureMapperTest {
     void testUpdateSobekFromNetex() {
         // Given
         org.rutebanken.netex.model.VehicleType netexEntity = new org.rutebanken.netex.model.VehicleType();
-        netexEntity.setId("TEST:VehicleType:789");
+        netexEntity.setId("NMR:VehicleType:789");
         netexEntity.setVersion("3");
 
         KeyListStructure keyList = new KeyListStructure();
@@ -219,7 +229,7 @@ public class DataManagedObjectStructureMapperTest {
         netexEntity.setKeyList(keyList);
 
         org.rutebanken.sobek.model.vehicle.VehicleType existingSobekEntity = new org.rutebanken.sobek.model.vehicle.VehicleType();
-        existingSobekEntity.setNetexId("TEST:VehicleType:789");
+        existingSobekEntity.setNetexId("NMR:VehicleType:789");
         existingSobekEntity.setVersion(2L);
         existingSobekEntity.setVersionComment("Old comment");
 
@@ -227,7 +237,7 @@ public class DataManagedObjectStructureMapperTest {
         mapper.updateSobekFromNetex(netexEntity, existingSobekEntity, context);
 
         // Then
-        assertThat(existingSobekEntity.getNetexId()).isEqualTo("TEST:VehicleType:789");
+        assertThat(existingSobekEntity.getNetexId()).isEqualTo("NMR:VehicleType:789");
         assertThat(existingSobekEntity.getVersion()).isEqualTo(3L);
         assertThat(existingSobekEntity.getVersionComment()).isEqualTo("Updated comment");
     }
@@ -236,7 +246,7 @@ public class DataManagedObjectStructureMapperTest {
     void testMapToSobek_WithMultipleKeyValues() {
         // Given
         org.rutebanken.netex.model.VehicleType netexEntity = new org.rutebanken.netex.model.VehicleType();
-        netexEntity.setId("TEST:VehicleType:999");
+        netexEntity.setId("NMR:VehicleType:999");
         netexEntity.setVersion("1");
 
         KeyListStructure keyList = new KeyListStructure();
@@ -265,7 +275,7 @@ public class DataManagedObjectStructureMapperTest {
     void testMapToSobek_NullKeyList() {
         // Given
         org.rutebanken.netex.model.VehicleType netexEntity = new org.rutebanken.netex.model.VehicleType();
-        netexEntity.setId("TEST:VehicleType:111");
+        netexEntity.setId("NMR:VehicleType:111");
         netexEntity.setVersion("1");
         netexEntity.setKeyList(null);
 
@@ -275,14 +285,33 @@ public class DataManagedObjectStructureMapperTest {
 
         // Then
         assertThat(sobekEntity).isNotNull();
-        assertThat(sobekEntity.getNetexId()).isEqualTo("TEST:VehicleType:111");
+        assertThat(sobekEntity.getNetexId()).isEqualTo("NMR:VehicleType:111");
+    }
+
+    @Test
+    void testMapToSobek_NullKeyList_InvalidPrefix() {
+        // Given
+        org.rutebanken.netex.model.VehicleType netexEntity = new org.rutebanken.netex.model.VehicleType();
+        netexEntity.setId("BS:VehicleType:111");
+        netexEntity.setVersion("1");
+        netexEntity.setKeyList(null);
+
+        // When
+        org.rutebanken.sobek.model.vehicle.VehicleType sobekEntity = new org.rutebanken.sobek.model.vehicle.VehicleType();
+        mapper.mapToSobek(netexEntity, sobekEntity, context);
+
+        // Then
+        assertThat(sobekEntity).isNotNull();
+        assertThat(sobekEntity.getNetexId()).isNull();
+        assertThat(sobekEntity.getKeyValues()).containsKey(ORIGINAL_ID_KEY);
+        assertEquals("BS:VehicleType:111", sobekEntity.getKeyValues().get(ORIGINAL_ID_KEY).getItems().stream().findFirst().orElse(null));
     }
 
     @Test
     void testMapToNetex_WithMultipleProperties() {
         // Given
         org.rutebanken.sobek.model.vehicle.VehicleType sobekEntity = new org.rutebanken.sobek.model.vehicle.VehicleType();
-        sobekEntity.setNetexId("TEST:VehicleType:222");
+        sobekEntity.setNetexId("NMR:VehicleType:222");
         sobekEntity.setVersion(5L);
         sobekEntity.setVersionComment("Multi-property test");
         sobekEntity.setChangedBy("admin@example.com");
@@ -293,7 +322,7 @@ public class DataManagedObjectStructureMapperTest {
 
         // Then
         assertThat(netexEntity).isNotNull();
-        assertThat(netexEntity.getId()).isEqualTo("TEST:VehicleType:222");
+        assertThat(netexEntity.getId()).isEqualTo("NMR:VehicleType:222");
         assertThat(netexEntity.getVersion()).isEqualTo("5");
         assertThat(netexEntity.getKeyList()).isNotNull();
         assertThat(netexEntity.getKeyList().getKeyValue())

@@ -1,6 +1,7 @@
 package org.rutebanken.sobek.netex.mapping.mapstruct;
 
 import org.mapstruct.*;
+import org.rutebanken.netex.model.PassengerCapacityStructure;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 
@@ -40,4 +41,26 @@ public interface PassengerCapacityMapper {
             @MappingTarget org.rutebanken.sobek.model.vehicle.PassengerCapacity target,
             @Context MappingContext context
     );
+
+    @AfterMapping
+    default void afterMapToSobek(
+            PassengerCapacityStructure source,
+            @MappingTarget org.rutebanken.sobek.model.vehicle.PassengerCapacity target,
+            @Context MappingContext context
+    ) {
+        if (target != null) {
+            context.getDataManagedObjectStructureMapper().afterMappingToSobek(source, target, context);
+        }
+    }
+    @AfterMapping
+    default void afterMapToNetex(
+            org.rutebanken.sobek.model.vehicle.PassengerCapacity source,
+            @MappingTarget PassengerCapacityStructure target,
+            @Context MappingContext context
+    ) {
+        if (target != null) {
+            context.getDataManagedObjectStructureMapper().afterMappingToNetex(source, target, context);
+        }
+    }
+
 }

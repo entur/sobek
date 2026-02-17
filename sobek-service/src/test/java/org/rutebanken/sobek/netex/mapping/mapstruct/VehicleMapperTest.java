@@ -9,6 +9,8 @@ import org.rutebanken.netex.model.Vehicle;
 import org.rutebanken.netex.model.VehicleModelRefStructure;
 import org.rutebanken.sobek.model.vehicle.VehicleModel;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
+import org.rutebanken.sobek.netex.id.NetexIdHelper;
+import org.rutebanken.sobek.netex.id.ValidPrefixList;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.rutebanken.sobek.repository.reference.ReferenceResolver;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,12 @@ class VehicleMapperTest {
     private TemporalTypeMapper temporalTypeMapper;
     @Autowired
     private KeyListStructureMapper keyListStructureMapper;
+    @Autowired
+    private NetexIdHelper  netexIdHelper;
+    @Autowired
+    private ValidPrefixList validPrefixList;
+    @Autowired
+    private DataManagedObjectStructureMapper dataManagedObjectStructureMapper;
 
     @Test
     void testMapperIsInjected() {
@@ -44,10 +52,10 @@ class VehicleMapperTest {
     public void setUp() {
         // Create mock resolver
         VehicleModel mockVehicleModel = new VehicleModel();
-        mockVehicleModel.setNetexId("VM:Model:1");
+        mockVehicleModel.setNetexId("NMR:VehicleModel:1");
 
         VehicleType mockVehicleType = new VehicleType();
-        mockVehicleType.setNetexId("VT:Bus:1");
+        mockVehicleType.setNetexId("NMR:VehicleType:1");
 
         ReferenceResolver referenceResolver = mock(ReferenceResolver.class);
         when(referenceResolver.resolve(any(),any(),eq(VehicleType.class))).thenReturn(mockVehicleType);
@@ -55,13 +63,16 @@ class VehicleMapperTest {
         mappingContext = new MappingContext();
         mappingContext.setReferenceResolver(referenceResolver);
         mappingContext.setKeyListStructureMapper(keyListStructureMapper);
+        mappingContext.setNetexIdHelper(netexIdHelper);
+        mappingContext.setValidPrefixList(validPrefixList);
+        mappingContext.setDataManagedObjectStructureMapper(dataManagedObjectStructureMapper);
     }
 
     @Test
     void testMapToSobek() {
         // Given
         Vehicle netexVehicle = new Vehicle();
-        netexVehicle.setId("V:123");
+        netexVehicle.setId("NMR:Vehicle:123");
         netexVehicle.setVersion("1");
         netexVehicle.setRegistrationNumber("ABC123");
         netexVehicle.setChassisNumber("CHASSIS123");
@@ -70,12 +81,12 @@ class VehicleMapperTest {
 
         // Vehicle Model Reference
         VehicleModelRefStructure vehicleModelRef = new VehicleModelRefStructure();
-        vehicleModelRef.setRef("VM:Model:1");
+        vehicleModelRef.setRef("NMR:VehicleModel:1");
         netexVehicle.setVehicleModelRef(vehicleModelRef);
 
         // Transport Type Reference (VehicleType)
         TransportTypeRefStructure transportTypeRef = new TransportTypeRefStructure();
-        transportTypeRef.setRef("VT:Bus:1");
+        transportTypeRef.setRef("NMR:VehicleType:1");
         JAXBElement<TransportTypeRefStructure> jaxbTransportType =
                 objectFactory.createTransportTypeRef(transportTypeRef);
         netexVehicle.setTransportTypeRef(jaxbTransportType);
@@ -94,26 +105,26 @@ class VehicleMapperTest {
 
         // Check that references are stored in transient fields
         assertNotNull(sobekVehicle.getVehicleModel());
-        assertEquals("VM:Model:1", sobekVehicle.getVehicleModel().getNetexId());
+        assertEquals("NMR:VehicleModel:1", sobekVehicle.getVehicleModel().getNetexId());
 
         assertNotNull(sobekVehicle.getTransportType());
-        assertEquals("VT:Bus:1", sobekVehicle.getTransportType().getNetexId());
+        assertEquals("NMR:VehicleType:1", sobekVehicle.getTransportType().getNetexId());
     }
 
     @Test
     void testMapToSobekWithResolvers() {
         // Given
         Vehicle netexVehicle = new Vehicle();
-        netexVehicle.setId("V:123");
+        netexVehicle.setId("NMR:Vehicle:123");
         netexVehicle.setVersion("1");
         netexVehicle.setRegistrationNumber("ABC123");
 
         VehicleModelRefStructure vehicleModelRef = new VehicleModelRefStructure();
-        vehicleModelRef.setRef("VM:Model:1");
+        vehicleModelRef.setRef("NMR:VehicleModel:1");
         netexVehicle.setVehicleModelRef(vehicleModelRef);
 
         TransportTypeRefStructure transportTypeRef = new TransportTypeRefStructure();
-        transportTypeRef.setRef("VT:Bus:1");
+        transportTypeRef.setRef("NMR:VehicleType:1");
         JAXBElement<TransportTypeRefStructure> jaxbTransportType =
                 objectFactory.createTransportTypeRef(transportTypeRef);
         netexVehicle.setTransportTypeRef(jaxbTransportType);
@@ -124,10 +135,10 @@ class VehicleMapperTest {
 
         // Then
         assertNotNull(sobekVehicle.getVehicleModel());
-        assertEquals("VM:Model:1", sobekVehicle.getVehicleModel().getNetexId());
+        assertEquals("NMR:VehicleModel:1", sobekVehicle.getVehicleModel().getNetexId());
 
         assertNotNull(sobekVehicle.getTransportType());
-        assertEquals("VT:Bus:1", sobekVehicle.getTransportType().getNetexId());
+        assertEquals("NMR:VehicleType:1", sobekVehicle.getTransportType().getNetexId());
     }
 
     @Test
@@ -142,12 +153,12 @@ class VehicleMapperTest {
 
         // Set up VehicleType with incomingId
         VehicleType vehicleType = new VehicleType();
-        vehicleType.setNetexId("VT:Bus:1");
+        vehicleType.setNetexId("NMR:VehicleType:1");
         sobekVehicle.setTransportType(vehicleType);
 
         // Set up VehicleModel with incomingId
         VehicleModel vehicleModel = new VehicleModel();
-        vehicleModel.setNetexId("VM:Model:1");
+        vehicleModel.setNetexId("NMR:VehicleModel:1");
         sobekVehicle.setVehicleModel(vehicleModel);
 
         // When
@@ -162,11 +173,11 @@ class VehicleMapperTest {
 
         // Check TransportTypeRef is wrapped in JAXBElement
         assertNotNull(netexVehicle.getTransportTypeRef());
-        assertEquals("VT:Bus:1", netexVehicle.getTransportTypeRef().getValue().getRef());
+        assertEquals("NMR:VehicleType:1", netexVehicle.getTransportTypeRef().getValue().getRef());
 
         // Check VehicleModelRef
         assertNotNull(netexVehicle.getVehicleModelRef());
-        assertEquals("VM:Model:1", netexVehicle.getVehicleModelRef().getRef());
+        assertEquals("NMR:VehicleModel:1", netexVehicle.getVehicleModelRef().getRef());
     }
 
     @Test
@@ -179,11 +190,11 @@ class VehicleMapperTest {
 
         // Set transient references
         VehicleType vehicleType = new VehicleType();
-        vehicleType.setNetexId("VT:Bus:1");
+        vehicleType.setNetexId("NMR:VehicleType:1");
         sobekVehicle.setTransportType(vehicleType);
 
         VehicleModel vehicleModel = new VehicleModel();
-        vehicleModel.setNetexId("VM:Model:1");
+        vehicleModel.setNetexId("NMR:VehicleModel:1");
         sobekVehicle.setVehicleModel(vehicleModel);
 
         // When
@@ -191,10 +202,10 @@ class VehicleMapperTest {
 
         // Then
         assertNotNull(netexVehicle.getTransportTypeRef());
-        assertEquals("VT:Bus:1", netexVehicle.getTransportTypeRef().getValue().getRef());
+        assertEquals("NMR:VehicleType:1", netexVehicle.getTransportTypeRef().getValue().getRef());
 
         assertNotNull(netexVehicle.getVehicleModelRef());
-        assertEquals("VM:Model:1", netexVehicle.getVehicleModelRef().getRef());
+        assertEquals("NMR:VehicleModel:1", netexVehicle.getVehicleModelRef().getRef());
     }
 
     @Test
@@ -207,11 +218,11 @@ class VehicleMapperTest {
         originalSobek.setChassisNumber("CHASSIS123");
 
         VehicleType vehicleType = new VehicleType();
-        vehicleType.setNetexId("VT:Bus:1");
+        vehicleType.setNetexId("NMR:VehicleType:1");
         originalSobek.setTransportType(vehicleType);
 
         VehicleModel vehicleModel = new VehicleModel();
-        vehicleModel.setNetexId("VM:Model:1");
+        vehicleModel.setNetexId("NMR:VehicleModel:1");
         originalSobek.setVehicleModel(vehicleModel);
 
         // When - Round trip mapping
@@ -226,9 +237,9 @@ class VehicleMapperTest {
 
         // References are preserved
         assertNotNull(backToSobek.getTransportType());
-        assertEquals("VT:Bus:1", backToSobek.getTransportType().getNetexId());
+        assertEquals("NMR:VehicleType:1", backToSobek.getTransportType().getNetexId());
 
         assertNotNull(backToSobek.getVehicleModel());
-        assertEquals("VM:Model:1", backToSobek.getVehicleModel().getNetexId());
+        assertEquals("NMR:VehicleModel:1", backToSobek.getVehicleModel().getNetexId());
     }
 }

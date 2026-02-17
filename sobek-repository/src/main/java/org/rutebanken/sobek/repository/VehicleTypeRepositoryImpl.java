@@ -64,6 +64,7 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
             "AND (vt.validBetween.toDate IS NULL OR vt.validBetween.toDate >= :now) " +
             "AND (v IS NULL OR (v.validBetween.fromDate <= :now AND (v.validBetween.toDate IS NULL OR v.validBetween.toDate >= :now)))", 
             VehicleType.class);
+        query.setHint("hibernate.query.passDistinctThrough", false);
         query.setParameter("now", now);
         return query.getResultList();
     }

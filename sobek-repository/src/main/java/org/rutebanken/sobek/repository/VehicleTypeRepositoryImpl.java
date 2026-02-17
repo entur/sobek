@@ -54,6 +54,7 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
         }
     }
 
+    @Override
     public List<VehicleType> findAllCurrent() {
         Instant now = Instant.now();
         TypedQuery<VehicleType> query = entityManager.createQuery(

@@ -97,14 +97,19 @@ public interface DataManagedObjectStructureMapper {
     ) {
         if (netexEntity.getKeyList() != null && netexEntity.getKeyList().getKeyValue() != null) {
             sobekEntity.getKeyValues().clear();
-            sobekEntity.getKeyValues().putAll(context.getKeyListStructureMapper().mapToSobek(netexEntity.getKeyList(), context));
-            netexEntity.getKeyList().getKeyValue().forEach(keyValueStructure -> {
-                logger.debug("Copy key values to sobek model {}", sobekEntity.getNetexId());
-                if (sobekEntitySetFunctions.containsKey(keyValueStructure.getKey())) {
-                    sobekEntitySetFunctions.get(keyValueStructure.getKey()).accept(keyValueStructure.getValue(), sobekEntity);
-                    sobekEntity.getKeyValues().remove(keyValueStructure.getValue());
+            if (!netexEntity.getKeyList().getKeyValue().isEmpty()) {
+                Map mappedKeyValues = context.getKeyListStructureMapper().mapToSobek(netexEntity.getKeyList(), context);
+                if (mappedKeyValues != null) {
+                    sobekEntity.getKeyValues().putAll(mappedKeyValues);
                 }
-            });
+                netexEntity.getKeyList().getKeyValue().forEach(keyValueStructure -> {
+                    logger.debug("Copy key values to sobek model {}", sobekEntity.getNetexId());
+                    if (sobekEntitySetFunctions.containsKey(keyValueStructure.getKey())) {
+                        sobekEntitySetFunctions.get(keyValueStructure.getKey()).accept(keyValueStructure.getValue(), sobekEntity);
+                        sobekEntity.getKeyValues().remove(keyValueStructure.getValue());
+                    }
+                });
+            }
         }
         if(netexEntity.getId() == null) {
             sobekEntity.setNetexId(null);

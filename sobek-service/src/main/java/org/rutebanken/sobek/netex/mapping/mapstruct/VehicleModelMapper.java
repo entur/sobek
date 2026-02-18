@@ -71,6 +71,10 @@ public interface VehicleModelMapper {
             @MappingTarget org.rutebanken.sobek.model.vehicle.VehicleModel target,
             @Context MappingContext context
     ) {
+        if (target != null) {
+            context.getDataManagedObjectStructureMapper().afterMappingToSobek(source, target, context);
+        }
+
         // Extract and resolve TransportTypeRef if present
         if (source.getTransportTypeRef() != null && source.getTransportTypeRef().getValue() != null) {
             TransportTypeRefStructure transportTypeRefStructure = source.getTransportTypeRef().getValue();
@@ -97,6 +101,10 @@ public interface VehicleModelMapper {
             @MappingTarget VehicleModel target,
             @Context MappingContext context
     ) {
+        if (target != null) {
+            context.getDataManagedObjectStructureMapper().afterMappingToNetex(source, target, context);
+        }
+
         // Handle TransportType -> TransportTypeRef wrapping
         if (source.getTransportType() != null && source.getTransportType().getNetexId() != null) {
             // Create reference from actual entity

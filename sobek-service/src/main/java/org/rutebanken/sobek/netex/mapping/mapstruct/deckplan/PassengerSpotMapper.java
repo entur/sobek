@@ -45,8 +45,6 @@ public interface PassengerSpotMapper {
      */
     @DataManagedObjectStructureMapper.ToNetexMappings
     @Mapping(target = "typeOfLocatableSpotRef", ignore = true) // TODO: Implement when needed
-//    @Mapping(target = "passengerSeatRef", ignore = true) // TODO: Implement when needed
-//    @Mapping(target = "spotAffinities", ignore = true)
     PassengerSpot mapToNetex(
             org.rutebanken.sobek.model.vehicle.PassengerSpot source,
             @Context MappingContext context
@@ -106,6 +104,9 @@ public interface PassengerSpotMapper {
             @MappingTarget org.rutebanken.sobek.model.vehicle.PassengerSpot target,
             @Context MappingContext context
     ) {
+        if (target != null) {
+            context.getDataManagedObjectStructureMapper().afterMappingToSobek(source, target, context);
+        }
         Deck currentSobekDeck = context.getCurrentSobekDeck();
         if(source.getSpotColumnRef() != null &&
                 source.getSpotColumnRef().getRef() != null) {
@@ -136,6 +137,10 @@ public interface PassengerSpotMapper {
             @MappingTarget PassengerSpot target,
             @Context MappingContext context
     ) {
+        if (target != null) {
+            context.getDataManagedObjectStructureMapper().afterMappingToNetex(source, target, context);
+        }
+
         if(source.getSpotColumn() != null) {
             target.setSpotColumnRef(new SpotColumnRefStructure().withRef(source.getSpotColumn().getNetexId()) );
         }

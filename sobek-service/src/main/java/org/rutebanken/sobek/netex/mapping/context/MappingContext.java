@@ -7,7 +7,10 @@ import lombok.Setter;
 import org.rutebanken.netex.model.*;
 import org.rutebanken.sobek.model.vehicle.Deck;
 import org.rutebanken.sobek.model.vehicle.DeckSpace;
+import org.rutebanken.sobek.netex.id.NetexIdHelper;
+import org.rutebanken.sobek.netex.id.ValidPrefixList;
 import org.rutebanken.sobek.netex.mapping.NetexMappingException;
+import org.rutebanken.sobek.netex.mapping.mapstruct.DataManagedObjectStructureMapper;
 import org.rutebanken.sobek.netex.mapping.mapstruct.KeyListStructureMapper;
 import org.rutebanken.sobek.netex.mapping.mapstruct.deckplan.DeckSpaceMapper;
 import org.rutebanken.sobek.netex.mapping.mapstruct.deckplan.SpotAffinityMapper;
@@ -50,6 +53,9 @@ public class MappingContext {
     private DeckSpaceMapper deckSpaceMapper;
     private SpotAffinityMapper spotAffinityMapper;
     private ZoneId defaultTimeZone;
+    private ValidPrefixList validPrefixList;
+    private NetexIdHelper netexIdHelper;
+    private DataManagedObjectStructureMapper dataManagedObjectStructureMapper;
 
     public MappingContext() {
     }
@@ -65,7 +71,10 @@ public class MappingContext {
                           EntranceEquipmentMapper entranceEquipmentMapper,
                           KeyListStructureMapper keyListStructureMapper,
                           DeckSpaceMapper deckSpaceMapper,
-                          SpotAffinityMapper spotAffinityMapper) {
+                          SpotAffinityMapper spotAffinityMapper,
+                          ValidPrefixList validPrefixList,
+                          NetexIdHelper netexIdHelper,
+                          DataManagedObjectStructureMapper dataManagedObjectStructureMapper) {
         this.referenceResolver = resolver;
         this.seatEquipmentMapper = seatEquipmentMapper;
         this.bedEquipmentMapper = bedEquipmentMapper;
@@ -77,6 +86,9 @@ public class MappingContext {
         this.keyListStructureMapper = keyListStructureMapper;
         this.deckSpaceMapper = deckSpaceMapper;
         this.spotAffinityMapper = spotAffinityMapper;
+        this.validPrefixList = validPrefixList;
+        this.netexIdHelper = netexIdHelper;
+        this.dataManagedObjectStructureMapper = dataManagedObjectStructureMapper;
     }
 
     public void updateMappingContext(SiteFrame netexSiteFrame) {

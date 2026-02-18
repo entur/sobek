@@ -1,8 +1,8 @@
 package org.rutebanken.sobek.netex.mapping.mapstruct.deckplan;
 
 import org.mapstruct.*;
-import org.rutebanken.netex.model.ObjectFactory;
 import org.rutebanken.netex.model.PassengerEntrance;
+import org.rutebanken.netex.model.ObjectFactory;
 import org.rutebanken.netex.model.DeckEntrances_RelStructure;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
@@ -63,6 +63,27 @@ public interface PassengerEntranceMapper {
             @MappingTarget org.rutebanken.sobek.model.vehicle.PassengerEntrance target,
             @Context MappingContext context
     );
+
+    @AfterMapping
+    default void afterMapToSobek(
+            PassengerEntrance source,
+            @MappingTarget org.rutebanken.sobek.model.vehicle.PassengerEntrance target,
+            @Context MappingContext context
+    ) {
+        if (target != null) {
+            context.getDataManagedObjectStructureMapper().afterMappingToSobek(source, target, context);
+        }
+    }
+    @AfterMapping
+    default void afterMapToNetex(
+            org.rutebanken.sobek.model.vehicle.PassengerEntrance source,
+            @MappingTarget PassengerEntrance target,
+            @Context MappingContext context
+    ) {
+        if (target != null) {
+            context.getDataManagedObjectStructureMapper().afterMappingToNetex(source, target, context);
+        }
+    }
 
     /**
      * Maps a list of PassengerEntrances from Sobek to NeTEx RelStructure.

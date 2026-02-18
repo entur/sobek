@@ -1,10 +1,13 @@
 
 package org.rutebanken.sobek.netex.mapping.mapstruct.equipment;
 
+import org.mapstruct.AfterMapping;
+import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.rutebanken.netex.model.BedEquipment;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
+import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.rutebanken.sobek.netex.mapping.mapstruct.DataManagedObjectStructureMapper;
 
 /**
@@ -24,7 +27,8 @@ public interface BedEquipmentMapper {
      */
     @DataManagedObjectStructureMapper.ToSobekMappings
     org.rutebanken.sobek.model.vehicle.BedEquipment mapToSobek(
-            BedEquipment source
+            BedEquipment source,
+            @Context MappingContext context
     );
 
     /**
@@ -32,7 +36,8 @@ public interface BedEquipmentMapper {
      */
     @DataManagedObjectStructureMapper.ToNetexMappings
     BedEquipment mapToNetex(
-            org.rutebanken.sobek.model.vehicle.BedEquipment source
+            org.rutebanken.sobek.model.vehicle.BedEquipment source,
+            @Context MappingContext context
     );
 
     /**
@@ -41,6 +46,28 @@ public interface BedEquipmentMapper {
     @DataManagedObjectStructureMapper.ToSobekMappings
     void updateSobekFromNetex(
             BedEquipment source,
-            @MappingTarget org.rutebanken.sobek.model.vehicle.BedEquipment target
+            @MappingTarget org.rutebanken.sobek.model.vehicle.BedEquipment target,
+            @Context MappingContext context
     );
+
+    @AfterMapping
+    default void afterMapToSobek(
+            BedEquipment source,
+            @MappingTarget org.rutebanken.sobek.model.vehicle.BedEquipment target,
+            @Context MappingContext context
+    ) {
+        if (target != null) {
+            context.getDataManagedObjectStructureMapper().afterMappingToSobek(source, target, context);
+        }
+    }
+    @AfterMapping
+    default void afterMapToNetex(
+            org.rutebanken.sobek.model.vehicle.BedEquipment source,
+            @MappingTarget BedEquipment target,
+            @Context MappingContext context
+    ) {
+        if (target != null) {
+            context.getDataManagedObjectStructureMapper().afterMappingToNetex(source, target, context);
+        }
+    }
 }

@@ -1,10 +1,13 @@
 
 package org.rutebanken.sobek.netex.mapping.mapstruct.equipment;
 
+import org.mapstruct.AfterMapping;
+import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.rutebanken.netex.model.SeatEquipment;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
+import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.rutebanken.sobek.netex.mapping.mapstruct.DataManagedObjectStructureMapper;
 
 /**
@@ -24,7 +27,8 @@ public interface SeatEquipmentMapper {
      */
     @DataManagedObjectStructureMapper.ToSobekMappings
     org.rutebanken.sobek.model.vehicle.SeatEquipment mapToSobek(
-            SeatEquipment source
+            SeatEquipment source,
+            @Context MappingContext context
     );
 
     /**
@@ -32,7 +36,8 @@ public interface SeatEquipmentMapper {
      */
     @DataManagedObjectStructureMapper.ToNetexMappings
     SeatEquipment mapToNetex(
-            org.rutebanken.sobek.model.vehicle.SeatEquipment source
+            org.rutebanken.sobek.model.vehicle.SeatEquipment source,
+            @Context MappingContext context
     );
 
     /**
@@ -41,6 +46,28 @@ public interface SeatEquipmentMapper {
     @DataManagedObjectStructureMapper.ToSobekMappings
     void updateSobekFromNetex(
             SeatEquipment source,
-            @MappingTarget org.rutebanken.sobek.model.vehicle.SeatEquipment target
+            @MappingTarget org.rutebanken.sobek.model.vehicle.SeatEquipment target,
+            @Context MappingContext context
     );
+
+    @AfterMapping
+    default void afterMapToSobek(
+            SeatEquipment source,
+            @MappingTarget org.rutebanken.sobek.model.vehicle.SeatEquipment target,
+            @Context MappingContext context
+    ) {
+        if (target != null) {
+            context.getDataManagedObjectStructureMapper().afterMappingToSobek(source, target, context);
+        }
+    }
+    @AfterMapping
+    default void afterMapToNetex(
+            org.rutebanken.sobek.model.vehicle.SeatEquipment source,
+            @MappingTarget SeatEquipment target,
+            @Context MappingContext context
+    ) {
+        if (target != null) {
+            context.getDataManagedObjectStructureMapper().afterMappingToNetex(source, target, context);
+        }
+    }
 }

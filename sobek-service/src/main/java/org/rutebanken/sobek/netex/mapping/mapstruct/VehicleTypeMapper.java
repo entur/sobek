@@ -84,6 +84,10 @@ public interface VehicleTypeMapper {
             @MappingTarget org.rutebanken.sobek.model.vehicle.VehicleType target,
             @Context MappingContext context
     ) {
+        if (target != null) {
+            context.getDataManagedObjectStructureMapper().afterMappingToSobek(source, target, context);
+        }
+
         // Extract and resolve DeckPlanRef if present
         if (source.getDeckPlanRef() != null) {
             DeckPlanRefStructure deckPlanRef = source.getDeckPlanRef();
@@ -109,6 +113,10 @@ public interface VehicleTypeMapper {
             @MappingTarget VehicleType target,
             @Context MappingContext context
     ) {
+        if (target != null) {
+            context.getDataManagedObjectStructureMapper().afterMappingToNetex(source, target, context);
+        }
+
         // Handle DeckPlanRef creation from entity or transient reference
         if (source.getDeckPlan() != null && source.getDeckPlan().getNetexId() != null) {
             // Create reference from actual entity

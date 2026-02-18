@@ -79,6 +79,9 @@ public interface DeckSpaceMapper {
     default void afterMapToSobek(PassengerSpace source,
                                  @MappingTarget org.rutebanken.sobek.model.vehicle.PassengerSpace target,
                                  @Context MappingContext context) {
+        if(target != null) {
+            context.getDataManagedObjectStructureMapper().afterMappingToSobek(source, target, context);
+        }
         context.setCurrentSobekDeckSpace(target);
         target.setSpotAffinities(context.getSpotAffinityMapper().mapListToSobek(source.getSpotAffinities(), context));
     }
@@ -87,6 +90,9 @@ public interface DeckSpaceMapper {
     default void afterMapToNetex(org.rutebanken.sobek.model.vehicle.PassengerSpace source,
                                  @MappingTarget PassengerSpace target,
                                  @Context MappingContext context) {
+        if(target != null) {
+            context.getDataManagedObjectStructureMapper().afterMappingToNetex(source, target, context);
+        }
         target.setSpotAffinities(context.getSpotAffinityMapper().mapListToNetex(source.getSpotAffinities(), context));
         if(source.getParentDeckSpace() != null) {
             target.setParentDeckSpaceRef(new DeckSpaceRefStructure().withRef(source.getParentDeckSpace().getNetexId()));

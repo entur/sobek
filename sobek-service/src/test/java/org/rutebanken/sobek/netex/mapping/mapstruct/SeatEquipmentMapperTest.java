@@ -2,8 +2,9 @@
 package org.rutebanken.sobek.netex.mapping.mapstruct;
 
 import org.junit.jupiter.api.Test;
-import org.rutebanken.netex.model.MultilingualString;
-import org.rutebanken.netex.model.SeatEquipment;
+import org.rutebanken.netex.model.*;
+import org.rutebanken.sobek.netex.mapping.context.MappingContext;
+import org.rutebanken.sobek.netex.mapping.mapstruct.equipment.EquipmentMapper;
 import org.rutebanken.sobek.netex.mapping.mapstruct.equipment.SeatEquipmentMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,6 +21,12 @@ class SeatEquipmentMapperTest {
     @Autowired
     private SeatEquipmentMapper mapper;
 
+    @Autowired
+    private EquipmentMapper equipmentMapper;
+
+    @Autowired
+    private MappingContext context;
+
     @Test
     void testMapperIsInjected() {
         assertThat(mapper).isNotNull();
@@ -29,7 +36,7 @@ class SeatEquipmentMapperTest {
     void testMapToSobek() {
         // Given - NeTEx SeatEquipment
         SeatEquipment netexSeatEquipment = new SeatEquipment()
-                .withId("NOR:SeatEquipment:SE001")
+                .withId("NMR:SeatEquipment:SE001")
                 .withVersion("1")
                 .withCreated(LocalDateTime.now())
                 .withChanged(LocalDateTime.now())
@@ -52,11 +59,16 @@ class SeatEquipmentMapperTest {
                 .withCanRotate(false);
 
         // When
-        org.rutebanken.sobek.model.vehicle.SeatEquipment sobekSeatEquipment = mapper.mapToSobek(netexSeatEquipment);
+        org.rutebanken.sobek.model.vehicle.Equipment sobekEquipment = equipmentMapper.mapToSobekManual(netexSeatEquipment, context);
+
+        assertThat(sobekEquipment).isNotNull();
+        assertThat(sobekEquipment).isInstanceOf(org.rutebanken.sobek.model.vehicle.SeatEquipment.class);
+
+        org.rutebanken.sobek.model.vehicle.SeatEquipment sobekSeatEquipment =  (org.rutebanken.sobek.model.vehicle.SeatEquipment)sobekEquipment;
 
         // Then
         assertThat(sobekSeatEquipment).isNotNull();
-        assertThat(sobekSeatEquipment.getNetexId()).isEqualTo("NOR:SeatEquipment:SE001");
+        assertThat(sobekSeatEquipment.getNetexId()).isEqualTo("NMR:SeatEquipment:SE001");
         assertThat(sobekSeatEquipment.getVersion()).isEqualTo(1L);
 
         // Verify SpotEquipment properties
@@ -82,7 +94,7 @@ class SeatEquipmentMapperTest {
         // Given - Sobek SeatEquipment
         org.rutebanken.sobek.model.vehicle.SeatEquipment sobekSeatEquipment =
                 new org.rutebanken.sobek.model.vehicle.SeatEquipment();
-        sobekSeatEquipment.setNetexId("NOR:SeatEquipment:SE002");
+        sobekSeatEquipment.setNetexId("NMR:SeatEquipment:SE002");
         sobekSeatEquipment.setVersion(2L);
 
         // SpotEquipment properties
@@ -103,11 +115,15 @@ class SeatEquipmentMapperTest {
         sobekSeatEquipment.setCanRotate(true);
 
         // When
-        SeatEquipment netexSeatEquipment = mapper.mapToNetex(sobekSeatEquipment);
+        Equipment_VersionStructure equipment = equipmentMapper.mapToNetexManual(sobekSeatEquipment, context);
+        assertThat(equipment).isNotNull();
+        assertThat(equipment).isInstanceOf(SeatEquipment.class);
+
+        SeatEquipment netexSeatEquipment = (SeatEquipment)equipment;
 
         // Then
         assertThat(netexSeatEquipment).isNotNull();
-        assertThat(netexSeatEquipment.getId()).isEqualTo("NOR:SeatEquipment:SE002");
+        assertThat(netexSeatEquipment.getId()).isEqualTo("NMR:SeatEquipment:SE002");
         assertThat(netexSeatEquipment.getVersion()).isEqualTo("2");
 
         // Verify SpotEquipment properties
@@ -132,7 +148,7 @@ class SeatEquipmentMapperTest {
     void testBidirectionalMapping() {
         // Given - NeTEx SeatEquipment
         SeatEquipment originalNetex = new SeatEquipment()
-                .withId("NOR:SeatEquipment:SE003")
+                .withId("NMR:SeatEquipment:SE003")
                 .withVersion("1")
                 .withWidth(BigDecimal.valueOf(52.0))
                 .withLength(BigDecimal.valueOf(82.0))
@@ -143,8 +159,9 @@ class SeatEquipmentMapperTest {
                 .withIsReversible(true);
 
         // When - Map to Sobek and back to NeTEx
-        org.rutebanken.sobek.model.vehicle.SeatEquipment sobek = mapper.mapToSobek(originalNetex);
-        SeatEquipment mappedBackNetex = mapper.mapToNetex(sobek);
+        org.rutebanken.sobek.model.vehicle.SeatEquipment sobekSeatEquipment = mapper.mapToSobek(originalNetex, context);
+
+        SeatEquipment mappedBackNetex = mapper.mapToNetex(sobekSeatEquipment, context);
 
         // Then - Verify bidirectional consistency
         assertThat(mappedBackNetex.getId()).isEqualTo(originalNetex.getId());
@@ -163,24 +180,24 @@ class SeatEquipmentMapperTest {
         // Given - Existing Sobek entity
         org.rutebanken.sobek.model.vehicle.SeatEquipment existingSobek =
                 new org.rutebanken.sobek.model.vehicle.SeatEquipment();
-        existingSobek.setNetexId("NOR:SeatEquipment:SE004");
+        existingSobek.setNetexId("NMR:SeatEquipment:SE004");
         existingSobek.setVersion(1);
         existingSobek.setSeatBackHeight(BigDecimal.valueOf(70.0));
         existingSobek.setIsReclining(false);
 
         // And - Updated NeTEx data
         SeatEquipment updatedNetex = new SeatEquipment()
-                .withId("NOR:SeatEquipment:SE004")
+                .withId("NMR:SeatEquipment:SE004")
                 .withVersion("2")
                 .withSeatBackHeight(BigDecimal.valueOf(75.0))
                 .withIsReclining(true)
                 .withMaximumRecline(BigInteger.valueOf(30));
 
         // When
-        mapper.updateSobekFromNetex(updatedNetex, existingSobek);
+        mapper.updateSobekFromNetex(updatedNetex, existingSobek, context);
 
         // Then - Verify update
-        assertThat(existingSobek.getNetexId()).isEqualTo("NOR:SeatEquipment:SE004");
+        assertThat(existingSobek.getNetexId()).isEqualTo("NMR:SeatEquipment:SE004");
         assertThat(existingSobek.getVersion()).isEqualTo(2L);
         assertThat(existingSobek.getSeatBackHeight()).isEqualByComparingTo(BigDecimal.valueOf(75.0));
         assertThat(existingSobek.getIsReclining()).isTrue();
@@ -191,14 +208,14 @@ class SeatEquipmentMapperTest {
     void testMapToSobek_withNullValues() {
         // Given - NeTEx SeatEquipment with minimal data
         SeatEquipment netexSeatEquipment = new SeatEquipment()
-                .withId("NOR:SeatEquipment:SE005");
+                .withId("NMR:SeatEquipment:SE005");
 
         // When
-        org.rutebanken.sobek.model.vehicle.SeatEquipment sobekSeatEquipment = mapper.mapToSobek(netexSeatEquipment);
+        org.rutebanken.sobek.model.vehicle.SeatEquipment sobekSeatEquipment = mapper.mapToSobek(netexSeatEquipment, context);
 
         // Then
         assertThat(sobekSeatEquipment).isNotNull();
-        assertThat(sobekSeatEquipment.getNetexId()).isEqualTo("NOR:SeatEquipment:SE005");
+        assertThat(sobekSeatEquipment.getNetexId()).isEqualTo("NMR:SeatEquipment:SE005");
         assertThat(sobekSeatEquipment.getSeatBackHeight()).isNull();
         assertThat(sobekSeatEquipment.getSeatDepth()).isNull();
         assertThat(sobekSeatEquipment.getIsFoldup()).isNull();
@@ -210,17 +227,43 @@ class SeatEquipmentMapperTest {
         // Given - Sobek SeatEquipment with minimal data
         org.rutebanken.sobek.model.vehicle.SeatEquipment sobekSeatEquipment =
                 new org.rutebanken.sobek.model.vehicle.SeatEquipment();
-        sobekSeatEquipment.setNetexId("NOR:SeatEquipment:SE006");
+        sobekSeatEquipment.setNetexId("NMR:SeatEquipment:SE006");
 
         // When
-        SeatEquipment netexSeatEquipment = mapper.mapToNetex(sobekSeatEquipment);
+        SeatEquipment netexSeatEquipment = mapper.mapToNetex(sobekSeatEquipment, context);
 
         // Then
         assertThat(netexSeatEquipment).isNotNull();
-        assertThat(netexSeatEquipment.getId()).isEqualTo("NOR:SeatEquipment:SE006");
+        assertThat(netexSeatEquipment.getId()).isEqualTo("NMR:SeatEquipment:SE006");
         assertThat(netexSeatEquipment.getSeatBackHeight()).isNull();
         assertThat(netexSeatEquipment.getSeatDepth()).isNull();
         assertThat(netexSeatEquipment.isIsFoldup()).isNull();
         assertThat(netexSeatEquipment.isIsReclining()).isNull();
     }
+
+    @Test
+    void testMapToSobek_withKeyValues() {
+        // Given - NeTEx SeatEquipment with minimal data
+        SeatEquipment netexSeatEquipment = new SeatEquipment()
+                .withId("NMR:SeatEquipment:SE005");
+
+        netexSeatEquipment.withKeyList(new KeyListStructure()).getKeyList().withKeyValue(new KeyValueStructure().withKey("key").withValue("value"));
+
+        // When
+        org.rutebanken.sobek.model.vehicle.SeatEquipment sobekSeatEquipment = mapper.mapToSobek(netexSeatEquipment, context);
+
+        // Then
+        assertThat(sobekSeatEquipment).isNotNull();
+        assertThat(sobekSeatEquipment.getNetexId()).isEqualTo("NMR:SeatEquipment:SE005");
+        assertThat(sobekSeatEquipment.getSeatBackHeight()).isNull();
+        assertThat(sobekSeatEquipment.getKeyValues())
+                .isNotNull()
+                .isNotEmpty()
+                .containsKey("key");
+        assertThat(sobekSeatEquipment.getKeyValues().getOrDefault("key", null)
+                .getItems())
+                .anyMatch(item -> item.equals("value"));
+    }
+
+
 }

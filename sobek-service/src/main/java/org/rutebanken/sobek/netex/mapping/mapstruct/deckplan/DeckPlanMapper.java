@@ -63,7 +63,9 @@ public interface DeckPlanMapper {
             @MappingTarget org.rutebanken.sobek.model.vehicle.DeckPlan target,
             @Context MappingContext context
     ) {
-        // Add custom mapping logic here if needed
+        if(target != null) {
+            context.getDataManagedObjectStructureMapper().afterMappingToSobek(source, target, context);
+        }
     }
 
     /**
@@ -75,7 +77,9 @@ public interface DeckPlanMapper {
             @MappingTarget DeckPlan target,
             @Context MappingContext context
     ) {
-        // Add custom mapping logic here if needed
+        if(target != null) {
+            context.getDataManagedObjectStructureMapper().afterMappingToNetex(source, target, context);
+        }
     }
 
     List<org.rutebanken.sobek.model.vehicle.DeckPlan> mapAsList(List<DeckPlan> sourceList, @Context MappingContext context);

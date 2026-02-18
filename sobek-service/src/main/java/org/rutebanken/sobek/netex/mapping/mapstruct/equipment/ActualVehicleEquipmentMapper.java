@@ -21,31 +21,6 @@ import java.util.Objects;
         }
 )
 public interface ActualVehicleEquipmentMapper {
-    /**
-     * Maps from NeTEx ActualVehicleEquipment to Sobek entity.
-     */
-//    @DataManagedObjectStructureMapper.ToSobekMappings
-//    org.rutebanken.sobek.model.ActualVehicleEquipment mapToSobek(
-//            ActualVehicleEquipment_VersionStructure source
-//    );
-
-    /**
-     * Maps from Sobek entity back to NeTEx ActualVehicleEquipment.
-     */
-//    @DataManagedObjectStructureMapper.ToNetexMappings
-//    ActualVehicleEquipment_VersionStructure mapToNetex(
-//            org.rutebanken.sobek.model.vehicle.ActualVehicleEquipment source
-//    );
-//
-//    /**
-//     * Updates an existing Sobek entity from NeTEx structure.
-//     */
-//    @DataManagedObjectStructureMapper.ToSobekMappings
-//    void updateSobekFromNetex(
-//            ActualVehicleEquipment_VersionStructure source,
-//            @MappingTarget org.rutebanken.sobek.model.vehicle.ActualVehicleEquipment target
-//    );
-
 
     default List<Equipment> mapActualEquipmentsNeTEx2Sobek(ActualVehicleEquipments_RelStructure actualVehicleEquipments, @Context MappingContext context) {
         if(actualVehicleEquipments != null &&

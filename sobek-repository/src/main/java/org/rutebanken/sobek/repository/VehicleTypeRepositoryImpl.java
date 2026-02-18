@@ -54,13 +54,22 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
         }
     }
 
+    @Override
     public List<VehicleType> findAllCurrent() {
         Instant now = Instant.now();
-        TypedQuery<VehicleType> query = entityManager.createQuery("SELECT vt FROM VehicleType vt WHERE vt.validBetween.fromDate <= :now and (vt.validBetween.toDate is null or vt.validBetween.toDate >= :now)", VehicleType.class);
+        TypedQuery<VehicleType> query = entityManager.createQuery(
+            "SELECT DISTINCT vt FROM VehicleType vt " +
+            "LEFT JOIN FETCH vt.vehicles v " +
+            "WHERE vt.validBetween.fromDate <= :now " +
+            "AND (vt.validBetween.toDate IS NULL OR vt.validBetween.toDate >= :now) " +
+            "AND (v IS NULL OR (v.validBetween.fromDate <= :now AND (v.validBetween.toDate IS NULL OR v.validBetween.toDate >= :now)))", 
+            VehicleType.class);
+        query.setHint("hibernate.query.passDistinctThrough", false);
         query.setParameter("now", now);
         return query.getResultList();
     }
 
+    @Override
     public void moveToDeckPlan(Long fromDeckPlanId, Long toDeckPlanId) {
         Query query = entityManager.createNativeQuery("UPDATE vehicle_type SET deck_plan_id = :toDeckPlanId WHERE deck_plan_id = :fromDeckPlanId " +
                 " and (from_date is null or from_date <= now()) and (to_date is null or to_date >= now())");

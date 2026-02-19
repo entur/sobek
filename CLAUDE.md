@@ -11,7 +11,7 @@
 - **Language**: Java 21
 - **Framework**: Spring Boot 3.x
 - **Build Tool**: Maven
-- **Current Version**: 0.0.2-SNAPSHOT
+- **Current Version**: 1.0.1-SNAPSHOT
 
 ## Technology Stack
 

@@ -304,7 +304,7 @@ spring.profiles.active=local-blobstore,activemq
 
 To start Sobek with this configuration, specify **spring.config.location**:
 
-`java -jar -Dspring.config.location=/path/to/sobek.properties -Denv=dev sobek-app-0.0.2-SNAPSHOT.jar`
+`java -jar -Dspring.config.location=/path/to/sobek.properties -Denv=dev sobek.jar`
 
 ## Database
 

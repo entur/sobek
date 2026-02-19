@@ -18,7 +18,7 @@ package org.rutebanken.sobek.netex.id;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.HashMap;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class NetexIdHelperTest {
 
 
-    private NetexIdHelper netexIdHelper = new NetexIdHelper(new ValidPrefixList("PRE", new HashMap<>()));
+    private NetexIdHelper netexIdHelper = new NetexIdHelper(new ValidPrefixList("PRE", List.of("RUT", "AVI")));
 
     @Test
     public void extractIdPostfix() throws Exception {

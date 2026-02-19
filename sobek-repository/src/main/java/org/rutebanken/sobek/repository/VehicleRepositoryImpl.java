@@ -66,4 +66,11 @@ public class VehicleRepositoryImpl implements VehicleRepositoryCustom {
 
         query.executeUpdate();
     }
+
+    @Override
+    public void healthCheck() {
+        logger.info("Health check for VehicleRepositoryImpl");
+        Query query = entityManager.createNativeQuery("SELECT 1");
+        query.getResultList();
+    }
 }

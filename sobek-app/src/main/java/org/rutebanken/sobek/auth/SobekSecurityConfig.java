@@ -61,7 +61,9 @@ public class SobekSecurityConfig {
         logger.info("Configuring HttpSecurity");
         http.cors(withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(request -> request.anyRequest().authenticated())
+                .authorizeHttpRequests(request ->
+                                request.requestMatchers("/health/*").permitAll()
+                                        .anyRequest().authenticated())
                 .oauth2ResourceServer(configurer -> configurer.authenticationManagerResolver(multiIssuerAuthenticationManagerResolver));
         return http.build();
     }

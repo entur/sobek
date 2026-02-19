@@ -40,7 +40,7 @@ public class HealthResource {
             @ApiResponse(responseCode = "200", description = "application is running")
     })
     public Response readinessProbe() {
-        vehicleRepository.findById(1L);
+        vehicleRepository.healthCheck();
         return Response.status(Response.Status.OK).build();
     }
 

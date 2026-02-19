@@ -33,22 +33,18 @@ public class ValidPrefixList {
 
     private final String validNetexPrefix;
 
-    private final Map<String, List<String>> validPrefixesPerType;
+    private final List<String> validCodeSpaces;
 
     @Autowired
-    public ValidPrefixList(@Value("${netex.validPrefix:NSR}") String validNetexPrefix,
-                           @Value("#{${netex.id.valid.prefix.list:{Vehicle:{'*'},VehicleType:{'*'},DeckPlan:{'*'}}}}") Map<String, List<String>> validPrefixesPerType) {
-        for (String type : validPrefixesPerType.keySet()) {
-            List<String> validPrefixesForType = validPrefixesPerType.get(type);
-            logger.info("Loaded valid prefixes for {}: {} ", type, validPrefixesForType);
-        }
+    public ValidPrefixList(@Value("${netex.validPrefix:NMR}") String validNetexPrefix,
+                           @Value("#{${netex.valid.codespaces.list:{}}}") List<String> validCodeSpaces) {
 
-        this.validPrefixesPerType = validPrefixesPerType;
         this.validNetexPrefix = validNetexPrefix;
+        this.validCodeSpaces = validCodeSpaces;
     }
 
     /**
-     * Gets the configured prefix in netex IDs. Ex: NSR
+     * Gets the configured prefix in netex IDs. Ex: NMR
      * See the property netex.validPrefix.
      * @return the prefix
      */
@@ -57,8 +53,11 @@ public class ValidPrefixList {
     }
 
     public List<String> get(Class clazz) {
-        logger.trace("Looking for valid prefixes for type: {}", clazz);
-        return validPrefixesPerType.get(clazz.getSimpleName());
+        return get(clazz.getSimpleName());
+    }
+    public List<String> get(String type) {
+        logger.trace("Looking for valid prefixes for type: {}", type);
+        return validCodeSpaces;
     }
 
     public boolean isValidPrefixForType(String prefix, Class clazz) {
@@ -71,7 +70,7 @@ public class ValidPrefixList {
             return true;
         }
 
-        List<String> validPrefixes = validPrefixesPerType.get(type);
+        List<String> validPrefixes = this.get(type);
         if (validPrefixes == null) {
             return false;
         }

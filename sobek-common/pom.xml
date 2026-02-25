@@ -70,5 +70,11 @@
             <groupId>org.rutebanken.sobek</groupId>
             <artifactId>sobek-model</artifactId>
         </dependency>
+
+        <!-- NeTEx Java Model -->
+        <dependency>
+            <groupId>org.entur</groupId>
+            <artifactId>netex-java-model</artifactId>
+        </dependency>
     </dependencies>
 </project>

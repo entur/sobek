@@ -16,17 +16,22 @@
 package org.rutebanken.sobek;
 
 import org.rutebanken.sobek.exporter.AsyncPublicationDeliveryExporter;
+import org.springframework.beans.factory.config.CustomScopeConfigurer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.context.support.SimpleThreadScope;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @SpringBootApplication
 @Configuration
 @EnableTransactionManagement
+@ContextConfiguration(classes = SobekApplication.TestConfig.class)
 @EntityScan("org.rutebanken.sobek.*")
 @ComponentScan(basePackages = { "org.entur", "org.rutebanken.sobek"},
         excludeFilters = { @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {AsyncPublicationDeliveryExporter.class})})
@@ -35,5 +40,16 @@ public class SobekApplication {
     public static void main(String[] args) {
         SpringApplication.run(SobekApplication.class, args);
     }
+
+    @Configuration
+    static class TestConfig {
+        @Bean
+        public CustomScopeConfigurer customScopeConfigurer() {
+            CustomScopeConfigurer configurer = new CustomScopeConfigurer();
+            configurer.addScope("request", new SimpleThreadScope());
+            return configurer;
+        }
+    }
+
 }
 

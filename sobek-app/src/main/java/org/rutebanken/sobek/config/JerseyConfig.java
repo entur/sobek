@@ -76,7 +76,6 @@ public class JerseyConfig {
 
         Set<Class<?>> publicResources = new HashSet<>();
         publicResources.add(VehicleImportResource.class);
-        publicResources.add(AutosysAPIResource.class);
         publicResources.add(AsyncExportResource.class);
         publicResources.add(VehicleExportResource.class);
         publicResources.add(GraphQLResource.class);

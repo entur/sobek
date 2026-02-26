@@ -1,0 +1,46 @@
+name: sobek-common-publish-jfrog-push.yml
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+env:
+  JFROG_USER: ${{ secrets.ARTIFACTORY_AUTH_USER }}
+  JFROG_PASS: ${{ secrets.ARTIFACTORY_AUTH_TOKEN }}
+
+jobs:
+  maven-package:
+    if: "!contains(github.event.head_commit.message, 'ci skip')"
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Copy maven settings
+        run: |
+          wget https://raw.githubusercontent.com/entur/ror-maven-settings/master/.m2/settings.xml -O .github/workflows/settings.xml
+      - uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: liberica
+      - name: Cache Maven dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+            ${{ runner.os }}-maven-
+            ${{ runner.os }}-
+
+      - name: Run maven build
+        run: mvn package -pl sobek-common -s .github/workflows/settings.xml
+      - name: Run maven test
+        run: mvn test -pl sobek-common -s .github/workflows/settings.xml -Dtest-enabled=true
+      - name: Deploy til JFrog Artifactory
+        run: mvn deploy -pl sobek-common -s .github/workflows/settings.xml
+        env:
+          JFROG_USER: ${{ secrets.ARTIFACTORY_AUTH_USER }}
+          JFROG_PASS: ${{ secrets.ARTIFACTORY_AUTH_TOKEN }}

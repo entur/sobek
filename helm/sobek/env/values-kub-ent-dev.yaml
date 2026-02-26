@@ -31,6 +31,3 @@ rbac:
 ingress:
   enabled: true
   domainName: .dev.entur.io
-
-autosys:
-  api-key:

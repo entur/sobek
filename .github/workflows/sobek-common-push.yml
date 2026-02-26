@@ -36,11 +36,11 @@ jobs:
             ${{ runner.os }}-
 
       - name: Run maven build
-        run: mvn package -pl sobek-common -s .github/workflows/settings.xml
+        run: mvn package -pl sobek-model -pl sobek-common -s .github/workflows/settings.xml
       - name: Run maven test
-        run: mvn test -pl sobek-common -s .github/workflows/settings.xml -Dtest-enabled=true
+        run: mvn test -pl sobek-model -pl sobek-common -s .github/workflows/settings.xml -Dtest-enabled=true
       - name: Deploy til JFrog Artifactory
-        run: mvn deploy -pl sobek-common -s .github/workflows/settings.xml
+        run: mvn deploy -pl sobek-model -pl sobek-common -s .github/workflows/settings.xml
         env:
           JFROG_USER: ${{ secrets.ARTIFACTORY_AUTH_USER }}
           JFROG_PASS: ${{ secrets.ARTIFACTORY_AUTH_TOKEN }}

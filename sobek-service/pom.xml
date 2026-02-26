@@ -65,12 +65,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.entur</groupId>
-            <artifactId>autosys</artifactId>
-            <version>0.0.2-SNAPSHOT</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.entur.ror.helpers</groupId>
             <artifactId>organisation</artifactId>
             <version>${entur.helpers.version}</version>

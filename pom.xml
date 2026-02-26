@@ -49,18 +49,18 @@
         <geotools.version>30.2</geotools.version>
         <graphql-java.version>20.9</graphql-java.version>
         <graphql-java-extended-scalars.version>20.2</graphql-java-extended-scalars.version>
-        <swagger-jersey2.version>2.2.38</swagger-jersey2.version>
+        <swagger-jersey2.version>2.2.43</swagger-jersey2.version>
         <netex-java-model.version>2.0.16-2-SNAPSHOT</netex-java-model.version>
         <entur.helpers.version>5.50.0</entur.helpers.version>
         <jts-core.version>1.20.0</jts-core.version>
         <groovy-all.version>4.0.28</groovy-all.version>
         <rest-assured.version>5.5.6</rest-assured.version>
         <!-- Dependency versions -->
-        <jakarta.version>3.1.0</jakarta.version>
-        <jakarta-validation.version>3.0.2</jakarta-validation.version>
+        <jakarta.version>3.2.0</jakarta.version>
+        <jakarta-validation.version>3.1.1</jakarta-validation.version>
         <postgis.version>2.5.1</postgis.version>
-        <slf4j.version>2.0.9</slf4j.version>
-        <commons-lang3.version>3.14.0</commons-lang3.version>
+        <slf4j.version>2.0.17</slf4j.version>
+        <commons-lang3.version>3.20.0</commons-lang3.version>
         <guava.version>32.1.3-jre</guava.version>
         <hibernate.version>6.5.3.Final</hibernate.version>
         <lombok.version>1.18.42</lombok.version>
@@ -69,7 +69,7 @@
         <graphql-java.version>20.9</graphql-java.version>
         <graphql-java-extended-scalars.version>20.2</graphql-java-extended-scalars.version>
         <spring-cloud-aws-secrets-manager.version>3.1.1</spring-cloud-aws-secrets-manager.version>
-        <aws-secretsmanager.version>2.0.3</aws-secretsmanager.version>
+        <aws-secretsmanager.version>2.0.4</aws-secretsmanager.version>
         <h2database.version>2.4.240</h2database.version>
     </properties>
 
@@ -198,7 +198,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.12.1</version>
+                    <version>3.15.0</version>
                     <configuration>
                         <source>${java.version}</source>
                         <target>${java.version}</target>

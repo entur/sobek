@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<PublicationDelivery version="1" xmlns="http://www.netex.org.uk/netex" xmlns:ns2="http://www.opengis.net/gml/3.2" xmlns:ns3="http://www.siri.org.uk/siri">
+    <PublicationTimestamp>2025-11-15T10:00:00</PublicationTimestamp>
+    <ParticipantRef>TST</ParticipantRef>
+    <dataObjects>
+        <ResourceFrame version="1" id="TST:ResourceFrame:1">
+            <FrameDefaults>
+                <DefaultLocale>
+                    <TimeZone>Europe/Oslo</TimeZone>
+                </DefaultLocale>
+            </FrameDefaults>
+            <vehicleTypes>
+                <VehicleType version="1" id="TST:VehicleType:1">
+                    <Name>Exqui City 24</Name>
+                    <Description>Van Hool articulated electric bus</Description>
+                    <EuroClass>Euro6</EuroClass>
+                    <SelfPropelled>true</SelfPropelled>
+                    <PropulsionType>electric</PropulsionType>
+                    <FuelType>battery</FuelType>
+                    <MaximumVelocity>80</MaximumVelocity>
+                    <TransportMode>bus</TransportMode>
+                    <PassengerCapacity>
+                        <TotalCapacity>160</TotalCapacity>
+                        <SeatingCapacity>52</SeatingCapacity>
+                        <StandingCapacity>108</StandingCapacity>
+                    </PassengerCapacity>
+                    <LowFloor>true</LowFloor>
+                    <HasLiftOrRamp>true</HasLiftOrRamp>
+                    <BoardingHeight>0.32</BoardingHeight>
+                    <Length>23.82</Length>
+                    <Width>2.55</Width>
+                    <Height>3.40</Height>
+                    <Weight>19500</Weight>
+                </VehicleType>
+            </vehicleTypes>
+        </ResourceFrame>
+    </dataObjects>
+</PublicationDelivery>

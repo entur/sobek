@@ -15,8 +15,8 @@
                     <Description>Van Hool articulated electric bus</Description>
                     <EuroClass>Euro6</EuroClass>
                     <SelfPropelled>true</SelfPropelled>
-                    <PropulsionType>electric</PropulsionType>
-                    <FuelType>battery</FuelType>
+                    <PropulsionTypes>electric</PropulsionTypes>
+                    <FuelTypes>battery</FuelTypes>
                     <MaximumVelocity>80</MaximumVelocity>
                     <TransportMode>bus</TransportMode>
                     <PassengerCapacity>

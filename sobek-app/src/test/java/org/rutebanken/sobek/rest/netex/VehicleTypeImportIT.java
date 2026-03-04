@@ -8,6 +8,7 @@ import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
+import java.io.InputStream;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,12 +33,10 @@ class VehicleTypeImportIT {
 
   @Test
   void importVehicleType_returnsImportedVehicleTypeWithAssignedId() throws Exception {
-    String xml =
-        new String(
-            getClass()
-                .getResourceAsStream("/fixtures/vehicle-type-import.xml")
-                .readAllBytes(),
-            StandardCharsets.UTF_8);
+    String xml;
+    try (InputStream in = getClass().getResourceAsStream("/fixtures/vehicle-type-import.xml")) {
+      xml = new String(in.readAllBytes(), StandardCharsets.UTF_8);
+    }
 
     String responseXml =
         given()

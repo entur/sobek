@@ -39,7 +39,11 @@
             <artifactId>netex-java-model</artifactId>
         </dependency>
 
-
+        <!-- Lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
 
         <!-- Spring Boot Starter Test -->
         <dependency>

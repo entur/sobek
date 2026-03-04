@@ -1,9 +1,6 @@
 package org.rutebanken.sobek.rest.netex.publicationdelivery;
 
-import jakarta.ws.rs.BeanParam;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.StreamingOutput;
@@ -33,6 +30,26 @@ public class VehicleExportResource {
         StreamingOutput streamingOutput = outputStream -> {
             try {
                 streamingPublicationDelivery.streamVehicles(exportParams.toExportParams(), outputStream);
+            } catch (Exception e) {
+                log.warn("Could not stream composite frame. {}", e.getMessage(), e);
+                throw new RuntimeException(e);
+            }
+        };
+
+        return Response.ok(streamingOutput).build();
+    }
+
+
+    @GET
+    @Path("deckplans/{id}")
+    @Produces(MediaType.APPLICATION_XML + "; charset=UTF-8")
+    public Response getOneDeckPlan(@BeanParam ExportParametersDto exportParams, @PathParam("id") String id) {
+        log.info("Exporting publication delivery. {}", exportParams);
+
+
+        StreamingOutput streamingOutput = outputStream -> {
+            try {
+                streamingPublicationDelivery.streamOneDeckPlan(exportParams.toExportParams(), id, outputStream);
             } catch (Exception e) {
                 log.warn("Could not stream composite frame. {}", e.getMessage(), e);
                 throw new RuntimeException(e);

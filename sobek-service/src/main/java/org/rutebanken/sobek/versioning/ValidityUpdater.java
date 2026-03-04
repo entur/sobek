@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 @Service
 public class ValidityUpdater {
@@ -65,7 +66,7 @@ public class ValidityUpdater {
     }
     
     private void validateNewVersionDateAfter(String description, Instant previousVersionDate, Instant newVersionFromDate) {
-        if(previousVersionDate != null && previousVersionDate.isAfter(newVersionFromDate)) {
+        if(previousVersionDate != null && previousVersionDate.minus(1, ChronoUnit.SECONDS).isAfter(newVersionFromDate)) {
             throw new IllegalArgumentException(description + " " + previousVersionDate + " is after new version's fromdate " + newVersionFromDate);
         }
     }

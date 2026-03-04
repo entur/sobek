@@ -1,11 +1,12 @@
 package org.rutebanken.sobek.repository;
 
 import jakarta.persistence.*;
-import org.rutebanken.sobek.model.vehicle.VehicleType;
+import org.rutebanken.sobek.model.vehicle.DeckPlan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 
@@ -51,5 +52,18 @@ public class DeckPlanRepositoryImpl implements DeckPlanRepositoryCustom {
         } catch (NoResultException noResultException) {
             return null;
         }
+    }
+
+    @Override
+    public List<DeckPlan> findAllCurrent() {
+        Instant now = Instant.now();
+        TypedQuery<DeckPlan> query = entityManager.createQuery(
+                "SELECT DISTINCT dp FROM DeckPlan dp " +
+                        "WHERE dp.validBetween.fromDate <= :now " +
+                        "AND (dp.validBetween.toDate IS NULL OR dp.validBetween.toDate >= :now) ",
+                DeckPlan.class);
+        query.setHint("hibernate.query.passDistinctThrough", false);
+        query.setParameter("now", now);
+        return query.getResultList();
     }
 }

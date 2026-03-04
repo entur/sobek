@@ -72,6 +72,8 @@ public class RegisterGraphQLSchema {
     @Autowired
     private VehicleTypeDeckPlanFetcher vehicleTypeDeckPlanFetcher;
 
+    @Autowired
+    DataFetcher deckPlanFetcher;
 
     @Autowired
     DateScalar dateScalar;
@@ -154,6 +156,11 @@ public class RegisterGraphQLSchema {
                         .type(new GraphQLList(vehicleTypeObjectType))
                         .description("Vehicle types")
                 )
+                .field(newFieldDefinition()
+                        .name(DECK_PLANS)
+                        .type(new GraphQLList(deckPlanObjectType))
+                        .description("Deck plans")
+                )
                 .build();
 
         MutableTypeResolver vehicleTypeResolver = new MutableTypeResolver();
@@ -182,6 +189,7 @@ public class RegisterGraphQLSchema {
         registerDataFetcher(codeRegistryBuilder,VEHICLE_REGISTER,USER_PERMISSIONS,userPermissionsFetcher);
 
 
+        registerDataFetcher(codeRegistryBuilder, VEHICLE_REGISTER, DECK_PLANS, deckPlanFetcher);
 
 
         //mutation

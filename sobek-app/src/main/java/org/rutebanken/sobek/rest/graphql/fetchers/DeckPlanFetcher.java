@@ -17,6 +17,7 @@ package org.rutebanken.sobek.rest.graphql.fetchers;
 
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
+import javassist.NotFoundException;
 import org.rutebanken.sobek.repository.DeckPlanRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
+import java.util.List;
 
 import static org.rutebanken.sobek.rest.graphql.GraphQLNames.ALL_VERSIONS;
 import static org.rutebanken.sobek.rest.graphql.GraphQLNames.ID;
@@ -40,17 +41,22 @@ class DeckPlanFetcher implements DataFetcher {
 
 
     @Override
-    public Object get(DataFetchingEnvironment environment) {
+    public Object get(DataFetchingEnvironment environment) throws NotFoundException {
         String netexId = environment.getArgument(ID);
         boolean allVersions = Boolean.TRUE.equals(environment.getArgument(ALL_VERSIONS));
 
         if (netexId != null) {
 
-            logger.debug("Returning vehicle type from netexId: {}", netexId);
+            logger.debug("Returning deck plan from netexId: {}", netexId);
             if (allVersions) {
                 return deckPlanRepository.findByNetexId(netexId);
             } else {
-                return Arrays.asList(deckPlanRepository.findFirstByNetexIdOrderByVersionDesc(netexId));
+                var deckPlan = deckPlanRepository.findFirstByNetexIdOrderByVersionDesc(netexId);
+                if(deckPlan == null) {
+                    throw new NotFoundException("No DeckPlan found with id " + netexId);
+                } else {
+                    return List.of(deckPlan);
+                }
             }
         }
         return deckPlanRepository.findAllCurrent();

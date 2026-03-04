@@ -282,7 +282,13 @@ public class StreamingPublicationDelivery {
         // Override lists with custom iterator to be able to scroll database results on the fly.
 //        if (!vehicleIds.isEmpty()) {
 
-        List<DeckPlan> deckPlansInDb = deckPlanId != null? List.of(deckPlanRepository.findFirstByNetexIdOrderByVersionDesc(deckPlanId)):deckPlanRepository.findAll();
+        List<DeckPlan> deckPlansInDb;
+        if (deckPlanId != null) {
+            DeckPlan deckPlan = deckPlanRepository.findFirstByNetexIdOrderByVersionDesc(deckPlanId);
+            deckPlansInDb = deckPlan != null ? Collections.singletonList(deckPlan) : Collections.emptyList();
+        } else {
+            deckPlansInDb = deckPlanRepository.findAll();
+        }
 
         if (!deckPlansInDb.isEmpty()) {
             logger.info("There are deck plans to export");

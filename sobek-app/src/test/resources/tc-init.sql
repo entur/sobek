@@ -1,0 +1,1 @@
+CREATE ROLE sobek LOGIN PASSWORD 'sobek';

@@ -41,29 +41,53 @@
 
 ## Architecture
 
-### Package Structure
+### Multi-Module Structure
+
+Sobek is a multi-module Maven project:
+
+```
+sobek/
+├── sobek-app/         - Spring Boot application (main entry point)
+├── sobek-model/       - JPA entity models
+├── sobek-common/      - Shared utilities (diff, export, geo, netex, time)
+├── sobek-repository/  - Spring Data JPA repositories
+└── sobek-service/     - Business logic (importers, versioning, changelog)
+```
+
+### Package Structure (by module)
 ```
 org.rutebanken.sobek/
-├── auth/              - Authentication and authorization
-├── autosys/           - Auto systems integration
-├── changelog/         - Change event publishing
-├── config/            - Spring configuration classes
-├── diff/              - Version comparison and diff tools
-├── dtoassembling/     - DTO assembly and transformation
-├── exporter/          - NeTEx export functionality
-├── filter/            - Data filtering utilities
-├── general/           - General utilities
-├── geo/               - Geospatial operations
-├── importer/          - NeTEx import with matching and merging
-├── jersey/            - REST API configuration
-├── lock/              - Distributed locking
-├── model/             - JPA entity models
-├── netex/             - NeTEx marshalling/unmarshalling
-├── repository/        - JPA repositories
-├── rest/              - REST endpoints
-├── service/           - Business logic services
-├── time/              - Time utilities
-└── versioning/        - Entity versioning system
+  sobek-app:
+  ├── auth/              - Authentication and authorization
+  ├── config/            - Spring configuration classes
+  ├── dtoassembling/     - DTO assembly and transformation
+  ├── filter/            - Data filtering utilities
+  ├── jersey/            - REST API configuration
+  ├── metrics/           - Metrics configuration
+  └── rest/              - REST endpoints
+
+  sobek-model:
+  └── model/             - JPA entity models
+
+  sobek-common:
+  ├── diff/              - Version comparison and diff tools
+  ├── exporter/          - NeTEx export functionality
+  ├── general/           - General utilities
+  ├── geo/               - Geospatial operations
+  ├── netex/             - NeTEx marshalling/unmarshalling
+  └── time/              - Time utilities
+
+  sobek-repository:
+  └── repository/        - JPA repositories
+
+  sobek-service:
+  ├── auth/              - Authorization services
+  ├── changelog/         - Change event publishing
+  ├── exporter/          - Export services
+  ├── importer/          - NeTEx import with matching
+  ├── netex/             - NeTEx mapping services
+  ├── service/           - Business logic services
+  └── versioning/        - Entity versioning system
 ```
 
 ### Key Features
@@ -290,7 +314,7 @@ async.export.path=/tmp
 changelog.publish.enabled=false
 
 # Server
-server.port=1888
+server.port=37999
 jettyMaxThreads=10
 jettyMinThreads=1
 
@@ -371,8 +395,8 @@ mvn verify
 ## CI/CD
 
 Workflows located in `.github/workflows/`:
-- `ci.yaml` - Continuous integration
-- `entur-push.yml` - Push to container registry
+- `entur-push.yml` - Build and push to container registry
+- `sobek-common-push.yml` - Publish sobek-common library to JFrog
 
 ## Monitoring & Observability
 
@@ -386,7 +410,7 @@ Workflows located in `.github/workflows/`:
 - **Hathor** - Frontend UI (https://github.com/entur/hathor)
 - **NeTEx Java Model** - NeTEx data model
 - **Rutebanken Helpers** - Shared utilities (storage, OAuth2, organization)
-- **Autosys** - Auto systems integration (dependency)
+- **Autosys** - Auto systems integration (separate project, depends on sobek-common)
 
 ## Troubleshooting
 
@@ -479,5 +503,5 @@ When troubleshooting profile-related issues:
 
 ---
 
-**Last Updated**: January 2025
+**Last Updated**: March 2026
 **Claude.ai Context**: This document provides comprehensive project context for AI assistants like Claude to understand and work with the Sobek codebase.

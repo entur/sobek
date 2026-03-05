@@ -176,7 +176,7 @@ public class StreamingPublicationDelivery {
         prepareVehicleTypes(exportParams, Collections.emptySet(), mappedVehicleTypeCount, netexResourceFrame, entitiesEvictor);
         prepareVehicleModels(exportParams, Collections.emptySet(), mappedVehicleModelCount, netexResourceFrame, entitiesEvictor);
         prepareVehicles(exportParams, Collections.emptySet(), mappedVehicleCount, netexResourceFrame, entitiesEvictor);
-        prepareDeckPlans(netexResourceFrame);
+        prepareDeckPlans(netexResourceFrame, null);
         prepareEquipments(netexResourceFrame);
 
         PublicationDeliveryStructure publicationDeliveryStructure = publicationDeliveryCreator.createPublicationDelivery(netexCompositeFrame);
@@ -190,6 +190,31 @@ public class StreamingPublicationDelivery {
                 mappedVehicleTypeCount.get(),
                 mappedTrainCount.get());
 
+    }
+
+    public void streamOneDeckPlan(ExportParams exportParams,String deckPlanId, OutputStream outputStream) throws JAXBException, XMLStreamException, IOException, InterruptedException, SAXException {
+
+        logger.info("Streaming export of deckplan initiated. Export params: {}, deckPlan ID: {}", exportParams, deckPlanId);
+
+        org.rutebanken.netex.model.CompositeFrame netexCompositeFrame = sobekComositeFrameExporter.createCompositeFrame("Composite frame " + exportParams);
+
+        logger.info("Mapping resource frame to netex model");
+        final org.rutebanken.netex.model.ResourceFrame netexResourceFrame = sobekResourceFrameExporter.createResourceFrame("Resource frame"+ exportParams);
+
+        Frames_RelStructure framesRelStructure = new Frames_RelStructure();
+        framesRelStructure.withCommonFrame(new ObjectFactory().createResourceFrame(netexResourceFrame));
+        netexCompositeFrame.withFrames(framesRelStructure);
+
+        logger.info("Preparing scrollable iterators");
+        prepareDeckPlans(netexResourceFrame, deckPlanId);
+        //prepareEquipments(netexResourceFrame);
+
+        PublicationDeliveryStructure publicationDeliveryStructure = publicationDeliveryCreator.createPublicationDelivery(netexCompositeFrame);
+
+        Marshaller marshaller = createMarshaller();
+
+        logger.info("Start marshalling publication delivery");
+        marshaller.marshal(netexObjectFactory.createPublicationDelivery(publicationDeliveryStructure), outputStream);
     }
 
 
@@ -253,11 +278,17 @@ public class StreamingPublicationDelivery {
         }
     }
 
-    private void prepareDeckPlans(org.rutebanken.netex.model.ResourceFrame resourceFrame) {
+    private void prepareDeckPlans(org.rutebanken.netex.model.ResourceFrame resourceFrame, String deckPlanId) {
         // Override lists with custom iterator to be able to scroll database results on the fly.
 //        if (!vehicleIds.isEmpty()) {
 
-        List<DeckPlan> deckPlansInDb = deckPlanRepository.findAll();
+        List<DeckPlan> deckPlansInDb;
+        if (deckPlanId != null) {
+            DeckPlan deckPlan = deckPlanRepository.findFirstByNetexIdOrderByVersionDesc(deckPlanId);
+            deckPlansInDb = deckPlan != null ? Collections.singletonList(deckPlan) : Collections.emptyList();
+        } else {
+            deckPlansInDb = deckPlanRepository.findAll();
+        }
 
         if (!deckPlansInDb.isEmpty()) {
             logger.info("There are deck plans to export");

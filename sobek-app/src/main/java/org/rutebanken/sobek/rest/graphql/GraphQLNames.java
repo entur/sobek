@@ -175,7 +175,9 @@ public class GraphQLNames {
     public static final String OUTPUT_TYPE_VEHICLE_TYPE = "VehicleType";
     public static final String VEHICLE_TYPE_DECK_PLAN = "deckPlan";
 
+    public static final String DECK_PLANS = "deckPlans";
+    public static final String OUTPUT_TYPE_DECK_PLAN = "DeckPlan";
+
     public static final String VEHICLES = "vehicles";
     public static final String OUTPUT_TYPE_VEHICLE = "Vehicle";
-    public static final String OUTPUT_TYPE_DECK_PLAN = "DeckPlan";
 }

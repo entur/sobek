@@ -17,6 +17,11 @@ package org.rutebanken.sobek.repository;
 
 import org.rutebanken.sobek.model.vehicle.DeckPlan;
 
+import java.util.List;
+
 public interface DeckPlanRepositoryCustom extends DataManagedObjectStructureRepository<DeckPlan> {
+
+    List<DeckPlan> findAllCurrent();
+
 }
 

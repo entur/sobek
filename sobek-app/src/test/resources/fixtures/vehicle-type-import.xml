@@ -12,10 +12,10 @@
       </FrameDefaults>
       <vehicleTypes>
         <VehicleType version="1" id="TST:VehicleType:1">
-          <Name>Exqui City 24</Name>
+          <Name lang="en">Exqui City 24</Name>
           <Description>
-            <Value lang="nb">Van_Hool artikulert elektrisk buss</Value>
-            <Value lang="en">Van Hool articulated electric bus</Value>
+            <Text lang="nb">Van_Hool artikulert elektrisk buss</Text>
+            <Text lang="en">Van Hool articulated electric bus</Text>
           </Description>
           <EuroClass>Euro6</EuroClass>
           <SelfPropelled>true</SelfPropelled>

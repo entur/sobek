@@ -295,7 +295,7 @@ netex.import.enabled.types=MERGE,INITIAL,ID_MATCH,MATCH
 
 # ID Generation
 netex.validPrefix=NSR
-netex.profile.version=1.12:NO-NeTEx-stops:1.4
+netex.profile.version=2.0:NO-NeTEx:2.0
 
 # OAuth2/Security
 authorization.enabled=true

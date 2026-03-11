@@ -50,7 +50,7 @@
         <graphql-java.version>20.9</graphql-java.version>
         <graphql-java-extended-scalars.version>20.2</graphql-java-extended-scalars.version>
         <swagger-jersey2.version>2.2.38</swagger-jersey2.version>
-        <netex-java-model.version>2.0.16-2-SNAPSHOT</netex-java-model.version>
+        <netex-java-model.version>3.0.0-SNAPSHOT</netex-java-model.version>
         <entur.helpers.version>5.50.0</entur.helpers.version>
         <jts-core.version>1.20.0</jts-core.version>
         <groovy-all.version>4.0.28</groovy-all.version>
@@ -85,8 +85,14 @@
             <url>https://repo.osgeo.org/repository/release/</url>
         </repository>
         <repository>
-            <id>central</id>
-            <url>https://entur2.jfrog.io/entur2/entur-team-rutebanken-snapshot</url>
+            <id>maven-snapshots</id>
+            <url>https://central.sonatype.com/repository/maven-snapshots</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
     </repositories>
 

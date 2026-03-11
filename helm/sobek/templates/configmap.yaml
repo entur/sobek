@@ -13,7 +13,7 @@ data:
     publicationDeliveryUnmarshaller.validateAgainstSchema=false
     netex.import.enabled.types=MERGE
     changelog.publish.enabled=true
-    netex.profile.version=1.12:NO-NeTEx-vehicle:1.4
+    netex.profile.version=2.0:NO-NeTEx:2.0
     netex.validPrefix=NMR
     netex.valid.codespaces.list={'AKT','ATB','ASH','AVI','BNR','BEF','BOR','BSR','BRA','NYC','COL','TEL','FJT','FLI','FLT','FTR','FLB','OSC','MOR','GFS','GLO','GOA','GOF','HAF','HAV','HUR','HOG','INN','KOL','SOF','OIS','NWY','NOR','NBU','NIA','VIP','RUT','SJV','SJN','SKY','FIN','STB','TID','TRO','TTS','ULR','UNI','VOT','VIL','VKT','VOG','NSB','GJB','VYG','VYB','VYX','OST','ATU'}
 

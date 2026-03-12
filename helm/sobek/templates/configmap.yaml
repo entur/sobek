@@ -8,7 +8,6 @@ metadata:
 data:
   application.properties: |-
     server.port={{ .Values.service.http.internalPort }}
-    tariffzoneLookupService.resetReferences=true
     publicationDeliveryStreamingOutput.validateAgainstSchema=false
     publicationDeliveryUnmarshaller.validateAgainstSchema=false
     netex.import.enabled.types=MERGE

@@ -35,7 +35,7 @@ import java.util.Set;
 public class Value implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequence_per_table_generator")
+    @GeneratedValue(generator = "sequence_per_table_generator")
     private long id;
 
     @ElementCollection

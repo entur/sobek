@@ -253,8 +253,6 @@ spring.datasource.hikari.leakDetectionThreshold=30000
 
 sobek.locals.language.default=eng
 
-tariffZoneLookupService.resetReferences=true
-
 debug=true
 
 # Disable feature detection by this undocumented parameter. Check the org.hibernate.engine.jdbc.internal.JdbcServiceImpl.configure method for more details.
@@ -262,8 +260,6 @@ spring.jpa.properties.hibernate.temp.use_jdbc_metadata_defaults = false
 
 # Because detection is disabled you have to set correct dialect by hand.
 spring.jpa.database-platform=org.hibernate.dialect.PostgreSQL9Dialect
-
-tariffzoneLookupService.resetReferences=true
 
 spring.jpa.properties.hibernate.dialect=org.hibernate.spatial.dialect.postgis.PostgisDialect
 
@@ -297,7 +293,7 @@ async.export.path=/tmp
 publicationDeliveryUnmarshaller.validateAgainstSchema=false
 publicationDeliveryStreamingOutput.validateAgainstSchema=false
 netex.validPrefix=NSR
-netex.profile.version=1.12:NO-NeTEx-stops:1.4
+netex.profile.version=2.0:NO-NeTEx:2.0
 blobstore.local.folder=/tmp/local-gcs-storage/sobek/export
 spring.profiles.active=local-blobstore,activemq
 ```

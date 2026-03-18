@@ -15,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
 import org.rutebanken.netex.model.ResourceFrame;
+import org.rutebanken.netex.model.TextType;
 import org.rutebanken.netex.model.VehicleType;
 import org.rutebanken.sobek.SobekTestApplication;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -70,11 +71,54 @@ class VehicleTypeImportIT {
 
     assertThat(imported.getId()).startsWith("NMR:VehicleType:");
     assertThat(imported.getVersion()).isEqualTo("1");
-    assertThat(imported.getName().getContent()).hasSize(1);
-    assertThat((String) imported.getName().getContent().get(0)).isEqualTo("Exqui City 24");
+    assertThat(imported.getName().getContent()).hasSize(3);
+    assertThat(((JAXBElement<? extends TextType>) imported.getName().getContent().get(1)).getValue().getValue()).isEqualTo("Exqui City 24");
   }
 
-  private static final JAXBContext jaxbContext;
+    @Test
+    void importVehicleTypeBasic_returnsImportedVehicleTypeWithAssignedId() throws Exception {
+        String xml;
+        try (InputStream in = getClass().getResourceAsStream("/fixtures/vehicle-type-import-basic.xml")) {
+            xml = new String(in.readAllBytes(), StandardCharsets.UTF_8);
+        }
+
+        String responseXml =
+                given()
+                        .contentType("application/xml")
+                        .queryParam("importType", "ID_MATCH")
+                        .body(xml)
+                        .when()
+                        .post("/services/vehicles/netex")
+                        .then()
+                        .statusCode(200)
+                        .extract()
+                        .body()
+                        .asString();
+
+        PublicationDeliveryStructure response = unmarshal(responseXml);
+
+        ResourceFrame responseFrame =
+                response.getDataObjects().getCompositeFrameOrCommonFrame().stream()
+                        .map(jaxb -> jaxb.getValue())
+                        .filter(ResourceFrame.class::isInstance)
+                        .map(ResourceFrame.class::cast)
+                        .findFirst()
+                        .orElseThrow(() -> new AssertionError("No ResourceFrame in response"));
+
+        assertThat(responseFrame.getVehicleTypes()).isNotNull();
+        assertThat(responseFrame.getVehicleTypes().getTransportType_Dummy()).hasSize(1);
+
+        VehicleType imported =
+                (VehicleType)
+                        responseFrame.getVehicleTypes().getTransportType_Dummy().get(0).getValue();
+
+        assertThat(imported.getId()).startsWith("NMR:VehicleType:");
+        assertThat(imported.getVersion()).isEqualTo("1");
+        assertThat(imported.getName().getContent()).hasSize(1);
+        assertThat((String) imported.getName().getContent().get(0)).isEqualTo("Exqui City 24");
+    }
+
+    private static final JAXBContext jaxbContext;
 
   static {
     try {

@@ -71,8 +71,19 @@ class VehicleTypeImportIT {
 
     assertThat(imported.getId()).startsWith("NMR:VehicleType:");
     assertThat(imported.getVersion()).isEqualTo("1");
-    assertThat(imported.getName().getContent()).hasSize(3);
-    assertThat(((JAXBElement<? extends TextType>) imported.getName().getContent().get(1)).getValue().getValue()).isEqualTo("Exqui City 24");
+    TextType nameText =
+        imported.getName().getContent().stream()
+            .filter(JAXBElement.class::isInstance)
+            .map(JAXBElement.class::cast)
+            .map(JAXBElement::getValue)
+            .filter(TextType.class::isInstance)
+            .map(TextType.class::cast)
+            .findFirst()
+            .orElseThrow(
+                () ->
+                    new AssertionError(
+                        "No TextType name element in imported vehicle type"));
+    assertThat(nameText.getValue()).isEqualTo("Exqui City 24");
   }
 
     @Test

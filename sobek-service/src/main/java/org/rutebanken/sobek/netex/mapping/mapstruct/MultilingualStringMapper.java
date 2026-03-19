@@ -48,13 +48,13 @@ public interface MultilingualStringMapper {
         AtomicReference<String> stringContent = new AtomicReference<>("");
         content.forEach(value -> {
            if(value != null) {
-               if(value.getClass() == JAXBElement.class) {
-                   TextType textType = (TextType) ((JAXBElement) value).getValue();
-                   if(textType != null) {
-                       if(textType.getLang() != null) {
+               if(value instanceof JAXBElement<?> jaxbElement) {
+                   Object elementValue = jaxbElement.getValue();
+                   if (elementValue instanceof TextType textType) {
+                       if (textType.getLang() != null) {
                            lang.set(textType.getLang());
                        }
-                       if(textType.getValue() != null) {
+                       if (textType.getValue() != null) {
                            stringContent.set(stringContent + textType.getValue());
                        }
                    }
@@ -64,7 +64,7 @@ public interface MultilingualStringMapper {
            }
         });
 
-        return new EmbeddableMultilingualString(stringContent.get(), lang.get());
+        return new EmbeddableMultilingualString(stringContent.toString(), lang.get());
     }
 
     /**

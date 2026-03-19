@@ -15,7 +15,6 @@ public class VehicleTypeValidationTest {
 
     @Test
     void importVehicleTypeBasic_returnsImportedVehicleTypeWithAssignedId() throws Exception {
-        String xml;
         try (InputStream in = getClass().getResourceAsStream("/fixtures/vehicle-type-import-basic.xml")) {
             unmarshaller.unmarshal(in);
         }

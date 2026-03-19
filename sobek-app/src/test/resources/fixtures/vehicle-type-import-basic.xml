@@ -11,7 +11,7 @@
             <vehicleTypes>
                 <VehicleType id="AKT:VehicleType:123">
                     <PropulsionTypes>electric</PropulsionTypes>
-                    <Name lang="nb"><Text>Test GG</Text></Name>
+                    <Name lang="nb"><Text>Exqui City 24</Text></Name>
                     <TransportMode>bus</TransportMode>
                     <PrivateCode>ABC</PrivateCode>
                     <PassengerCapacity>

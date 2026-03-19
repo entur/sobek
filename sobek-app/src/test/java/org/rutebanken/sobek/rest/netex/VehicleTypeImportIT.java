@@ -125,8 +125,10 @@ class VehicleTypeImportIT {
 
         assertThat(imported.getId()).startsWith("NMR:VehicleType:");
         assertThat(imported.getVersion()).isEqualTo("1");
-        assertThat(imported.getName().getContent()).hasSize(1);
-        assertThat((String) imported.getName().getContent().get(0)).isEqualTo("Exqui City 24");
+        assertThat(imported.getName().getContent()).hasSize(3);
+        assertThat(imported.getName().getContent().get(1)).isInstanceOf(JAXBElement.class);
+        JAXBElement<? extends  TextType> theName = (JAXBElement)imported.getName().getContent().get(1);
+        assertThat(theName.getValue().getValue()).isEqualTo("Exqui City 24");
     }
 
     private static final JAXBContext jaxbContext;

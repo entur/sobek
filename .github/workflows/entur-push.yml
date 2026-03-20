@@ -25,7 +25,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
             ${{ runner.os }}-maven-
-
+      - name: Display Maven version
+        run: mvn -v
+      - name: Display dependency tree
+        run: mvn -q -DskipTests dependency:tree -Dverbose
+      - name: Display effective POM
+        run: mvn -q -DskipTests help:effective-pom
       - name: Run maven verify
         run: mvn verify
       - uses: actions/upload-artifact@v7.0.0

@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.entur.ror</groupId>
         <artifactId>superpom</artifactId>
-        <version>5.3.0</version>
+        <version>6.1.0</version>
     </parent>
     <groupId>org.rutebanken.sobek</groupId>
     <artifactId>sobek-parent</artifactId>
@@ -49,26 +49,18 @@
         <geotools.version>30.2</geotools.version>
         <graphql-java.version>20.9</graphql-java.version>
         <graphql-java-extended-scalars.version>24.0</graphql-java-extended-scalars.version>
-        <swagger-jersey2.version>2.2.43</swagger-jersey2.version>
+        <swagger-jersey2.version>2.2.45</swagger-jersey2.version>
         <netex-java-model.version>3.0.0-SNAPSHOT</netex-java-model.version>
-        <entur.helpers.version>6.3.0</entur.helpers.version>
+        <entur.helpers.version>7.0.0-SNAPSHOT</entur.helpers.version>
         <jts-core.version>1.20.0</jts-core.version>
         <groovy-all.version>4.0.28</groovy-all.version>
         <rest-assured.version>6.0.0</rest-assured.version>
         <!-- Dependency versions -->
-        <jakarta.version>3.2.0</jakarta.version>
-        <jakarta-validation.version>3.1.1</jakarta-validation.version>
         <postgis.version>2.5.1</postgis.version>
-        <slf4j.version>2.0.17</slf4j.version>
-        <commons-lang3.version>3.20.0</commons-lang3.version>
-        <guava.version>32.1.3-jre</guava.version>
-        <hibernate.version>7.1.11.Final</hibernate.version>
-        <lombok.version>1.18.42</lombok.version>
         <mapstruct.version>1.6.3</mapstruct.version>
         <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
         <spring-cloud-aws-secrets-manager.version>3.1.1</spring-cloud-aws-secrets-manager.version>
         <aws-secretsmanager.version>2.0.4</aws-secretsmanager.version>
-        <h2database.version>2.4.240</h2database.version>
     </properties>
 
     <repositories>
@@ -81,6 +73,10 @@
             <id>osgeo</id>
             <name>Open Source Geospatial Foundation Repository</name>
             <url>https://repo.osgeo.org/repository/release/</url>
+        </repository>
+        <repository>
+            <id>central-sonatype</id>
+            <url>https://central.sonatype.com</url>
         </repository>
         <repository>
             <id>maven-snapshots</id>
@@ -118,37 +114,6 @@
                 <version>${project.version}</version>
             </dependency>
 
-            <!-- Jakarta EE -->
-            <dependency>
-                <groupId>jakarta.persistence</groupId>
-                <artifactId>jakarta.persistence-api</artifactId>
-                <version>${jakarta.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>jakarta.validation</groupId>
-                <artifactId>jakarta.validation-api</artifactId>
-                <version>${jakarta-validation.version}</version>
-            </dependency>
-
-            <!-- Hibernate -->
-            <dependency>
-                <groupId>org.hibernate.orm</groupId>
-                <artifactId>hibernate-core</artifactId>
-                <version>${hibernate.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.hibernate.orm</groupId>
-                <artifactId>hibernate-spatial</artifactId>
-                <version>${hibernate.version}</version>
-            </dependency>
-
-            <!-- Lombok -->
-            <dependency>
-                <groupId>org.projectlombok</groupId>
-                <artifactId>lombok</artifactId>
-                <version>${lombok.version}</version>
-            </dependency>
-
             <!-- PostGIS - database driver -->
             <dependency>
                 <groupId>net.postgis</groupId>
@@ -162,36 +127,17 @@
                 <artifactId>netex-java-model</artifactId>
                 <version>${netex-java-model.version}</version>
             </dependency>
-
-            <!-- Apache Commons -->
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-lang3</artifactId>
-                <version>${commons-lang3.version}</version>
-            </dependency>
-
-            <!-- Guava -->
-            <dependency>
-                <groupId>com.google.guava</groupId>
-                <artifactId>guava</artifactId>
-                <version>${guava.version}</version>
-            </dependency>
-
-            <!-- SLF4J -->
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>${slf4j.version}</version>
-            </dependency>
             <dependency>
                 <groupId>org.mapstruct</groupId>
                 <artifactId>mapstruct</artifactId>
                 <version>${mapstruct.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.h2database</groupId>
-                <artifactId>h2</artifactId>
-                <version>${h2database.version}</version>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-bom</artifactId>
+                <version>1.19.3</version> <!-- Use latest stable version -->
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -211,7 +157,6 @@
                             <path>
                                 <groupId>org.projectlombok</groupId>
                                 <artifactId>lombok</artifactId>
-                                <version>${lombok.version}</version>
                             </path>
                             <!-- MapStruct processor -->
                             <path>

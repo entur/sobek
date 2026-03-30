@@ -51,7 +51,7 @@
         <graphql-java-extended-scalars.version>24.0</graphql-java-extended-scalars.version>
         <swagger-jersey2.version>2.2.45</swagger-jersey2.version>
         <netex-java-model.version>3.0.0-SNAPSHOT</netex-java-model.version>
-        <entur.helpers.version>7.0.0-SNAPSHOT</entur.helpers.version>
+        <entur.helpers.version>7.1.0</entur.helpers.version>
         <jts-core.version>1.20.0</jts-core.version>
         <groovy-all.version>4.0.28</groovy-all.version>
         <rest-assured.version>6.0.0</rest-assured.version>
@@ -73,10 +73,6 @@
             <id>osgeo</id>
             <name>Open Source Geospatial Foundation Repository</name>
             <url>https://repo.osgeo.org/repository/release/</url>
-        </repository>
-        <repository>
-            <id>central-sonatype</id>
-            <url>https://central.sonatype.com</url>
         </repository>
         <repository>
             <id>maven-snapshots</id>

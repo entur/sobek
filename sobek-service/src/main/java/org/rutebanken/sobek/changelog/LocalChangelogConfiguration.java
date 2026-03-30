@@ -1,6 +1,8 @@
 package org.rutebanken.sobek.changelog;
 
+import org.springframework.boot.activemq.autoconfigure.ActiveMQAutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.jms.autoconfigure.JmsAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
@@ -8,7 +10,7 @@ import org.springframework.context.annotation.Profile;
  * This configuration disables conflicting autoconfiguration used by other variants of the changelog feature.
  */
 @Configuration
-@EnableAutoConfiguration
+@EnableAutoConfiguration(exclude = {JmsAutoConfiguration.class, ActiveMQAutoConfiguration.class})
 @Profile("local-changelog")
 public class LocalChangelogConfiguration {
     // intentionally left blank

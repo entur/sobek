@@ -16,10 +16,9 @@
 package org.rutebanken.sobek.changelog;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
-import java.io.IOException;
 import java.io.StringWriter;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -42,14 +41,10 @@ public class EntityChangedEvent {
     public CrudAction crudAction;
 
     public String toString() {
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.registerModule(new JavaTimeModule());
-            StringWriter writer = new StringWriter();
-            mapper.writeValue(writer, this);
-            return writer.toString();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        ObjectMapper mapper = JsonMapper.builder()
+                .build();
+        StringWriter writer = new StringWriter();
+        mapper.writeValue(writer, this);
+        return writer.toString();
     }
 }

@@ -16,9 +16,11 @@
 package org.rutebanken.sobek.rest.netex.publicationdelivery;
 
 import jakarta.ws.rs.core.StreamingOutput;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
+import org.rutebanken.sobek.SobekTestApplication;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.xml.sax.SAXParseException;
 
 import java.io.ByteArrayOutputStream;
@@ -26,19 +28,22 @@ import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@SpringBootTest(classes = SobekTestApplication.class)
 public class PublicationDeliveryStreamingOutputTest {
+
+    @Autowired
+    private PublicationDeliveryStreamingOutput publicationDeliveryStreamingOutput;
 
     /**
      * Publication delivery should not validate.
      * It does not, for instance, contain publication timestamp nor participant ref.
      */
     @Test
-    @Ignore("Needs fix")
     public void cannotStreamInvalidXml() throws Exception {
 
         PublicationDeliveryStructure publicationDelivery = new PublicationDeliveryStructure();
 
-        StreamingOutput streamingOutput = new PublicationDeliveryStreamingOutput().stream(publicationDelivery);
+        StreamingOutput streamingOutput = publicationDeliveryStreamingOutput.stream(publicationDelivery);
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
         assertThatThrownBy(() -> {

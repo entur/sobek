@@ -17,11 +17,9 @@ package org.rutebanken.sobek.rest.graphql.types;
 
 import graphql.schema.GraphQLList;
 import graphql.schema.GraphQLObjectType;
-import graphql.schema.GraphQLTypeReference;
 import org.springframework.stereotype.Component;
 
-import static graphql.Scalars.GraphQLInt;
-import static graphql.Scalars.GraphQLString;
+import static graphql.Scalars.*;
 import static graphql.schema.GraphQLFieldDefinition.newFieldDefinition;
 import static graphql.schema.GraphQLObjectType.newObject;
 import static org.rutebanken.sobek.rest.graphql.GraphQLNames.*;
@@ -41,13 +39,13 @@ public class VehicleTypeObjectTypeCreator {
                         .type(embeddableMultilingualStringObjectType))
                 .field(newFieldDefinition()
                         .name("length")
-                        .type(GraphQLInt))
+                        .type(GraphQLFloat))
                 .field(newFieldDefinition()
                         .name("width")
-                        .type(GraphQLInt))
+                        .type(GraphQLFloat))
                 .field(newFieldDefinition()
                         .name("height")
-                        .type(GraphQLInt))
+                        .type(GraphQLFloat))
                 .field(newFieldDefinition()
                         .name(VERSION)
                         .type(GraphQLInt))

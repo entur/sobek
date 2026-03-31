@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PublicationDelivery xmlns="http://www.netex.org.uk/netex" version="1.0">
+    <PublicationTimestamp>2026-03-16T10:25:00.619Z</PublicationTimestamp>
+    <dataObjects>
+        <ResourceFrame id="RF:1" version="1">
+            <FrameDefaults>
+                <DefaultLocale>
+                    <TimeZone>Europe/Oslo</TimeZone>
+                </DefaultLocale>
+            </FrameDefaults>
+            <vehicleTypes>
+                <VehicleType id="AKT:VehicleType:123">
+                    <PropulsionTypes>electric</PropulsionTypes>
+                    <Name lang="nb"><Text>Exqui City 24</Text></Name>
+                    <TransportMode>bus</TransportMode>
+                    <PrivateCode>ABC</PrivateCode>
+                    <PassengerCapacity>
+                        <TotalCapacity>50</TotalCapacity>
+                        <SeatingCapacity>30</SeatingCapacity>
+                        <StandingCapacity>20</StandingCapacity>
+                    </PassengerCapacity>
+                    <FuelTypes>battery</FuelTypes>
+                    <FuelTypes>diesel</FuelTypes>
+                    <MaximumVelocity>100</MaximumVelocity>
+                    <Length>25000</Length>
+                    <Width>5000</Width>
+                    <Height>5000</Height>
+                    <Weight>20000</Weight>
+                </VehicleType>
+            </vehicleTypes>
+        </ResourceFrame>
+    </dataObjects>
+</PublicationDelivery>

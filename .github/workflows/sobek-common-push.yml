@@ -33,9 +33,9 @@ jobs:
             ${{ runner.os }}-
 
       - name: Run maven build
-        run: mvn package -pl sobek-model -pl sobek-common -s .github/workflows/settings.xml
+        run: mvn package -pl sobek-model -pl sobek-common
       - name: Run maven test
-        run: mvn test -pl sobek-model -pl sobek-common -s .github/workflows/settings.xml -Dtest-enabled=true
+        run: mvn test -pl sobek-model -pl sobek-common -Dtest-enabled=true
       - name: Deploy parent til JFrog Artifactory
         run: mvn deploy -N -s .github/workflows/settings.xml
         env:

@@ -1,13 +1,15 @@
 
 package org.rutebanken.sobek.netex.mapping.mapstruct;
 
+import jakarta.xml.bind.JAXBElement;
 import org.mapstruct.Mapper;
 import org.rutebanken.netex.model.MultilingualString;
+import org.rutebanken.netex.model.ObjectFactory;
+import org.rutebanken.netex.model.TextType;
 import org.rutebanken.sobek.model.EmbeddableMultilingualString;
-import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * MapStruct mapper for MultilingualString conversions.
@@ -21,6 +23,8 @@ import java.util.List;
  */
 @Mapper()
 public interface MultilingualStringMapper {
+
+    ObjectFactory OBJECT_FACTORY = new ObjectFactory();
 
     /**
      * Maps NeTEx MultilingualString to Sobek EmbeddableMultilingualString.
@@ -38,7 +42,29 @@ public interface MultilingualStringMapper {
             return null;
         }
 
-        return new EmbeddableMultilingualString(source.getContent().getFirst().toString(), source.getLang());
+        final var content = source.getContent();
+        AtomicReference<String> lang = new AtomicReference<>(source.getLang());
+
+        AtomicReference<String> stringContent = new AtomicReference<>("");
+        content.forEach(value -> {
+           if(value != null) {
+               if(value instanceof JAXBElement<?> jaxbElement) {
+                   Object elementValue = jaxbElement.getValue();
+                   if (elementValue instanceof TextType textType) {
+                       if (textType.getLang() != null) {
+                           lang.set(textType.getLang());
+                       }
+                       if (textType.getValue() != null) {
+                           stringContent.set(stringContent + textType.getValue());
+                       }
+                   }
+               } else {
+                   stringContent.set(stringContent + value.toString());
+               }
+           }
+        });
+
+        return new EmbeddableMultilingualString(stringContent.toString(), lang.get());
     }
 
     /**
@@ -58,8 +84,14 @@ public interface MultilingualStringMapper {
         }
 
         MultilingualString netexString = new MultilingualString();
-        netexString.withContent(source.getValue());
-        netexString.setLang(source.getLang());
+        netexString.withContent(List.of(createTextType(source.getLang(), source.getValue())));
         return netexString;
     }
+
+    private JAXBElement<? extends TextType> createTextType (String lang, String value){
+        return OBJECT_FACTORY.createMultilingualStringText(new TextType()
+                .withLang(lang)
+                .withValue(value));
+    }
+
 }

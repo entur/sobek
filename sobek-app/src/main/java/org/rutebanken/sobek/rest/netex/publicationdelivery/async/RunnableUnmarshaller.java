@@ -17,8 +17,6 @@ package org.rutebanken.sobek.rest.netex.publicationdelivery.async;
 
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
-import org.rutebanken.netex.model.Parking;
-import org.rutebanken.netex.model.StopPlace;
 import org.rutebanken.netex.model.Vehicle;
 import org.rutebanken.netex.model.VehicleType;
 import org.slf4j.Logger;

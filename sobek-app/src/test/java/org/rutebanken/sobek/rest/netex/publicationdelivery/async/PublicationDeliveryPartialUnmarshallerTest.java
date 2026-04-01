@@ -20,6 +20,7 @@ import org.rutebanken.netex.model.Vehicle;
 import org.rutebanken.netex.model.VehicleType;
 import org.rutebanken.sobek.SobekTestApplication;
 import org.rutebanken.sobek.netex.mapping.PublicationDeliveryHelper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.xml.sax.SAXException;
 
@@ -34,7 +35,8 @@ import static org.rutebanken.sobek.rest.netex.publicationdelivery.async.Runnable
 @SpringBootTest(classes = SobekTestApplication.class)
 public class PublicationDeliveryPartialUnmarshallerTest {
 
-    private PublicationDeliveryPartialUnmarshaller publicationDeliveryPartialUnmarshaller = new PublicationDeliveryPartialUnmarshaller(new PublicationDeliveryHelper());
+    @Autowired
+    private PublicationDeliveryPartialUnmarshaller publicationDeliveryPartialUnmarshaller;
 
     public PublicationDeliveryPartialUnmarshallerTest() throws IOException, SAXException {
     }

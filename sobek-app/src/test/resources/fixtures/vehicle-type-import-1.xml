@@ -19,7 +19,7 @@
                     <FuelTypes>battery</FuelTypes>
                     <MaximumVelocity>80</MaximumVelocity>
                     <TransportMode>bus</TransportMode>
-                    <PassengerCapacity>
+                    <PassengerCapacity version="new" id="TST:PassengerCapacity:1">
                         <TotalCapacity>160</TotalCapacity>
                         <SeatingCapacity>52</SeatingCapacity>
                         <StandingCapacity>108</StandingCapacity>
@@ -41,7 +41,7 @@
                     <FuelTypes>battery</FuelTypes>
                     <MaximumVelocity>80</MaximumVelocity>
                     <TransportMode>bus</TransportMode>
-                    <PassengerCapacity>
+                    <PassengerCapacity version="new" id="TST:PassengerCapacity:2">
                         <TotalCapacity>160</TotalCapacity>
                         <SeatingCapacity>52</SeatingCapacity>
                         <StandingCapacity>108</StandingCapacity>

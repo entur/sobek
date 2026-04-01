@@ -19,6 +19,8 @@ import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
 import org.rutebanken.netex.model.Parking;
 import org.rutebanken.netex.model.StopPlace;
+import org.rutebanken.netex.model.Vehicle;
+import org.rutebanken.netex.model.VehicleType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,8 +37,8 @@ public class RunnableUnmarshaller implements Runnable {
 
     private static final Logger logger = LoggerFactory.getLogger(RunnableUnmarshaller.class);
 
-    public static final StopPlace POISON_STOP_PLACE = new StopPlace().withId("-100");
-    public static final Parking POISON_PARKING = new Parking().withId("-100");
+    public static final Vehicle POISON_VEHICLE = new Vehicle().withId("-100");
+    public static final VehicleType POISON_VEHICLE_TYPE = new VehicleType().withId("-100");
 
     private final InputStream inputStream;
     private final Unmarshaller unmarshaller;
@@ -51,8 +53,8 @@ public class RunnableUnmarshaller implements Runnable {
     @Override
     public void run() {
         final XMLInputFactory xmlInputFactory = XMLInputFactory.newFactory();
-        AtomicInteger stops = new AtomicInteger();
-        AtomicInteger parkings = new AtomicInteger();
+        AtomicInteger vehicles = new AtomicInteger();
+        AtomicInteger vehicleTypes = new AtomicInteger();
 
         final XMLEventReader xmlEventReader;
         try {
@@ -68,37 +70,37 @@ public class RunnableUnmarshaller implements Runnable {
                     StartElement startElement = xmlEvent.asStartElement();
                     String localPartOfName = startElement.getName().getLocalPart();
 
-                    if (localPartOfName.equals("StopPlace")) {
-                        StopPlace stopPlace = unmarshaller.unmarshal(xmlEventReader, StopPlace.class).getValue();
-                        stops.incrementAndGet();
-                        unmarshalResult.getStopPlaceQueue().put(stopPlace);
+                    if (localPartOfName.equals("Vehicle")) {
+                        Vehicle vehicle = unmarshaller.unmarshal(xmlEventReader, Vehicle.class).getValue();
+                        vehicles.incrementAndGet();
+                        unmarshalResult.getVehiclesQueue().put(vehicle);
 
-                        if (stops.get() % 200 == 0) {
-                            logger.info("Unmarshalled stop number {}", stops.get());
+                        if (vehicles.get() % 200 == 0) {
+                            logger.info("Unmarshalled vehicle number {}", vehicles.get());
                         }
                         continue;
                     }
 
-                    if (localPartOfName.equals("Parking")) {
-                        Parking parking = unmarshaller.unmarshal(xmlEventReader, Parking.class).getValue();
-                        parkings.incrementAndGet();
-                        unmarshalResult.getParkingQueue().put(parking);
+                    if (localPartOfName.equals("VehicleType")) {
+                        VehicleType vehicleType = unmarshaller.unmarshal(xmlEventReader, VehicleType.class).getValue();
+                        vehicleTypes.incrementAndGet();
+                        unmarshalResult.getVehicleTypesQueue().put(vehicleType);
 
-                        if (parkings.get() % 20 == 0) {
-                            logger.info("Unmarshalled parking number {}", parkings.get());
+                        if (vehicleTypes.get() % 20 == 0) {
+                            logger.info("Unmarshalled vehicleType number {}", vehicleTypes.get());
                         }
                         continue;
                     }
                 } else if (xmlEvent.isEndElement()) {
                     EndElement endElement = xmlEvent.asEndElement();
                     String localPartOfName = endElement.getName().getLocalPart();
-                    if (localPartOfName.equals("stopPlaces")) {
-                        logger.info("End of stop places in incoming XML. Counter ended at {}. Adding poison pill to the queue.", stops.get());
-                        unmarshalResult.getStopPlaceQueue().put(POISON_STOP_PLACE);
+                    if (localPartOfName.equals("vehicles")) {
+                        logger.info("End of vehicles in incoming XML. Counter ended at {}. Adding poison pill to the queue.", vehicles.get());
+                        unmarshalResult.getVehiclesQueue().put(POISON_VEHICLE);
                     }
-                    if (localPartOfName.equals("parkings")) {
-                        logger.info("End of parkings in incoming XML. Counter ended at {}. Adding poison pill to the queue.", parkings.get());
-                        unmarshalResult.getParkingQueue().put(POISON_PARKING);
+                    if (localPartOfName.equals("vehicleTypes")) {
+                        logger.info("End of vehicleTypes in incoming XML. Counter ended at {}. Adding poison pill to the queue.", vehicleTypes.get());
+                        unmarshalResult.getVehicleTypesQueue().put(POISON_VEHICLE_TYPE);
                     }
                 }
                 xmlEventReader.next();
@@ -107,22 +109,22 @@ public class RunnableUnmarshaller implements Runnable {
 
             logger.error("Could not read netex from events. Stopping. " + e.getMessage(), e);
             try {
-                unmarshalResult.getStopPlaceQueue().put(POISON_STOP_PLACE);
-                unmarshalResult.getParkingQueue().put(POISON_PARKING);
+                unmarshalResult.getVehiclesQueue().put(POISON_VEHICLE);
+                unmarshalResult.getVehicleTypesQueue().put(POISON_VEHICLE_TYPE);
             } catch (InterruptedException e2) {
-                logger.warn("Interrupted when adding poison stop place to queue", e2);
+                logger.warn("Interrupted when adding poison vehicle to queue", e2);
             }
         }
         try {
-            // Do this regardless of processing above. If parking is empty, make sure threads can exit.
+            // Do this regardless of processing above. If vehicleType is empty, make sure threads can exit.
             // After all, the queue is blocking.
-            unmarshalResult.getParkingQueue().put(POISON_PARKING);
-            unmarshalResult.getStopPlaceQueue().put(POISON_STOP_PLACE);
+            unmarshalResult.getVehicleTypesQueue().put(POISON_VEHICLE_TYPE);
+            unmarshalResult.getVehiclesQueue().put(POISON_VEHICLE);
         } catch (InterruptedException e) {
             // Intentionally empty
         }
 
-        logger.info("Unmarshalling thread finished after {} stops, {} parkings.", stops.get(), parkings.get());
+        logger.info("Unmarshalling thread finished after {} vehicles, {} vehicleTypes.", vehicles.get(), vehicleTypes.get());
     }
 
 }

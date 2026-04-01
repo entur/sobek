@@ -17,7 +17,7 @@ package org.rutebanken.sobek.rest.netex.publicationdelivery;
 
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.UnmarshalException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 
 import java.io.ByteArrayInputStream;

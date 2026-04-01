@@ -15,61 +15,23 @@
 
 package org.rutebanken.sobek;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.EntityTransaction;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.runner.RunWith;
-import org.rutebanken.sobek.versioning.VersionCreator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT, classes = SobekTestApplication.class)
 @ActiveProfiles({"test","gcs-blobstore"})
 @EnableAspectJAutoProxy(proxyTargetClass = true)
-@EntityScan(basePackages = {"org.rutebanken.sobek.model"})
 @EnableJpaRepositories(basePackages = {"org.rutebanken.sobek.repository"})
 public abstract class SobekIntegrationTest {
 
     private static Logger logger = LoggerFactory.getLogger(SobekIntegrationTest.class);
 
-    @Autowired
-    protected EntityManagerFactory entityManagerFactory;
-
-    @Autowired
-    protected VersionCreator versionCreator;
-
     @Value("${local.server.port}")
     protected int port;
 
-    @Before
-    @After
-    public void clearRepositories() {
-        clearIdGeneration();
-    }
-
-    /**
-     * Clear id_generator table and reset available ID queues and last IDs for entities.
-     */
-    private void clearIdGeneration() {
-
-        EntityManager entityManager = entityManagerFactory.createEntityManager();
-        EntityTransaction transaction = entityManager.getTransaction();
-        transaction.begin();
-
-        int updated = entityManager.createNativeQuery("DELETE FROM id_generator").executeUpdate();
-        logger.debug("Cleared id generator table. deleted: {}", updated);
-        transaction.commit();
-        entityManager.close();
-    }
 }

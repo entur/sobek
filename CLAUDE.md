@@ -9,7 +9,7 @@
 - **License**: EUPL-1.2
 - **Repository**: https://github.com/entur/sobek
 - **Language**: Java 21
-- **Framework**: Spring Boot 3.x
+- **Framework**: Spring Boot 4.x
 - **Build Tool**: Maven
 - **Current Version**: 1.0.1-SNAPSHOT
 
@@ -17,27 +17,27 @@
 
 ### Core Technologies
 - **Spring Boot** - Application framework
-- **Hibernate 6.5.3** - ORM with spatial support (hibernate-spatial)
+- **Hibernate 7.2.7** - ORM with spatial support (hibernate-spatial)
 - **PostgreSQL/PostGIS** - Database with geospatial extensions
 - **Jersey** - REST API framework
 - **Jackson** - JSON processing
 - **GraphQL** (graphql-java 20.9) - Primary API interface
 
 ### Key Dependencies
-- **NeTEx Java Model 2.0.16** - NeTEx format support
+- **NeTEx Java Model 3.0.0-SNAPSHOT** - NeTEx format support
 - **GeoTools 30.2** - Geospatial operations
 - **JTS Core 1.20.0** - Geometry operations
 - **Flyway** - Database migrations
-- **Testcontainers 1.21.3** - Integration testing with Docker
-- **Orika 1.5.4** - Object mapping
+- **Testcontainers 1.19.3** - Integration testing with Docker
+- **MapStruct 1.6.3** - Object mapping
 - **Google Cloud PubSub** - Event publishing
 - **AWS Secrets Manager** - Credential management
 
 ### Additional Components
-- **Lombok 1.18.42** - Code generation
+- **Lombok 1.18.44** - Code generation
 - **Micrometer/Prometheus** - Metrics and monitoring
 - **ActiveMQ** - JMS messaging
-- **Rest Assured 5.5.6** - API testing
+- **Rest Assured 6.0.0** - API testing
 
 ## Architecture
 
@@ -503,5 +503,5 @@ When troubleshooting profile-related issues:
 
 ---
 
-**Last Updated**: March 2026
+**Last Updated**: April 2026
 **Claude.ai Context**: This document provides comprehensive project context for AI assistants like Claude to understand and work with the Sobek codebase.

@@ -97,12 +97,13 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
             TypedQuery<VehicleType> fetchQuery = entityManager.createQuery(fetchJpql, VehicleType.class);
             fetchQuery.setParameter("now", now);
             setFilterParams(fetchQuery, ids, transportMode);
-            return new PageImpl<>(fetchQuery.getResultList());
+            return new PageImpl<>(fetchQuery.getResultList(), pageable, total);
         }
 
         // Phase 2: fetch paged IDs (no JOIN FETCH — safe for LIMIT/OFFSET)
         String idJpql = "SELECT DISTINCT vt.id FROM VehicleType vt " +
-                "LEFT JOIN vt.vehicles v " + CURRENT_BASE_WHERE + filterSuffix;
+                "LEFT JOIN vt.vehicles v " + CURRENT_BASE_WHERE + filterSuffix +
+                " ORDER BY vt.id";
         TypedQuery<Long> idQuery = entityManager.createQuery(idJpql, Long.class);
         idQuery.setParameter("now", now);
         setFilterParams(idQuery, ids, transportMode);

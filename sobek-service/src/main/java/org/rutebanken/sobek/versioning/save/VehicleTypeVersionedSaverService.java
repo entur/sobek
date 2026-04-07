@@ -17,9 +17,11 @@ package org.rutebanken.sobek.versioning.save;
 
 
 import lombok.extern.java.Log;
+import org.rutebanken.sobek.model.vehicle.PassengerCapacity;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
 import org.rutebanken.sobek.repository.VehicleRepository;
 import org.rutebanken.sobek.repository.VehicleTypeRepository;
+import org.rutebanken.sobek.repository.listener.NetexIdAssigner;
 import org.springframework.stereotype.Component;
 
 import java.util.logging.Level;
@@ -31,14 +33,26 @@ public class VehicleTypeVersionedSaverService {
     private final VehicleTypeRepository vehicleTypeRepository;
     private final VehicleRepository vehicleRepository;
     private final DefaultMergingVersionedSaverService defaultVersionedSaverService;
+    private final NetexIdAssigner netexIdAssigner;
 
-    public VehicleTypeVersionedSaverService(VehicleTypeRepository vehicleTypeRepository, VehicleRepository vehicleRepository, DefaultMergingVersionedSaverService defaultVersionedSaverService) {
+
+    public VehicleTypeVersionedSaverService(VehicleTypeRepository vehicleTypeRepository, VehicleRepository vehicleRepository, DefaultMergingVersionedSaverService defaultVersionedSaverService, NetexIdAssigner netexIdAssigner) {
         this.vehicleTypeRepository = vehicleTypeRepository;
         this.vehicleRepository = vehicleRepository;
         this.defaultVersionedSaverService = defaultVersionedSaverService;
+        this.netexIdAssigner = netexIdAssigner;
     }
 
     public VehicleType saveNewVersion(VehicleType newVersion) {
+
+        // Assign netexId if not already assigned
+        // PassengerCapacity doesn't have a independent lifecycle, meaning it's linked to the VehicleType at all times
+        // Therefore, if the client doesn't control the netexId, we assign it here.
+        PassengerCapacity passengerCapacity = newVersion.getPassengerCapacity();
+        if(passengerCapacity != null && passengerCapacity.getId() == null) {
+            netexIdAssigner.assignNetexId(passengerCapacity);
+        }
+
         var existingVersion = vehicleTypeRepository.findFirstByNetexIdOrderByVersionDesc(newVersion.getNetexId());
         if (existingVersion != null) {
             log.log(Level.FINE, "Found existing entity from netexId {}", existingVersion.getNetexId());

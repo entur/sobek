@@ -32,6 +32,28 @@
                     <Height>3.40</Height>
                     <Weight>19500</Weight>
                 </VehicleType>
+                <VehicleType version="1" id="TST:VehicleType:2">
+                    <Name><Text>Exqui City 24</Text></Name>
+                    <Description><Text>Van Hool articulated electric bus</Text></Description>
+                    <EuroClass>Euro6</EuroClass>
+                    <SelfPropelled>true</SelfPropelled>
+                    <PropulsionTypes>electric</PropulsionTypes>
+                    <FuelTypes>battery</FuelTypes>
+                    <MaximumVelocity>80</MaximumVelocity>
+                    <TransportMode>bus</TransportMode>
+                    <PassengerCapacity version="1" id="TST:PassengerCapacity:2">
+                        <TotalCapacity>160</TotalCapacity>
+                        <SeatingCapacity>52</SeatingCapacity>
+                        <StandingCapacity>108</StandingCapacity>
+                    </PassengerCapacity>
+                    <LowFloor>true</LowFloor>
+                    <HasLiftOrRamp>true</HasLiftOrRamp>
+                    <BoardingHeight>0.32</BoardingHeight>
+                    <Length>23.82</Length>
+                    <Width>2.55</Width>
+                    <Height>3.40</Height>
+                    <Weight>19500</Weight>
+                </VehicleType>
             </vehicleTypes>
         </ResourceFrame>
     </dataObjects>

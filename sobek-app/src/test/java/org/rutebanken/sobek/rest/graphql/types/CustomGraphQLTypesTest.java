@@ -17,9 +17,10 @@ package org.rutebanken.sobek.rest.graphql.types;
 
 import graphql.schema.GraphQLEnumType;
 import graphql.schema.GraphQLEnumValueDefinition;
-import org.junit.Test;
-import org.rutebanken.sobek.exporter.params.ExportParams;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.rutebanken.sobek.model.LimitationStatusEnumeration;
+import org.rutebanken.sobek.model.job.ExportParams;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -27,7 +28,6 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static junit.framework.TestCase.assertTrue;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class CustomGraphQLTypesTest {
@@ -56,13 +56,13 @@ public class CustomGraphQLTypesTest {
                         Object enumObject = m.invoke(value.getValue(), value.getName());
 
                         //Compare with resolved Enum-value
-                        assertTrue(enumObject.equals(value.getValue()));
+                        Assertions.assertEquals(enumObject, value.getValue());
                         counter.incrementAndGet();
                     }
                 }
             }
         }
-        assertTrue("No custom GraphQL-enums have been tested!", counter.get() > 0);
+        Assertions.assertTrue(counter.get() > 0);
     }
 
     @Test

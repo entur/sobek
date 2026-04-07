@@ -23,7 +23,6 @@ import org.rutebanken.netex.model.StopPlace;
 import org.rutebanken.netex.model.TopographicPlace;
 import org.rutebanken.netex.validation.NeTExValidator;
 import org.rutebanken.sobek.netex.mapping.PublicationDeliveryHelper;
-import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,7 +74,7 @@ public class PublicationDeliveryPartialUnmarshaller {
     /**
      * Validating large incoming XMLs against schema often leads to StackOverFlowException.
      */
-    @Value("${publicationDeliveryPartialUnmarshaller.validateAgainstSchema:false}")
+    @Value("${publicationDeliveryPartialUnmarshaller.validateAgainstSchema:true}")
     private boolean validateAgainstSchema;
 
     private final PublicationDeliveryHelper publicationDeliveryHelper;
@@ -85,7 +84,7 @@ public class PublicationDeliveryPartialUnmarshaller {
         this.publicationDeliveryHelper = publicationDeliveryHelper;
     }
 
-    public UnmarshalResult unmarshal(InputStream inputStream, MappingContext mappingContext) throws JAXBException, IOException, SAXException, XMLStreamException, InterruptedException, ParserConfigurationException {
+    public UnmarshalResult unmarshal(InputStream inputStream) throws JAXBException, IOException, SAXException, XMLStreamException, InterruptedException, ParserConfigurationException {
         File file = File.createTempFile("sobek-" + System.currentTimeMillis(), ".xml");
         Files.copy(inputStream, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
@@ -108,7 +107,6 @@ public class PublicationDeliveryPartialUnmarshaller {
         logger.debug("Unmarshalling incoming publication delivery structure. Schema validation enabled: {}", validateAgainstSchema);
 
         PublicationDeliveryStructure publicationDeliveryStructure = readPublicationDeliveryStructure(xmlInputFactory, new FileInputStream(file), unmarshaller);
-        mappingContext.updateMappingContext(publicationDeliveryHelper.findSiteFrame(publicationDeliveryStructure));
 
         // Read the rest from the same file
         UnmarshalResult unmarshalResult = readWithXmlEventReaderAsync(new FileInputStream(file), unmarshaller);

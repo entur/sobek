@@ -55,7 +55,7 @@ public class PublicationDeliveryStreamingOutput {
 
 
     @Value("${publicationDeliveryStreamingOutput.validateAgainstSchema:true}")
-    private boolean validateAgainstSchema = false; //TODO
+    private boolean validateAgainstSchema;
 
     public PublicationDeliveryStreamingOutput() throws IOException, SAXException {
     }

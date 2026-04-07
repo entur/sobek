@@ -22,19 +22,21 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.rutebanken.sobek.SobekTestApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = SobekTestApplication.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class GraphQLPagedQueriesTest {
 
     @LocalServerPort int port;
 
-    @BeforeEach
+    @BeforeAll
     void setUp() throws Exception {
         RestAssured.port = port;
         importFixture("/fixtures/vehicle-type-import-basic.xml");

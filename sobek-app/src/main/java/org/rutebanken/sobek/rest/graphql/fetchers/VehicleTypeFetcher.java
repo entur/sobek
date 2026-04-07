@@ -24,7 +24,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -60,12 +59,6 @@ class VehicleTypeFetcher implements DataFetcher<Map<String, Object>> {
         }
 
         var result = vehicleTypeRepository.findCurrentFiltered(ids, mode, PageRequest.of(page, size));
-
-        Map<String, Object> pageResult = new LinkedHashMap<>();
-        pageResult.put(CONTENT, result.getContent());
-        pageResult.put(TOTAL_ELEMENTS, Math.toIntExact(result.getTotalElements()));
-        pageResult.put(PAGE, page);
-        pageResult.put(SIZE, size);
-        return pageResult;
+        return PageResult.from(result, page, size);
     }
 }

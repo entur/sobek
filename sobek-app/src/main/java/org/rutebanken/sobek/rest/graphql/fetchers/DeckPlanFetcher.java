@@ -23,7 +23,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.rutebanken.sobek.rest.graphql.GraphQLNames.*;
@@ -43,12 +42,6 @@ class DeckPlanFetcher implements DataFetcher<Map<String, Object>> {
         int size = env.getArgumentOrDefault(SIZE, DEFAULT_SIZE_VALUE);
 
         var result = deckPlanRepository.findCurrentPaged(PageRequest.of(page, size));
-
-        Map<String, Object> pageResult = new LinkedHashMap<>();
-        pageResult.put(CONTENT, result.getContent());
-        pageResult.put(TOTAL_ELEMENTS, Math.toIntExact(result.getTotalElements()));
-        pageResult.put(PAGE, page);
-        pageResult.put(SIZE, size);
-        return pageResult;
+        return PageResult.from(result, page, size);
     }
 }

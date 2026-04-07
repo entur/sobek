@@ -138,13 +138,7 @@ public class RegisterGraphQLSchema {
         GraphQLObjectType vehicleObjectType = vehicleObjectTypeCreator.create();
         GraphQLObjectType vehicleTypeObjectType = vehicleTypeObjectTypeCreator.create(deckPlanObjectType, vehicleObjectType, dateScalar.getGraphQLDateScalar());
 
-        GraphQLObjectType vehicleTypePageType = newObject()
-                .name(OUTPUT_TYPE_VEHICLE_TYPE_PAGE)
-                .field(newFieldDefinition().name(CONTENT).type(new GraphQLList(vehicleTypeObjectType)))
-                .field(newFieldDefinition().name(TOTAL_ELEMENTS).type(new GraphQLNonNull(GraphQLInt)))
-                .field(newFieldDefinition().name(PAGE).type(new GraphQLNonNull(GraphQLInt)))
-                .field(newFieldDefinition().name(SIZE).type(new GraphQLNonNull(GraphQLInt)))
-                .build();
+        GraphQLObjectType vehicleTypePageType = createPageType(OUTPUT_TYPE_VEHICLE_TYPE_PAGE, vehicleTypeObjectType);
 
         GraphQLInputObjectType vehicleTypeFilterInput = newInputObject()
                 .name(INPUT_TYPE_VEHICLE_TYPE_FILTER)
@@ -152,13 +146,7 @@ public class RegisterGraphQLSchema {
                 .field(newInputObjectField().name(TRANSPORT_MODE).type(transportModeEnumType).description("Filter by transport mode"))
                 .build();
 
-        GraphQLObjectType deckPlanPageType = newObject()
-                .name(OUTPUT_TYPE_DECK_PLAN_PAGE)
-                .field(newFieldDefinition().name(CONTENT).type(new GraphQLList(deckPlanObjectType)))
-                .field(newFieldDefinition().name(TOTAL_ELEMENTS).type(new GraphQLNonNull(GraphQLInt)))
-                .field(newFieldDefinition().name(PAGE).type(new GraphQLNonNull(GraphQLInt)))
-                .field(newFieldDefinition().name(SIZE).type(new GraphQLNonNull(GraphQLInt)))
-                .build();
+        GraphQLObjectType deckPlanPageType = createPageType(OUTPUT_TYPE_DECK_PLAN_PAGE, deckPlanObjectType);
 
         GraphQLObjectType vehicleRegistryQuery = newObject()
                 .name(VEHICLE_REGISTER)
@@ -274,6 +262,16 @@ public class RegisterGraphQLSchema {
                 .description(SIZE_ARG_DESCRIPTION)
                 .build());
         return arguments;
+    }
+
+    private static GraphQLObjectType createPageType(String name, GraphQLObjectType contentType) {
+        return newObject()
+                .name(name)
+                .field(newFieldDefinition().name(CONTENT).type(new GraphQLList(contentType)))
+                .field(newFieldDefinition().name(TOTAL_ELEMENTS).type(new GraphQLNonNull(GraphQLInt)))
+                .field(newFieldDefinition().name(PAGE).type(new GraphQLNonNull(GraphQLInt)))
+                .field(newFieldDefinition().name(SIZE).type(new GraphQLNonNull(GraphQLInt)))
+                .build();
     }
 
     private GraphQLObjectType createValidBetweenObjectType() {

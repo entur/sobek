@@ -70,6 +70,10 @@ public class VehicleTypeObjectTypeCreator {
                 .field(newFieldDefinition()
                         .name(VERSION_COMMENT)
                         .type(GraphQLString))
+                // TODO #85: includedIn is @Transient — needs Flyway migration to add
+                // self-referencing FK (parent VehicleType), then persist via JPA @ManyToOne,
+                // update MapStruct mappers, and wire a custom DataFetcher here.
+                // NeTEx: IncludedIn is a child-to-parent ref for VehicleType hierarchies.
                 .field(newFieldDefinition()
                         .name(VEHICLE_TYPE_DECK_PLAN)
                         .type(deckPlanObjectType))

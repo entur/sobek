@@ -17,49 +17,38 @@ package org.rutebanken.sobek.rest.graphql.fetchers;
 
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
-import javassist.NotFoundException;
 import org.rutebanken.sobek.repository.DeckPlanRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
-import static org.rutebanken.sobek.rest.graphql.GraphQLNames.ALL_VERSIONS;
-import static org.rutebanken.sobek.rest.graphql.GraphQLNames.ID;
+import static org.rutebanken.sobek.rest.graphql.GraphQLNames.*;
+import static org.rutebanken.sobek.rest.graphql.RegisterGraphQLSchema.DEFAULT_PAGE_VALUE;
+import static org.rutebanken.sobek.rest.graphql.RegisterGraphQLSchema.DEFAULT_SIZE_VALUE;
 
 @Service("deckPlanFetcher")
 @Transactional
-class DeckPlanFetcher implements DataFetcher {
-
-    private static final Logger logger = LoggerFactory.getLogger(DeckPlanFetcher.class);
+class DeckPlanFetcher implements DataFetcher<Map<String, Object>> {
 
     @Autowired
     private DeckPlanRepository deckPlanRepository;
 
-
     @Override
-    public Object get(DataFetchingEnvironment environment) throws NotFoundException {
-        String netexId = environment.getArgument(ID);
-        boolean allVersions = Boolean.TRUE.equals(environment.getArgument(ALL_VERSIONS));
+    public Map<String, Object> get(DataFetchingEnvironment env) {
+        int page = env.getArgumentOrDefault(PAGE, DEFAULT_PAGE_VALUE);
+        int size = env.getArgumentOrDefault(SIZE, DEFAULT_SIZE_VALUE);
 
-        if (netexId != null) {
+        var result = deckPlanRepository.findCurrentPaged(PageRequest.of(page, size));
 
-            logger.debug("Returning deck plan from netexId: {}", netexId);
-            if (allVersions) {
-                return deckPlanRepository.findByNetexId(netexId);
-            } else {
-                var deckPlan = deckPlanRepository.findFirstByNetexIdOrderByVersionDesc(netexId);
-                if(deckPlan == null) {
-                    throw new NotFoundException("No DeckPlan found with id " + netexId);
-                } else {
-                    return List.of(deckPlan);
-                }
-            }
-        }
-        return deckPlanRepository.findAllCurrent();
-
+        Map<String, Object> pageResult = new LinkedHashMap<>();
+        pageResult.put(CONTENT, result.getContent());
+        pageResult.put(TOTAL_ELEMENTS, Math.toIntExact(result.getTotalElements()));
+        pageResult.put(PAGE, page);
+        pageResult.put(SIZE, size);
+        return pageResult;
     }
 }

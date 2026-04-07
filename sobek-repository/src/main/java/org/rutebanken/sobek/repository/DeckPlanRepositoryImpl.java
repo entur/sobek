@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import org.rutebanken.sobek.model.vehicle.DeckPlan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
@@ -54,16 +57,37 @@ public class DeckPlanRepositoryImpl implements DeckPlanRepositoryCustom {
         }
     }
 
+    private static final String CURRENT_BASE_WHERE =
+            "WHERE dp.validBetween.fromDate <= :now " +
+            "AND (dp.validBetween.toDate IS NULL OR dp.validBetween.toDate >= :now)";
+
     @Override
     public List<DeckPlan> findAllCurrent() {
+        return findCurrentPaged(Pageable.unpaged()).getContent();
+    }
+
+    @Override
+    public Page<DeckPlan> findCurrentPaged(Pageable pageable) {
         Instant now = Instant.now();
-        TypedQuery<DeckPlan> query = entityManager.createQuery(
-                "SELECT DISTINCT dp FROM DeckPlan dp " +
-                        "WHERE dp.validBetween.fromDate <= :now " +
-                        "AND (dp.validBetween.toDate IS NULL OR dp.validBetween.toDate >= :now) ",
-                DeckPlan.class);
-        query.setHint("hibernate.query.passDistinctThrough", false);
+        String baseJpql = "SELECT DISTINCT dp FROM DeckPlan dp " + CURRENT_BASE_WHERE;
+
+        if (pageable.isUnpaged()) {
+            TypedQuery<DeckPlan> query = entityManager.createQuery(baseJpql, DeckPlan.class);
+            query.setParameter("now", now);
+            List<DeckPlan> results = query.getResultList();
+            return new PageImpl<>(results);
+        }
+
+        String countJpql = "SELECT COUNT(DISTINCT dp) FROM DeckPlan dp " + CURRENT_BASE_WHERE;
+        TypedQuery<Long> countQuery = entityManager.createQuery(countJpql, Long.class);
+        countQuery.setParameter("now", now);
+        long total = countQuery.getSingleResult();
+
+        TypedQuery<DeckPlan> query = entityManager.createQuery(baseJpql + " ORDER BY dp.id", DeckPlan.class);
         query.setParameter("now", now);
-        return query.getResultList();
+        query.setFirstResult((int) pageable.getOffset());
+        query.setMaxResults(pageable.getPageSize());
+
+        return new PageImpl<>(query.getResultList(), pageable, total);
     }
 }

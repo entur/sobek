@@ -17,42 +17,55 @@ package org.rutebanken.sobek.rest.graphql.fetchers;
 
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
+import org.rutebanken.sobek.model.vehicle.AllPublicTransportModesEnumeration;
 import org.rutebanken.sobek.repository.VehicleTypeRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.rutebanken.sobek.rest.graphql.GraphQLNames.*;
+import static org.rutebanken.sobek.rest.graphql.RegisterGraphQLSchema.DEFAULT_PAGE_VALUE;
+import static org.rutebanken.sobek.rest.graphql.RegisterGraphQLSchema.DEFAULT_SIZE_VALUE;
 
 @Service("vehicleTypeFetcher")
 @Transactional
-class VehicleTypeFetcher implements DataFetcher {
-
-    private static final Logger logger = LoggerFactory.getLogger(VehicleTypeFetcher.class);
+class VehicleTypeFetcher implements DataFetcher<Map<String, Object>> {
 
     @Autowired
     private VehicleTypeRepository vehicleTypeRepository;
 
-
     @Override
-    public Object get(DataFetchingEnvironment environment) {
-        String netexId = environment.getArgument(ID);
-        boolean allVersions = Boolean.TRUE.equals(environment.getArgument(ALL_VERSIONS));
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> get(DataFetchingEnvironment env) {
+        int page = env.getArgumentOrDefault(PAGE, DEFAULT_PAGE_VALUE);
+        int size = env.getArgumentOrDefault(SIZE, DEFAULT_SIZE_VALUE);
 
-        if (netexId != null) {
+        List<String> ids = null;
+        AllPublicTransportModesEnumeration mode = null;
 
-            logger.debug("Returning vehicle type from netexId: {}", netexId);
-            if (allVersions) {
-                return vehicleTypeRepository.findByNetexId(netexId);
-            } else {
-                return Arrays.asList(vehicleTypeRepository.findFirstByNetexIdOrderByVersionDesc(netexId));
+        Map<String, Object> filter = env.getArgument(FILTER);
+        if (filter != null) {
+            ids = (List<String>) filter.get(IDS);
+            Object modeArg = filter.get(TRANSPORT_MODE);
+            if (modeArg instanceof AllPublicTransportModesEnumeration m) {
+                mode = m;
+            } else if (modeArg instanceof String s) {
+                mode = AllPublicTransportModesEnumeration.fromValue(s);
             }
         }
-        return vehicleTypeRepository.findAllCurrent();
 
+        var result = vehicleTypeRepository.findCurrentFiltered(ids, mode, PageRequest.of(page, size));
+
+        Map<String, Object> pageResult = new LinkedHashMap<>();
+        pageResult.put(CONTENT, result.getContent());
+        pageResult.put(TOTAL_ELEMENTS, Math.toIntExact(result.getTotalElements()));
+        pageResult.put(PAGE, page);
+        pageResult.put(SIZE, size);
+        return pageResult;
     }
 }

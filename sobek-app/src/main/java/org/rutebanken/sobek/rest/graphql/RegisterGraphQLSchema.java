@@ -71,8 +71,6 @@ public class RegisterGraphQLSchema {
     @Autowired
     DataFetcher vehicleTypeFetcher;
     @Autowired
-    DataFetcher vehicleTypesPageFetcher;
-    @Autowired
     private VehicleTypeDeckPlanFetcher vehicleTypeDeckPlanFetcher;
 
     @Autowired
@@ -154,29 +152,24 @@ public class RegisterGraphQLSchema {
                 .field(newInputObjectField().name(TRANSPORT_MODE).type(transportModeEnumType).description("Filter by transport mode"))
                 .build();
 
-        GraphQLArgument allVersionsArgument = GraphQLArgument.newArgument()
-                .name(ALL_VERSIONS)
-                .type(GraphQLBoolean)
-                .description(ALL_VERSIONS_ARG_DESCRIPTION)
+        GraphQLObjectType deckPlanPageType = newObject()
+                .name(OUTPUT_TYPE_DECK_PLAN_PAGE)
+                .field(newFieldDefinition().name(CONTENT).type(new GraphQLList(deckPlanObjectType)))
+                .field(newFieldDefinition().name(TOTAL_ELEMENTS).type(new GraphQLNonNull(GraphQLInt)))
+                .field(newFieldDefinition().name(PAGE).type(new GraphQLNonNull(GraphQLInt)))
+                .field(newFieldDefinition().name(SIZE).type(new GraphQLNonNull(GraphQLInt)))
                 .build();
-
 
         GraphQLObjectType vehicleRegistryQuery = newObject()
                 .name(VEHICLE_REGISTER)
                 .description("Query and search for data")
                 .field(newFieldDefinition()
-                                        .name(USER_PERMISSIONS)
-                                        .description("User permissions")
-                                        .type(userPermissionsObjectType)
-
+                        .name(USER_PERMISSIONS)
+                        .description("User permissions")
+                        .type(userPermissionsObjectType)
                         .build())
                 .field(newFieldDefinition()
                         .name(VEHICLE_TYPES)
-                        .type(new GraphQLList(vehicleTypeObjectType))
-                        .description("Vehicle types (unbounded, legacy)")
-                )
-                .field(newFieldDefinition()
-                        .name(VEHICLE_TYPES_PAGE)
                         .type(vehicleTypePageType)
                         .description("Paged vehicle types with optional filtering")
                         .argument(GraphQLArgument.newArgument().name(FILTER).type(vehicleTypeFilterInput))
@@ -184,8 +177,9 @@ public class RegisterGraphQLSchema {
                 )
                 .field(newFieldDefinition()
                         .name(DECK_PLANS)
-                        .type(new GraphQLList(deckPlanObjectType))
-                        .description("Deck plans")
+                        .type(deckPlanPageType)
+                        .description("Paged deck plans")
+                        .arguments(createPageAndSizeArguments())
                 )
                 .build();
 
@@ -208,7 +202,6 @@ public class RegisterGraphQLSchema {
         registerDataFetcher(codeRegistryBuilder, OUTPUT_TYPE_VEHICLE_TYPE, KEY_VALUES, keyValuesDataFetcher);
 
         registerDataFetcher(codeRegistryBuilder, VEHICLE_REGISTER, VEHICLE_TYPES, vehicleTypeFetcher);
-        registerDataFetcher(codeRegistryBuilder, VEHICLE_REGISTER, VEHICLE_TYPES_PAGE, vehicleTypesPageFetcher);
         registerDataFetcher(codeRegistryBuilder, OUTPUT_TYPE_VEHICLE_TYPE, ID, getNetexIdFetcher());
         registerDataFetcher(codeRegistryBuilder, OUTPUT_TYPE_VEHICLE_TYPE, VEHICLE_TYPE_DECK_PLAN, vehicleTypeDeckPlanFetcher);
         registerDataFetcher(codeRegistryBuilder, OUTPUT_TYPE_VEHICLE_TYPE, CHANGED_BY, getChangedByFetcher(authorizationService));

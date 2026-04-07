@@ -177,8 +177,8 @@ public class GraphQLNames {
     public static final String FILTER = "filter";
 
     public static final String OUTPUT_TYPE_VEHICLE_TYPE_PAGE = "VehicleTypePage";
+    public static final String OUTPUT_TYPE_DECK_PLAN_PAGE = "DeckPlanPage";
     public static final String TOTAL_ELEMENTS = "totalElements";
-    public static final String VEHICLE_TYPES_PAGE = "vehicleTypesPage";
     public static final String INPUT_TYPE_VEHICLE_TYPE_FILTER = "VehicleTypeFilter";
 
     public static final String VEHICLE_TYPES = "vehicleTypes";

@@ -10,13 +10,13 @@
                 </DefaultLocale>
             </FrameDefaults>
             <vehicleTypes>
-                <VehicleType id="AKT:VehicleType:123" version="new">
+                <VehicleType id="AKT:VehicleType:123" version="1">
                     <Name lang="nb"><Text>Exqui City 24</Text></Name>
                     <PropulsionTypes>electric</PropulsionTypes>
                     <FuelTypes>battery diesel</FuelTypes>
                     <MaximumVelocity>100</MaximumVelocity>
                     <TransportMode>bus</TransportMode>
-                    <PassengerCapacity version="new" id="TST:PassengerCapacity:1">
+                    <PassengerCapacity id="AKT:PassengerCapacity:123" version="1">
                         <TotalCapacity>50</TotalCapacity>
                         <SeatingCapacity>30</SeatingCapacity>
                         <StandingCapacity>20</StandingCapacity>

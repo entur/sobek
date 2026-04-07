@@ -19,7 +19,7 @@
                     <FuelTypes>battery</FuelTypes>
                     <MaximumVelocity>80</MaximumVelocity>
                     <TransportMode>bus</TransportMode>
-                    <PassengerCapacity version="new" id="TST:PassengerCapacity:1">
+                    <PassengerCapacity version="1" id="TST:PassengerCapacity:1">
                         <TotalCapacity>160</TotalCapacity>
                         <SeatingCapacity>52</SeatingCapacity>
                         <StandingCapacity>108</StandingCapacity>

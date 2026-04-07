@@ -171,6 +171,16 @@ public class GraphQLNames {
 
     public static final String VEHICLE_REGISTER = "VehicleRegister";
     
+    public static final String TRANSPORT_MODE = "transportMode";
+    public static final String CREATED = "created";
+    public static final String CHANGED = "changed";
+    public static final String FILTER = "filter";
+
+    public static final String OUTPUT_TYPE_VEHICLE_TYPE_PAGE = "VehicleTypePage";
+    public static final String TOTAL_ELEMENTS = "totalElements";
+    public static final String VEHICLE_TYPES_PAGE = "vehicleTypesPage";
+    public static final String INPUT_TYPE_VEHICLE_TYPE_FILTER = "VehicleTypeFilter";
+
     public static final String VEHICLE_TYPES = "vehicleTypes";
     public static final String OUTPUT_TYPE_VEHICLE_TYPE = "VehicleType";
     public static final String VEHICLE_TYPE_DECK_PLAN = "deckPlan";

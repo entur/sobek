@@ -17,6 +17,7 @@ package org.rutebanken.sobek.rest.graphql.types;
 
 import graphql.schema.GraphQLList;
 import graphql.schema.GraphQLObjectType;
+import graphql.schema.GraphQLScalarType;
 import org.springframework.stereotype.Component;
 
 import static graphql.Scalars.*;
@@ -28,7 +29,7 @@ import static org.rutebanken.sobek.rest.graphql.types.CustomGraphQLTypes.*;
 @Component
 public class VehicleTypeObjectTypeCreator {
 
-    public GraphQLObjectType create(GraphQLObjectType deckPlanObjectType, GraphQLObjectType vehicleObjectType) {
+    public GraphQLObjectType create(GraphQLObjectType deckPlanObjectType, GraphQLObjectType vehicleObjectType, GraphQLScalarType dateScalar) {
         return newObject()
                 .name(OUTPUT_TYPE_VEHICLE_TYPE)
                 .field(newFieldDefinition()
@@ -37,6 +38,12 @@ public class VehicleTypeObjectTypeCreator {
                 .field(newFieldDefinition()
                         .name(NAME)
                         .type(embeddableMultilingualStringObjectType))
+                .field(newFieldDefinition()
+                        .name(SHORT_NAME)
+                        .type(embeddableMultilingualStringObjectType))
+                .field(newFieldDefinition()
+                        .name(TRANSPORT_MODE)
+                        .type(transportModeEnumType))
                 .field(newFieldDefinition()
                         .name("length")
                         .type(GraphQLFloat))
@@ -49,6 +56,20 @@ public class VehicleTypeObjectTypeCreator {
                 .field(newFieldDefinition()
                         .name(VERSION)
                         .type(GraphQLInt))
+                .field(newFieldDefinition()
+                        .name(CREATED)
+                        .type(dateScalar)
+                        .description(DATE_SCALAR_DESCRIPTION))
+                .field(newFieldDefinition()
+                        .name(CHANGED)
+                        .type(dateScalar)
+                        .description(DATE_SCALAR_DESCRIPTION))
+                .field(newFieldDefinition()
+                        .name(CHANGED_BY)
+                        .type(GraphQLString))
+                .field(newFieldDefinition()
+                        .name(VERSION_COMMENT)
+                        .type(GraphQLString))
                 .field(newFieldDefinition()
                     .name("deckPlan")
                     .type(deckPlanObjectType))

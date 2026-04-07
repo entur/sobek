@@ -82,6 +82,17 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
             filterSuffix.append(" AND vt.transportMode = :transportMode");
         }
 
+        if (pageable.isUnpaged()) {
+            // No pagination — single query, skip count
+            String fetchJpql = "SELECT DISTINCT vt FROM VehicleType vt " +
+                    "LEFT JOIN FETCH vt.vehicles v " + CURRENT_BASE_WHERE + filterSuffix;
+            TypedQuery<VehicleType> fetchQuery = entityManager.createQuery(fetchJpql, VehicleType.class);
+            fetchQuery.setParameter("now", now);
+            setFilterParams(fetchQuery, ids, transportMode);
+            List<VehicleType> results = fetchQuery.getResultList();
+            return new PageImpl<>(results);
+        }
+
         // Phase 1: count
         String countJpql = "SELECT COUNT(DISTINCT vt) FROM VehicleType vt " +
                 "LEFT JOIN vt.vehicles v " + CURRENT_BASE_WHERE + filterSuffix;
@@ -89,16 +100,6 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
         countQuery.setParameter("now", now);
         setFilterParams(countQuery, ids, transportMode);
         long total = countQuery.getSingleResult();
-
-        if (pageable.isUnpaged()) {
-            // No pagination — fetch all with JOIN FETCH
-            String fetchJpql = "SELECT DISTINCT vt FROM VehicleType vt " +
-                    "LEFT JOIN FETCH vt.vehicles v " + CURRENT_BASE_WHERE + filterSuffix;
-            TypedQuery<VehicleType> fetchQuery = entityManager.createQuery(fetchJpql, VehicleType.class);
-            fetchQuery.setParameter("now", now);
-            setFilterParams(fetchQuery, ids, transportMode);
-            return new PageImpl<>(fetchQuery.getResultList(), pageable, total);
-        }
 
         // Phase 2: fetch paged IDs (no JOIN FETCH — safe for LIMIT/OFFSET)
         String idJpql = "SELECT DISTINCT vt.id FROM VehicleType vt " +
@@ -121,7 +122,8 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
                 "LEFT JOIN FETCH vt.vehicles v " +
                 "WHERE vt.id IN :pagedIds " +
                 "AND (v IS NULL OR (v.validBetween.fromDate <= :now " +
-                "AND (v.validBetween.toDate IS NULL OR v.validBetween.toDate >= :now)))",
+                "AND (v.validBetween.toDate IS NULL OR v.validBetween.toDate >= :now))) " +
+                "ORDER BY vt.id",
                 VehicleType.class);
         fetchQuery.setParameter("pagedIds", pagedIds);
         fetchQuery.setParameter("now", now);

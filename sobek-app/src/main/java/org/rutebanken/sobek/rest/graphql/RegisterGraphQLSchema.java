@@ -85,6 +85,8 @@ public class RegisterGraphQLSchema {
     private KeyValuesDataFetcher keyValuesDataFetcher;
 
     @Autowired
+    private AuthorizationService authorizationService;
+    @Autowired
     private UserPermissionsFetcher userPermissionsFetcher;
 
 
@@ -209,6 +211,7 @@ public class RegisterGraphQLSchema {
         registerDataFetcher(codeRegistryBuilder, VEHICLE_REGISTER, VEHICLE_TYPES_PAGE, vehicleTypesPageFetcher);
         registerDataFetcher(codeRegistryBuilder, OUTPUT_TYPE_VEHICLE_TYPE, ID, getNetexIdFetcher());
         registerDataFetcher(codeRegistryBuilder, OUTPUT_TYPE_VEHICLE_TYPE, VEHICLE_TYPE_DECK_PLAN, vehicleTypeDeckPlanFetcher);
+        registerDataFetcher(codeRegistryBuilder, OUTPUT_TYPE_VEHICLE_TYPE, CHANGED_BY, getChangedByFetcher(authorizationService));
 
 
         registerDataFetcher(codeRegistryBuilder,VEHICLE_REGISTER,USER_PERMISSIONS,userPermissionsFetcher);

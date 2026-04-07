@@ -15,13 +15,18 @@
 
 package org.rutebanken.sobek.repository;
 
+import org.rutebanken.sobek.model.vehicle.AllPublicTransportModesEnumeration;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 public interface VehicleTypeRepositoryCustom extends DataManagedObjectStructureRepository<VehicleType> {
 
     List<VehicleType> findAllCurrent();
+
+    Page<VehicleType> findCurrentFiltered(List<String> ids, AllPublicTransportModesEnumeration transportMode, Pageable pageable);
 
     void moveToDeckPlan(Long fromDeckPlanId, Long toDeckPlanId);
 }

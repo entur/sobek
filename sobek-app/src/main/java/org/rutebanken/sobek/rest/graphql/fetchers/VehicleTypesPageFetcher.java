@@ -18,9 +18,9 @@ package org.rutebanken.sobek.rest.graphql.fetchers;
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
 import org.rutebanken.sobek.model.vehicle.AllPublicTransportModesEnumeration;
-import org.rutebanken.sobek.model.vehicle.VehicleType;
 import org.rutebanken.sobek.repository.VehicleTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,26 +59,13 @@ class VehicleTypesPageFetcher implements DataFetcher<Map<String, Object>> {
             }
         }
 
-        // Stub: in-memory filtering/paging over findAllCurrent() until Layer 2 adds repo support
-        List<VehicleType> all = vehicleTypeRepository.findAllCurrent();
+        var result = vehicleTypeRepository.findCurrentFiltered(ids, mode, PageRequest.of(page, size));
 
-        final List<String> filterIds = ids;
-        final AllPublicTransportModesEnumeration filterMode = mode;
-        List<VehicleType> filtered = all.stream()
-                .filter(vt -> filterIds == null || filterIds.isEmpty() || filterIds.contains(vt.getNetexId()))
-                .filter(vt -> filterMode == null || filterMode.equals(vt.getTransportMode()))
-                .toList();
-
-        int total = filtered.size();
-        int fromIdx = Math.min(page * size, total);
-        int toIdx = Math.min(fromIdx + size, total);
-        List<VehicleType> content = filtered.subList(fromIdx, toIdx);
-
-        Map<String, Object> result = new LinkedHashMap<>();
-        result.put(CONTENT, content);
-        result.put(TOTAL_ELEMENTS, total);
-        result.put(PAGE, page);
-        result.put(SIZE, size);
-        return result;
+        Map<String, Object> pageResult = new LinkedHashMap<>();
+        pageResult.put(CONTENT, result.getContent());
+        pageResult.put(TOTAL_ELEMENTS, (int) result.getTotalElements());
+        pageResult.put(PAGE, page);
+        pageResult.put(SIZE, size);
+        return pageResult;
     }
 }

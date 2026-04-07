@@ -1,9 +1,13 @@
 package org.rutebanken.sobek.repository;
 
 import jakarta.persistence.*;
+import org.rutebanken.sobek.model.vehicle.AllPublicTransportModesEnumeration;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
@@ -67,6 +71,54 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
         query.setHint("hibernate.query.passDistinctThrough", false);
         query.setParameter("now", now);
         return query.getResultList();
+    }
+
+    @Override
+    public Page<VehicleType> findCurrentFiltered(List<String> ids, AllPublicTransportModesEnumeration transportMode, Pageable pageable) {
+        Instant now = Instant.now();
+        StringBuilder jpql = new StringBuilder(
+            "SELECT DISTINCT vt FROM VehicleType vt " +
+            "LEFT JOIN FETCH vt.vehicles v " +
+            "WHERE vt.validBetween.fromDate <= :now " +
+            "AND (vt.validBetween.toDate IS NULL OR vt.validBetween.toDate >= :now) " +
+            "AND (v IS NULL OR (v.validBetween.fromDate <= :now " +
+            "AND (v.validBetween.toDate IS NULL OR v.validBetween.toDate >= :now)))");
+
+        StringBuilder countJpql = new StringBuilder(
+            "SELECT COUNT(DISTINCT vt) FROM VehicleType vt " +
+            "WHERE vt.validBetween.fromDate <= :now " +
+            "AND (vt.validBetween.toDate IS NULL OR vt.validBetween.toDate >= :now)");
+
+        if (ids != null && !ids.isEmpty()) {
+            jpql.append(" AND vt.netexId IN :ids");
+            countJpql.append(" AND vt.netexId IN :ids");
+        }
+        if (transportMode != null) {
+            jpql.append(" AND vt.transportMode = :transportMode");
+            countJpql.append(" AND vt.transportMode = :transportMode");
+        }
+
+        TypedQuery<VehicleType> query = entityManager.createQuery(jpql.toString(), VehicleType.class);
+        query.setHint("hibernate.query.passDistinctThrough", false);
+        query.setParameter("now", now);
+
+        TypedQuery<Long> countQuery = entityManager.createQuery(countJpql.toString(), Long.class);
+        countQuery.setParameter("now", now);
+
+        if (ids != null && !ids.isEmpty()) {
+            query.setParameter("ids", ids);
+            countQuery.setParameter("ids", ids);
+        }
+        if (transportMode != null) {
+            query.setParameter("transportMode", transportMode);
+            countQuery.setParameter("transportMode", transportMode);
+        }
+
+        long total = countQuery.getSingleResult();
+        query.setFirstResult((int) pageable.getOffset());
+        query.setMaxResults(pageable.getPageSize());
+
+        return new PageImpl<>(query.getResultList(), pageable, total);
     }
 
     @Override

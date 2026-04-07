@@ -71,11 +71,11 @@ public class VehicleTypeObjectTypeCreator {
                         .name(VERSION_COMMENT)
                         .type(GraphQLString))
                 .field(newFieldDefinition()
-                    .name("deckPlan")
-                    .type(deckPlanObjectType))
+                        .name(VEHICLE_TYPE_DECK_PLAN)
+                        .type(deckPlanObjectType))
                 .field(newFieldDefinition()
-                    .name("vehicles")
-                    .type(new GraphQLList(vehicleObjectType)))
+                        .name(VEHICLES)
+                        .type(new GraphQLList(vehicleObjectType)))
                 .build();
     }
 

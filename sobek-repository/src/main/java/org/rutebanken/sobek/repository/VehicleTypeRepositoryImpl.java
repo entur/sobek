@@ -58,67 +58,83 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
         }
     }
 
-    @Override
-    public List<VehicleType> findAllCurrent() {
-        Instant now = Instant.now();
-        TypedQuery<VehicleType> query = entityManager.createQuery(
-            "SELECT DISTINCT vt FROM VehicleType vt " +
-            "LEFT JOIN FETCH vt.vehicles v " +
+    private static final String CURRENT_BASE_WHERE =
             "WHERE vt.validBetween.fromDate <= :now " +
             "AND (vt.validBetween.toDate IS NULL OR vt.validBetween.toDate >= :now) " +
-            "AND (v IS NULL OR (v.validBetween.fromDate <= :now AND (v.validBetween.toDate IS NULL OR v.validBetween.toDate >= :now)))", 
-            VehicleType.class);
-        query.setHint("hibernate.query.passDistinctThrough", false);
-        query.setParameter("now", now);
-        return query.getResultList();
+            "AND (v IS NULL OR (v.validBetween.fromDate <= :now " +
+            "AND (v.validBetween.toDate IS NULL OR v.validBetween.toDate >= :now)))";
+
+    @Override
+    public List<VehicleType> findAllCurrent() {
+        return findCurrentFiltered(null, null, Pageable.unpaged()).getContent();
     }
 
     @Override
     public Page<VehicleType> findCurrentFiltered(List<String> ids, AllPublicTransportModesEnumeration transportMode, Pageable pageable) {
         Instant now = Instant.now();
-        StringBuilder jpql = new StringBuilder(
-            "SELECT DISTINCT vt FROM VehicleType vt " +
-            "LEFT JOIN FETCH vt.vehicles v " +
-            "WHERE vt.validBetween.fromDate <= :now " +
-            "AND (vt.validBetween.toDate IS NULL OR vt.validBetween.toDate >= :now) " +
-            "AND (v IS NULL OR (v.validBetween.fromDate <= :now " +
-            "AND (v.validBetween.toDate IS NULL OR v.validBetween.toDate >= :now)))");
 
-        StringBuilder countJpql = new StringBuilder(
-            "SELECT COUNT(DISTINCT vt) FROM VehicleType vt " +
-            "WHERE vt.validBetween.fromDate <= :now " +
-            "AND (vt.validBetween.toDate IS NULL OR vt.validBetween.toDate >= :now)");
-
+        // Build dynamic WHERE suffix for optional filters
+        StringBuilder filterSuffix = new StringBuilder();
         if (ids != null && !ids.isEmpty()) {
-            jpql.append(" AND vt.netexId IN :ids");
-            countJpql.append(" AND vt.netexId IN :ids");
+            filterSuffix.append(" AND vt.netexId IN :ids");
         }
         if (transportMode != null) {
-            jpql.append(" AND vt.transportMode = :transportMode");
-            countJpql.append(" AND vt.transportMode = :transportMode");
+            filterSuffix.append(" AND vt.transportMode = :transportMode");
         }
 
-        TypedQuery<VehicleType> query = entityManager.createQuery(jpql.toString(), VehicleType.class);
-        query.setHint("hibernate.query.passDistinctThrough", false);
-        query.setParameter("now", now);
-
-        TypedQuery<Long> countQuery = entityManager.createQuery(countJpql.toString(), Long.class);
+        // Phase 1: count
+        String countJpql = "SELECT COUNT(DISTINCT vt) FROM VehicleType vt " +
+                "LEFT JOIN vt.vehicles v " + CURRENT_BASE_WHERE + filterSuffix;
+        TypedQuery<Long> countQuery = entityManager.createQuery(countJpql, Long.class);
         countQuery.setParameter("now", now);
+        setFilterParams(countQuery, ids, transportMode);
+        long total = countQuery.getSingleResult();
 
+        if (pageable.isUnpaged()) {
+            // No pagination — fetch all with JOIN FETCH
+            String fetchJpql = "SELECT DISTINCT vt FROM VehicleType vt " +
+                    "LEFT JOIN FETCH vt.vehicles v " + CURRENT_BASE_WHERE + filterSuffix;
+            TypedQuery<VehicleType> fetchQuery = entityManager.createQuery(fetchJpql, VehicleType.class);
+            fetchQuery.setParameter("now", now);
+            setFilterParams(fetchQuery, ids, transportMode);
+            return new PageImpl<>(fetchQuery.getResultList());
+        }
+
+        // Phase 2: fetch paged IDs (no JOIN FETCH — safe for LIMIT/OFFSET)
+        String idJpql = "SELECT DISTINCT vt.id FROM VehicleType vt " +
+                "LEFT JOIN vt.vehicles v " + CURRENT_BASE_WHERE + filterSuffix;
+        TypedQuery<Long> idQuery = entityManager.createQuery(idJpql, Long.class);
+        idQuery.setParameter("now", now);
+        setFilterParams(idQuery, ids, transportMode);
+        idQuery.setFirstResult((int) pageable.getOffset());
+        idQuery.setMaxResults(pageable.getPageSize());
+        List<Long> pagedIds = idQuery.getResultList();
+
+        if (pagedIds.isEmpty()) {
+            return new PageImpl<>(List.of(), pageable, total);
+        }
+
+        // Phase 3: batch-fetch full entities with vehicles for the paged IDs
+        TypedQuery<VehicleType> fetchQuery = entityManager.createQuery(
+                "SELECT DISTINCT vt FROM VehicleType vt " +
+                "LEFT JOIN FETCH vt.vehicles v " +
+                "WHERE vt.id IN :pagedIds " +
+                "AND (v IS NULL OR (v.validBetween.fromDate <= :now " +
+                "AND (v.validBetween.toDate IS NULL OR v.validBetween.toDate >= :now)))",
+                VehicleType.class);
+        fetchQuery.setParameter("pagedIds", pagedIds);
+        fetchQuery.setParameter("now", now);
+
+        return new PageImpl<>(fetchQuery.getResultList(), pageable, total);
+    }
+
+    private void setFilterParams(Query query, List<String> ids, AllPublicTransportModesEnumeration transportMode) {
         if (ids != null && !ids.isEmpty()) {
             query.setParameter("ids", ids);
-            countQuery.setParameter("ids", ids);
         }
         if (transportMode != null) {
             query.setParameter("transportMode", transportMode);
-            countQuery.setParameter("transportMode", transportMode);
         }
-
-        long total = countQuery.getSingleResult();
-        query.setFirstResult((int) pageable.getOffset());
-        query.setMaxResults(pageable.getPageSize());
-
-        return new PageImpl<>(query.getResultList(), pageable, total);
     }
 
     @Override

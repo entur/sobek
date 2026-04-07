@@ -29,12 +29,12 @@ import java.util.List;
 import java.util.Map;
 
 import static org.rutebanken.sobek.rest.graphql.GraphQLNames.*;
+import static org.rutebanken.sobek.rest.graphql.RegisterGraphQLSchema.DEFAULT_PAGE_VALUE;
+import static org.rutebanken.sobek.rest.graphql.RegisterGraphQLSchema.DEFAULT_SIZE_VALUE;
 
 @Service("vehicleTypesPageFetcher")
 @Transactional
 class VehicleTypesPageFetcher implements DataFetcher<Map<String, Object>> {
-
-    static final int DEFAULT_SIZE = 25;
 
     @Autowired
     private VehicleTypeRepository vehicleTypeRepository;
@@ -42,8 +42,8 @@ class VehicleTypesPageFetcher implements DataFetcher<Map<String, Object>> {
     @Override
     @SuppressWarnings("unchecked")
     public Map<String, Object> get(DataFetchingEnvironment env) {
-        int page = env.getArgumentOrDefault(PAGE, 0);
-        int size = env.getArgumentOrDefault(SIZE, DEFAULT_SIZE);
+        int page = env.getArgumentOrDefault(PAGE, DEFAULT_PAGE_VALUE);
+        int size = env.getArgumentOrDefault(SIZE, DEFAULT_SIZE_VALUE);
 
         List<String> ids = null;
         AllPublicTransportModesEnumeration mode = null;
@@ -63,7 +63,7 @@ class VehicleTypesPageFetcher implements DataFetcher<Map<String, Object>> {
 
         Map<String, Object> pageResult = new LinkedHashMap<>();
         pageResult.put(CONTENT, result.getContent());
-        pageResult.put(TOTAL_ELEMENTS, (int) result.getTotalElements());
+        pageResult.put(TOTAL_ELEMENTS, Math.toIntExact(result.getTotalElements()));
         pageResult.put(PAGE, page);
         pageResult.put(SIZE, size);
         return pageResult;

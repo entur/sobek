@@ -20,14 +20,11 @@ import graphql.schema.DataFetcher;
 import graphql.schema.FieldCoordinates;
 import graphql.schema.GraphQLArgument;
 import graphql.schema.GraphQLCodeRegistry;
-import graphql.schema.GraphQLFieldDefinition;
-import graphql.schema.GraphQLInputObjectField;
 import graphql.schema.GraphQLInputObjectType;
 import graphql.schema.GraphQLList;
 import graphql.schema.GraphQLNonNull;
 import graphql.schema.GraphQLObjectType;
 import graphql.schema.GraphQLSchema;
-import graphql.schema.TypeResolver;
 import jakarta.annotation.PostConstruct;
 import org.rutebanken.sobek.auth.AuthorizationService;
 import org.rutebanken.sobek.model.DataManagedObjectStructure;
@@ -50,7 +47,6 @@ import static graphql.schema.GraphQLInputObjectField.newInputObjectField;
 import static graphql.schema.GraphQLInputObjectType.newInputObject;
 import static graphql.schema.GraphQLObjectType.newObject;
 import static org.rutebanken.sobek.rest.graphql.GraphQLNames.*;
-import static org.rutebanken.sobek.rest.graphql.types.CustomGraphQLTypes.modificationEnumerationType;
 import static org.rutebanken.sobek.rest.graphql.types.CustomGraphQLTypes.transportModeEnumType;
 
 @Component
@@ -87,24 +83,9 @@ public class RegisterGraphQLSchema {
     @Autowired
     private UserPermissionsFetcher userPermissionsFetcher;
 
-
-    @Autowired
     @PostConstruct
     public void init() {
 
-        /**
-         * Common field list for quays, stop places and addressable place.
-         */
-        List<GraphQLFieldDefinition> commonFieldsList = new ArrayList<>();
-
-        commonFieldsList.add(
-                newFieldDefinition()
-                        .name(MODIFICATION_ENUMERATION)
-                        .type(modificationEnumerationType)
-                        .build()
-        );
-
-        GraphQLObjectType validBetweenObjectType = createValidBetweenObjectType();
         GraphQLObjectType userPermissionsObjectType = newObject()
                 .name(OUTPUT_TYPE_USER_PERMISSIONS)
                 .field(newFieldDefinition()
@@ -119,19 +100,6 @@ public class RegisterGraphQLSchema {
                         .name("preferredName")
                         .type(GraphQLString)
                         .build())
-                .build();
-
-        GraphQLObjectType entityPermissionObjectType = newObject()
-                .name(OUTPUT_TYPE_ENTITY_PERMISSIONS)
-                .field(newFieldDefinition()
-                        .name("canEdit")
-                        .type(GraphQLBoolean)
-                        .build())
-                .field(newFieldDefinition()
-                        .name("canDelete")
-                        .type(GraphQLBoolean)
-                        .build())
-
                 .build();
 
         GraphQLObjectType deckPlanObjectType = deckPlanObjectTypeCreator.create();
@@ -171,48 +139,27 @@ public class RegisterGraphQLSchema {
                 )
                 .build();
 
-        MutableTypeResolver vehicleTypeResolver = new MutableTypeResolver();
-
         vehicleRegisterSchema = GraphQLSchema.newSchema()
                 .query(vehicleRegistryQuery)
-//                .mutation(stopPlaceRegisterMutation)
-                .codeRegistry(buildCodeRegistry(vehicleTypeResolver))
+                .codeRegistry(buildCodeRegistry())
                 .build();
-
     }
 
-
-    public GraphQLCodeRegistry buildCodeRegistry(TypeResolver stopPlaceTypeResolver) {
+    private GraphQLCodeRegistry buildCodeRegistry() {
         GraphQLCodeRegistry.Builder codeRegistryBuilder = GraphQLCodeRegistry.newCodeRegistry();
 
         registerDataFetcher(codeRegistryBuilder, OUTPUT_TYPE_DECK_PLAN, ID, getNetexIdFetcher());
 
         registerDataFetcher(codeRegistryBuilder, OUTPUT_TYPE_VEHICLE_TYPE, KEY_VALUES, keyValuesDataFetcher);
-
         registerDataFetcher(codeRegistryBuilder, VEHICLE_REGISTER, VEHICLE_TYPES, vehicleTypeFetcher);
         registerDataFetcher(codeRegistryBuilder, OUTPUT_TYPE_VEHICLE_TYPE, ID, getNetexIdFetcher());
         registerDataFetcher(codeRegistryBuilder, OUTPUT_TYPE_VEHICLE_TYPE, VEHICLE_TYPE_DECK_PLAN, vehicleTypeDeckPlanFetcher);
         registerDataFetcher(codeRegistryBuilder, OUTPUT_TYPE_VEHICLE_TYPE, CHANGED_BY, getChangedByFetcher(authorizationService));
 
-
-        registerDataFetcher(codeRegistryBuilder,VEHICLE_REGISTER,USER_PERMISSIONS,userPermissionsFetcher);
-
-
+        registerDataFetcher(codeRegistryBuilder, VEHICLE_REGISTER, USER_PERMISSIONS, userPermissionsFetcher);
         registerDataFetcher(codeRegistryBuilder, VEHICLE_REGISTER, DECK_PLANS, deckPlanFetcher);
 
-
-        //mutation
-
         return codeRegistryBuilder.build();
-    }
-
-    private void mapNetexId(GraphQLCodeRegistry.Builder codeRegistryBuilder, String outputTypeShelterEquipment, String outputTypeSanitaryEquipment, String outputTypeCycleStorageEquipment, String outputTypeGeneralSignEquipment, String outputTypeTicketingEquipment, String outputTypeWaitingRoomEquipment) {
-        registerDataFetcher(codeRegistryBuilder, outputTypeShelterEquipment,ID,getNetexIdFetcher());
-        registerDataFetcher(codeRegistryBuilder, outputTypeSanitaryEquipment,ID,getNetexIdFetcher());
-        registerDataFetcher(codeRegistryBuilder, outputTypeCycleStorageEquipment,ID,getNetexIdFetcher());
-        registerDataFetcher(codeRegistryBuilder, outputTypeGeneralSignEquipment,ID,getNetexIdFetcher());
-        registerDataFetcher(codeRegistryBuilder, outputTypeTicketingEquipment,ID,getNetexIdFetcher());
-        registerDataFetcher(codeRegistryBuilder, outputTypeWaitingRoomEquipment,ID,getNetexIdFetcher());
     }
 
     private static DataFetcher<Object> getNetexIdFetcher() {
@@ -224,19 +171,10 @@ public class RegisterGraphQLSchema {
         };
     }
 
-    private static DataFetcher<Object> getOriginalIdsFetcher(){
-        return env -> {
-            if(env.getSource() instanceof DataManagedObjectStructure dataManagedObjectStructure){
-                return dataManagedObjectStructure.getOriginalIds();
-            }
-            return null;
-        };
-    }
-
     private static DataFetcher<Object> getChangedByFetcher(AuthorizationService authorizationService) {
         return env -> {
-            if(env.getSource() instanceof DataManagedObjectStructure dataManagedObjectStructure && !authorizationService.isGuest()){
-                return dataManagedObjectStructure.getChangedBy();
+            if (env.getSource() instanceof DataManagedObjectStructure dmo && !authorizationService.isGuest()) {
+                return dmo.getChangedBy();
             }
             return null;
         };
@@ -273,47 +211,4 @@ public class RegisterGraphQLSchema {
                 .field(newFieldDefinition().name(SIZE).type(new GraphQLNonNull(GraphQLInt)))
                 .build();
     }
-
-    private GraphQLObjectType createValidBetweenObjectType() {
-        return newObject()
-                .name(OUTPUT_TYPE_VALID_BETWEEN)
-                .field(newFieldDefinition()
-                        .name(VALID_BETWEEN_FROM_DATE)
-                        .type(dateScalar.getGraphQLDateScalar())
-                        .description(DATE_SCALAR_DESCRIPTION))
-                .field(newFieldDefinition()
-                        .name(VALID_BETWEEN_TO_DATE)
-                        .type(dateScalar.getGraphQLDateScalar())
-                        .description(DATE_SCALAR_DESCRIPTION))
-                .build();
-    }
-
-    private GraphQLInputObjectType createValidBetweenInputObjectType() {
-        return newInputObject()
-                .name(INPUT_TYPE_VALID_BETWEEN)
-                .field(newInputObjectField()
-                        .name(VALID_BETWEEN_FROM_DATE)
-                        .type(new GraphQLNonNull(dateScalar.getGraphQLDateScalar()))
-                        .description("When the new version is valid from"))
-                .field(newInputObjectField()
-                        .name(VALID_BETWEEN_TO_DATE)
-                        .type(dateScalar.getGraphQLDateScalar())
-                        .description("When the version is no longer valid"))
-                .build();
-    }
-
-
-    private List<GraphQLInputObjectField> createCommonInputFieldList(GraphQLInputObjectType embeddableMultiLingualStringInputObjectType) {
-
-        List<GraphQLInputObjectField> commonInputFieldsList = new ArrayList<>();
-        commonInputFieldsList.add(newInputObjectField().name(ID).type(GraphQLString).description("Ignore when creating new").build());
-        commonInputFieldsList.add(newInputObjectField().name(NAME).type(embeddableMultiLingualStringInputObjectType).build());
-        commonInputFieldsList.add(newInputObjectField().name(SHORT_NAME).type(embeddableMultiLingualStringInputObjectType).build());
-        commonInputFieldsList.add(newInputObjectField().name(PUBLIC_CODE).type(GraphQLString).build());
-        commonInputFieldsList.add(newInputObjectField().name(DESCRIPTION).type(embeddableMultiLingualStringInputObjectType).build());
-        return commonInputFieldsList;
-    }
-
-
 }
-

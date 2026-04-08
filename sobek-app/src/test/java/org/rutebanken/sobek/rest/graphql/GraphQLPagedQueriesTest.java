@@ -120,6 +120,45 @@ class GraphQLPagedQueriesTest {
     }
 
     @Test
+    void vehicleTypes_filterByIds() {
+        // First, get the actual NeTEx ID of the imported vehicle type
+        String id = given()
+            .contentType(ContentType.JSON)
+            .body(gql("{ vehicleTypes(page: 0, size: 1) { content { id } } }"))
+        .when()
+            .post("/services/vehicles/graphql")
+        .then()
+            .statusCode(200)
+            .body("data.vehicleTypes.content", hasSize(1))
+            .extract().path("data.vehicleTypes.content[0].id");
+
+        // Filter by that ID — should return exactly one result
+        given()
+            .contentType(ContentType.JSON)
+            .body(gql("{ vehicleTypes(filter: { ids: [\"" + id + "\"] }, page: 0, size: 10) { content { id } totalElements } }"))
+        .when()
+            .post("/services/vehicles/graphql")
+        .then()
+            .statusCode(200)
+            .body("data.vehicleTypes.content", hasSize(1))
+            .body("data.vehicleTypes.content[0].id", equalTo(id))
+            .body("data.vehicleTypes.totalElements", equalTo(1));
+    }
+
+    @Test
+    void vehicleTypes_filterByIds_noMatch() {
+        given()
+            .contentType(ContentType.JSON)
+            .body(gql("{ vehicleTypes(filter: { ids: [\"FAKE:VehicleType:999\"] }, page: 0, size: 10) { content { id } totalElements } }"))
+        .when()
+            .post("/services/vehicles/graphql")
+        .then()
+            .statusCode(200)
+            .body("data.vehicleTypes.content", is(empty()))
+            .body("data.vehicleTypes.totalElements", equalTo(0));
+    }
+
+    @Test
     void vehicleTypes_paginationBeyondResults() {
         given()
             .contentType(ContentType.JSON)

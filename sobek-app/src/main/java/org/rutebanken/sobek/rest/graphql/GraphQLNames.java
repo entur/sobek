@@ -129,6 +129,10 @@ public class GraphQLNames {
     public static final String DECK_PLANS = "deckPlans";
     public static final String OUTPUT_TYPE_DECK_PLAN = "DeckPlan";
 
+    public static final String LENGTH = "length";
+    public static final String WIDTH = "width";
+    public static final String HEIGHT = "height";
+
     public static final String VEHICLES = "vehicles";
     public static final String OUTPUT_TYPE_VEHICLE = "Vehicle";
 }

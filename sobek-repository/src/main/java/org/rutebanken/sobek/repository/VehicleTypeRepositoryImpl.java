@@ -58,10 +58,14 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
         }
     }
 
-    private static final String CURRENT_BASE_WHERE =
+    /** VehicleType-only validity — no Vehicle join needed. */
+    private static final String VT_CURRENT_WHERE =
             "WHERE vt.validBetween.fromDate <= :now " +
-            "AND (vt.validBetween.toDate IS NULL OR vt.validBetween.toDate >= :now) " +
-            "AND (v IS NULL OR (v.validBetween.fromDate <= :now " +
+            "AND (vt.validBetween.toDate IS NULL OR vt.validBetween.toDate >= :now)";
+
+    /** Extra condition for filtering out expired vehicles (requires alias v). */
+    private static final String VEHICLE_CURRENT_COND =
+            " AND (v IS NULL OR (v.validBetween.fromDate <= :now " +
             "AND (v.validBetween.toDate IS NULL OR v.validBetween.toDate >= :now)))";
 
     @Override
@@ -82,51 +86,32 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
             filterSuffix.append(" AND vt.transportMode = :transportMode");
         }
 
+        String fetchJpql = "SELECT DISTINCT vt FROM VehicleType vt " +
+                "LEFT JOIN FETCH vt.vehicles v " +
+                VT_CURRENT_WHERE + VEHICLE_CURRENT_COND + filterSuffix +
+                " ORDER BY vt.id";
+
         if (pageable.isUnpaged()) {
-            // No pagination — single query, skip count
-            String fetchJpql = "SELECT DISTINCT vt FROM VehicleType vt " +
-                    "LEFT JOIN FETCH vt.vehicles v " + CURRENT_BASE_WHERE + filterSuffix;
             TypedQuery<VehicleType> fetchQuery = entityManager.createQuery(fetchJpql, VehicleType.class);
             fetchQuery.setParameter("now", now);
             setFilterParams(fetchQuery, ids, transportMode);
-            List<VehicleType> results = fetchQuery.getResultList();
-            return new PageImpl<>(results);
+            return new PageImpl<>(fetchQuery.getResultList());
         }
 
-        // Phase 1: count
-        String countJpql = "SELECT COUNT(DISTINCT vt) FROM VehicleType vt " +
-                "LEFT JOIN vt.vehicles v " + CURRENT_BASE_WHERE + filterSuffix;
+        // Count — no Vehicle JOIN, no DISTINCT needed
+        String countJpql = "SELECT COUNT(vt) FROM VehicleType vt " +
+                VT_CURRENT_WHERE + filterSuffix;
         TypedQuery<Long> countQuery = entityManager.createQuery(countJpql, Long.class);
         countQuery.setParameter("now", now);
         setFilterParams(countQuery, ids, transportMode);
         long total = countQuery.getSingleResult();
 
-        // Phase 2: fetch paged IDs (no JOIN FETCH — safe for LIMIT/OFFSET)
-        String idJpql = "SELECT DISTINCT vt.id FROM VehicleType vt " +
-                "LEFT JOIN vt.vehicles v " + CURRENT_BASE_WHERE + filterSuffix +
-                " ORDER BY vt.id";
-        TypedQuery<Long> idQuery = entityManager.createQuery(idJpql, Long.class);
-        idQuery.setParameter("now", now);
-        setFilterParams(idQuery, ids, transportMode);
-        idQuery.setFirstResult((int) pageable.getOffset());
-        idQuery.setMaxResults(pageable.getPageSize());
-        List<Long> pagedIds = idQuery.getResultList();
-
-        if (pagedIds.isEmpty()) {
-            return new PageImpl<>(List.of(), pageable, total);
-        }
-
-        // Phase 3: batch-fetch full entities with vehicles for the paged IDs
-        TypedQuery<VehicleType> fetchQuery = entityManager.createQuery(
-                "SELECT DISTINCT vt FROM VehicleType vt " +
-                "LEFT JOIN FETCH vt.vehicles v " +
-                "WHERE vt.id IN :pagedIds " +
-                "AND (v IS NULL OR (v.validBetween.fromDate <= :now " +
-                "AND (v.validBetween.toDate IS NULL OR v.validBetween.toDate >= :now))) " +
-                "ORDER BY vt.id",
-                VehicleType.class);
-        fetchQuery.setParameter("pagedIds", pagedIds);
+        // Fetch — in-memory pagination (HHH90003004) is acceptable for this small dataset
+        TypedQuery<VehicleType> fetchQuery = entityManager.createQuery(fetchJpql, VehicleType.class);
         fetchQuery.setParameter("now", now);
+        setFilterParams(fetchQuery, ids, transportMode);
+        fetchQuery.setFirstResult((int) pageable.getOffset());
+        fetchQuery.setMaxResults(pageable.getPageSize());
 
         return new PageImpl<>(fetchQuery.getResultList(), pageable, total);
     }

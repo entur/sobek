@@ -16,12 +16,16 @@
 package org.rutebanken.sobek.repository;
 
 import org.rutebanken.sobek.model.vehicle.DeckPlan;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 public interface DeckPlanRepositoryCustom extends DataManagedObjectStructureRepository<DeckPlan> {
 
     List<DeckPlan> findAllCurrent();
+
+    Page<DeckPlan> findCurrentPaged(Pageable pageable);
 
 }
 

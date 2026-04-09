@@ -81,7 +81,7 @@ class GraphQLPagedQueriesTest {
     void vehicleTypes_exposesNewFields() {
         given()
             .contentType(ContentType.JSON)
-            .body(gql("{ vehicleTypes(page: 0, size: 10) { content { id name { value lang } shortName { value } transportMode created changed changedBy versionComment version } totalElements } }"))
+            .body(gql("{ vehicleTypes(filter: { transportMode: bus }, page: 0, size: 10) { content { id name { value lang } shortName { value } transportMode created changed changedBy versionComment version } totalElements } }"))
         .when()
             .post("/services/vehicles/graphql")
         .then()

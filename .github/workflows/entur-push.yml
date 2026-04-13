@@ -33,7 +33,7 @@ jobs:
         run: mvn -q -DskipTests help:effective-pom
       - name: Run maven verify
         run: mvn verify
-      - uses: actions/upload-artifact@v7.0.0
+      - uses: actions/upload-artifact@v7.0.1
         with:
           path: sobek-app/target/*.jar
 #      - name: Sonar Scan

@@ -100,7 +100,7 @@ public class RutebankenBlobStoreConfiguration {
     @Profile("!local & !test")
     @Bean
     public AwsCredentialsProvider cloudCredentials() {
-        return DefaultCredentialsProvider.create();
+        return DefaultCredentialsProvider.builder().build();
     }
 
     @Bean
@@ -118,7 +118,7 @@ public class RutebankenBlobStoreConfiguration {
                                 .builder()
                                 .apiCallAttemptTimeout(Duration.ofSeconds(15))
                                 .apiCallTimeout(Duration.ofSeconds(15))
-                                .retryPolicy(retryPolicy -> retryPolicy.numRetries(5))
+                                .retryStrategy(s -> s.maxAttempts(5))
                                 .build()
                 );
         if (endpointOverride != null) {

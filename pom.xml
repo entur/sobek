@@ -49,7 +49,7 @@
         <geotools.version>30.2</geotools.version>
         <graphql-java.version>20.9</graphql-java.version>
         <graphql-java-extended-scalars.version>24.0</graphql-java-extended-scalars.version>
-        <swagger-jersey2.version>2.2.45</swagger-jersey2.version>
+        <swagger-jersey2.version>2.2.47</swagger-jersey2.version>
         <netex-java-model.version>3.0.0-SNAPSHOT</netex-java-model.version>
         <entur.helpers.version>7.1.0</entur.helpers.version>
         <jts-core.version>1.20.0</jts-core.version>
@@ -60,7 +60,6 @@
         <mapstruct.version>1.6.3</mapstruct.version>
         <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
         <spring-cloud-aws-secrets-manager.version>3.1.1</spring-cloud-aws-secrets-manager.version>
-        <aws-secretsmanager.version>2.0.4</aws-secretsmanager.version>
     </properties>
 
     <repositories>

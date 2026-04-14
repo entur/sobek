@@ -29,7 +29,6 @@
 - **JTS Core 1.20.0** - Geometry operations
 - **Flyway** - Database migrations
 - **Testcontainers 1.21.3** - Integration testing with Docker
-- **Orika 1.5.4** - Object mapping
 - **Google Cloud PubSub** - Event publishing
 - **AWS Secrets Manager** - Credential management
 

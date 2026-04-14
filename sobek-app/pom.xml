@@ -154,12 +154,6 @@
             <artifactId>spring-cloud-aws-starter-secrets-manager</artifactId>
             <version>${spring-cloud-aws-secrets-manager.version}</version>
         </dependency>
-        <!-- AWS: acquire and refresh jdbc credentials from Secrets Manager in cloud environments -->
-        <dependency>
-            <groupId>com.amazonaws.secretsmanager</groupId>
-            <artifactId>aws-secretsmanager-jdbc</artifactId>
-            <version>${aws-secretsmanager.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.entur.ror.helpers</groupId>
             <artifactId>storage-aws-s3</artifactId>

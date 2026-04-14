@@ -118,7 +118,7 @@ public class RutebankenBlobStoreConfiguration {
                                 .builder()
                                 .apiCallAttemptTimeout(Duration.ofSeconds(15))
                                 .apiCallTimeout(Duration.ofSeconds(15))
-                                .retryStrategy(s -> s.maxAttempts(5))
+                                .retryStrategy(s -> s.maxAttempts(6))
                                 .build()
                 );
         if (endpointOverride != null) {

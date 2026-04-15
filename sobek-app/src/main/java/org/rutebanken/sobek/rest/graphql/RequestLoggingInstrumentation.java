@@ -1,9 +1,7 @@
 package org.rutebanken.sobek.rest.graphql;
 
 import graphql.ExecutionResult;
-import graphql.execution.instrumentation.InstrumentationContext;
-import graphql.execution.instrumentation.SimpleInstrumentation;
-import graphql.execution.instrumentation.SimpleInstrumentationContext;
+import graphql.execution.instrumentation.*;
 import graphql.execution.instrumentation.parameters.InstrumentationExecutionParameters;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -14,14 +12,17 @@ import org.springframework.stereotype.Component;
 import static org.rutebanken.sobek.config.JerseyConfig.ET_CLIENT_NAME_HEADER;
 
 @Component
-public class RequestLoggingInstrumentation extends SimpleInstrumentation {
+public class RequestLoggingInstrumentation extends SimplePerformantInstrumentation {
     public static final Logger logger = LoggerFactory.getLogger(RequestLoggingInstrumentation.class);
 
-    @Autowired
-    private HttpServletRequest httpServletRequest;
+    private final HttpServletRequest httpServletRequest;
+
+    public RequestLoggingInstrumentation(HttpServletRequest httpServletRequest) {
+        this.httpServletRequest = httpServletRequest;
+    }
 
     @Override
-    public  InstrumentationContext<ExecutionResult> beginExecution(InstrumentationExecutionParameters parameters) {
+    public  InstrumentationContext<ExecutionResult> beginExecution(InstrumentationExecutionParameters parameters, InstrumentationState state) {
         long startMillis = System.currentTimeMillis();
         var executionId = parameters.getExecutionInput().getExecutionId();
 

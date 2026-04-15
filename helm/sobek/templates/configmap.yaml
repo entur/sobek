@@ -46,6 +46,8 @@ data:
     sobek.hazelcast.service-port=5701
     sobek.hazelcast.kubernetes.enabled=false
 
+    # AWS properties
+    spring.cloud.aws.region.static=eu-north-1
 
 
     # Security config with auth0
@@ -91,3 +93,4 @@ data:
     # Compression
     server.compression.enabled=true
     server.compression.mime-types=application/json,application/xml,text/html,text/xml,text/plain
+

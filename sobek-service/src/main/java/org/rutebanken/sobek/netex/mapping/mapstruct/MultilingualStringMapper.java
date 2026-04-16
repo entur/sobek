@@ -55,11 +55,11 @@ public interface MultilingualStringMapper {
                            lang.set(textType.getLang());
                        }
                        if (textType.getValue() != null) {
-                           stringContent.set(stringContent + textType.getValue());
+                           stringContent.set(stringContent.get() + textType.getValue());
                        }
                    }
                } else {
-                   stringContent.set(stringContent + value.toString());
+                   stringContent.set(stringContent.get() + value.toString());
                }
            }
         });

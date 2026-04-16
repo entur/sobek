@@ -15,11 +15,6 @@
 
 package org.rutebanken.sobek.rest.graphql;
 
-import org.rutebanken.sobek.rest.graphql.scalars.DateScalar;
-
-
-import static org.rutebanken.sobek.model.CustomKeyValueTypes.MERGED_ID_KEY;
-import static org.rutebanken.sobek.model.CustomKeyValueTypes.ORIGINAL_ID_KEY;
 import static org.rutebanken.sobek.rest.graphql.RegisterGraphQLSchema.DEFAULT_PAGE_VALUE;
 import static org.rutebanken.sobek.rest.graphql.RegisterGraphQLSchema.DEFAULT_SIZE_VALUE;
 import static org.rutebanken.sobek.rest.graphql.scalars.DateScalar.DATE_TIME_PATTERN;
@@ -38,7 +33,7 @@ public class GraphQLNames {
     public static final String VERSION_LESS_ENTITY_REF_DESCRIPTION = "A reference to an entity without version";
 
     public static final String ENTITY_REF_REF = "ref";
-    public static final String ENTITY_REF_REF_DESCRIPTION = "The NeTEx ID of the of the referenced entity. The reference must already exist";
+    public static final String ENTITY_REF_REF_DESCRIPTION = "The NeTEx ID of the referenced entity. The reference must already exist";
     public static final String ENTITY_REF_VERSION = "version";
     public static final String ENTITY_REF_VERSION_DESCRIPTION = "The version of the referenced entity.";
 
@@ -48,7 +43,7 @@ public class GraphQLNames {
     public static final String VALID_BETWEEN_FROM_DATE = "fromDate";
     public static final String VALID_BETWEEN_TO_DATE = "toDate";
 
-    public static final String DATE_SCALAR_DESCRIPTION = "Date time using the format: " + DATE_TIME_PATTERN + ". Example: "+EXAMPLE_DATE_TIME;
+    public static final String DATE_SCALAR_DESCRIPTION = "Date time using the format: " + DATE_TIME_PATTERN + ". Example: " + EXAMPLE_DATE_TIME;
 
     public static final String OUTPUT_TYPE_EMBEDDABLE_MULTILINGUAL_STRING = "EmbeddableMultilingualString";
     public static final String INPUT_TYPE_EMBEDDABLE_MULTILINGUAL_STRING = OUTPUT_TYPE_EMBEDDABLE_MULTILINGUAL_STRING + INPUT_TYPE_POSTFIX;
@@ -65,22 +60,11 @@ public class GraphQLNames {
     public static final String OUTPUT_TYPE_KEY_VALUES = "KeyValues";
     public static final String INPUT_TYPE_KEY_VALUES = OUTPUT_TYPE_KEY_VALUES + INPUT_TYPE_POSTFIX;
 
-    public static final String PERMISSIONS = "permissions";
-    public static final String ENTITY_PERMISSIONS= "entityPermissions";
-    public static final String OUTPUT_TYPE_ENTITY_PERMISSIONS= "EntityPermissions";
-    public static final String USER_PERMISSIONS= "userPermissions";
-    public static final String OUTPUT_TYPE_USER_PERMISSIONS= "UserPermissions";
-    public static final String USER_CONTEXT= "userContext";
-    public static final String LOCATION_PERMISSIONS= "locationPermissions";
-
-
-    public static final String OUTPUT_TYPE_TAG = "Tag";
-    public static final String INPUT_TYPE_TAG = "Tag" + INPUT_TYPE_POSTFIX;
-
+    public static final String USER_PERMISSIONS = "userPermissions";
+    public static final String OUTPUT_TYPE_USER_PERMISSIONS = "UserPermissions";
 
     public static final String ID = "id";
     public static final String IDS = "ids";
-    public static final String ID_ARG_DESCRIPTION = "IDs used to lookup StopPlace(s). When used - all other searchparameters are ignored.";
 
     public static final String SHORT_NAME = "shortName";
     public static final String DESCRIPTION = "description";
@@ -91,11 +75,9 @@ public class GraphQLNames {
     public static final String SANITARY_EQUIPMENT = "sanitaryEquipment";
     public static final String GENERAL_SIGN = "generalSign";
 
-    // SanitaryEquipment
     public static final String NUMBER_OF_TOILETS = "numberOfToilets";
     public static final String GENDER = "gender";
 
-    //GeneralSign
     public static final String NUMBER_OF_SPACES_WITH_RECHARGE_POINT = "numberOfSpacesWithRechargePoint";
 
     public static final String OUTPUT_TYPE_PRIVATE_CODE = "PrivateCode";
@@ -105,51 +87,13 @@ public class GraphQLNames {
     public static final String CONTENT = "content";
     public static final String SIGN_CONTENT_TYPE = "signContentType";
 
-    public static final String IMPORTED_ID = "importedId";
     public static final String KEY_VALUES = "keyValues";
     public static final String KEY = "key";
-    public static final String KEY_ARG_DESCRIPTION = "Must be used together with parameter 'values', other search-parameters are ignored. Defines key to search for.";
     public static final String VALUES = "values";
-    public static final String VALUES_ARG_DESCRIPTION = "Must be used together with parameter 'key', other search-parameters are ignored. Defines value to search for.";
     public static final String VERSION = "version";
     public static final String VERSION_COMMENT = "versionComment";
-    public static final String MODIFICATION_ENUMERATION = "modificationEnumeration";
-    public static final String VERSION_ARG_DESCRIPTION = "Find stop place from " + ID + " and " +  VERSION + ". Only used together with " + ID + " argument";
-
     public static final String CHANGED_BY = "changedBy";
-    public static final String FROM_VERSION_COMMENT = "fromVersionComment";
-    public static final String TO_VERSION_COMMENT = "toVersionComment";
-    public static final String DRY_RUN = "dryRun";
     public static final String PUBLIC_CODE = "publicCode";
-    public static final String WEIGHTING = "weighting";
-    public static final String URL = "url";
-
-    public static final String IMPORTED_ID_QUERY = "importedId";
-    public static final String IMPORTED_ID_ARG_DESCRIPTION = "Searches for StopPlace by importedId.";
-    public static final String COUNTY_REF = "countyReference";
-    public static final String COUNTRY_REF = "countryReference";
-    public static final String COUNTY_REF_ARG_DESCRIPTION = "Only return StopPlaces located in given counties.";
-    public static final String COUNTRY_REF_ARG_DESCRIPTION = "Only return StopPlaces located in given countries.";
-
-    public static final String MUNICIPALITY_REF = "municipalityReference";
-    public static final String MUNICIPALITY_REF_ARG_DESCRIPTION = "Only return StopPlaces located in given municipalities.";
-
-    public static final String QUERY = "query";
-    public static final String QUERY_ARG_DESCRIPTION = "Searches for StopPlace by name, " + ID + ", " + ORIGINAL_ID_KEY + ", " + MERGED_ID_KEY + " or a single tag prefixed with #";
-    public static final String PAGE = "page";
-    public static final String PAGE_ARG_DESCRIPTION = "Pagenumber when using pagination - default is " + DEFAULT_PAGE_VALUE;
-
-    public static final String SIZE = "size";
-    public static final String SIZE_ARG_DESCRIPTION = "Number of hits per page when using pagination - default is " + DEFAULT_SIZE_VALUE;
-
-    public static final String ALL_VERSIONS = "allVersions";
-    public static final String ALL_VERSIONS_ARG_DESCRIPTION = "Fetch all versions for entitites in result. Should not be combined with argument versionValidity";
-
-    public static final String VALID_BETWEEN = "validBetween";
-    public static final String INCLUDE_EXPIRED = "includeExpired";
-
-    public static final String SEARCH_WITH_CODE_SPACE = "code";
-    public static final String SEARCH_WITH_CODE_SPACE_ARG_DESCRIPTION = "Filter results by data producer code space - i.e. code from original imported ID";
 
     public static final String NAME = "name";
     public static final String NAME_TYPE = "nameType";
@@ -157,26 +101,37 @@ public class GraphQLNames {
     public static final String VALUE = "value";
     public static final String LANG = "lang";
 
-    public static final String TOTAL_CAPACITY = "totalCapacity";
+    public static final String PAGE = "page";
+    public static final String PAGE_ARG_DESCRIPTION = "Page number when using pagination - default is " + DEFAULT_PAGE_VALUE;
 
-    public static final String VERSION_VALIDITY_ARG = "versionValidity";
-    public static final String VERSION_VALIDITY_ARG_DESCRIPTION = "Controls returned stop places based on time. " +
-            "Only return stop places wich are valid currently, currently and in the future or just all versions. Default value: CURRENT";
+    public static final String SIZE = "size";
+    public static final String SIZE_ARG_DESCRIPTION = "Number of hits per page when using pagination - default is " + DEFAULT_SIZE_VALUE;
 
-    public static final String POINT_IN_TIME = "pointInTime";
-    public static final String POINT_IN_TIME_ARG_DESCRIPTION = "Sets the point in time to use in search. Only StopPlaces " +
-            "valid on the given timestamp will be returned. " +
-            "If no value is provided, the search will fall back "+ VERSION_VALIDITY_ARG +"'s default value. Cannot be combined with " + VERSION_VALIDITY_ARG +
-            " Date format: "+ DateScalar.DATE_TIME_PATTERN;
+    public static final String ALL_VERSIONS = "allVersions";
+    public static final String ALL_VERSIONS_ARG_DESCRIPTION = "Fetch all versions for entities in result";
 
     public static final String VEHICLE_REGISTER = "VehicleRegister";
-    
+
+    public static final String TRANSPORT_MODE = "transportMode";
+    public static final String CREATED = "created";
+    public static final String CHANGED = "changed";
+    public static final String FILTER = "filter";
+
+    public static final String OUTPUT_TYPE_VEHICLE_TYPE_PAGE = "VehicleTypePage";
+    public static final String OUTPUT_TYPE_DECK_PLAN_PAGE = "DeckPlanPage";
+    public static final String TOTAL_ELEMENTS = "totalElements";
+    public static final String INPUT_TYPE_VEHICLE_TYPE_FILTER = "VehicleTypeFilter";
+
     public static final String VEHICLE_TYPES = "vehicleTypes";
     public static final String OUTPUT_TYPE_VEHICLE_TYPE = "VehicleType";
     public static final String VEHICLE_TYPE_DECK_PLAN = "deckPlan";
 
     public static final String DECK_PLANS = "deckPlans";
     public static final String OUTPUT_TYPE_DECK_PLAN = "DeckPlan";
+
+    public static final String LENGTH = "length";
+    public static final String WIDTH = "width";
+    public static final String HEIGHT = "height";
 
     public static final String VEHICLES = "vehicles";
     public static final String OUTPUT_TYPE_VEHICLE = "Vehicle";

@@ -26,6 +26,7 @@ import org.rutebanken.sobek.model.ModificationEnumeration;
 import org.rutebanken.sobek.model.NameTypeEnumeration;
 import org.rutebanken.sobek.model.SignContentEnumeration;
 import org.rutebanken.sobek.model.job.ExportParams;
+import org.rutebanken.sobek.model.vehicle.AllPublicTransportModesEnumeration;
 
 import java.lang.reflect.Method;
 
@@ -43,6 +44,7 @@ public class CustomGraphQLTypes {
     public static GraphQLEnumType nameTypeEnum = createCustomEnumType(NAME_TYPE, NameTypeEnumeration.class);
     public static GraphQLEnumType versionValidityEnumType = createCustomEnumType(ExportParams.VersionValidity.class.getSimpleName(), ExportParams.VersionValidity.class);
     public static GraphQLEnumType modificationEnumerationType = createCustomEnumType("ModificationEnumerationType", ModificationEnumeration.class);
+    public static GraphQLEnumType transportModeEnumType = createCustomEnumType(TRANSPORT_MODE, AllPublicTransportModesEnumeration.class);
 
 
     public static GraphQLEnumType createCustomEnumType(String name, Class c) {

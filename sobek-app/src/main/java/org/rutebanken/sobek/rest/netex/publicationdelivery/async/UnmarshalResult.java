@@ -16,47 +16,43 @@
 package org.rutebanken.sobek.rest.netex.publicationdelivery.async;
 
 import com.google.common.base.MoreObjects;
-import org.rutebanken.netex.model.NavigationPath;
-import org.rutebanken.netex.model.Parking;
-import org.rutebanken.netex.model.PublicationDeliveryStructure;
-import org.rutebanken.netex.model.StopPlace;
-import org.rutebanken.netex.model.TopographicPlace;
+import org.rutebanken.netex.model.*;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 public class UnmarshalResult {
 
-    private final BlockingQueue<StopPlace> stopPlaceQueue;
-    private final BlockingQueue<Parking> parkingQueue;
-    private final BlockingQueue<TopographicPlace> topographicPlaceQueue;
-    private final BlockingQueue<NavigationPath> navigationPathsQueue;
+    private final BlockingQueue<Vehicle> vehicleQueue;
+    private final BlockingQueue<VehicleType> vehicleTypeQueue;
+    private final BlockingQueue<DeckPlan> deckPlanQueue;
+    private final BlockingQueue<VehicleModel> vehicleModelQueue;
 
     private PublicationDeliveryStructure publicationDeliveryStructure;
 
     public UnmarshalResult(int size) {
-        stopPlaceQueue = new ArrayBlockingQueue<>(size);
-        parkingQueue = new ArrayBlockingQueue<>(size);
-        topographicPlaceQueue = new ArrayBlockingQueue<>(size);
-        navigationPathsQueue = new ArrayBlockingQueue<>(size);
+        vehicleQueue = new ArrayBlockingQueue<>(size);
+        vehicleTypeQueue = new ArrayBlockingQueue<>(size);
+        deckPlanQueue = new ArrayBlockingQueue<>(size);
+        vehicleModelQueue = new ArrayBlockingQueue<>(size);
     }
 
-    public BlockingQueue<StopPlace> getStopPlaceQueue() {
-        return stopPlaceQueue;
+    public BlockingQueue<Vehicle> getVehiclesQueue() {
+        return vehicleQueue;
     }
 
-    public BlockingQueue<Parking> getParkingQueue() {
-        return parkingQueue;
+    public BlockingQueue<VehicleType> getVehicleTypesQueue() {
+        return vehicleTypeQueue;
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("publicationDelivery", publicationDeliveryStructure)
-                .add("stopPlaceQueue", stopPlaceQueue.size())
-                .add("parkingQueue", parkingQueue.size())
-                .add("topographicPlaceQueue", topographicPlaceQueue.size())
-                .add("navigationPathsQueue", navigationPathsQueue.size())
+                .add("vehicleQueue", vehicleQueue.size())
+                .add("vehicleTypeQueue", vehicleTypeQueue.size())
+                .add("deckPlanQueue", deckPlanQueue.size())
+                .add("vehicleModelQueue", vehicleModelQueue.size())
                 .toString();
     }
 

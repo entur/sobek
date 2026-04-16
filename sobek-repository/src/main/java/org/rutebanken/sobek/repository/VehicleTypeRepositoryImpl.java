@@ -1,9 +1,13 @@
 package org.rutebanken.sobek.repository;
 
 import jakarta.persistence.*;
+import org.rutebanken.sobek.model.vehicle.AllPublicTransportModesEnumeration;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
@@ -54,19 +58,71 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
         }
     }
 
+    /** VehicleType-only validity — no Vehicle join needed. */
+    private static final String VT_CURRENT_WHERE =
+            "WHERE vt.validBetween.fromDate <= :now " +
+            "AND (vt.validBetween.toDate IS NULL OR vt.validBetween.toDate >= :now)";
+
+    /** Extra condition for filtering out expired vehicles (requires alias v). */
+    private static final String VEHICLE_CURRENT_COND =
+            " AND (v IS NULL OR (v.validBetween.fromDate <= :now " +
+            "AND (v.validBetween.toDate IS NULL OR v.validBetween.toDate >= :now)))";
+
     @Override
     public List<VehicleType> findAllCurrent() {
+        return findCurrentFiltered(null, null, Pageable.unpaged()).getContent();
+    }
+
+    @Override
+    public Page<VehicleType> findCurrentFiltered(List<String> ids, AllPublicTransportModesEnumeration transportMode, Pageable pageable) {
         Instant now = Instant.now();
-        TypedQuery<VehicleType> query = entityManager.createQuery(
-            "SELECT DISTINCT vt FROM VehicleType vt " +
-            "LEFT JOIN FETCH vt.vehicles v " +
-            "WHERE vt.validBetween.fromDate <= :now " +
-            "AND (vt.validBetween.toDate IS NULL OR vt.validBetween.toDate >= :now) " +
-            "AND (v IS NULL OR (v.validBetween.fromDate <= :now AND (v.validBetween.toDate IS NULL OR v.validBetween.toDate >= :now)))", 
-            VehicleType.class);
-        query.setHint("hibernate.query.passDistinctThrough", false);
-        query.setParameter("now", now);
-        return query.getResultList();
+
+        // Build dynamic WHERE suffix for optional filters
+        StringBuilder filterSuffix = new StringBuilder();
+        if (ids != null && !ids.isEmpty()) {
+            filterSuffix.append(" AND vt.netexId IN :ids");
+        }
+        if (transportMode != null) {
+            filterSuffix.append(" AND vt.transportMode = :transportMode");
+        }
+
+        String fetchJpql = "SELECT DISTINCT vt FROM VehicleType vt " +
+                "LEFT JOIN FETCH vt.vehicles v " +
+                VT_CURRENT_WHERE + VEHICLE_CURRENT_COND + filterSuffix +
+                " ORDER BY vt.id";
+
+        if (pageable.isUnpaged()) {
+            TypedQuery<VehicleType> fetchQuery = entityManager.createQuery(fetchJpql, VehicleType.class);
+            fetchQuery.setParameter("now", now);
+            setFilterParams(fetchQuery, ids, transportMode);
+            return new PageImpl<>(fetchQuery.getResultList());
+        }
+
+        // Count — no Vehicle JOIN, no DISTINCT needed
+        String countJpql = "SELECT COUNT(vt) FROM VehicleType vt " +
+                VT_CURRENT_WHERE + filterSuffix;
+        TypedQuery<Long> countQuery = entityManager.createQuery(countJpql, Long.class);
+        countQuery.setParameter("now", now);
+        setFilterParams(countQuery, ids, transportMode);
+        long total = countQuery.getSingleResult();
+
+        // Fetch — in-memory pagination (HHH90003004) is acceptable for this small dataset
+        TypedQuery<VehicleType> fetchQuery = entityManager.createQuery(fetchJpql, VehicleType.class);
+        fetchQuery.setParameter("now", now);
+        setFilterParams(fetchQuery, ids, transportMode);
+        fetchQuery.setFirstResult((int) pageable.getOffset());
+        fetchQuery.setMaxResults(pageable.getPageSize());
+
+        return new PageImpl<>(fetchQuery.getResultList(), pageable, total);
+    }
+
+    private void setFilterParams(Query query, List<String> ids, AllPublicTransportModesEnumeration transportMode) {
+        if (ids != null && !ids.isEmpty()) {
+            query.setParameter("ids", ids);
+        }
+        if (transportMode != null) {
+            query.setParameter("transportMode", transportMode);
+        }
     }
 
     @Override

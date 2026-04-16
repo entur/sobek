@@ -17,7 +17,10 @@ package org.rutebanken.sobek.rest.netex.publicationdelivery;
 
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.UnmarshalException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.rutebanken.sobek.SobekTestApplication;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.xml.sax.SAXException;
 
 import java.io.ByteArrayInputStream;
@@ -27,7 +30,11 @@ import java.io.InputStream;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 
+@SpringBootTest(classes = SobekTestApplication.class)
 public class PublicationDeliveryUnmarshallerTest {
+
+    @Autowired
+    PublicationDeliveryUnmarshaller publicationDeliveryUnmarshaller;
 
     @Test
     public void expectUnmarshalExceptionWhenIncorrectPublicationDeliveryXml() throws IOException, SAXException, JAXBException {
@@ -38,8 +45,6 @@ public class PublicationDeliveryUnmarshallerTest {
                 </PublicationDeliivery>""";
 
         InputStream inputStream = new ByteArrayInputStream(notValidPublicationDeliveryXml.getBytes());
-
-        PublicationDeliveryUnmarshaller publicationDeliveryUnmarshaller = new PublicationDeliveryUnmarshaller();
 
         assertThatThrownBy(() -> publicationDeliveryUnmarshaller.unmarshal(inputStream))
                 .isInstanceOf(UnmarshalException.class);

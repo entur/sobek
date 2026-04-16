@@ -123,7 +123,7 @@ class VehicleTypeImportIT {
                 (VehicleType)
                         responseFrame.getVehicleTypes().getTransportType_Dummy().get(0).getValue();
 
-        assertThat(imported.getId()).startsWith("NMR:VehicleType:");
+        assertThat(imported.getId()).startsWith("AKT:VehicleType:");
         assertThat(imported.getVersion()).isEqualTo("1");
         assertThat(imported.getName().getContent()).hasSize(3);
         assertThat(imported.getName().getContent().get(1)).isInstanceOf(JAXBElement.class);

@@ -192,6 +192,7 @@ public class StreamingPublicationDelivery {
 
     }
 
+    // See also streamOneVehicle below — same skeleton; DRY-up tracked in #101.
     public void streamOneDeckPlan(ExportParams exportParams,String deckPlanId, OutputStream outputStream) throws JAXBException, XMLStreamException, IOException, InterruptedException, SAXException {
 
         logger.info("Streaming export of deckplan initiated. Export params: {}, deckPlan ID: {}", exportParams, deckPlanId);
@@ -217,9 +218,13 @@ public class StreamingPublicationDelivery {
         marshaller.marshal(netexObjectFactory.createPublicationDelivery(publicationDeliveryStructure), outputStream);
     }
 
-    public void streamOneVehicle(ExportParams exportParams, String vehicleId, OutputStream outputStream) throws JAXBException, XMLStreamException, IOException, InterruptedException, SAXException {
+    // NOTE: This is a near-duplicate of streamOneDeckPlan's CompositeFrame /
+    // ResourceFrame / marshal skeleton (only the prepareXxx call differs).
+    // DRY-up tracked in #101 — intentionally not refactored in the PR that
+    // introduced this method to keep the diff scoped to the new endpoint.
+    public void streamOneVehicle(ExportParams exportParams, String vehicleNetexId, OutputStream outputStream) throws JAXBException, XMLStreamException, IOException, InterruptedException, SAXException {
 
-        logger.info("Streaming export of vehicle initiated. Export params: {}, Vehicle ID: {}", exportParams, vehicleId);
+        logger.info("Streaming export of vehicle initiated. Export params: {}, Vehicle NeTEx id: {}", exportParams, vehicleNetexId);
 
         org.rutebanken.netex.model.CompositeFrame netexCompositeFrame = sobekComositeFrameExporter.createCompositeFrame("Composite frame " + exportParams);
 
@@ -230,7 +235,7 @@ public class StreamingPublicationDelivery {
         framesRelStructure.withCommonFrame(new ObjectFactory().createResourceFrame(netexResourceFrame));
         netexCompositeFrame.withFrames(framesRelStructure);
 
-        prepareOneVehicle(netexResourceFrame, vehicleId);
+        prepareOneVehicle(netexResourceFrame, vehicleNetexId);
 
         PublicationDeliveryStructure publicationDeliveryStructure = publicationDeliveryCreator.createPublicationDelivery(netexCompositeFrame);
 

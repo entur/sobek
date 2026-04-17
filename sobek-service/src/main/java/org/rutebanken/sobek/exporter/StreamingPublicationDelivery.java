@@ -192,6 +192,7 @@ public class StreamingPublicationDelivery {
 
     }
 
+    // See also streamOneVehicle below — same skeleton; DRY-up tracked in #101.
     public void streamOneDeckPlan(ExportParams exportParams,String deckPlanId, OutputStream outputStream) throws JAXBException, XMLStreamException, IOException, InterruptedException, SAXException {
 
         logger.info("Streaming export of deckplan initiated. Export params: {}, deckPlan ID: {}", exportParams, deckPlanId);
@@ -215,6 +216,48 @@ public class StreamingPublicationDelivery {
 
         logger.info("Start marshalling publication delivery");
         marshaller.marshal(netexObjectFactory.createPublicationDelivery(publicationDeliveryStructure), outputStream);
+    }
+
+    // NOTE: This is a near-duplicate of streamOneDeckPlan's CompositeFrame /
+    // ResourceFrame / marshal skeleton (only the prepareXxx call differs).
+    // DRY-up tracked in #101 — intentionally not refactored in the PR that
+    // introduced this method to keep the diff scoped to the new endpoint.
+    public void streamOneVehicle(ExportParams exportParams, String vehicleNetexId, OutputStream outputStream) throws JAXBException, XMLStreamException, IOException, InterruptedException, SAXException {
+
+        logger.info("Streaming export of vehicle initiated. Export params: {}, Vehicle NeTEx id: {}", exportParams, vehicleNetexId);
+
+        org.rutebanken.netex.model.CompositeFrame netexCompositeFrame = sobekComositeFrameExporter.createCompositeFrame("Composite frame " + exportParams);
+
+        logger.info("Mapping resource frame to netex model");
+        final org.rutebanken.netex.model.ResourceFrame netexResourceFrame = sobekResourceFrameExporter.createResourceFrame("Resource frame" + exportParams);
+
+        Frames_RelStructure framesRelStructure = new Frames_RelStructure();
+        framesRelStructure.withCommonFrame(new ObjectFactory().createResourceFrame(netexResourceFrame));
+        netexCompositeFrame.withFrames(framesRelStructure);
+
+        prepareOneVehicle(netexResourceFrame, vehicleNetexId);
+
+        PublicationDeliveryStructure publicationDeliveryStructure = publicationDeliveryCreator.createPublicationDelivery(netexCompositeFrame);
+
+        Marshaller marshaller = createMarshaller();
+
+        logger.info("Start marshalling publication delivery");
+        marshaller.marshal(netexObjectFactory.createPublicationDelivery(publicationDeliveryStructure), outputStream);
+    }
+
+    private void prepareOneVehicle(org.rutebanken.netex.model.ResourceFrame resourceFrame, String vehicleNetexId) {
+        Vehicle vehicle = vehicleRepository.findFirstByNetexIdOrderByVersionDesc(vehicleNetexId);
+        if (vehicle == null) {
+            logger.info("No vehicle found for id {}", vehicleNetexId);
+            return;
+        }
+
+        VehiclesInFrame_RelStructure vehiclesInFrame_relStructure = new VehiclesInFrame_RelStructure();
+        List<org.rutebanken.netex.model.Vehicle> vehicles =
+                Collections.singletonList(vehicleMapper.mapToNetex(vehicle, mappingContext));
+
+        setField(VehiclesInFrame_RelStructure.class, "vehicle", vehiclesInFrame_relStructure, vehicles);
+        resourceFrame.setVehicles(vehiclesInFrame_relStructure);
     }
 
 

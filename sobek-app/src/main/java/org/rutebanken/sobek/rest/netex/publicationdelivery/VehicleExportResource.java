@@ -58,4 +58,26 @@ public class VehicleExportResource {
 
         return Response.ok(streamingOutput).build();
     }
+
+    // Path param is `{id}` (not `{netexId}`) for symmetry with
+    // @Path("deckplans/{id}") above — both endpoints look up by NeTEx id.
+    // Renaming one without the other would break the convention. If we
+    // want a rename, do it to both at once (tracked under the DRY-up in #101).
+    @GET
+    @Path("vehicles/{id}")
+    @Produces(MediaType.APPLICATION_XML + "; charset=UTF-8")
+    public Response getOneVehicle(@BeanParam ExportParametersDto exportParams, @PathParam("id") String id) {
+        log.info("Exporting publication delivery for Vehicle NeTEx id {}. {}", id, exportParams);
+
+        StreamingOutput streamingOutput = outputStream -> {
+            try {
+                streamingPublicationDelivery.streamOneVehicle(exportParams.toExportParams(), id, outputStream);
+            } catch (Exception e) {
+                log.warn("Could not stream vehicle. {}", e.getMessage(), e);
+                throw new RuntimeException(e);
+            }
+        };
+
+        return Response.ok(streamingOutput).build();
+    }
 }

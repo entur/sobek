@@ -58,4 +58,22 @@ public class VehicleExportResource {
 
         return Response.ok(streamingOutput).build();
     }
+
+    @GET
+    @Path("vehicles/{id}")
+    @Produces(MediaType.APPLICATION_XML + "; charset=UTF-8")
+    public Response getOneVehicle(@BeanParam ExportParametersDto exportParams, @PathParam("id") String id) {
+        log.info("Exporting publication delivery for Vehicle {}. {}", id, exportParams);
+
+        StreamingOutput streamingOutput = outputStream -> {
+            try {
+                streamingPublicationDelivery.streamOneVehicle(exportParams.toExportParams(), id, outputStream);
+            } catch (Exception e) {
+                log.warn("Could not stream vehicle. {}", e.getMessage(), e);
+                throw new RuntimeException(e);
+            }
+        };
+
+        return Response.ok(streamingOutput).build();
+    }
 }

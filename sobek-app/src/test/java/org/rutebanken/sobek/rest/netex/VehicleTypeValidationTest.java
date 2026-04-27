@@ -2,7 +2,7 @@ package org.rutebanken.sobek.rest.netex;
 
 import org.junit.jupiter.api.Test;
 import org.rutebanken.sobek.SobekTestApplication;
-import org.rutebanken.sobek.rest.netex.publicationdelivery.PublicationDeliveryUnmarshaller;
+import org.rutebanken.sobek.netex.util.PublicationDeliveryUnmarshaller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 

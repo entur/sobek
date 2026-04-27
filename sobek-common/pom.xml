@@ -76,5 +76,14 @@
             <groupId>org.entur</groupId>
             <artifactId>netex-java-model</artifactId>
         </dependency>
+
+        <!-- Spring Boot Starter Test -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+
     </dependencies>
 </project>

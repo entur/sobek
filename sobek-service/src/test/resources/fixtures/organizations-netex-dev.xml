@@ -1,0 +1,1084 @@
+<PublicationDelivery xmlns="http://www.netex.org.uk/netex" xmlns:ns2="http://www.opengis.net/gml/3.2" xmlns:ns3="http://www.siri.org.uk/siri">
+    <PublicationTimestamp>2026-04-24T07:27:34.081</PublicationTimestamp>
+    <ParticipantRef>EnTur:Avtaler</ParticipantRef>
+    <dataObjects>
+        <ResourceFrame version="1" id="NOG:ResourceFrame:1">
+            <organisations>
+                <Authority created="2023-06-20T00:00:00" version="26" id="NOG:Authority:23e9gDqTGNg">
+                    <PrivateCode type="organisationId">22</PrivateCode>
+                    <CompanyNumber>991609407</CompanyNumber>
+                    <Name>Ruter</Name>
+                    <LegalName>RUTER AS</LegalName>
+                    <TradingName>Ruter</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://ruter.no/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Authority>
+                <Operator created="2023-06-20T00:00:00" version="6" id="NOG:Operator:earJinAJlwf">
+                    <PrivateCode type="organisationId">110</PrivateCode>
+                    <CompanyNumber>985615616</CompanyNumber>
+                    <Name>Unibuss</Name>
+                    <LegalName>UNIBUSS AS</LegalName>
+                    <TradingName>Unibuss</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://www.unibuss.no/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Operator>
+                <Authority created="2023-06-20T00:00:00" version="6" id="NOG:Authority:c5HUG26214p">
+                    <PrivateCode type="organisationId">104</PrivateCode>
+                    <CompanyNumber>982076811</CompanyNumber>
+                    <Name>Go Fjords</Name>
+                    <LegalName>DSD EXPLORE AS</LegalName>
+                    <TradingName>Go Fjords</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://gofjords.com/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Authority>
+                <Operator created="2023-06-20T00:00:00" version="6" id="NOG:Operator:eanaqt2T022">
+                    <PrivateCode type="organisationId">104</PrivateCode>
+                    <CompanyNumber>982076811</CompanyNumber>
+                    <Name>Go Fjords</Name>
+                    <LegalName>DSD EXPLORE AS</LegalName>
+                    <TradingName>Go Fjords</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://gofjords.com/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Operator>
+                <Authority created="2023-06-20T00:00:00" version="2" id="NOG:Authority:23vuxVHRJIi">
+                    <PrivateCode type="organisationId">66</PrivateCode>
+                    <CompanyNumber>975950662</CompanyNumber>
+                    <Name>Oscarsborgfergen</Name>
+                    <LegalName>FORSVARSBYGG</LegalName>
+                    <TradingName>Oscarsborgfergen</TradingName>
+                    <ContactDetails>
+                        <Email>servicesenter@forsvarsbygg.no</Email>
+                        <Phone>46870400</Phone>
+                        <Url>https://www.forsvarsbygg.no/no/festningene/oscarsborg-festning/oscarsborg-fortress/Timetables-tickets-parking/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Authority>
+                <Operator created="2023-06-20T00:00:00" version="2" id="NOG:Operator:jQT7MgG76Uv">
+                    <PrivateCode type="organisationId">66</PrivateCode>
+                    <CompanyNumber>975950662</CompanyNumber>
+                    <Name>Oscarsborgfergen</Name>
+                    <LegalName>FORSVARSBYGG</LegalName>
+                    <TradingName>Oscarsborgfergen</TradingName>
+                    <ContactDetails>
+                        <Email>servicesenter@forsvarsbygg.no</Email>
+                        <Phone>46870400</Phone>
+                        <Url>https://www.forsvarsbygg.no/no/festningene/oscarsborg-festning/oscarsborg-fortress/Timetables-tickets-parking/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Operator>
+                <Authority created="2023-06-20T00:00:00" version="7" id="NOG:Authority:23iGgoYVAIh">
+                    <PrivateCode type="organisationId">30</PrivateCode>
+                    <CompanyNumber>556564-9976</CompanyNumber>
+                    <Name>Vy Tåg</Name>
+                    <LegalName>Vy Tåg AB</LegalName>
+                    <TradingName>Vy Tåg</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://www.vy.no/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="se">SE</CountryRef>
+                </Authority>
+                <Operator created="2023-06-20T00:00:00" version="7" id="NOG:Operator:jR663eIIXBy">
+                    <PrivateCode type="organisationId">30</PrivateCode>
+                    <CompanyNumber>556564-9976</CompanyNumber>
+                    <Name>Vy Tåg</Name>
+                    <LegalName>Vy Tåg AB</LegalName>
+                    <TradingName>Vy Tåg</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://www.vy.no/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="se">SE</CountryRef>
+                </Operator>
+                <Authority created="2023-06-20T00:00:00" version="1" id="NOG:Authority:c68jDviL7TW">
+                    <PrivateCode type="organisationId">165</PrivateCode>
+                    <CompanyNumber>922182868</CompanyNumber>
+                    <Name>Telemarkskanalen</Name>
+                    <LegalName>TELEMARKSKANALEN BOOKING AS</LegalName>
+                    <TradingName>Telemarkskanalen</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://www.telemarkskanalen.no/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Authority>
+                <Operator created="2023-06-20T00:00:00" version="1" id="NOG:Operator:eavC11HLGJB">
+                    <PrivateCode type="organisationId">165</PrivateCode>
+                    <CompanyNumber>922182868</CompanyNumber>
+                    <Name>Telemarkskanalen</Name>
+                    <LegalName>TELEMARKSKANALEN BOOKING AS</LegalName>
+                    <TradingName>Telemarkskanalen</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://www.telemarkskanalen.no/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Operator>
+                <Authority created="2023-06-20T00:00:00" version="1" id="NOG:Authority:c68kgdDmBL0">
+                    <PrivateCode type="organisationId">167</PrivateCode>
+                    <CompanyNumber>988237019</CompanyNumber>
+                    <Name>Gjendebåten</Name>
+                    <LegalName>GJENDEBÅTEN AS</LegalName>
+                    <TradingName>Gjendebåten</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://www.gjende.no/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Authority>
+                <Operator created="2023-06-20T00:00:00" version="1" id="NOG:Operator:eavCDK2naAF">
+                    <PrivateCode type="organisationId">167</PrivateCode>
+                    <CompanyNumber>988237019</CompanyNumber>
+                    <Name>Gjendebåten</Name>
+                    <LegalName>GJENDEBÅTEN AS</LegalName>
+                    <TradingName>Gjendebåten</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://www.gjende.no/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Operator>
+                <Authority created="2023-06-20T00:00:00" version="1" id="NOG:Authority:c63P8B599pb">
+                    <PrivateCode type="organisationId">175</PrivateCode>
+                    <CompanyNumber>816034442</CompanyNumber>
+                    <Name>Sundbåten</Name>
+                    <LegalName>FORENINGEN SUNDBÅTEN RAPP</LegalName>
+                    <TradingName>Sundbåten</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://www.sundbaten.no/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Authority>
+                <Operator created="2023-06-20T00:00:00" version="1" id="NOG:Operator:eaA90NfNAEC">
+                    <PrivateCode type="organisationId">175</PrivateCode>
+                    <CompanyNumber>816034442</CompanyNumber>
+                    <Name>Sundbåten</Name>
+                    <LegalName>FORENINGEN SUNDBÅTEN RAPP</LegalName>
+                    <TradingName>Sundbåten</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://www.sundbaten.no/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Operator>
+                <Authority created="2023-06-20T00:00:00" version="1" id="NOG:Authority:c6hq7TJeRae">
+                    <PrivateCode type="organisationId">181</PrivateCode>
+                    <CompanyNumber>983472583</CompanyNumber>
+                    <Name>Fjord1</Name>
+                    <LegalName>FJORD1 AS</LegalName>
+                    <TradingName>Fjord1</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://www.fjord1.no/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Authority>
+                <Operator created="2023-06-20T00:00:00" version="1" id="NOG:Operator:eaW5294qqD3">
+                    <PrivateCode type="organisationId">181</PrivateCode>
+                    <CompanyNumber>983472583</CompanyNumber>
+                    <Name>Fjord1</Name>
+                    <LegalName>FJORD1 AS</LegalName>
+                    <TradingName>Fjord1</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://www.fjord1.no/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Operator>
+                <Authority created="2023-06-20T00:00:00" version="3" id="NOG:Authority:c5MqqmYQXhi">
+                    <PrivateCode type="organisationId">132</PrivateCode>
+                    <CompanyNumber>912288161</CompanyNumber>
+                    <Name>Hyke</Name>
+                    <LegalName>HYDROLIFT SMART CITY FERRIES AS</LegalName>
+                    <TradingName>Hyke</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://hydroliftsmartcityferries.com/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Authority>
+                <Operator created="2023-06-20T00:00:00" version="3" id="NOG:Operator:eaiDqHuR671">
+                    <PrivateCode type="organisationId">132</PrivateCode>
+                    <CompanyNumber>912288161</CompanyNumber>
+                    <Name>Hyke</Name>
+                    <LegalName>HYDROLIFT SMART CITY FERRIES AS</LegalName>
+                    <TradingName>Hyke</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://hydroliftsmartcityferries.com/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Operator>
+                <Authority created="2023-06-20T00:00:00" version="1" id="NOG:Authority:c6hnD2oOVJY">
+                    <PrivateCode type="organisationId">189</PrivateCode>
+                    <CompanyNumber>983634087</CompanyNumber>
+                    <Name>Lustrabaatane</Name>
+                    <LegalName>LUSTRABAATANE AS</LegalName>
+                    <TradingName>Lustrabaatane</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://www.lustrabaatane.no/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Authority>
+                <Operator created="2023-06-20T00:00:00" version="1" id="NOG:Operator:eaW2xhK0vcN">
+                    <PrivateCode type="organisationId">189</PrivateCode>
+                    <CompanyNumber>983634087</CompanyNumber>
+                    <Name>Lustrabaatane</Name>
+                    <LegalName>LUSTRABAATANE AS</LegalName>
+                    <TradingName>Lustrabaatane</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://www.lustrabaatane.no/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Operator>
+                <Authority created="2023-06-20T00:00:00" version="16" id="NOG:Authority:23r031ufLdx">
+                    <PrivateCode type="organisationId">18</PrivateCode>
+                    <CompanyNumber>964982953</CompanyNumber>
+                    <Name>Reis Nordland</Name>
+                    <LegalName>NORDLAND FYLKESKOMMUNE</LegalName>
+                    <TradingName>Reis Nordland</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://www.reisnordland.no/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Authority>
+                <Operator created="2023-06-20T00:00:00" version="6" id="NOG:Operator:eanaJPdbJXz">
+                    <PrivateCode type="organisationId">105</PrivateCode>
+                    <CompanyNumber>981940768</CompanyNumber>
+                    <Name>Norled</Name>
+                    <LegalName>NORLED AS</LegalName>
+                    <TradingName>Norled</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://www.norled.no/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Operator>
+                <Authority created="2023-06-20T00:00:00" version="11" id="NOG:Authority:23e9zZBcqIN">
+                    <PrivateCode type="organisationId">23</PrivateCode>
+                    <CompanyNumber>960961358</CompanyNumber>
+                    <Name>Hurtigruten</Name>
+                    <LegalName>HURTIGRUTEN AS</LegalName>
+                    <TradingName>Hurtigruten</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://www.hurtigruten.no/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Authority>
+                <Operator created="2023-06-20T00:00:00" version="11" id="NOG:Operator:jRaCJE6s7B2">
+                    <PrivateCode type="organisationId">23</PrivateCode>
+                    <CompanyNumber>960961358</CompanyNumber>
+                    <Name>Hurtigruten</Name>
+                    <LegalName>HURTIGRUTEN AS</LegalName>
+                    <TradingName>Hurtigruten</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://www.hurtigruten.no/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Operator>
+                <Operator created="2023-06-20T00:00:00" version="1" id="NOG:Operator:eb0s2tiMCR2">
+                    <PrivateCode type="organisationId">191</PrivateCode>
+                    <CompanyNumber>912617750</CompanyNumber>
+                    <Name>Brevik fergeselskap</Name>
+                    <LegalName>BREVIK FERGESELSKAP IKS</LegalName>
+                    <TradingName>Brevik fergeselskap</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>http://fergene.no/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Operator>
+                <Authority created="2023-06-20T00:00:00" version="4" id="NOG:Authority:23A2N7V6Blr">
+                    <PrivateCode type="organisationId">70</PrivateCode>
+                    <CompanyNumber>991776524</CompanyNumber>
+                    <Name>Agder kollektivtrafikk</Name>
+                    <LegalName>AGDER KOLLEKTIVTRAFIKK AS</LegalName>
+                    <TradingName>Agder kollektivtrafikk</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://www.akt.no/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Authority>
+                <Authority created="2023-06-20T00:00:00" version="6" id="NOG:Authority:cP48DNz00yq">
+                    <PrivateCode type="organisationId">8</PrivateCode>
+                    <CompanyNumber>965694404</CompanyNumber>
+                    <Name>Flytoget</Name>
+                    <LegalName>FLYTOGET AS</LegalName>
+                    <TradingName>Flytoget</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://flytoget.no/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Authority>
+                <Operator created="2023-06-20T00:00:00" version="6" id="NOG:Operator:9BqAavXh68t">
+                    <PrivateCode type="organisationId">8</PrivateCode>
+                    <CompanyNumber>965694404</CompanyNumber>
+                    <Name>Flytoget</Name>
+                    <LegalName>FLYTOGET AS</LegalName>
+                    <TradingName>Flytoget</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://flytoget.no/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Operator>
+                <Authority created="2023-06-20T00:00:00" version="1" id="NOG:Authority:9VYLhdbiBba">
+                    <PrivateCode type="organisationId">213</PrivateCode>
+                    <CompanyNumber>979699492</CompanyNumber>
+                    <Name>Fjellvåken</Name>
+                    <LegalName>FJELLVÅKEN AS</LegalName>
+                    <TradingName>Fjellvåken</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://visitrauland.com/fjellvaaken/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Authority>
+                <Operator created="2023-06-20T00:00:00" version="1" id="NOG:Operator:dqbNn8rcrSX">
+                    <PrivateCode type="organisationId">213</PrivateCode>
+                    <CompanyNumber>979699492</CompanyNumber>
+                    <Name>Fjellvåken</Name>
+                    <LegalName>FJELLVÅKEN AS</LegalName>
+                    <TradingName>Fjellvåken</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://visitrauland.com/fjellvaaken/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Operator>
+                <Authority created="2023-06-20T00:00:00" version="6" id="NOG:Authority:c5HUmFVJh8S">
+                    <PrivateCode type="organisationId">105</PrivateCode>
+                    <CompanyNumber>981940768</CompanyNumber>
+                    <Name>Norled</Name>
+                    <LegalName>NORLED AS</LegalName>
+                    <TradingName>Norled</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://www.norled.no/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Authority>
+                <Operator created="2023-06-20T00:00:00" version="4" id="NOG:Operator:dq7Tp3EX8Xt">
+                    <PrivateCode type="organisationId">222</PrivateCode>
+                    <CompanyNumber>979437218</CompanyNumber>
+                    <Name>Boreal Buss</Name>
+                    <LegalName>BOREAL BUSS AS</LegalName>
+                    <TradingName>Boreal Buss</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://www.boreal.no/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Operator>
+                <Authority created="2023-06-20T00:00:00" version="88" id="NOG:Authority:cP4bs13IFUd">
+                    <PrivateCode type="organisationId">1</PrivateCode>
+                    <CompanyNumber>917422575</CompanyNumber>
+                    <Name>Entur</Name>
+                    <LegalName>ENTUR AS</LegalName>
+                    <TradingName>Entur</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://entur.no/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Authority>
+                <Operator created="2023-06-20T00:00:00" version="88" id="NOG:Operator:9BqxmisyqMG">
+                    <PrivateCode type="organisationId">1</PrivateCode>
+                    <CompanyNumber>917422575</CompanyNumber>
+                    <Name>Entur</Name>
+                    <LegalName>ENTUR AS</LegalName>
+                    <TradingName>Entur</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://entur.no/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Operator>
+                <Authority created="2025-10-09T10:12:15.791" version="1" id="NOG:Authority:aIhAMzxndpm">
+                    <PrivateCode type="organisationId">301</PrivateCode>
+                    <CompanyNumber>932295288</CompanyNumber>
+                    <Name>Tet Digital</Name>
+                    <LegalName>Tet Digital AS</LegalName>
+                    <TradingName>Tet Digital</TradingName>
+                    <ContactDetails/>
+                    <ValidityPeriod>
+                        <FromDate>2025-10-09T10:12:15.791</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Authority>
+                <Operator created="2023-06-20T00:00:00" version="61" id="NOG:Operator:g3XG7ru1Ssv">
+                    <PrivateCode type="organisationId">1234</PrivateCode>
+                    <Name>Test</Name>
+                    <LegalName>TEST AS</LegalName>
+                    <TradingName>Test</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url></Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Operator>
+                <Authority created="2023-06-20T00:00:00" version="1" id="NOG:Authority:9VYNsIlpMFT">
+                    <PrivateCode type="organisationId">214</PrivateCode>
+                    <CompanyNumber>922374287</CompanyNumber>
+                    <Name>Vy Travel</Name>
+                    <LegalName>VY TRAVEL AS</LegalName>
+                    <TradingName>Vy Travel</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://www.vybuss.no/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Authority>
+                <Operator created="2023-06-20T00:00:00" version="1" id="NOG:Operator:dqbOVVgI9wC">
+                    <PrivateCode type="organisationId">214</PrivateCode>
+                    <CompanyNumber>922374287</CompanyNumber>
+                    <Name>Vy Travel</Name>
+                    <LegalName>VY TRAVEL AS</LegalName>
+                    <TradingName>Vy Travel</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://www.vybuss.no/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Operator>
+                <Authority created="2023-06-20T00:00:00" version="61" id="NOG:Authority:iqpGBbo1JV4">
+                    <PrivateCode type="organisationId">1234</PrivateCode>
+                    <Name>Test</Name>
+                    <LegalName>TEST AS</LegalName>
+                    <TradingName>Test</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url></Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Authority>
+                <Authority created="2023-06-20T00:00:00" version="2" id="NOG:Authority:c5HVVsLeYMx">
+                    <PrivateCode type="organisationId">108</PrivateCode>
+                    <CompanyNumber>985198292</CompanyNumber>
+                    <Name>Avinor</Name>
+                    <LegalName>AVINOR AS</LegalName>
+                    <TradingName>Avinor</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://avinor.no/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Authority>
+                <Operator created="2023-06-20T00:00:00" version="2" id="NOG:Operator:eaneaL2vTaq">
+                    <PrivateCode type="organisationId">108</PrivateCode>
+                    <CompanyNumber>985198292</CompanyNumber>
+                    <Name>Avinor</Name>
+                    <LegalName>AVINOR AS</LegalName>
+                    <TradingName>Avinor</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://avinor.no/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Operator>
+                <Authority created="2023-06-20T00:00:00" version="11" id="NOG:Authority:23qZJFjX1i0">
+                    <PrivateCode type="organisationId">19</PrivateCode>
+                    <CompanyNumber>987263059</CompanyNumber>
+                    <Name>NOR-WAY Bussekspress</Name>
+                    <LegalName>NOR-WAY BUSSEKSPRESS AS</LegalName>
+                    <TradingName>NOR-WAY Bussekspress</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://www.nor-way.no/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Authority>
+                <Operator created="2023-06-20T00:00:00" version="11" id="NOG:Operator:jRf46YF2GOt">
+                    <PrivateCode type="organisationId">19</PrivateCode>
+                    <CompanyNumber>987263059</CompanyNumber>
+                    <Name>NOR-WAY Bussekspress</Name>
+                    <LegalName>NOR-WAY BUSSEKSPRESS AS</LegalName>
+                    <TradingName>NOR-WAY Bussekspress</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://www.nor-way.no/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Operator>
+                <Authority created="2023-06-20T00:00:00" version="24" id="NOG:Authority:cP4aPiJ7c39">
+                    <PrivateCode type="organisationId">3</PrivateCode>
+                    <CompanyNumber>994686011</CompanyNumber>
+                    <Name>AtB</Name>
+                    <LegalName>ATB AS</LegalName>
+                    <TradingName>AtB</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://www.atb.no/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Authority>
+                <Operator created="2023-06-20T00:00:00" version="24" id="NOG:Operator:9BqwJA7WWVC">
+                    <PrivateCode type="organisationId">3</PrivateCode>
+                    <CompanyNumber>994686011</CompanyNumber>
+                    <Name>AtB</Name>
+                    <LegalName>ATB AS</LegalName>
+                    <TradingName>AtB</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://www.atb.no/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Operator>
+                <Authority created="2023-06-20T00:00:00" version="11" id="NOG:Authority:23eaPqgpoqV">
+                    <PrivateCode type="organisationId">27</PrivateCode>
+                    <CompanyNumber>926849212</CompanyNumber>
+                    <Name>Farte</Name>
+                    <LegalName>TELEMARK FYLKESKOMMUNE SAMFERDSEL OG SAMFUNNSUTVIKLING</LegalName>
+                    <TradingName>Farte</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://www.farte.no/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Authority>
+                <Operator created="2023-06-20T00:00:00" version="11" id="NOG:Operator:jRaBudrf9SU">
+                    <PrivateCode type="organisationId">27</PrivateCode>
+                    <CompanyNumber>926849212</CompanyNumber>
+                    <Name>Farte</Name>
+                    <LegalName>TELEMARK FYLKESKOMMUNE SAMFERDSEL OG SAMFUNNSUTVIKLING</LegalName>
+                    <TradingName>Farte</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://www.farte.no/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Operator>
+                <Authority created="2023-06-20T00:00:00" version="1" id="NOG:Authority:c5E1XnYZFR3">
+                    <PrivateCode type="organisationId">117</PrivateCode>
+                    <CompanyNumber>910500805</CompanyNumber>
+                    <Name>Tide Buss</Name>
+                    <LegalName>TIDE BUSS AS</LegalName>
+                    <TradingName>Tide Buss</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://www.tide.no/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Authority>
+                <Operator created="2023-06-20T00:00:00" version="1" id="NOG:Operator:earKRaqf39U">
+                    <PrivateCode type="organisationId">117</PrivateCode>
+                    <CompanyNumber>910500805</CompanyNumber>
+                    <Name>Tide Buss</Name>
+                    <LegalName>TIDE BUSS AS</LegalName>
+                    <TradingName>Tide Buss</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://www.tide.no/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Operator>
+                <Authority created="2023-06-20T00:00:00" version="1" id="NOG:Authority:9WpbaKSVVNi">
+                    <PrivateCode type="organisationId">279</PrivateCode>
+                    <CompanyNumber>915977766</CompanyNumber>
+                    <Name>Fjord Shuttle</Name>
+                    <LegalName>FJORD SHUTTLE AS</LegalName>
+                    <TradingName>Fjord Shuttle</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url></Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Authority>
+                <Operator created="2023-06-20T00:00:00" version="1" id="NOG:Operator:dpLXH40D2Uz">
+                    <PrivateCode type="organisationId">279</PrivateCode>
+                    <CompanyNumber>915977766</CompanyNumber>
+                    <Name>Fjord Shuttle</Name>
+                    <LegalName>FJORD SHUTTLE AS</LegalName>
+                    <TradingName>Fjord Shuttle</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url></Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Operator>
+                <Authority created="2023-06-20T00:00:00" version="8" id="NOG:Authority:23Irg6UXSLG">
+                    <PrivateCode type="organisationId">59</PrivateCode>
+                    <CompanyNumber>556429-0319</CompanyNumber>
+                    <Name>Vy Buss Sverige</Name>
+                    <LegalName>Vy Buss AB</LegalName>
+                    <TradingName>Vy Buss Sverige</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://www.vybuss.no/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="se">SE</CountryRef>
+                </Authority>
+                <Operator created="2023-06-20T00:00:00" version="8" id="NOG:Operator:jQXHAfIRGbj">
+                    <PrivateCode type="organisationId">59</PrivateCode>
+                    <CompanyNumber>556429-0319</CompanyNumber>
+                    <Name>Vy Buss Sverige</Name>
+                    <LegalName>Vy Buss AB</LegalName>
+                    <TradingName>Vy Buss Sverige</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://www.vybuss.no/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="se">SE</CountryRef>
+                </Operator>
+                <Authority created="2023-06-20T00:00:00" version="2" id="NOG:Authority:9WpcJxIrDqX">
+                    <PrivateCode type="organisationId">274</PrivateCode>
+                    <CompanyNumber>556794-3492</CompanyNumber>
+                    <Name>Øresundståg</Name>
+                    <LegalName>Öresundståg AB</LegalName>
+                    <TradingName>Øresundståg</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://www.oresundstag.se/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="se">SE</CountryRef>
+                </Authority>
+                <Operator created="2023-06-20T00:00:00" version="2" id="NOG:Operator:dpM17ZPXc7q">
+                    <PrivateCode type="organisationId">274</PrivateCode>
+                    <CompanyNumber>556794-3492</CompanyNumber>
+                    <Name>Øresundståg</Name>
+                    <LegalName>Öresundståg AB</LegalName>
+                    <TradingName>Øresundståg</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://www.oresundstag.se/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2023-06-20T00:00:00</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="se">SE</CountryRef>
+                </Operator>
+                <Authority created="2025-09-18T11:37:28.852" version="1" id="NOG:Authority:aIhB5VHFXkT">
+                    <PrivateCode type="organisationId">300</PrivateCode>
+                    <CompanyNumber>556401-0055</CompanyNumber>
+                    <Name>Snälltåget</Name>
+                    <LegalName>Snälltåget AB</LegalName>
+                    <TradingName>Snälltåget</TradingName>
+                    <ContactDetails>
+                        <Url>https://www.snalltaget.se/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2025-09-18T11:37:28.852</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="se">SE</CountryRef>
+                </Authority>
+                <Operator created="2025-09-18T11:37:28.852" version="1" id="NOG:Operator:cDTsMax3aws">
+                    <PrivateCode type="organisationId">300</PrivateCode>
+                    <CompanyNumber>556401-0055</CompanyNumber>
+                    <Name>Snälltåget</Name>
+                    <LegalName>Snälltåget AB</LegalName>
+                    <TradingName>Snälltåget</TradingName>
+                    <ContactDetails>
+                        <Url>https://www.snalltaget.se/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2025-09-18T11:37:28.852</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="se">SE</CountryRef>
+                </Operator>
+                <Authority created="2025-05-12T12:22:13.647" version="1" id="NOG:Authority:9VpSejZgSdO">
+                    <PrivateCode type="organisationId">293</PrivateCode>
+                    <CompanyNumber>556758-3496</CompanyNumber>
+                    <Name>Norrtåg AB</Name>
+                    <LegalName>Norrtåg AB</LegalName>
+                    <TradingName>Norrtåg AB</TradingName>
+                    <ContactDetails>
+                        <Url>https://www.norrtag.se/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2025-05-12T12:22:13.647</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="se">SE</CountryRef>
+                </Authority>
+                <Operator created="2025-05-12T12:22:13.647" version="1" id="NOG:Operator:dpCUkffaIVB">
+                    <PrivateCode type="organisationId">293</PrivateCode>
+                    <CompanyNumber>556758-3496</CompanyNumber>
+                    <Name>Norrtåg AB</Name>
+                    <LegalName>Norrtåg AB</LegalName>
+                    <TradingName>Norrtåg AB</TradingName>
+                    <ContactDetails>
+                        <Url>https://www.norrtag.se/</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2025-05-12T12:22:13.647</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="se">SE</CountryRef>
+                </Operator>
+                <Authority created="2025-06-26T10:14:21.896" version="4" id="NOG:Authority:9Vlom86gnA7">
+                    <PrivateCode type="organisationId">289</PrivateCode>
+                    <CompanyNumber>123456789</CompanyNumber>
+                    <Name>Martins Testorg</Name>
+                    <LegalName>Martins Testorg</LegalName>
+                    <TradingName>Martins Testorg</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>test</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2025-06-26T10:14:21.896</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="ai">AI</CountryRef>
+                </Authority>
+                <Authority created="2024-12-06T10:53:59.961" version="7" id="NOG:Authority:9WkHBVaeb58">
+                    <PrivateCode type="organisationId">264</PrivateCode>
+                    <CompanyNumber>999888771</CompanyNumber>
+                    <Name>Min Test Org</Name>
+                    <LegalName>Min Test Org AS</LegalName>
+                    <TradingName>Min Test Org</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone>12345</Phone>
+                        <Url>min.test.invalid2</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2024-12-06T10:53:59.961</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Authority>
+                <Operator created="2025-06-26T10:14:21.896" version="4" id="NOG:Operator:dpHurAse27W">
+                    <PrivateCode type="organisationId">289</PrivateCode>
+                    <CompanyNumber>123456789</CompanyNumber>
+                    <Name>Martins Testorg</Name>
+                    <LegalName>Martins Testorg</LegalName>
+                    <TradingName>Martins Testorg</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>test</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2025-06-26T10:14:21.896</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="ai">AI</CountryRef>
+                </Operator>
+                <Authority created="2025-10-30T11:17:21.843" version="5" id="NOG:Authority:2DcUfJzgJOk">
+                    <PrivateCode type="organisationId">500001</PrivateCode>
+                    <CompanyNumber>101010101</CompanyNumber>
+                    <Name>ThoRail</Name>
+                    <LegalName>ThoRail [Syntetiske testdata]</LegalName>
+                    <TradingName>ThoRail</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://en.wikipedia.org/wiki/Thor</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2025-10-30T11:17:21.843</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Authority>
+                <Operator created="2025-10-30T11:17:21.843" version="5" id="NOG:Operator:8b92hLgyrWt">
+                    <PrivateCode type="organisationId">500001</PrivateCode>
+                    <CompanyNumber>101010101</CompanyNumber>
+                    <Name>ThoRail</Name>
+                    <LegalName>ThoRail [Syntetiske testdata]</LegalName>
+                    <TradingName>ThoRail</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://en.wikipedia.org/wiki/Thor</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2025-10-30T11:17:21.843</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Operator>
+                <Authority created="2025-10-30T11:36:18.226" version="5" id="NOG:Authority:2DcTjF4mw1J">
+                    <PrivateCode type="organisationId">500004</PrivateCode>
+                    <CompanyNumber>913481312</CompanyNumber>
+                    <Name>Valkyrie</Name>
+                    <LegalName>Valkyrie AS [Syntetisk testdata]</LegalName>
+                    <TradingName>Valkyrie</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://en.wikipedia.org/wiki/Valkyrie</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2025-10-30T11:36:18.226</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Authority>
+                <Operator created="2025-10-30T11:36:18.226" version="5" id="NOG:Operator:8b90IYr2KiO">
+                    <PrivateCode type="organisationId">500004</PrivateCode>
+                    <CompanyNumber>913481312</CompanyNumber>
+                    <Name>Valkyrie</Name>
+                    <LegalName>Valkyrie AS [Syntetisk testdata]</LegalName>
+                    <TradingName>Valkyrie</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://en.wikipedia.org/wiki/Valkyrie</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2025-10-30T11:36:18.226</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Operator>
+                <Authority created="2025-10-30T11:19:05.369" version="7" id="NOG:Authority:2DcUSrTSdFo">
+                    <PrivateCode type="organisationId">500003</PrivateCode>
+                    <CompanyNumber>134924782</CompanyNumber>
+                    <Name>Odins Reiser</Name>
+                    <LegalName>Odins Reiser AS [Syntetiske testdata]</LegalName>
+                    <TradingName>Odins Reiser</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://en.wikipedia.org/wiki/Odin</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2025-10-30T11:19:05.369</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Authority>
+                <Operator created="2025-10-30T11:19:05.369" version="7" id="NOG:Operator:8b91F2VWY5p">
+                    <PrivateCode type="organisationId">500003</PrivateCode>
+                    <CompanyNumber>134924782</CompanyNumber>
+                    <Name>Odins Reiser</Name>
+                    <LegalName>Odins Reiser AS [Syntetiske testdata]</LegalName>
+                    <TradingName>Odins Reiser</TradingName>
+                    <ContactDetails>
+                        <Email></Email>
+                        <Phone></Phone>
+                        <Url>https://en.wikipedia.org/wiki/Odin</Url>
+                    </ContactDetails>
+                    <ValidityPeriod>
+                        <FromDate>2025-10-30T11:19:05.369</FromDate>
+                    </ValidityPeriod>
+                    <CountryRef ref="no">NO</CountryRef>
+                </Operator>
+            </organisations>
+        </ResourceFrame>
+    </dataObjects>
+</PublicationDelivery>

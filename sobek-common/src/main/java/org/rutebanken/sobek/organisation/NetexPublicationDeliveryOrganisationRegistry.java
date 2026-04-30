@@ -17,6 +17,8 @@
 
 package org.rutebanken.sobek.organisation;
 
+import java.time.Instant;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -32,9 +34,18 @@ import org.rutebanken.sobek.netex.marshal.NetexUnmarshallerUnmarshalFromSourceEx
 import org.rutebanken.sobek.netex.util.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 
 public abstract class NetexPublicationDeliveryOrganisationRegistry
         implements OrganisationRegistry {
+
+    private final Duration CACHE_DURATION;
+
+    public NetexPublicationDeliveryOrganisationRegistry(
+            @Value("${netex.organisations.cache-duration-seconds:3600}") String cacheDurationSeconds
+    ) {
+        this.CACHE_DURATION = Duration.ofSeconds(Long.parseLong(cacheDurationSeconds));
+    }
 
     private final Logger logger = LoggerFactory.getLogger(
             NetexPublicationDeliveryOrganisationRegistry.class
@@ -46,10 +57,29 @@ public abstract class NetexPublicationDeliveryOrganisationRegistry
     private final List<Organisation_VersionStructure> organisations = Collections.synchronizedList(
             new ArrayList<>()
     );
+    
+    private volatile Instant lastLoadTime;
 
     @PostConstruct
     public void init() {
+        loadOrganisations();
+    }
+
+    private void ensureFreshData() {
+        if (lastLoadTime == null || Instant.now().isAfter(lastLoadTime.plus(CACHE_DURATION))) {
+            synchronized (this) {
+                // Double-check locking pattern
+                if (lastLoadTime == null || Instant.now().isAfter(lastLoadTime.plus(CACHE_DURATION))) {
+                    logger.info("Cache expired or empty, reloading organisations");
+                    loadOrganisations();
+                }
+            }
+        }
+    }
+
+    private void loadOrganisations() {
         try {
+            List<Organisation_VersionStructure> loadedOrganisations = new ArrayList<>();
             PublicationDeliveryStructure publicationDeliveryStructure =
                     netexUnmarshaller.unmarshalFromSource(getPublicationDeliverySource());
             publicationDeliveryStructure
@@ -63,14 +93,20 @@ public abstract class NetexPublicationDeliveryOrganisationRegistry
                                     .getOrganisation_Dummy()
                                     .forEach(org -> {
                                         if (Organisation_VersionStructure.class.isAssignableFrom(org.getDeclaredType())) {
-                                            organisations.add((Organisation_VersionStructure)org.getValue());
+                                            loadedOrganisations.add((Organisation_VersionStructure)org.getValue());
                                         } else {
                                             throw new UnsupportedOrganisationTypeException(org.getDeclaredType());
                                         }
                                     });
                         }
                     });
-            logger.info("Organisations loaded from organisations xml");
+            
+            // Atomic replacement of the organisations list
+            organisations.clear();
+            organisations.addAll(loadedOrganisations);
+            lastLoadTime = Instant.now();
+            
+            logger.info("Organisations loaded from organisations xml (total: {})", organisations.size());
         } catch (NetexUnmarshallerUnmarshalFromSourceException e) {
             logger.warn(
                     "Unable to unmarshal organisations xml, organisation registry will be an empty list",
@@ -83,11 +119,13 @@ public abstract class NetexPublicationDeliveryOrganisationRegistry
 
     @Override
     public List<Authority> getAuthorities() {
+        ensureFreshData();
         return organisations.stream().filter(org -> org instanceof Authority).map(org -> (Authority) org).toList();
     }
 
     @Override
     public Optional<Authority> getAuthority(String id) {
+        ensureFreshData();
         return organisations
                 .stream()
                 .filter(authority -> authority.getId().equals(id) && authority instanceof Authority)
@@ -97,11 +135,13 @@ public abstract class NetexPublicationDeliveryOrganisationRegistry
 
     @Override
     public List<GeneralOrganisation> getGeneralOrganisations() {
+        ensureFreshData();
         return organisations.stream().filter(org -> org instanceof GeneralOrganisation).map(org -> (GeneralOrganisation) org).toList();
     }
 
     @Override
     public Optional<GeneralOrganisation> getGeneralOrganisation(String id) {
+        ensureFreshData();
         return organisations
                 .stream()
                 .filter(org -> org.getId().equals(id) && org instanceof GeneralOrganisation)
@@ -111,11 +151,13 @@ public abstract class NetexPublicationDeliveryOrganisationRegistry
 
     @Override
     public List<Organisation_VersionStructure> getOrganisations() {
+        ensureFreshData();
         return Collections.unmodifiableList(organisations);
     }
 
     @Override
     public Optional<Organisation_VersionStructure> getOrganisation(String id) {
+        ensureFreshData();
         return organisations
                 .stream()
                 .filter(org -> org.getId().equals(id))
@@ -124,11 +166,13 @@ public abstract class NetexPublicationDeliveryOrganisationRegistry
 
     @Override
     public List<Operator> getOperators() {
+        ensureFreshData();
         return organisations.stream().filter(org -> org instanceof Operator).map(org -> (Operator) org).toList();
     }
 
     @Override
     public Optional<Operator> getOperator(String id) {
+        ensureFreshData();
         return organisations.stream().filter(operator -> operator.getId().equals(id)).map(org -> (Operator)org).findFirst();
     }
 
@@ -137,6 +181,7 @@ public abstract class NetexPublicationDeliveryOrganisationRegistry
      */
     @Override
     public void validateOperatorRef(String operatorRef) {
+        ensureFreshData();
         Preconditions.checkArgument(
                 organisations.stream().anyMatch(org -> org.getId().equals(operatorRef) && org instanceof Operator),
                 CodedError.fromErrorCode(
@@ -152,6 +197,7 @@ public abstract class NetexPublicationDeliveryOrganisationRegistry
      */
     @Override
     public void validateAuthorityRef(String authorityRef) {
+        ensureFreshData();
         Preconditions.checkArgument(
                 organisations.stream().anyMatch(org -> org.getId().equals(authorityRef) && org instanceof Authority),
                 CodedError.fromErrorCode(
@@ -167,6 +213,7 @@ public abstract class NetexPublicationDeliveryOrganisationRegistry
      */
     @Override
     public void validateGeneralOrganisationRef(String generalOrganisationRef) {
+        ensureFreshData();
         Preconditions.checkArgument(
                 organisations.stream().anyMatch(org -> org.getId().equals(generalOrganisationRef) && org instanceof GeneralOrganisation),
                 CodedError.fromErrorCode(
@@ -174,7 +221,7 @@ public abstract class NetexPublicationDeliveryOrganisationRegistry
                 ),
                 "Organisation with ref %s not found in organisation registry",
                 generalOrganisationRef
-        );
+            );
     }
 
 

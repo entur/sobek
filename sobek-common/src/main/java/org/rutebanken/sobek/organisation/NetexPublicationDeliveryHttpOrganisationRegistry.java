@@ -36,10 +36,12 @@ public class NetexPublicationDeliveryHttpOrganisationRegistry
 
   public NetexPublicationDeliveryHttpOrganisationRegistry(
     @Value("${netex.organisations.netex-http-uri}") String netexHttpUri,
+    @Value("${netex.organisations.cache-duration-seconds:3600}") String cacheDurationSeconds,
     WebClient orgRegisterClient
   ) {
-    this.netexHttpUri = netexHttpUri;
-    this.orgRegisterClient = orgRegisterClient;
+      super(cacheDurationSeconds);
+      this.netexHttpUri = netexHttpUri;
+      this.orgRegisterClient = orgRegisterClient;
   }
 
   @Override

@@ -32,8 +32,10 @@ public class NetexPublicationDeliveryFileOrganisationRegistry
     private final String netexFileUri;
 
     public NetexPublicationDeliveryFileOrganisationRegistry(
-            @Value("${netex.organisations.netex-file-uri}") String netexFileUri
+            @Value("${netex.organisations.netex-file-uri}") String netexFileUri,
+            @Value("${netex.organisations.cache-duration-seconds:3600}") String cacheDurationSeconds
     ) {
+        super(cacheDurationSeconds);
         this.netexFileUri = netexFileUri;
     }
 

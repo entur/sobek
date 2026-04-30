@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Optional;
 import javax.xml.transform.Source;
 
+import jakarta.annotation.PostConstruct;
 import org.rutebanken.netex.model.*;
 import org.rutebanken.sobek.error.CodedError;
 import org.rutebanken.sobek.error.ErrorCodeEnumeration;
@@ -46,6 +47,7 @@ public abstract class NetexPublicationDeliveryOrganisationRegistry
             new ArrayList<>()
     );
 
+    @PostConstruct
     public void init() {
         try {
             PublicationDeliveryStructure publicationDeliveryStructure =

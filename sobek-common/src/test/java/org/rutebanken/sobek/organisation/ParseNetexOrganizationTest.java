@@ -23,6 +23,9 @@ public class ParseNetexOrganizationTest {
     @Autowired
     private PublicationDeliveryHelper publicationDeliveryHelper;
 
+    @Autowired
+    private NetexPublicationDeliveryOrganisationRegistry netexPublicationDeliveryOrganisationRegistry;
+
     @Test
     public void readFileRawTest() throws IOException, JAXBException, SAXException {
         PublicationDeliveryStructure publicationDelivery;
@@ -69,16 +72,14 @@ public class ParseNetexOrganizationTest {
 
     @Test
     public void readFileWithFileRegistryTest() {
-        NetexPublicationDeliveryFileOrganisationRegistry netexPublicationDeliveryFileOrganisationRegistry = new NetexPublicationDeliveryFileOrganisationRegistry("classpath:/fixtures/organizations-netex-dev.xml");
-        netexPublicationDeliveryFileOrganisationRegistry.init();
-        validateOrganisations(netexPublicationDeliveryFileOrganisationRegistry.getOperators(), "985615616");
-        validateOrganisations(netexPublicationDeliveryFileOrganisationRegistry.getAuthorities(), "991609407");
-        validateOrganisations(netexPublicationDeliveryFileOrganisationRegistry.getGeneralOrganisations(), "920285376");
+        validateOrganisations(netexPublicationDeliveryOrganisationRegistry.getOperators(), "985615616");
+        validateOrganisations(netexPublicationDeliveryOrganisationRegistry.getAuthorities(), "991609407");
+        validateOrganisations(netexPublicationDeliveryOrganisationRegistry.getGeneralOrganisations(), "920285376");
 
-        netexPublicationDeliveryFileOrganisationRegistry.validateGeneralOrganisationRef("NOG:GeneralOrganisation:l9B7EYodP6d");
+        netexPublicationDeliveryOrganisationRegistry.validateGeneralOrganisationRef("NOG:GeneralOrganisation:l9B7EYodP6d");
 
-        netexPublicationDeliveryFileOrganisationRegistry.validateAuthorityRef("NOG:Authority:c5HUG26214p");
+        netexPublicationDeliveryOrganisationRegistry.validateAuthorityRef("NOG:Authority:c5HUG26214p");
 
-        netexPublicationDeliveryFileOrganisationRegistry.validateOperatorRef("NOG:Operator:eanaqt2T022");
+        netexPublicationDeliveryOrganisationRegistry.validateOperatorRef("NOG:Operator:eanaqt2T022");
     }
 }

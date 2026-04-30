@@ -31,12 +31,11 @@ public class PublicationDeliveryHelper {
 
         return Stream.of(dataManagedObject)
                 .filter(Objects::nonNull)
-                .map(object -> object.getKeyList())
+                .map(DataManagedObjectStructure::getKeyList)
                 .filter(Objects::nonNull)
                 .flatMap(keyList -> keyList.getKeyValue().stream())
                 .filter(keyValueStructure -> keyValueStructure.getKey().equals(key))
-                .map(keyValue -> keyValue.getValue())
-                .flatMap(values -> Stream.of(values))
+                .map(KeyValueStructure::getValue)
                 .findFirst().orElse(null);
     }
 
@@ -57,7 +56,7 @@ public class PublicationDeliveryHelper {
                 .stream()
                 .filter(element -> element.getValue() instanceof CompositeFrame)
                 .map(element -> (CompositeFrame) element.getValue())
-                .map(compositeFrame -> compositeFrame.getFrames())
+                .map(Composite_VersionFrameStructure::getFrames)
                 .flatMap(frames -> frames.getCommonFrame().stream())
                 .filter(jaxbElement -> jaxbElement.getValue() instanceof ResourceFrame)
                 .map(jaxbElement -> (ResourceFrame) jaxbElement.getValue())

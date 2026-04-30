@@ -17,6 +17,7 @@ package org.rutebanken.sobek.rest.netex.publicationdelivery;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -29,7 +30,6 @@ import org.rutebanken.sobek.netex.marshal.PublicationDeliveryUnmarshaller;
 import org.rutebanken.sobek.rest.ParameterDto.ImportParametersDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.xml.sax.SAXException;
@@ -57,7 +57,7 @@ public class VehicleImportResource {
 
     private final Set<ImportType> enabledImportTypes;
 
-    @Autowired
+    @Inject
     public VehicleImportResource(PublicationDeliveryUnmarshaller publicationDeliveryUnmarshaller,
                                  PublicationDeliveryStreamingOutput publicationDeliveryStreamingOutput,
                                  PublicationDeliveryImporter publicationDeliveryImporter,

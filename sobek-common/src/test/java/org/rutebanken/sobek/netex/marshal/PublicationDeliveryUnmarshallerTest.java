@@ -20,7 +20,6 @@ import jakarta.xml.bind.UnmarshalException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.rutebanken.sobek.SobekTestApplication;
-import org.rutebanken.sobek.netex.marshal.PublicationDeliveryUnmarshaller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.xml.sax.SAXException;

@@ -20,9 +20,9 @@ package org.rutebanken.sobek.error;
 import java.util.Map;
 
 public interface CodedException {
-    public String getCode();
+    String getCode();
 
-    public String getSubCode();
+    String getSubCode();
 
-    public Map<String, Object> getMetadata();
+    Map<String, Object> getMetadata();
 }

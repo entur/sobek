@@ -37,7 +37,7 @@ public class PublicationDeliveryPartialUnmarshallerTest {
     @Autowired
     private PublicationDeliveryPartialUnmarshaller publicationDeliveryPartialUnmarshaller;
 
-    public PublicationDeliveryPartialUnmarshallerTest() throws IOException, SAXException {
+    public PublicationDeliveryPartialUnmarshallerTest() {
     }
 
 
@@ -61,13 +61,13 @@ public class PublicationDeliveryPartialUnmarshallerTest {
         readAndVerifyVehicleTypes(unmarshalResult, 1);
     }
 
-    private void readAndVerifyVehicles(UnmarshalResult unmarshalResult, int expectedCount) throws InterruptedException {
+    private void readAndVerifyVehicles(UnmarshalResult unmarshalResult, int expectedCount) {
         AtomicInteger vehicles = new AtomicInteger();
         new EntityQueueProcessor<Vehicle>(unmarshalResult.getVehiclesQueue(), new AtomicBoolean(false), vehicle -> vehicles.incrementAndGet(), POISON_VEHICLE).run();
         assertThat(vehicles.get()).isEqualTo(expectedCount);
     }
 
-    private void readAndVerifyVehicleTypes(UnmarshalResult unmarshalResult, int expectedCount) throws InterruptedException {
+    private void readAndVerifyVehicleTypes(UnmarshalResult unmarshalResult, int expectedCount) {
         AtomicInteger vehicleTypes = new AtomicInteger();
         new EntityQueueProcessor<VehicleType>(unmarshalResult.getVehicleTypesQueue(), new AtomicBoolean(false), vt -> vehicleTypes.incrementAndGet(), POISON_VEHICLE_TYPE).run();
         assertThat(vehicleTypes.get()).isEqualTo(expectedCount);

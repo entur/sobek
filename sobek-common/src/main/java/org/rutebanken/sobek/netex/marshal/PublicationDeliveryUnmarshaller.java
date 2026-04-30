@@ -55,7 +55,7 @@ public class PublicationDeliveryUnmarshaller {
     @Value("${publicationDeliveryUnmarshaller.validateAgainstSchema:true}")
     private boolean validateAgainstSchema;
 
-    public PublicationDeliveryUnmarshaller() throws IOException, SAXException {
+    public PublicationDeliveryUnmarshaller() {
         //TODO
     }
 

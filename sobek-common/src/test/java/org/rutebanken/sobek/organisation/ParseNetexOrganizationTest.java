@@ -68,7 +68,7 @@ public class ParseNetexOrganizationTest {
     }
 
     @Test
-    public void readFileWithFileRegistryTest() throws IOException, JAXBException, SAXException {
+    public void readFileWithFileRegistryTest() {
         NetexPublicationDeliveryFileOrganisationRegistry netexPublicationDeliveryFileOrganisationRegistry = new NetexPublicationDeliveryFileOrganisationRegistry("classpath:/fixtures/organizations-netex-dev.xml");
         netexPublicationDeliveryFileOrganisationRegistry.init();
         validateOrganisations(netexPublicationDeliveryFileOrganisationRegistry.getOperators(), "985615616");

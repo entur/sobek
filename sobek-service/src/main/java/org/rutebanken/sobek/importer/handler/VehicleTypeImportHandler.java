@@ -31,15 +31,13 @@
 package org.rutebanken.sobek.importer.handler;
 
 import jakarta.xml.bind.JAXBElement;
-import org.mapstruct.Mapping;
 import org.rutebanken.netex.model.*;
 import org.rutebanken.sobek.importer.ImportParams;
 import org.rutebanken.sobek.importer.VehicleTypeImporter;
 import org.rutebanken.sobek.importer.converter.VehicleTypeIdConverter;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.rutebanken.sobek.netex.mapping.mapstruct.VehicleTypeMapper;
-import org.rutebanken.sobek.netex.mapping.PublicationDeliveryHelper;
-import org.rutebanken.sobek.repository.reference.ReferenceResolver;
+import org.rutebanken.sobek.netex.util.PublicationDeliveryHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

@@ -13,7 +13,7 @@
  * limitations under the Licence.
  */
 
-package org.rutebanken.sobek.netex.util;
+package org.rutebanken.sobek.netex.marshal;
 
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;

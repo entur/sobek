@@ -25,7 +25,7 @@ import org.rutebanken.helper.organisation.NotAuthenticatedException;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
 import org.rutebanken.sobek.importer.ImportType;
 import org.rutebanken.sobek.importer.PublicationDeliveryImporter;
-import org.rutebanken.sobek.netex.util.PublicationDeliveryUnmarshaller;
+import org.rutebanken.sobek.netex.marshal.PublicationDeliveryUnmarshaller;
 import org.rutebanken.sobek.rest.ParameterDto.ImportParametersDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

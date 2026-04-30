@@ -1,10 +1,10 @@
-package org.rutebanken.sobek.organization;
+package org.rutebanken.sobek.organisation;
 
 import jakarta.xml.bind.JAXBException;
 import org.junit.jupiter.api.Test;
 import org.rutebanken.netex.model.*;
-import org.rutebanken.sobek.netex.mapping.PublicationDeliveryHelper;
-import org.rutebanken.sobek.netex.util.PublicationDeliveryUnmarshaller;
+import org.rutebanken.sobek.netex.marshal.PublicationDeliveryUnmarshaller;
+import org.rutebanken.sobek.netex.util.PublicationDeliveryHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.xml.sax.SAXException;
@@ -24,7 +24,7 @@ public class ParseNetexOrganizationTest {
     private PublicationDeliveryHelper publicationDeliveryHelper;
 
     @Test
-    public void readFileTest() throws IOException, JAXBException, SAXException {
+    public void readFileRawTest() throws IOException, JAXBException, SAXException {
         PublicationDeliveryStructure publicationDelivery;
         try (InputStream in = getClass().getResourceAsStream("/fixtures/organizations-netex-dev.xml")) {
             publicationDelivery = publicationDeliveryUnmarshaller.unmarshal(in);
@@ -45,20 +45,40 @@ public class ParseNetexOrganizationTest {
         assertThat(organisations.getOrganisation_Dummy()).isNotNull()
                 .isNotEmpty();
 
+
         List<Operator> operators = organisations.getOrganisation_Dummy()
                 .stream()
                 .filter(org -> org.getValue() instanceof Operator)
                 .map(org -> (Operator) org.getValue())
                 .toList();
-        assertThat(operators).isNotEmpty();
-        assertThat(operators.stream().filter(op -> op.getCompanyNumber() != null && op.getCompanyNumber().equals("985615616")).count()).isEqualTo(1); // Find UNIBUSS
+
+        validateOrganisations(operators, "985615616");
 
         List<Authority> authorities = organisations.getOrganisation_Dummy()
                 .stream()
                 .filter(org -> org.getValue() instanceof Authority)
                 .map(org -> (Authority) org.getValue())
                 .toList();
-        assertThat(authorities).isNotEmpty();
-        assertThat(authorities.stream().filter(aut -> aut.getCompanyNumber() != null && aut.getCompanyNumber().equals("991609407")).count()).isEqualTo(1); // Find Ruter
+        validateOrganisations(authorities, "991609407");
+    }
+
+    private static void validateOrganisations(List<? extends Organisation_VersionStructure> organisations, String expectedCompanyNumber) {
+        assertThat(organisations).isNotEmpty();
+        assertThat(organisations.stream().filter(op -> op.getCompanyNumber() != null && op.getCompanyNumber().equals(expectedCompanyNumber)).count()).isEqualTo(1); // Find expected organisation
+    }
+
+    @Test
+    public void readFileWithFileRegistryTest() throws IOException, JAXBException, SAXException {
+        NetexPublicationDeliveryFileOrganisationRegistry netexPublicationDeliveryFileOrganisationRegistry = new NetexPublicationDeliveryFileOrganisationRegistry("classpath:/fixtures/organizations-netex-dev.xml");
+        netexPublicationDeliveryFileOrganisationRegistry.init();
+        validateOrganisations(netexPublicationDeliveryFileOrganisationRegistry.getOperators(), "985615616");
+        validateOrganisations(netexPublicationDeliveryFileOrganisationRegistry.getAuthorities(), "991609407");
+        validateOrganisations(netexPublicationDeliveryFileOrganisationRegistry.getGeneralOrganisations(), "920285376");
+
+        netexPublicationDeliveryFileOrganisationRegistry.validateGeneralOrganisationRef("NOG:GeneralOrganisation:l9B7EYodP6d");
+
+        netexPublicationDeliveryFileOrganisationRegistry.validateAuthorityRef("NOG:Authority:c5HUG26214p");
+
+        netexPublicationDeliveryFileOrganisationRegistry.validateOperatorRef("NOG:Operator:eanaqt2T022");
     }
 }

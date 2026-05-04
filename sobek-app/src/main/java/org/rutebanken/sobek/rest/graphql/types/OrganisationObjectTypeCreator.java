@@ -18,31 +18,27 @@ package org.rutebanken.sobek.rest.graphql.types;
 import graphql.schema.GraphQLObjectType;
 import org.springframework.stereotype.Component;
 
-import static graphql.Scalars.GraphQLInt;
-import static graphql.Scalars.GraphQLString;
+import static graphql.Scalars.*;
 import static graphql.schema.GraphQLFieldDefinition.newFieldDefinition;
 import static graphql.schema.GraphQLObjectType.newObject;
 import static org.rutebanken.sobek.rest.graphql.GraphQLNames.*;
 import static org.rutebanken.sobek.rest.graphql.types.CustomGraphQLTypes.embeddableMultilingualStringObjectType;
 
 @Component
-public class DeckPlanObjectTypeCreator {
+public class OrganisationObjectTypeCreator {
 
     public GraphQLObjectType create() {
         return newObject()
-                .name(OUTPUT_TYPE_DECK_PLAN)
+                .name(OUTPUT_TYPE_ORGANISATION)
                 .field(newFieldDefinition()
                         .name(ID)
                         .type(GraphQLString))
                 .field(newFieldDefinition()
-                        .name(DESCRIPTION)
-                        .type(embeddableMultilingualStringObjectType))
-                .field(newFieldDefinition()
                         .name(NAME)
                         .type(embeddableMultilingualStringObjectType))
                 .field(newFieldDefinition()
-                        .name(VERSION)
-                        .type(GraphQLInt))
+                        .name(TYPE)
+                        .type(GraphQLString))
                 .build();
     }
 

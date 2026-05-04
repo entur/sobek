@@ -60,11 +60,6 @@ public abstract class NetexPublicationDeliveryOrganisationRegistry
     
     private volatile Instant lastLoadTime;
 
-    @PostConstruct
-    public void init() {
-        loadOrganisations();
-    }
-
     private void ensureFreshData() {
         if (lastLoadTime == null || Instant.now().isAfter(lastLoadTime.plus(CACHE_DURATION))) {
             synchronized (this) {

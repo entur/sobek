@@ -29,7 +29,7 @@ public class ParseNetexOrganizationTest {
     @Test
     public void readFileRawTest() throws IOException, JAXBException, SAXException {
         PublicationDeliveryStructure publicationDelivery;
-        try (InputStream in = getClass().getResourceAsStream("/fixtures/organizations-netex-dev.xml")) {
+        try (InputStream in = getClass().getResourceAsStream("/fixtures/organisations-netex-dev.xml")) {
             publicationDelivery = publicationDeliveryUnmarshaller.unmarshal(in);
         }
         assertThat(publicationDelivery).isNotNull();

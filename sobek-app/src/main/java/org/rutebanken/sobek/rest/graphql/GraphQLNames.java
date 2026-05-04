@@ -100,6 +100,7 @@ public class GraphQLNames {
     public static final String ALTERNATIVE_NAMES = "alternativeNames";
     public static final String VALUE = "value";
     public static final String LANG = "lang";
+    public static final String TYPE = "type";
 
     public static final String PAGE = "page";
     public static final String PAGE_ARG_DESCRIPTION = "Page number when using pagination - default is " + DEFAULT_PAGE_VALUE;
@@ -116,11 +117,14 @@ public class GraphQLNames {
     public static final String CREATED = "created";
     public static final String CHANGED = "changed";
     public static final String FILTER = "filter";
+    public static final String ORGANISATION_TYPE = "organisationType";
 
     public static final String OUTPUT_TYPE_VEHICLE_TYPE_PAGE = "VehicleTypePage";
     public static final String OUTPUT_TYPE_DECK_PLAN_PAGE = "DeckPlanPage";
+    public static final String OUTPUT_TYPE_ORGANISATION_PAGE = "OrganisationPage";
     public static final String TOTAL_ELEMENTS = "totalElements";
     public static final String INPUT_TYPE_VEHICLE_TYPE_FILTER = "VehicleTypeFilter";
+    public static final String INPUT_TYPE_ORGANISATIONS_FILTER = "OrganisationsFilter";
 
     public static final String VEHICLE_TYPES = "vehicleTypes";
     public static final String OUTPUT_TYPE_VEHICLE_TYPE = "VehicleType";
@@ -135,4 +139,7 @@ public class GraphQLNames {
 
     public static final String VEHICLES = "vehicles";
     public static final String OUTPUT_TYPE_VEHICLE = "Vehicle";
+
+    public static final String OUTPUT_TYPE_ORGANISATION = "Organisation";
+    public static final String ORGANISATIONS = "organisations";
 }

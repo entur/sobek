@@ -83,8 +83,13 @@ public abstract class NetexPublicationDeliveryOrganisationRegistry
     private void loadOrganisations() {
         try {
             List<Organisation_VersionStructure> loadedOrganisations = new ArrayList<>();
+            Source orgSource = getPublicationDeliverySource();
+            if(orgSource == null) {
+                logger.info("No data received when loading organisations");
+                return;
+            }
             PublicationDeliveryStructure publicationDeliveryStructure =
-                    netexUnmarshaller.unmarshalFromSource(getPublicationDeliverySource());
+                    netexUnmarshaller.unmarshalFromSource(orgSource);
             publicationDeliveryStructure
                     .getDataObjects()
                     .getCompositeFrameOrCommonFrame()

@@ -49,6 +49,23 @@ public class OrganisationRepositoryImpl implements OrganisationRepository {
                     .toList();
         }
 
+        // Handle pagination
+        if (pageable.isUnpaged()) {
+            return new PageImpl<>(mapOrganisations(organisations));
+        }
+
+        int start = (int) pageable.getOffset();
+        int end = Math.min(start + pageable.getPageSize(), organisations.size());
+        
+        if (start >= organisations.size()) {
+            return new PageImpl<>(List.of(), pageable, organisations.size());
+        }
+
+        List<Organisation> pagedList = mapOrganisations(organisations.subList(start, end));
+        return new PageImpl<>(pagedList, pageable, organisations.size());
+    }
+
+    private List<Organisation> mapOrganisations(List<? extends Organisation_VersionStructure> organisations) {
         // Convert to Organisation records
         List<Organisation> organisationList = organisations.stream()
                 .map(org -> new Organisation(
@@ -57,21 +74,7 @@ public class OrganisationRepositoryImpl implements OrganisationRepository {
                         getOrganisationType(org)
                 ))
                 .toList();
-
-        // Handle pagination
-        if (pageable.isUnpaged()) {
-            return new PageImpl<>(organisationList);
-        }
-
-        int start = (int) pageable.getOffset();
-        int end = Math.min(start + pageable.getPageSize(), organisationList.size());
-        
-        if (start >= organisationList.size()) {
-            return new PageImpl<>(List.of(), pageable, organisationList.size());
-        }
-
-        List<Organisation> pagedList = organisationList.subList(start, end);
-        return new PageImpl<>(pagedList, pageable, organisationList.size());
+        return organisationList;
     }
 
     private OrganisationTypeEnumeration getOrganisationType(Organisation_VersionStructure org) {

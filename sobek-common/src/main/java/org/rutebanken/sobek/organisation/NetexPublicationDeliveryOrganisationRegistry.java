@@ -44,7 +44,19 @@ public abstract class NetexPublicationDeliveryOrganisationRegistry
     public NetexPublicationDeliveryOrganisationRegistry(
             @Value("${netex.organisations.cache-duration-seconds:3600}") String cacheDurationSeconds
     ) {
-        this.CACHE_DURATION = Duration.ofSeconds(Long.parseLong(cacheDurationSeconds));
+        long cacheDuration;
+        try {
+            cacheDuration = Long.parseLong(cacheDurationSeconds);
+        } catch (NumberFormatException e) {
+            cacheDuration = 3600L;
+            logger.warn(
+                    "Invalid value for netex.organisations.cache-duration-seconds: '{}'. Falling back to default {} seconds.",
+                    cacheDurationSeconds,
+                    cacheDuration,
+                    e
+            );
+        }
+        this.CACHE_DURATION = Duration.ofSeconds(cacheDuration);
     }
 
     private final Logger logger = LoggerFactory.getLogger(

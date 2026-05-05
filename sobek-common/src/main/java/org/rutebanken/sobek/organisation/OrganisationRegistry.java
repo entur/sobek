@@ -87,7 +87,7 @@ public interface OrganisationRegistry {
     /**
      * Check if the organisation represented by the reference id is a valid general organisation
      * @param generalOrganisationRef The organisation id
-     * @throws CodedIllegalArgumentException if the organisation is not a valid authority
+     * @throws CodedIllegalArgumentException if the organisation is not a valid general organisation
      */
     void validateGeneralOrganisationRef(String generalOrganisationRef);
 

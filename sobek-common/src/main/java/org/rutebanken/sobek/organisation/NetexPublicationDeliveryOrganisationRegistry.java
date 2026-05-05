@@ -20,12 +20,10 @@ package org.rutebanken.sobek.organisation;
 import java.time.Instant;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import javax.xml.transform.Source;
 
-import jakarta.annotation.PostConstruct;
 import org.rutebanken.netex.model.*;
 import org.rutebanken.sobek.error.CodedError;
 import org.rutebanken.sobek.error.ErrorCodeEnumeration;
@@ -66,10 +64,8 @@ public abstract class NetexPublicationDeliveryOrganisationRegistry
             PublicationDeliveryStructure.class
     );
 
-    private final List<Organisation_VersionStructure> organisations = Collections.synchronizedList(
-            new ArrayList<>()
-    );
-    
+    private volatile List<Organisation_VersionStructure> organisations = List.of();
+
     private volatile Instant lastLoadTime;
 
     private void ensureFreshData() {
@@ -109,11 +105,10 @@ public abstract class NetexPublicationDeliveryOrganisationRegistry
                     });
             
             // Atomic replacement of the organisations list
-            organisations.clear();
-            organisations.addAll(loadedOrganisations);
+            this.organisations = List.copyOf(loadedOrganisations);
             lastLoadTime = Instant.now();
             
-            logger.info("Organisations loaded from organisations xml (total: {})", organisations.size());
+            logger.info("Organisations loaded from organisations xml (total: {})", this.organisations.size());
         } catch (NetexUnmarshallerUnmarshalFromSourceException e) {
             logger.warn(
                     "Unable to unmarshal organisations xml, organisation registry will be an empty list",
@@ -159,7 +154,7 @@ public abstract class NetexPublicationDeliveryOrganisationRegistry
     @Override
     public List<Organisation_VersionStructure> getOrganisations() {
         ensureFreshData();
-        return Collections.unmodifiableList(organisations);
+        return organisations;
     }
 
     @Override

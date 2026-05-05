@@ -12,7 +12,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public class OrganisationRepositoryImpl implements OrganisationRepository {
@@ -36,13 +38,14 @@ public class OrganisationRepositoryImpl implements OrganisationRepository {
         } else if (organisationType == OrganisationTypeEnumeration.OPERATOR) {
             organisations = organisationRegistry.getOperators();
         } else {
-            organisations = organisationRegistry.getOrganisations();
+            throw new IllegalArgumentException("Unsupported organisation type filter: " + organisationType);
         }
 
         if(ids != null && !ids.isEmpty()) {
+            Set<String> idSet = new HashSet<>(ids);
             organisations = organisations
                     .stream()
-                    .filter(org -> ids.stream().anyMatch(id -> org.getId().equals(id)))
+                    .filter(org -> idSet.contains(org.getId()))
                     .toList();
         }
 

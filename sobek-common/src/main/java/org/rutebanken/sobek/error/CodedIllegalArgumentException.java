@@ -35,6 +35,7 @@ public class CodedIllegalArgumentException
         this.metadata = codedError.getMetadata();
     }
 
+    @Override
     public String getCode() {
         return Optional.ofNullable(code).map(ErrorCode::toString).orElse(null);
     }

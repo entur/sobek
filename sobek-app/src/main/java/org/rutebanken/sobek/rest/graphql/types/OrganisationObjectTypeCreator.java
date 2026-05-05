@@ -23,6 +23,7 @@ import static graphql.schema.GraphQLFieldDefinition.newFieldDefinition;
 import static graphql.schema.GraphQLObjectType.newObject;
 import static org.rutebanken.sobek.rest.graphql.GraphQLNames.*;
 import static org.rutebanken.sobek.rest.graphql.types.CustomGraphQLTypes.embeddableMultilingualStringObjectType;
+import static org.rutebanken.sobek.rest.graphql.types.CustomGraphQLTypes.organisationTypeEnumType;
 
 @Component
 public class OrganisationObjectTypeCreator {
@@ -38,7 +39,7 @@ public class OrganisationObjectTypeCreator {
                         .type(embeddableMultilingualStringObjectType))
                 .field(newFieldDefinition()
                         .name(TYPE)
-                        .type(GraphQLString))
+                        .type(organisationTypeEnumType))
                 .build();
     }
 

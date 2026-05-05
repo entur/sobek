@@ -39,6 +39,7 @@ public class CodedIllegalArgumentException
         return Optional.ofNullable(code).map(ErrorCode::toString).orElse(null);
     }
 
+    @Override
     public String getSubCode() {
         return Optional.ofNullable(subCode).map(SubCode::toString).orElse(null);
     }

@@ -43,6 +43,7 @@ public class CodedIllegalArgumentException
         return Optional.ofNullable(subCode).map(SubCode::toString).orElse(null);
     }
 
+    @Override
     public Map<String, Object> getMetadata() {
         return metadata;
     }

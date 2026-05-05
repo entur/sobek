@@ -22,8 +22,18 @@ public class DefaultOrgRegisterClient {
                         .builder()
                         .codecs(codecs -> codecs
                                 .defaultCodecs()
-                                .maxInMemorySize(Long.valueOf(maxInMemorySizeKB).intValue() * 1024))
+                                .maxInMemorySize(resolveMaxInMemorySizeBytes()))
                         .build())
                 .build();
+    }
+
+    private int resolveMaxInMemorySizeBytes() {
+        long maxInMemorySizeKb;
+        try {
+            maxInMemorySizeKb = Long.parseLong(maxInMemorySizeKB);
+        } catch (NumberFormatException e) {
+            maxInMemorySizeKb = 500L;
+        }
+        return (int) (maxInMemorySizeKb * 1024);
     }
 }

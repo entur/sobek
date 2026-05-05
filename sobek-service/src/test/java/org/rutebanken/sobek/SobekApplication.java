@@ -16,6 +16,7 @@
 package org.rutebanken.sobek;
 
 import org.rutebanken.sobek.exporter.AsyncPublicationDeliveryExporter;
+import org.rutebanken.sobek.repository.OrganisationRepository;
 import org.springframework.beans.factory.config.CustomScopeConfigurer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -32,7 +33,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 @ContextConfiguration(classes = SobekApplication.TestConfig.class)
 @ComponentScan(basePackages = { "org.entur", "org.rutebanken.sobek"},
-        excludeFilters = { @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {AsyncPublicationDeliveryExporter.class})})
+        excludeFilters = { @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {AsyncPublicationDeliveryExporter.class, OrganisationRepository.class})})
 public class SobekApplication {
 
     public static void main(String[] args) {

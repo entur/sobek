@@ -449,7 +449,7 @@ Note that the HTTP strategy requires an organisations api WebClient bean called
 `orgRegisterClient`. A basic default is provided, but if you need anything more
 than that, you should provide your own bean.
 
-Refer to [`sobek-common/src/test/resources/fixtures/organisations.xml`](src/test/resources/fixtures/organisations-netex-dev.xml) for an example
+Refer to [`sobek-common/src/test/resources/fixtures/organisations-netex-dev.xml`](sobek-common/src/test/resources/fixtures/organisations-netex-dev.xml) for an example
 of a NeTEx file with organisations.
 
 You can also provide your own implementation of the [`OrganisationRegistry`](sobek-common/src/main/java/org/rutebanken/sobek/organisation/OrganisationRegistry.java)

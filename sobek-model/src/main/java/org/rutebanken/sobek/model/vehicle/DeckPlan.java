@@ -16,6 +16,7 @@ import org.rutebanken.sobek.model.DataManagedObjectStructure;
 import org.rutebanken.sobek.model.EmbeddableMultilingualString;
 import org.rutebanken.sobek.model.EntityInVersionStructure;
 import org.rutebanken.sobek.model.Value;
+import org.rutebanken.sobek.model.authorization.OwnedEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +24,7 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-public class DeckPlan extends DataManagedObjectStructure {
+public class DeckPlan extends DataManagedObjectStructure implements OwnedEntity {
     @AttributeOverrides({
             @AttributeOverride(name = "value", column = @Column(name = "name_value")),
             @AttributeOverride(name = "lang", column = @Column(name = "name_lang", length = 5))
@@ -44,6 +45,17 @@ public class DeckPlan extends DataManagedObjectStructure {
     @Transient
     private ValidityConditions_RelStructure configurationConditions;
 
+    private String dataOwnerRef;
+
+    @Override
+    public String getDataOwnerRef() {
+        return dataOwnerRef;
+    }
+
+    @Override
+    public void setDataOwnerRef(String dataOwnerRef) {
+        this.dataOwnerRef = dataOwnerRef;
+    }
     // TODO - TBD
 //    private DeckLevels_RelStructure deckLevels;
 

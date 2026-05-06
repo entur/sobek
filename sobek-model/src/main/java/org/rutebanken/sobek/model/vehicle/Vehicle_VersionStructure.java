@@ -6,13 +6,14 @@ import lombok.Getter;
 import lombok.Setter;
 
 import org.rutebanken.sobek.model.*;
+import org.rutebanken.sobek.model.authorization.OwnedEntity;
 
 import java.time.Instant;
 
 @MappedSuperclass
 @Getter
 @Setter
-public class Vehicle_VersionStructure extends DataManagedObjectStructure {
+public class Vehicle_VersionStructure extends DataManagedObjectStructure implements OwnedEntity {
     @AttributeOverrides({
             @AttributeOverride(name = "value", column = @Column(name = "name_value")),
             @AttributeOverride(name = "lang", column = @Column(name = "name_lang", length = 5))
@@ -60,5 +61,17 @@ public class Vehicle_VersionStructure extends DataManagedObjectStructure {
     @Transient
     private Equipments_RelStructure actualVehicleEquipments;
     private Boolean monitored;
+
+    private String dataOwnerRef;
+
+    @Override
+    public String getDataOwnerRef() {
+        return dataOwnerRef;
+    }
+
+    @Override
+    public void setDataOwnerRef(String dataOwnerRef) {
+        this.dataOwnerRef = dataOwnerRef;
+    }
 
 }

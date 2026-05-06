@@ -4,15 +4,15 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.rutebanken.sobek.model.*;
+import org.rutebanken.sobek.model.authorization.OwnedEntity;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 @MappedSuperclass
 @Getter
 @Setter
-public class TransportType_VersionStructure extends DataManagedObjectStructure {
+public class TransportType_VersionStructure extends DataManagedObjectStructure implements OwnedEntity {
     @AttributeOverrides({
             @AttributeOverride(name = "value", column = @Column(name = "name_value")),
             @AttributeOverride(name = "lang", column = @Column(name = "name_lang", length = 5))
@@ -51,5 +51,15 @@ public class TransportType_VersionStructure extends DataManagedObjectStructure {
     @ManyToOne
     private org.rutebanken.sobek.model.vehicle.DeckPlan deckPlan;
 
+    private String dataOwnerRef;
 
+    @Override
+    public String getDataOwnerRef() {
+        return dataOwnerRef;
+    }
+
+    @Override
+    public void setDataOwnerRef(String dataOwnerRef) {
+        this.dataOwnerRef = dataOwnerRef;
+    }
 }

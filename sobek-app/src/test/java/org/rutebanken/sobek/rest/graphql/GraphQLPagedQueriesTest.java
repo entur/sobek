@@ -88,7 +88,8 @@ class GraphQLPagedQueriesTest {
                 .statusCode(200)
                 .body("data.organisations.content", is(not(empty())))
                 .body("data.organisations.totalElements", greaterThanOrEqualTo(339))
-                .body("data.organisations.page", equalTo(0));
+                .body("data.organisations.page", equalTo(0))
+                .body("data.organisations.size", equalTo(10));
     }
 
     @Test
@@ -102,8 +103,7 @@ class GraphQLPagedQueriesTest {
                 .statusCode(200)
                 .body("data.organisations.content", is(not(empty())))
                 .body("data.organisations.totalElements", greaterThanOrEqualTo(1))
-                .body("data.organisations.page", equalTo(0))
-                .body("data.organisations.size", equalTo(10));
+                .body("data.organisations.page", equalTo(0));
     }
 
     @Test

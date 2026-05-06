@@ -19,6 +19,7 @@ package org.rutebanken.sobek.auth.check;
 import org.rutebanken.helper.organisation.OrganisationChecker;
 import org.rutebanken.helper.organisation.RoleAssignment;
 import org.rutebanken.netex.model.Vehicle;
+import org.rutebanken.sobek.model.authorization.OwnedEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -31,13 +32,11 @@ public class SobekOriganisationChecker implements OrganisationChecker {
     @Override
     public boolean entityMatchesOrganisationRef(RoleAssignment roleAssignment, Object entity) {
 
-        if (entity instanceof Vehicle vehicle) {
-            if (vehicle.getTransportOrganisationRef() != null) {
-                String orgRef = vehicle.getTransportOrganisationRef().getValue().getRef();
-                if (orgRef != null) {
-                    logger.debug("Found org ref {} for entity. Returning true if it matches role assignment organisation :{}", orgRef, roleAssignment.getOrganisation());
-                    return orgRef.endsWith(":" + roleAssignment.getOrganisation());
-                }
+        if (entity instanceof OwnedEntity ownedEntity) {
+            if (ownedEntity.getDataOwnerRef() != null) {
+                String orgRef = ":" + ownedEntity.getDataOwnerRef().replace(":", "/");
+                logger.debug("Found org ref {} for entity. Returning true if the role assignment contains reference to the organisation", orgRef);
+                return roleAssignment.getEntityClassifications().get("Vehicle").stream().anyMatch(c -> c.endsWith(orgRef));
             }
             logger.debug("Org ref is null for entity: {}", entity);
             return true;

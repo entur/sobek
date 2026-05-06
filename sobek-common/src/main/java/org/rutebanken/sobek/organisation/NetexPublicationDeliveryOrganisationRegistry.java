@@ -180,7 +180,7 @@ public abstract class NetexPublicationDeliveryOrganisationRegistry
     @Override
     public Optional<Operator> getOperator(String id) {
         ensureFreshData();
-        return organisations.stream().filter(operator -> operator.getId().equals(id)).map(org -> (Operator)org).findFirst();
+        return organisations.stream().filter(org -> org.getId().equals(id) && org instanceof Operator).map(org -> (Operator)org).findFirst();
     }
 
     /**

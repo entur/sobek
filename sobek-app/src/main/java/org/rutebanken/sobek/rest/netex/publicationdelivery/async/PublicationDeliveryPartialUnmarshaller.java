@@ -22,15 +22,12 @@ import org.rutebanken.netex.model.PublicationDeliveryStructure;
 import org.rutebanken.netex.model.StopPlace;
 import org.rutebanken.netex.model.TopographicPlace;
 import org.rutebanken.netex.validation.NeTExValidator;
-import org.rutebanken.sobek.netex.mapping.PublicationDeliveryHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.EventFilter;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
@@ -38,7 +35,6 @@ import javax.xml.stream.XMLStreamException;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -77,14 +73,7 @@ public class PublicationDeliveryPartialUnmarshaller {
     @Value("${publicationDeliveryPartialUnmarshaller.validateAgainstSchema:true}")
     private boolean validateAgainstSchema;
 
-    private final PublicationDeliveryHelper publicationDeliveryHelper;
-
-    @Autowired
-    public PublicationDeliveryPartialUnmarshaller(PublicationDeliveryHelper publicationDeliveryHelper) throws IOException, SAXException {
-        this.publicationDeliveryHelper = publicationDeliveryHelper;
-    }
-
-    public UnmarshalResult unmarshal(InputStream inputStream) throws JAXBException, IOException, SAXException, XMLStreamException, InterruptedException, ParserConfigurationException {
+    public UnmarshalResult unmarshal(InputStream inputStream) throws JAXBException, IOException, SAXException, XMLStreamException {
         File file = File.createTempFile("sobek-" + System.currentTimeMillis(), ".xml");
         Files.copy(inputStream, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
@@ -120,7 +109,7 @@ public class PublicationDeliveryPartialUnmarshaller {
     /**
      * Unmarshal publication delivery structure without stop places, topographic places and navigation paths.
      */
-    private PublicationDeliveryStructure readPublicationDeliveryStructure(XMLInputFactory xmlInputFactory, InputStream inputStream, Unmarshaller unmarshaller) throws FileNotFoundException, XMLStreamException, JAXBException {
+    private PublicationDeliveryStructure readPublicationDeliveryStructure(XMLInputFactory xmlInputFactory, InputStream inputStream, Unmarshaller unmarshaller) throws XMLStreamException, JAXBException {
 
         EventFilter eventFilter = new TypesEventFilter("stopPlaces", "navigationPaths", "parkings");
 
@@ -131,7 +120,7 @@ public class PublicationDeliveryPartialUnmarshaller {
         return publicationDeliveryStructure;
     }
 
-    public UnmarshalResult readWithXmlEventReaderAsync(InputStream inputStream, Unmarshaller unmarshaller) throws XMLStreamException, JAXBException, InterruptedException, IOException {
+    public UnmarshalResult readWithXmlEventReaderAsync(InputStream inputStream, Unmarshaller unmarshaller) {
 
         UnmarshalResult unmarshalResult = new UnmarshalResult(100);
 

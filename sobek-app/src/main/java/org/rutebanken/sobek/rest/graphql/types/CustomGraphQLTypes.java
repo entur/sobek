@@ -21,6 +21,7 @@ import graphql.schema.GraphQLInputObjectType;
 import graphql.schema.GraphQLList;
 import graphql.schema.GraphQLNonNull;
 import graphql.schema.GraphQLObjectType;
+import org.rutebanken.netex.model.OrganisationTypeEnumeration;
 import org.rutebanken.sobek.model.GenderLimitationEnumeration;
 import org.rutebanken.sobek.model.ModificationEnumeration;
 import org.rutebanken.sobek.model.NameTypeEnumeration;
@@ -45,6 +46,7 @@ public class CustomGraphQLTypes {
     public static GraphQLEnumType versionValidityEnumType = createCustomEnumType(ExportParams.VersionValidity.class.getSimpleName(), ExportParams.VersionValidity.class);
     public static GraphQLEnumType modificationEnumerationType = createCustomEnumType("ModificationEnumerationType", ModificationEnumeration.class);
     public static GraphQLEnumType transportModeEnumType = createCustomEnumType(TRANSPORT_MODE, AllPublicTransportModesEnumeration.class);
+    public static GraphQLEnumType organisationTypeEnumType = createCustomEnumType(ORGANISATION_TYPE, OrganisationTypeEnumeration.class);
 
 
     public static GraphQLEnumType createCustomEnumType(String name, Class c) {

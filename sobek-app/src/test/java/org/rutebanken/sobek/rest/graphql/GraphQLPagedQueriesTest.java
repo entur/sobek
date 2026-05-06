@@ -78,6 +78,35 @@ class GraphQLPagedQueriesTest {
     }
 
     @Test
+    void organisations_returnsPageStructure() {
+        given()
+                .contentType(ContentType.JSON)
+                .body(gql("{ organisations(page: 0, size: 10) { content { id } totalElements page size } }"))
+                .when()
+                .post("/services/vehicles/graphql")
+                .then()
+                .statusCode(200)
+                .body("data.organisations.content", is(not(empty())))
+                .body("data.organisations.totalElements", greaterThanOrEqualTo(339))
+                .body("data.organisations.page", equalTo(0))
+                .body("data.organisations.size", equalTo(10));
+    }
+
+    @Test
+    void organisations_filterByOrganisationType() {
+        given()
+                .contentType(ContentType.JSON)
+                .body(gql("{ organisations(page: 0, size: 1000, filter: { organisationType: authority }  ) { content { id } totalElements page size } }"))
+                .when()
+                .post("/services/vehicles/graphql")
+                .then()
+                .statusCode(200)
+                .body("data.organisations.content", is(not(empty())))
+                .body("data.organisations.totalElements", greaterThanOrEqualTo(1))
+                .body("data.organisations.page", equalTo(0));
+    }
+
+    @Test
     void vehicleTypes_exposesNewFields() {
         given()
             .contentType(ContentType.JSON)

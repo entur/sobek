@@ -47,6 +47,7 @@ import static graphql.schema.GraphQLInputObjectField.newInputObjectField;
 import static graphql.schema.GraphQLInputObjectType.newInputObject;
 import static graphql.schema.GraphQLObjectType.newObject;
 import static org.rutebanken.sobek.rest.graphql.GraphQLNames.*;
+import static org.rutebanken.sobek.rest.graphql.types.CustomGraphQLTypes.organisationTypeEnumType;
 import static org.rutebanken.sobek.rest.graphql.types.CustomGraphQLTypes.transportModeEnumType;
 
 @Component
@@ -63,6 +64,8 @@ public class RegisterGraphQLSchema {
     private DeckPlanObjectTypeCreator deckPlanObjectTypeCreator;
     @Autowired
     private VehicleObjectTypeCreator vehicleObjectTypeCreator;
+    @Autowired
+    private OrganisationObjectTypeCreator organisationObjectTypeCreator;
 
     @Autowired
     DataFetcher vehicleTypeFetcher;
@@ -71,6 +74,9 @@ public class RegisterGraphQLSchema {
 
     @Autowired
     DataFetcher deckPlanFetcher;
+
+    @Autowired
+    DataFetcher organisationFetcher;
 
     @Autowired
     DateScalar dateScalar;
@@ -105,6 +111,7 @@ public class RegisterGraphQLSchema {
         GraphQLObjectType deckPlanObjectType = deckPlanObjectTypeCreator.create();
         GraphQLObjectType vehicleObjectType = vehicleObjectTypeCreator.create();
         GraphQLObjectType vehicleTypeObjectType = vehicleTypeObjectTypeCreator.create(deckPlanObjectType, vehicleObjectType, dateScalar.getGraphQLDateScalar());
+        GraphQLObjectType organisationType = organisationObjectTypeCreator.create();
 
         GraphQLObjectType vehicleTypePageType = createPageType(OUTPUT_TYPE_VEHICLE_TYPE_PAGE, vehicleTypeObjectType);
 
@@ -114,7 +121,15 @@ public class RegisterGraphQLSchema {
                 .field(newInputObjectField().name(TRANSPORT_MODE).type(transportModeEnumType).description("Filter by transport mode"))
                 .build();
 
+        GraphQLInputObjectType organisationsFilterInput = newInputObject()
+                .name(INPUT_TYPE_ORGANISATIONS_FILTER)
+                .field(newInputObjectField().name(IDS).type(new GraphQLList(new GraphQLNonNull(GraphQLString))).description("Batch lookup by NeTEx IDs"))
+                .field(newInputObjectField().name(ORGANISATION_TYPE).type(organisationTypeEnumType).description("Filter by organisation type"))
+                .build();
+
+
         GraphQLObjectType deckPlanPageType = createPageType(OUTPUT_TYPE_DECK_PLAN_PAGE, deckPlanObjectType);
+        GraphQLObjectType organisationPageType = createPageType(OUTPUT_TYPE_ORGANISATION_PAGE, organisationType);
 
         GraphQLObjectType vehicleRegistryQuery = newObject()
                 .name(VEHICLE_REGISTER)
@@ -135,6 +150,13 @@ public class RegisterGraphQLSchema {
                         .name(DECK_PLANS)
                         .type(deckPlanPageType)
                         .description("Paged deck plans")
+                        .arguments(createPageAndSizeArguments())
+                )
+                .field(newFieldDefinition()
+                        .name(ORGANISATIONS)
+                        .type(organisationPageType)
+                        .description("Paged organisations")
+                        .argument(GraphQLArgument.newArgument().name(FILTER).type(organisationsFilterInput))
                         .arguments(createPageAndSizeArguments())
                 )
                 .build();
@@ -158,6 +180,7 @@ public class RegisterGraphQLSchema {
 
         registerDataFetcher(codeRegistryBuilder, VEHICLE_REGISTER, USER_PERMISSIONS, userPermissionsFetcher);
         registerDataFetcher(codeRegistryBuilder, VEHICLE_REGISTER, DECK_PLANS, deckPlanFetcher);
+        registerDataFetcher(codeRegistryBuilder, VEHICLE_REGISTER, ORGANISATIONS, organisationFetcher);
 
         return codeRegistryBuilder.build();
     }

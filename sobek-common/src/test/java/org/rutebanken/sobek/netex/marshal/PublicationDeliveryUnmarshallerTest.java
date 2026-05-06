@@ -13,10 +13,11 @@
  * limitations under the Licence.
  */
 
-package org.rutebanken.sobek.rest.netex.publicationdelivery;
+package org.rutebanken.sobek.netex.marshal;
 
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.UnmarshalException;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.rutebanken.sobek.SobekTestApplication;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +27,6 @@ import org.xml.sax.SAXException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 
 @SpringBootTest(classes = SobekTestApplication.class)
@@ -46,7 +45,7 @@ public class PublicationDeliveryUnmarshallerTest {
 
         InputStream inputStream = new ByteArrayInputStream(notValidPublicationDeliveryXml.getBytes());
 
-        assertThatThrownBy(() -> publicationDeliveryUnmarshaller.unmarshal(inputStream))
+        Assertions.assertThatThrownBy(() -> publicationDeliveryUnmarshaller.unmarshal(inputStream))
                 .isInstanceOf(UnmarshalException.class);
 
     }

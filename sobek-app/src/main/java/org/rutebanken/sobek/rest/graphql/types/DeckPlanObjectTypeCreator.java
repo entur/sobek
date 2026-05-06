@@ -36,7 +36,7 @@ public class DeckPlanObjectTypeCreator {
                         .type(GraphQLString))
                 .field(newFieldDefinition()
                         .name(DESCRIPTION)
-                        .type(GraphQLString))
+                        .type(embeddableMultilingualStringObjectType))
                 .field(newFieldDefinition()
                         .name(NAME)
                         .type(embeddableMultilingualStringObjectType))

@@ -22,7 +22,7 @@ import org.rutebanken.sobek.exporter.PublicationDeliveryCreator;
 import org.rutebanken.sobek.importer.handler.*;
 import org.rutebanken.sobek.importer.log.ImportLogger;
 import org.rutebanken.sobek.importer.log.ImportLoggerTask;
-import org.rutebanken.sobek.netex.mapping.PublicationDeliveryHelper;
+import org.rutebanken.sobek.netex.util.PublicationDeliveryHelper;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

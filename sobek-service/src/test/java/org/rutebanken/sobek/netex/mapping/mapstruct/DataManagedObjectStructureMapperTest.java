@@ -7,7 +7,7 @@ import org.rutebanken.netex.model.KeyValueStructure;
 import org.rutebanken.netex.model.VehicleType;
 import org.rutebanken.sobek.netex.id.NetexIdHelper;
 import org.rutebanken.sobek.netex.id.ValidPrefixList;
-import org.rutebanken.sobek.netex.mapping.PublicationDeliveryHelper;
+import org.rutebanken.sobek.netex.util.PublicationDeliveryHelper;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

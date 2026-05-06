@@ -80,9 +80,9 @@ public class PublicationDeliveryImporter {
     }
 
     public PublicationDeliveryStructure importPublicationDelivery(PublicationDeliveryStructure incomingPublicationDelivery, ImportParams importParams) {
-        if(authorizationEnabled && !authorizationService.canEditAllEntities()){
-            throw new AccessDeniedException("Insufficient privileges for operation");
-        }
+//        if(authorizationEnabled && !authorizationService.canEditAllEntities()){
+//            throw new AccessDeniedException("Insufficient privileges for operation");
+//        }
 
 
         if (incomingPublicationDelivery.getDataObjects() == null) {

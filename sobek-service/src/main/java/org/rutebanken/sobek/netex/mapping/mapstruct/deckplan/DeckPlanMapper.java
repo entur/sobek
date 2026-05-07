@@ -66,6 +66,7 @@ public interface DeckPlanMapper {
         if(target != null) {
             context.getDataManagedObjectStructureMapper().afterMappingToSobek(source, target, context);
         }
+        context.getOwnedEntityMapper().updateSobekFromNetex(source, target, context);
     }
 
     /**

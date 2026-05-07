@@ -5,12 +5,23 @@
     <dataObjects>
         <ResourceFrame id="AKT:ResourceFrame:export-seed" version="1">
             <FrameDefaults>
+                <DefaultResponsibilitySetRef ref="TST:ResponsibilitySet:1" />
                 <DefaultLocale>
                     <TimeZone>Europe/Oslo</TimeZone>
                 </DefaultLocale>
             </FrameDefaults>
+            <responsibilitySets>
+                <ResponsibilitySet id="TST:ResponsibilitySet:1" version="1">
+                    <roles>
+                        <ResponsibilityRoleAssignment id="TST:ResponsibilityRoleAssignment:1" version="1">
+                            <DataRoleType>owns</DataRoleType>
+                            <ResponsibleOrganisationRef ref="NOG:Authority:cP4aPiJ7c39"/>
+                        </ResponsibilityRoleAssignment>
+                    </roles>
+                </ResponsibilitySet>
+            </responsibilitySets>
             <vehicleTypes>
-                <VehicleType id="AKT:VehicleType:export-seed" version="1">
+                <VehicleType id="AKT:VehicleType:export-seed" version="1" >
                     <ValidBetween>
                         <FromDate>2026-04-17T00:00:00</FromDate>
                     </ValidBetween>
@@ -19,7 +30,7 @@
                 </VehicleType>
             </vehicleTypes>
             <vehicles>
-                <Vehicle id="AKT:Vehicle:export-seed" version="1">
+                <Vehicle id="AKT:Vehicle:export-seed" version="1" >
                     <ValidBetween>
                         <FromDate>2026-04-17T00:00:00</FromDate>
                     </ValidBetween>

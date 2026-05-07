@@ -5,10 +5,21 @@
     <dataObjects>
         <ResourceFrame id="RF:1" version="1">
             <FrameDefaults>
+                <DefaultResponsibilitySetRef ref="TST:ResponsibilitySet:1" />
                 <DefaultLocale>
                     <TimeZone>Europe/Oslo</TimeZone>
                 </DefaultLocale>
             </FrameDefaults>
+            <responsibilitySets>
+                <ResponsibilitySet id="TST:ResponsibilitySet:1" version="1">
+                    <roles>
+                        <ResponsibilityRoleAssignment id="TST:ResponsibilityRoleAssignment:1" version="1">
+                            <DataRoleType>owns</DataRoleType>
+                            <ResponsibleOrganisationRef ref="NOG:Authority:cP4aPiJ7c39"/>
+                        </ResponsibilityRoleAssignment>
+                    </roles>
+                </ResponsibilitySet>
+            </responsibilitySets>
             <vehicleTypes>
                 <VehicleType id="AKT:VehicleType:123" version="1">
                     <Name lang="nb"><Text>Exqui City 24</Text></Name>

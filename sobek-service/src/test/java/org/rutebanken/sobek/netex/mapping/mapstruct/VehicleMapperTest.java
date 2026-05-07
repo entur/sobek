@@ -42,6 +42,8 @@ class VehicleMapperTest {
     private ValidPrefixList validPrefixList;
     @Autowired
     private DataManagedObjectStructureMapper dataManagedObjectStructureMapper;
+    @Autowired
+    private OwnedEntityMapper ownedEntityMapper;
 
     @Test
     void testMapperIsInjected() {
@@ -66,6 +68,7 @@ class VehicleMapperTest {
         mappingContext.setNetexIdHelper(netexIdHelper);
         mappingContext.setValidPrefixList(validPrefixList);
         mappingContext.setDataManagedObjectStructureMapper(dataManagedObjectStructureMapper);
+        mappingContext.setOwnedEntityMapper(ownedEntityMapper);
     }
 
     @Test

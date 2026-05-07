@@ -111,7 +111,7 @@ public class PublicationDeliveryImporter {
         // Currently only supporting one resource frame per publication delivery
         ResourceFrame netexResourceFrame = publicationDeliveryHelper.findResourceFrame(incomingPublicationDelivery);
 
-        mappingContext.updateMappingContext(incomingPublicationDelivery);
+        mappingContext.updateMappingContext(incomingPublicationDelivery, netexResourceFrame);
 
         ResourceFrame responseResourceFrame = null;
         if(netexResourceFrame != null) {

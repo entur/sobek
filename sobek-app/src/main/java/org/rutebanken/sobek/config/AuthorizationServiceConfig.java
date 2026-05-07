@@ -27,6 +27,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @Configuration
 public class AuthorizationServiceConfig {
 
@@ -47,11 +51,8 @@ public class AuthorizationServiceConfig {
                                                                          SobekOriganisationChecker sobekOriganisationChecker,
                                                                          SobekEntityResolver sobekEntityResolver) {
 
-        // // Should be made configurable
-        // Map<String, List<String>> fieldMappings = new HashMap<>();
-        // fieldMappings.put(SUBMODE.toLowerCase(), Arrays.asList("airSubmode", "busSubmode", "coachSubmode", "funicularSubmode", "metroSubmode", "tramSubmode", "telecabinSubmode", "railSubmode", "waterSubmode"));
+        Map<String, List<String>> fieldMappings = new HashMap<>();
 
-
-        return new ReflectionAuthorizationService(roleAssignmentExtractor, authorizationEnabled, sobekOriganisationChecker, null, sobekEntityResolver, null);
+        return new ReflectionAuthorizationService(roleAssignmentExtractor, authorizationEnabled, sobekOriganisationChecker, null, sobekEntityResolver, fieldMappings);
     }
 }

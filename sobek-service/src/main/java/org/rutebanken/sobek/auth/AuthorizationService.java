@@ -4,6 +4,7 @@ import org.rutebanken.sobek.model.EntityStructure;
 import org.springframework.security.access.AccessDeniedException;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Authorization service interface for managing authorization of users to perform operations
@@ -64,4 +65,10 @@ public interface AuthorizationService {
       * @return {@code true} if the user is a guest, otherwise {@code false}.
       */
     boolean isGuest();
+
+    /**
+     * Get the organisation refs the user is authorized for. If authorization is disabled, return null, which means "all organisations".
+     * @return A list of organisation refs, e.g. "NOG:Authority:23A2N7V6Blr"
+     */
+    List<String> getOrganisationRefsUserIsAuthorizedFor();
 }

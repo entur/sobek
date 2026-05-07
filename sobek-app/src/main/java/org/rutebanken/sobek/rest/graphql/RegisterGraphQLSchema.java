@@ -15,6 +15,7 @@
 
 package org.rutebanken.sobek.rest.graphql;
 
+import graphql.language.BooleanValue;
 import graphql.language.IntValue;
 import graphql.schema.DataFetcher;
 import graphql.schema.FieldCoordinates;
@@ -30,7 +31,6 @@ import org.rutebanken.sobek.auth.AuthorizationService;
 import org.rutebanken.sobek.model.DataManagedObjectStructure;
 import org.rutebanken.sobek.model.identification.IdentifiedEntity;
 import org.rutebanken.sobek.rest.graphql.fetchers.*;
-import org.rutebanken.sobek.rest.graphql.resolvers.MutableTypeResolver;
 import org.rutebanken.sobek.rest.graphql.scalars.DateScalar;
 import org.rutebanken.sobek.rest.graphql.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +55,7 @@ public class RegisterGraphQLSchema {
 
     public final static int DEFAULT_PAGE_VALUE = 0;
     public final static int DEFAULT_SIZE_VALUE = 20;
+    public final static boolean DEFAULT_USER_AUTHORIZED_VALUE = false;
 
     public GraphQLSchema vehicleRegisterSchema;
 
@@ -125,8 +126,8 @@ public class RegisterGraphQLSchema {
                 .name(INPUT_TYPE_ORGANISATIONS_FILTER)
                 .field(newInputObjectField().name(IDS).type(new GraphQLList(new GraphQLNonNull(GraphQLString))).description("Batch lookup by NeTEx IDs"))
                 .field(newInputObjectField().name(ORGANISATION_TYPE).type(organisationTypeEnumType).description("Filter by organisation type"))
+                .field(newInputObjectField().name(USER_AUTHORIZED).type(GraphQLBoolean).description(USER_AUTHORIZED_ARG_DESCRIPTION).defaultValueLiteral(BooleanValue.of(DEFAULT_USER_AUTHORIZED_VALUE)))
                 .build();
-
 
         GraphQLObjectType deckPlanPageType = createPageType(OUTPUT_TYPE_DECK_PLAN_PAGE, deckPlanObjectType);
         GraphQLObjectType organisationPageType = createPageType(OUTPUT_TYPE_ORGANISATION_PAGE, organisationType);

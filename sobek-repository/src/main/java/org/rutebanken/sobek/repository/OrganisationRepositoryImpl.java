@@ -28,7 +28,7 @@ public class OrganisationRepositoryImpl implements OrganisationRepository {
     }
 
     @Override
-    public Page<Organisation> findCurrentFiltered(List<String> ids, OrganisationTypeEnumeration organisationType, Pageable pageable) {
+    public Page<Organisation> findCurrentFiltered(List<String> ids, OrganisationTypeEnumeration organisationType, List<String> authorizedIds, Pageable pageable) {
         List<? extends Organisation_VersionStructure> organisations;
 
         if(organisationType == null) {
@@ -43,6 +43,14 @@ public class OrganisationRepositoryImpl implements OrganisationRepository {
 
         if(ids != null && !ids.isEmpty()) {
             Set<String> idSet = new HashSet<>(ids);
+            organisations = organisations
+                    .stream()
+                    .filter(org -> idSet.contains(org.getId()))
+                    .toList();
+        }
+
+        if(authorizedIds != null) {
+            Set<String> idSet = new HashSet<>(authorizedIds);
             organisations = organisations
                     .stream()
                     .filter(org -> idSet.contains(org.getId()))
@@ -67,14 +75,13 @@ public class OrganisationRepositoryImpl implements OrganisationRepository {
 
     private List<Organisation> mapOrganisations(List<? extends Organisation_VersionStructure> organisations) {
         // Convert to Organisation records
-        List<Organisation> organisationList = organisations.stream()
+        return organisations.stream()
                 .map(org -> new Organisation(
                         org.getId(),
                         multilingualStringMapper.mapToSobek(org.getName()),
                         getOrganisationType(org)
                 ))
                 .toList();
-        return organisationList;
     }
 
     private OrganisationTypeEnumeration getOrganisationType(Organisation_VersionStructure org) {

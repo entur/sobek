@@ -11,11 +11,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.rutebanken.helper.organisation.AuthorizationConstants.ENTITY_CLASSIFIER_ALL_ATTRIBUTES;
-import static org.rutebanken.sobek.auth.AuthorizationConstants.ROLE_DELETE_VEHICLE_DATA;
-import static org.rutebanken.sobek.auth.AuthorizationConstants.ROLE_EDIT_VEHICLE_DATA;
+import static org.rutebanken.sobek.auth.AuthorizationConstants.*;
 
 public class DefaultAuthorizationService implements AuthorizationService {
     private final DataScopedAuthorizationService dataScopedAuthorizationService;
@@ -98,4 +99,21 @@ public class DefaultAuthorizationService implements AuthorizationService {
 
         return dataScopedAuthorizationService.isAuthorized(role, List.of(entity));
     }
+
+    @Override
+    public List<String> getOrganisationRefsUserIsAuthorizedFor() {
+        List<RoleAssignment> roleAssignments = roleAssignmentExtractor.getRoleAssignmentsForUser();
+
+        Set<String> organisationRefs = new HashSet<>();
+        roleAssignments.forEach(roleAssignment -> {
+            if(roleAssignment.getRole().equals(ROLE_EDIT_VEHICLE_DATA)) {  // Maybe return also "read" or "delete"? Review this later on, for now only "edit" is needed.
+                List<String> dataOwnersAllowed = roleAssignment.getEntityClassifications().get(CLASSIFICATION_DATA_OWNER);
+                if(dataOwnersAllowed != null) {
+                    organisationRefs.addAll(dataOwnersAllowed.stream().map(dataOwner -> dataOwner.replace("/", ":")).toList());
+                }
+            }
+        });
+        return organisationRefs.stream().toList();
+    }
+
 }

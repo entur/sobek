@@ -18,6 +18,7 @@ package org.rutebanken.sobek.rest.graphql.fetchers;
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
 import org.rutebanken.netex.model.OrganisationTypeEnumeration;
+import org.rutebanken.sobek.auth.AuthorizationService;
 import org.rutebanken.sobek.repository.OrganisationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -28,8 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.rutebanken.sobek.rest.graphql.GraphQLNames.*;
-import static org.rutebanken.sobek.rest.graphql.RegisterGraphQLSchema.DEFAULT_PAGE_VALUE;
-import static org.rutebanken.sobek.rest.graphql.RegisterGraphQLSchema.DEFAULT_SIZE_VALUE;
+import static org.rutebanken.sobek.rest.graphql.RegisterGraphQLSchema.*;
 
 @Service("organisationFetcher")
 @Transactional
@@ -38,6 +38,9 @@ class OrganisationFetcher implements DataFetcher<Map<String, Object>> {
     @Autowired
     private OrganisationRepository organisationRepository;
 
+    @Autowired
+    private AuthorizationService authorizationService;
+
     @Override
     @SuppressWarnings("unchecked")
     public Map<String, Object> get(DataFetchingEnvironment env) {
@@ -45,19 +48,30 @@ class OrganisationFetcher implements DataFetcher<Map<String, Object>> {
         int size = env.getArgumentOrDefault(SIZE, DEFAULT_SIZE_VALUE);
 
         Map<String, Object> filter = env.getArgument(FILTER);
+
         List<String> ids = null;
         OrganisationTypeEnumeration type = null;
+        Boolean onlyAuthorized = false;
+
         if (filter != null) {
             ids = (List<String>) filter.get(IDS);
             Object orgArg = filter.get(ORGANISATION_TYPE);
+
             if (orgArg instanceof org.rutebanken.netex.model.OrganisationTypeEnumeration t) {
                 type = t;
             } else if (orgArg instanceof String s) {
                 type = OrganisationTypeEnumeration.fromValue(s);
             }
+
+            onlyAuthorized = (Boolean)filter.get(USER_AUTHORIZED);
         }
 
-        var result = organisationRepository.findCurrentFiltered(ids, type, PageRequest.of(page, size));
+        List<String> authorizedIds = null;
+        if(onlyAuthorized != null && onlyAuthorized) {
+            authorizedIds = authorizationService.getOrganisationRefsUserIsAuthorizedFor();
+        }
+
+        var result = organisationRepository.findCurrentFiltered(ids, type, authorizedIds, PageRequest.of(page, size));
         return PageResult.from(result, page, size);
     }
 }

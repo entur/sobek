@@ -108,6 +108,9 @@ public class GraphQLNames {
     public static final String SIZE = "size";
     public static final String SIZE_ARG_DESCRIPTION = "Number of hits per page when using pagination - default is " + DEFAULT_SIZE_VALUE;
 
+    public static final String USER_AUTHORIZED = "onlyUserAuthorized";
+    public static final String USER_AUTHORIZED_ARG_DESCRIPTION = "Only return entities that the user is authorized to use";
+
     public static final String ALL_VERSIONS = "allVersions";
     public static final String ALL_VERSIONS_ARG_DESCRIPTION = "Fetch all versions for entities in result";
 

@@ -95,17 +95,6 @@ public class MappingContext {
         this.ownedEntityMapper = ownedEntityMapper;
     }
 
-    public void updateMappingContext(SiteFrame netexSiteFrame) {
-        String timeZoneString = Optional.of(netexSiteFrame)
-                .map(SiteFrame::getFrameDefaults)
-                .map(VersionFrameDefaultsStructure::getDefaultLocale)
-                .map(LocaleStructure::getTimeZone)
-                .orElseThrow(() -> new NetexMappingException("Cannot resolve time zone from FrameDefaults in site frame " + netexSiteFrame.getId()));
-
-        this.defaultTimeZone = ZoneId.of(timeZoneString);
-        logger.info("Setting default time zone for netex mapping context to {}", this.defaultTimeZone);
-    }
-
     public void updateMappingContext(PublicationDeliveryStructure publicationDeliveryStructure, ResourceFrame resourceFrame) {
         // Check what kind of frame we find
         List<JAXBElement<? extends Common_VersionFrameStructure>> compositeFrameOrCommonFrame = publicationDeliveryStructure.getDataObjects().getCompositeFrameOrCommonFrame();

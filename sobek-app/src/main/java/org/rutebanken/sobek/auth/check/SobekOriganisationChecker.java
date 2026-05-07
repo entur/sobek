@@ -34,9 +34,9 @@ public class SobekOriganisationChecker implements OrganisationChecker {
 
         if (entity instanceof OwnedEntity ownedEntity) {
             if (ownedEntity.getDataOwnerRef() != null) {
-                String orgRef = ":" + ownedEntity.getDataOwnerRef().replace(":", "/");
+                String orgRef = ownedEntity.getDataOwnerRef().replace(":", "/");
                 logger.debug("Found org ref {} for entity. Returning true if the role assignment contains reference to the organisation", orgRef);
-                return roleAssignment.getEntityClassifications().get("Vehicle").stream().anyMatch(c -> c.endsWith(orgRef));
+                return roleAssignment.getEntityClassifications().get("DataOwner").stream().anyMatch(c -> c.equals(orgRef));
             }
             logger.debug("Org ref is null for entity: {}", entity);
             return true;

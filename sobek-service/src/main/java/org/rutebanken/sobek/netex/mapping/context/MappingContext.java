@@ -106,7 +106,7 @@ public class MappingContext {
         logger.info("Setting default time zone for netex mapping context to {}", this.defaultTimeZone);
     }
 
-    public void updateMappingContext(PublicationDeliveryStructure publicationDeliveryStructure) {
+    public void updateMappingContext(PublicationDeliveryStructure publicationDeliveryStructure, ResourceFrame resourceFrame) {
         // Check what kind of frame we find
         List<JAXBElement<? extends Common_VersionFrameStructure>> compositeFrameOrCommonFrame = publicationDeliveryStructure.getDataObjects().getCompositeFrameOrCommonFrame();
 
@@ -127,6 +127,47 @@ public class MappingContext {
         String timeZoneString = defaults.getDefaultLocale().getTimeZone();
 
         this.defaultTimeZone = ZoneId.of(timeZoneString);
+
+        ResponsibilitySetsInFrame_RelStructure responsibilitySets = resourceFrame.getResponsibilitySets();
+
+        if (responsibilitySets == null || responsibilitySets.getResponsibilitySet() == null) {
+            throw new NetexMappingException("Cannot resolve responsibilitysets from resourceframe " + resourceFrame.getId());
+        }
+
+        ResponsibilitySet responsibilitySet = responsibilitySets.getResponsibilitySet().getFirst();
+        if (responsibilitySet == null) {
+            throw new NetexMappingException("Cannot resolve responsibilityset from resourceframe " + resourceFrame.getId());
+        }
+
+        if(responsibilitySet.getRoles() == null ||
+                responsibilitySet.getRoles().getResponsibilityRoleAssignment() == null ||
+                responsibilitySet.getRoles().getResponsibilityRoleAssignment().isEmpty()) {
+            throw new NetexMappingException("Cannot resolve role from responsibilityset " + responsibilitySet.getId());
+        }
+
+        ResponsibilityRoleAssignment roleAssignment = responsibilitySet.getRoles()
+                                .getResponsibilityRoleAssignment()
+                                .stream()
+                                .filter(ra -> ra.getDataRoleType().contains(DataRoleTypeEnumeration.OWNS))
+                                .findFirst()
+                                .orElseThrow(() -> new NetexMappingException("Cannot resolve dataowner role from responsibilityset " + responsibilitySet.getId()));
+
+        if(roleAssignment.getResponsibleOrganisationRef() == null || roleAssignment.getResponsibleOrganisationRef().getRef() == null) {
+            throw new NetexMappingException("Cannot resolve responsible organisation from responsibilityset " + responsibilitySet.getId());
+        }
+
+        if(defaults.getDefaultResponsibilitySetRef() == null || defaults.getDefaultResponsibilitySetRef().getRef() == null) {
+            throw new NetexMappingException("Cannot resolve default responsibilityset from FrameDefaults");
+        }
+
+        if(!responsibilitySet.getId().equals(defaults.getDefaultResponsibilitySetRef().getRef())) {
+            throw new NetexMappingException("Default responsibilitysetref " + defaults.getDefaultResponsibilitySetRef().getRef() + " doesn't match to a valid responsibilityset");
+        }
+
+        this.ownedEntityMapper.setDataOwnerRef(roleAssignment.getResponsibleOrganisationRef().getRef());
+
+
+
         logger.info("Setting default time zone for netex mapping context to {}", this.defaultTimeZone);
     }
 }

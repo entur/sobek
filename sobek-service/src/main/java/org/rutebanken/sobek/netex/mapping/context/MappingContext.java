@@ -12,6 +12,7 @@ import org.rutebanken.sobek.netex.id.ValidPrefixList;
 import org.rutebanken.sobek.netex.mapping.NetexMappingException;
 import org.rutebanken.sobek.netex.mapping.mapstruct.DataManagedObjectStructureMapper;
 import org.rutebanken.sobek.netex.mapping.mapstruct.KeyListStructureMapper;
+import org.rutebanken.sobek.netex.mapping.mapstruct.OwnedEntityMapper;
 import org.rutebanken.sobek.netex.mapping.mapstruct.deckplan.DeckSpaceMapper;
 import org.rutebanken.sobek.netex.mapping.mapstruct.deckplan.SpotAffinityMapper;
 import org.rutebanken.sobek.netex.mapping.mapstruct.equipment.*;
@@ -56,6 +57,7 @@ public class MappingContext {
     private ValidPrefixList validPrefixList;
     private NetexIdHelper netexIdHelper;
     private DataManagedObjectStructureMapper dataManagedObjectStructureMapper;
+    private OwnedEntityMapper ownedEntityMapper;
 
     public MappingContext() {
     }
@@ -74,7 +76,8 @@ public class MappingContext {
                           SpotAffinityMapper spotAffinityMapper,
                           ValidPrefixList validPrefixList,
                           NetexIdHelper netexIdHelper,
-                          DataManagedObjectStructureMapper dataManagedObjectStructureMapper) {
+                          DataManagedObjectStructureMapper dataManagedObjectStructureMapper,
+                          OwnedEntityMapper ownedEntityMapper) {
         this.referenceResolver = resolver;
         this.seatEquipmentMapper = seatEquipmentMapper;
         this.bedEquipmentMapper = bedEquipmentMapper;
@@ -89,6 +92,7 @@ public class MappingContext {
         this.validPrefixList = validPrefixList;
         this.netexIdHelper = netexIdHelper;
         this.dataManagedObjectStructureMapper = dataManagedObjectStructureMapper;
+        this.ownedEntityMapper = ownedEntityMapper;
     }
 
     public void updateMappingContext(SiteFrame netexSiteFrame) {

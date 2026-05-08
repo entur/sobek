@@ -37,7 +37,17 @@ public class SobekOriganisationChecker implements OrganisationChecker {
             if (ownedEntity.getDataOwnerRef() != null) {
                 String orgRef = ownedEntity.getDataOwnerRef().replace(":", "/");
                 logger.debug("Found org ref {} for entity. Returning true if the role assignment contains reference to the organisation", orgRef);
-                return roleAssignment.getEntityClassifications().get(CLASSIFICATION_DATA_OWNER).stream().anyMatch(c -> c.equals(orgRef));
+                var entityClassifications = roleAssignment.getEntityClassifications();
+                if (entityClassifications == null) {
+                    logger.warn("Role assignment has no entity classifications. Denying organisation match for org ref {}", orgRef);
+                    return false;
+                }
+                var dataOwnerClassifications = entityClassifications.get(CLASSIFICATION_DATA_OWNER);
+                if (dataOwnerClassifications == null) {
+                    logger.warn("Role assignment is missing {} classification. Denying organisation match for org ref {}", CLASSIFICATION_DATA_OWNER, orgRef);
+                    return false;
+                }
+                return dataOwnerClassifications.stream().anyMatch(c -> c.equals(orgRef));
             }
             logger.debug("Org ref is null for entity: {}", entity);
             return true;

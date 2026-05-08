@@ -107,6 +107,20 @@ class GraphQLPagedQueriesTest {
     }
 
     @Test
+    void organisations_filterByUserAuthorizedOrganisations() {
+        given()
+                .contentType(ContentType.JSON)
+                .body(gql("{ organisations(page: 0, size: 1000, filter: { onlyUserAuthorized: true }  ) { content { id } totalElements page size } }"))
+                .when()
+                .post("/services/vehicles/graphql")
+                .then()
+                .statusCode(200)
+                .body("data.organisations.content", is(not(empty())))
+                .body("data.organisations.totalElements", greaterThanOrEqualTo(1))
+                .body("data.organisations.page", equalTo(0));
+    }
+
+    @Test
     void vehicleTypes_exposesNewFields() {
         given()
             .contentType(ContentType.JSON)

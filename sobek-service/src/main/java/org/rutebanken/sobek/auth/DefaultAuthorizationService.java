@@ -108,7 +108,8 @@ public class DefaultAuthorizationService implements AuthorizationService {
 
         Set<String> organisationRefs = new HashSet<>();
         roleAssignments.forEach(roleAssignment -> {
-            if(roleAssignment.getRole().equals(ROLE_EDIT_VEHICLE_DATA)) {  // Maybe return also "read" or "delete"? Review this later on, for now only "edit" is needed.
+            if(roleAssignment.getRole().equals(ROLE_EDIT_VEHICLE_DATA)
+                    && roleAssignment.getEntityClassifications() != null) {  // Maybe return also "read" or "delete"? Review this later on, for now only "edit" is needed.
                 List<String> dataOwnersAllowed = roleAssignment.getEntityClassifications().get(CLASSIFICATION_DATA_OWNER);
                 if(dataOwnersAllowed != null) {
                     organisationRefs.addAll(dataOwnersAllowed.stream().map(dataOwner -> dataOwner.replace("/", ":")).toList());

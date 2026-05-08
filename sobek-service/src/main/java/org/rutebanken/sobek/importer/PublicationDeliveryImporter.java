@@ -70,10 +70,6 @@ public class PublicationDeliveryImporter {
 
 
     public PublicationDeliveryStructure importPublicationDelivery(PublicationDeliveryStructure incomingPublicationDelivery, ImportParams importParams) {
-//        if(authorizationEnabled && !authorizationService.canEditAllEntities()){
-//            throw new AccessDeniedException("Insufficient privileges for operation");
-//        }
-
 
         if (incomingPublicationDelivery.getDataObjects() == null) {
             String responseMessage = "Received publication delivery but it does not contain any data objects.";

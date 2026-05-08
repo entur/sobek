@@ -17,7 +17,6 @@ package org.rutebanken.sobek.importer;
 
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
 import org.rutebanken.netex.model.ResourceFrame;
-import org.rutebanken.sobek.auth.AuthorizationService;
 import org.rutebanken.sobek.exporter.PublicationDeliveryCreator;
 import org.rutebanken.sobek.importer.handler.*;
 import org.rutebanken.sobek.importer.log.ImportLogger;
@@ -28,7 +27,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Timer;

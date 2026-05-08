@@ -125,7 +125,7 @@ public interface VehicleMapper {
                 target.setVehicleModel(vehicleModel);
             }
         }
-        context.getOwnedEntityMapper().updateSobekFromNetex(source, target, context);
+        context.getOwnedEntityMapper().updateSobekFromNetex(target);
     }
 
     /**

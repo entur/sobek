@@ -126,7 +126,9 @@ public class MappingContext {
 
         ResponsibilitySetsInFrame_RelStructure responsibilitySets = resourceFrame.getResponsibilitySets();
 
-        if (responsibilitySets == null || responsibilitySets.getResponsibilitySet() == null) {
+        if (responsibilitySets == null ||
+                responsibilitySets.getResponsibilitySet() == null ||
+                responsibilitySets.getResponsibilitySet().isEmpty()) {
             throw new NetexMappingException("Cannot resolve responsibilitysets from resourceframe " + resourceFrame.getId());
         }
 

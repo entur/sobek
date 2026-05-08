@@ -120,6 +120,10 @@ public class MappingContext {
 
         this.defaultTimeZone = ZoneId.of(timeZoneString);
 
+        if(resourceFrame == null) {
+            throw new NetexMappingException("There is no ResourceFrame in the publication delivery");
+        }
+
         ResponsibilitySetsInFrame_RelStructure responsibilitySets = resourceFrame.getResponsibilitySets();
 
         if (responsibilitySets == null || responsibilitySets.getResponsibilitySet() == null) {

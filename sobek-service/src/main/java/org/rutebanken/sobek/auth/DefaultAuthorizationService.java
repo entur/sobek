@@ -102,6 +102,8 @@ public class DefaultAuthorizationService implements AuthorizationService {
 
     @Override
     public List<String> getOrganisationRefsUserIsAuthorizedFor() {
+        if(!authorizationEnabled) { return null; }
+
         List<RoleAssignment> roleAssignments = roleAssignmentExtractor.getRoleAssignmentsForUser();
 
         Set<String> organisationRefs = new HashSet<>();

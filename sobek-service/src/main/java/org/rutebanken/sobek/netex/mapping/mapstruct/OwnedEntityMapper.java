@@ -1,23 +1,20 @@
 package org.rutebanken.sobek.netex.mapping.mapstruct;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.mapstruct.Context;
 import org.mapstruct.MappingTarget;
 import org.rutebanken.sobek.model.authorization.OwnedEntity;
+import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.springframework.stereotype.Service;
 
 @Service
-@Getter
-@Setter
 public class OwnedEntityMapper {
 
-    private String dataOwnerRef;
-
     public void updateSobekFromNetex(
-            @MappingTarget OwnedEntity target
+            @MappingTarget OwnedEntity target,
+            @Context MappingContext context
     ) {
         if (target != null) {
-            target.setDataOwnerRef(dataOwnerRef);
+            target.setDataOwnerRef(context.getDataOwnerRef());
         }
     }
 }

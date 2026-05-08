@@ -58,6 +58,7 @@ public class MappingContext {
     private NetexIdHelper netexIdHelper;
     private DataManagedObjectStructureMapper dataManagedObjectStructureMapper;
     private OwnedEntityMapper ownedEntityMapper;
+    private String dataOwnerRef;
 
     public MappingContext() {
     }
@@ -109,7 +110,9 @@ public class MappingContext {
             throw new NetexMappingException("Cannot resolve time zone from FrameDefaults in frame " + compositeFrameOrCommonFrame.getFirst().getValue().getId());
         }
 
-        if(defaults == null) {
+        if(defaults == null ||
+                defaults.getDefaultLocale() == null ||
+                defaults.getDefaultLocale().getTimeZone() == null) {
             throw new NetexMappingException("Cannot resolve time zone from FrameDefaults in frame " + compositeFrameOrCommonFrame.getFirst().getValue().getId());
         }
 
@@ -153,7 +156,7 @@ public class MappingContext {
             throw new NetexMappingException("Default responsibilitysetref " + defaults.getDefaultResponsibilitySetRef().getRef() + " doesn't match to a valid responsibilityset");
         }
 
-        this.ownedEntityMapper.setDataOwnerRef(roleAssignment.getResponsibleOrganisationRef().getRef());
+        this.setDataOwnerRef(roleAssignment.getResponsibleOrganisationRef().getRef());
 
 
 

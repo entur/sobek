@@ -58,6 +58,7 @@ class VehicleMapperTest {
 
         VehicleType mockVehicleType = new VehicleType();
         mockVehicleType.setNetexId("NMR:VehicleType:1");
+        mockVehicleType.setDataOwnerRef("NOG:Authority:1");
 
         ReferenceResolver referenceResolver = mock(ReferenceResolver.class);
         when(referenceResolver.resolve(any(),any(),eq(VehicleType.class))).thenReturn(mockVehicleType);

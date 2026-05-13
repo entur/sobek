@@ -37,88 +37,58 @@ public class GraphQLNames {
     public static final String ENTITY_REF_VERSION = "version";
     public static final String ENTITY_REF_VERSION_DESCRIPTION = "The version of the referenced entity.";
 
-    public static final String OUTPUT_TYPE_VALID_BETWEEN = "ValidBetween";
-    public static final String INPUT_TYPE_VALID_BETWEEN = OUTPUT_TYPE_VALID_BETWEEN + INPUT_TYPE_POSTFIX;
-
-    public static final String VALID_BETWEEN_FROM_DATE = "fromDate";
-    public static final String VALID_BETWEEN_TO_DATE = "toDate";
-
     public static final String DATE_SCALAR_DESCRIPTION = "Date time using the format: " + DATE_TIME_PATTERN + ". Example: " + EXAMPLE_DATE_TIME;
 
     public static final String OUTPUT_TYPE_EMBEDDABLE_MULTILINGUAL_STRING = "EmbeddableMultilingualString";
     public static final String INPUT_TYPE_EMBEDDABLE_MULTILINGUAL_STRING = OUTPUT_TYPE_EMBEDDABLE_MULTILINGUAL_STRING + INPUT_TYPE_POSTFIX;
 
-    public static final String OUTPUT_TYPE_ALTERNATIVE_NAME = "AlternativeName";
-    public static final String INPUT_TYPE_ALTERNATIVE_NAME = OUTPUT_TYPE_ALTERNATIVE_NAME + INPUT_TYPE_POSTFIX;
-
-    public static final String OUTPUT_TYPE_SANITARY_EQUIPMENT = "SanitaryEquipment";
-    public static final String INPUT_TYPE_SANITARY_EQUIPMENT = OUTPUT_TYPE_SANITARY_EQUIPMENT + INPUT_TYPE_POSTFIX;
-
-    public static final String OUTPUT_TYPE_GENERAL_SIGN_EQUIPMENT = "GeneralSign";
-    public static final String INPUT_TYPE_GENERAL_SIGN_EQUIPMENT = OUTPUT_TYPE_GENERAL_SIGN_EQUIPMENT + INPUT_TYPE_POSTFIX;
-
     public static final String OUTPUT_TYPE_KEY_VALUES = "KeyValues";
     public static final String INPUT_TYPE_KEY_VALUES = OUTPUT_TYPE_KEY_VALUES + INPUT_TYPE_POSTFIX;
 
-    public static final String USER_PERMISSIONS = "userPermissions";
-    public static final String OUTPUT_TYPE_USER_PERMISSIONS = "UserPermissions";
-
-    public static final String ID = "id";
-    public static final String IDS = "ids";
-
-    public static final String SHORT_NAME = "shortName";
-    public static final String DESCRIPTION = "description";
-
-    public static final String AUDIBLE_SIGNALS_AVAILABLE = "audibleSignalsAvailable";
-    public static final String VISUAL_SIGNS_AVAILABLE = "visualSignsAvailable";
-
-    public static final String SANITARY_EQUIPMENT = "sanitaryEquipment";
-    public static final String GENERAL_SIGN = "generalSign";
-
-    public static final String NUMBER_OF_TOILETS = "numberOfToilets";
-    public static final String GENDER = "gender";
-
-    public static final String NUMBER_OF_SPACES_WITH_RECHARGE_POINT = "numberOfSpacesWithRechargePoint";
-
-    public static final String OUTPUT_TYPE_PRIVATE_CODE = "PrivateCode";
-    public static final String PRIVATE_CODE = "privateCode";
-    public static final String INPUT_TYPE_PRIVATE_CODE = OUTPUT_TYPE_PRIVATE_CODE + INPUT_TYPE_POSTFIX;
-
     public static final String CONTENT = "content";
-    public static final String SIGN_CONTENT_TYPE = "signContentType";
 
-    public static final String KEY_VALUES = "keyValues";
-    public static final String KEY = "key";
-    public static final String VALUES = "values";
-    public static final String VERSION = "version";
-    public static final String VERSION_COMMENT = "versionComment";
-    public static final String CHANGED_BY = "changedBy";
-    public static final String PUBLIC_CODE = "publicCode";
-
-    public static final String NAME = "name";
-    public static final String NAME_TYPE = "nameType";
-    public static final String ALTERNATIVE_NAMES = "alternativeNames";
-    public static final String VALUE = "value";
-    public static final String LANG = "lang";
-    public static final String TYPE = "type";
-
+    // Pagination fields
+    public static final String TOTAL_ELEMENTS = "totalElements";
     public static final String PAGE = "page";
     public static final String PAGE_ARG_DESCRIPTION = "Page number when using pagination - default is " + DEFAULT_PAGE_VALUE;
-
     public static final String SIZE = "size";
     public static final String SIZE_ARG_DESCRIPTION = "Number of hits per page when using pagination - default is " + DEFAULT_SIZE_VALUE;
 
-    public static final String ALL_VERSIONS = "allVersions";
-    public static final String ALL_VERSIONS_ARG_DESCRIPTION = "Fetch all versions for entities in result";
-
     public static final String VEHICLE_REGISTER = "VehicleRegister";
 
-    public static final String TRANSPORT_MODE = "transportMode";
-    public static final String TRANSPORT_MODES = "transportModes";
-    public static final String CREATED = "created";
-    public static final String CHANGED = "changed";
+    // Filter fields
     public static final String FILTER = "filter";
-    public static final String ORGANISATION_TYPE = "organisationType";
+    public static final String FILTER_TRANSPORT_MODES = "transportModes";
+    public static final String FILTER_ORGANISATION_TYPE = "organisationType";
+    public static final String FILTER_IDS = "ids";
+
+    // Property names
+    public static final String PROPERTY_TRANSPORT_MODE = "transportMode";
+    public static final String PROPERTY_CREATED = "created";
+    public static final String PROPERTY_CHANGED = "changed";
+    public static final String PROPERTY_LENGTH = "length";
+    public static final String PROPERTY_WIDTH = "width";
+    public static final String PROPERTY_HEIGHT = "height";
+    public static final String PROPERTY_TRANSPORT_TYPE = "transportType";
+    public static final String PROPERTY_VEHICLES = "vehicles";
+    public static final String PROPERTY_TYPE = "type";
+    public static final String PROPERTY_CHANGED_BY = "changedBy";
+    public static final String PROPERTY_SHORT_NAME = "shortName";
+    public static final String PROPERTY_DESCRIPTION = "description";
+
+    public static final String PROPERTY_KEY_VALUES = "keyValues";
+    public static final String PROPERTY_KEY = "key";
+    public static final String PROPERTY_VALUES = "values";
+    public static final String PROPERTY_VERSION = "version";
+    public static final String PROPERTY_VERSION_COMMENT = "versionComment";
+
+    public static final String PROPERTY_NAME = "name";
+    public static final String PROPERTY_VALUE = "value";
+    public static final String PROPERTY_LANG = "lang";
+
+    public static final String PROPERTY_VALID_BETWEEN_FROM_DATE = "fromDate";
+    public static final String PROPERTY_VALID_BETWEEN_TO_DATE = "toDate";
+    public static final String PROPERTY_ID = "id";
 
     // Root lists in GraphQL lists
     public static final String OUTPUT_TYPE_VEHICLE_TYPE_PAGE = "VehicleTypePage";
@@ -126,28 +96,26 @@ public class GraphQLNames {
     public static final String OUTPUT_TYPE_DECK_PLAN_PAGE = "DeckPlanPage";
     public static final String OUTPUT_TYPE_ORGANISATION_PAGE = "OrganisationPage";
 
-    public static final String TOTAL_ELEMENTS = "totalElements";
     public static final String INPUT_TYPE_VEHICLE_TYPE_FILTER = "VehicleTypeFilter";
     public static final String INPUT_TYPE_VEHICLE_FILTER = "VehicleFilter";
     public static final String INPUT_TYPE_ORGANISATIONS_FILTER = "OrganisationsFilter";
 
-    public static final String VEHICLE_TYPES = "vehicleTypes";
+    public static final String LIST_NAME_VEHICLE_TYPES = "vehicleTypes";
     public static final String OUTPUT_TYPE_VEHICLE_TYPE = "VehicleType";
-    public static final String VEHICLE_TYPE_DECK_PLAN = "deckPlan";
-    public static final String VEHICLE_TYPE_VEHICLE = "VehicleTypeVehicle";
+    public static final String OUTPUT_TYPE_VEHICLE_TYPE_VEHICLE = "VehicleTypeVehicle";
+    public static final String OUTPUT_TYPE_VEHICLE_TYPE_DECK_PLAN = "deckPlan";
 
-    public static final String DECK_PLANS = "deckPlans";
+    public static final String LIST_NAME_DECK_PLANS = "deckPlans";
     public static final String OUTPUT_TYPE_DECK_PLAN = "DeckPlan";
 
-    public static final String VEHICLE_VECHILE_TYPE = "transportType";
+    public static final String OUTPUT_TYPE_VEHICLE_VEHICLE_TYPE = "VehicleVehicleType";
 
-    public static final String LENGTH = "length";
-    public static final String WIDTH = "width";
-    public static final String HEIGHT = "height";
-
-    public static final String VEHICLES = "vehicles";
+    public static final String LIST_NAME_VEHICLES = "vehicles";
     public static final String OUTPUT_TYPE_VEHICLE = "Vehicle";
 
+    public static final String LIST_NAME_ORGANISATIONS = "organisations";
     public static final String OUTPUT_TYPE_ORGANISATION = "Organisation";
-    public static final String ORGANISATIONS = "organisations";
+
+    public static final String TYPE_TRANSPORT_MODE = "transportMode";
+    public static final String TYPE_ORGANISATION_TYPE = "organisationType";
 }

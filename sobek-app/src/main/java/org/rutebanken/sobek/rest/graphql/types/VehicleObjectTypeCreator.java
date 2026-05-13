@@ -31,7 +31,7 @@ public class VehicleObjectTypeCreator {
         var builder = newObject()
                 .name(typeName)
                 .field(newFieldDefinition()
-                        .name(ID)
+                        .name(PROPERTY_ID)
                         .type(GraphQLString))
                 .field(newFieldDefinition()
                         .name("registrationNumber")
@@ -40,11 +40,11 @@ public class VehicleObjectTypeCreator {
                         .name("operationalNumber")
                         .type(GraphQLString))
                 .field(newFieldDefinition()
-                        .name(VERSION)
+                        .name(PROPERTY_VERSION)
                         .type(GraphQLInt));
         if(vehicleTypeObjectType != null) {
                 builder.field(newFieldDefinition()
-                    .name(VEHICLE_VECHILE_TYPE)
+                    .name(PROPERTY_TRANSPORT_TYPE)
                     .type(vehicleTypeObjectType));
 
         }

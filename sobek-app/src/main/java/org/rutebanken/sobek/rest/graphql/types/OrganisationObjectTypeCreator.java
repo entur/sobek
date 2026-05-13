@@ -32,13 +32,13 @@ public class OrganisationObjectTypeCreator {
         return newObject()
                 .name(OUTPUT_TYPE_ORGANISATION)
                 .field(newFieldDefinition()
-                        .name(ID)
+                        .name(PROPERTY_ID)
                         .type(GraphQLString))
                 .field(newFieldDefinition()
-                        .name(NAME)
+                        .name(PROPERTY_NAME)
                         .type(embeddableMultilingualStringObjectType))
                 .field(newFieldDefinition()
-                        .name(TYPE)
+                        .name(PROPERTY_TYPE)
                         .type(organisationTypeEnumType))
                 .build();
     }

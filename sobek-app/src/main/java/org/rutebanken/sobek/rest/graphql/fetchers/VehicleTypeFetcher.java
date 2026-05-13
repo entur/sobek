@@ -49,8 +49,8 @@ class VehicleTypeFetcher implements DataFetcher<Map<String, Object>> {
 
         Map<String, Object> filter = env.getArgument(FILTER);
         if (filter != null) {
-            ids = (List<String>) filter.get(IDS);
-            modes = (List<AllPublicTransportModesEnumeration>) filter.get(TRANSPORT_MODES);
+            ids = (List<String>) filter.get(FILTER_IDS);
+            modes = (List<AllPublicTransportModesEnumeration>) filter.get(FILTER_TRANSPORT_MODES);
         }
 
         var result = vehicleTypeRepository.findCurrentFiltered(ids, modes, PageRequest.of(page, size));

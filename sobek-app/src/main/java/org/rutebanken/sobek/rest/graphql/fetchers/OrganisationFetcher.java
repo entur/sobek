@@ -48,8 +48,8 @@ class OrganisationFetcher implements DataFetcher<Map<String, Object>> {
         List<String> ids = null;
         OrganisationTypeEnumeration type = null;
         if (filter != null) {
-            ids = (List<String>) filter.get(IDS);
-            Object orgArg = filter.get(ORGANISATION_TYPE);
+            ids = (List<String>) filter.get(FILTER_IDS);
+            Object orgArg = filter.get(FILTER_ORGANISATION_TYPE);
             if (orgArg instanceof org.rutebanken.netex.model.OrganisationTypeEnumeration t) {
                 type = t;
             } else if (orgArg instanceof String s) {

@@ -23,8 +23,8 @@ import org.springframework.stereotype.Component;
 import java.time.Instant;
 import java.util.Map;
 
-import static org.rutebanken.sobek.rest.graphql.GraphQLNames.VALID_BETWEEN_FROM_DATE;
-import static org.rutebanken.sobek.rest.graphql.GraphQLNames.VALID_BETWEEN_TO_DATE;
+import static org.rutebanken.sobek.rest.graphql.GraphQLNames.PROPERTY_VALID_BETWEEN_FROM_DATE;
+import static org.rutebanken.sobek.rest.graphql.GraphQLNames.PROPERTY_VALID_BETWEEN_TO_DATE;
 
 @Component
 public class ValidBetweenMapper {
@@ -44,12 +44,12 @@ public class ValidBetweenMapper {
 
         ValidBetween validBetween = new ValidBetween();
 
-        if(input.get(VALID_BETWEEN_FROM_DATE) != null) {
-            validBetween.setFromDate((Instant) input.get(VALID_BETWEEN_FROM_DATE));
+        if(input.get(PROPERTY_VALID_BETWEEN_FROM_DATE) != null) {
+            validBetween.setFromDate((Instant) input.get(PROPERTY_VALID_BETWEEN_FROM_DATE));
         }
 
-        if(input.get(VALID_BETWEEN_TO_DATE) != null) {
-            validBetween.setToDate((Instant) input.get(VALID_BETWEEN_TO_DATE));
+        if(input.get(PROPERTY_VALID_BETWEEN_TO_DATE) != null) {
+            validBetween.setToDate((Instant) input.get(PROPERTY_VALID_BETWEEN_TO_DATE));
         }
 
         return validBetween;

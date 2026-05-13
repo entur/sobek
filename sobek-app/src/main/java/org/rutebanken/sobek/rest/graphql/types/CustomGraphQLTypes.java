@@ -22,11 +22,6 @@ import graphql.schema.GraphQLList;
 import graphql.schema.GraphQLNonNull;
 import graphql.schema.GraphQLObjectType;
 import org.rutebanken.netex.model.OrganisationTypeEnumeration;
-import org.rutebanken.sobek.model.GenderLimitationEnumeration;
-import org.rutebanken.sobek.model.ModificationEnumeration;
-import org.rutebanken.sobek.model.NameTypeEnumeration;
-import org.rutebanken.sobek.model.SignContentEnumeration;
-import org.rutebanken.sobek.model.job.ExportParams;
 import org.rutebanken.sobek.model.vehicle.AllPublicTransportModesEnumeration;
 
 import java.lang.reflect.Method;
@@ -40,13 +35,8 @@ import static org.rutebanken.sobek.rest.graphql.GraphQLNames.*;
 
 public class CustomGraphQLTypes {
 
-    public static GraphQLEnumType signContentTypeEnum = createCustomEnumType(SIGN_CONTENT_TYPE, SignContentEnumeration.class);
-    public static GraphQLEnumType genderTypeEnum = createCustomEnumType(GENDER, GenderLimitationEnumeration.class);
-    public static GraphQLEnumType nameTypeEnum = createCustomEnumType(NAME_TYPE, NameTypeEnumeration.class);
-    public static GraphQLEnumType versionValidityEnumType = createCustomEnumType(ExportParams.VersionValidity.class.getSimpleName(), ExportParams.VersionValidity.class);
-    public static GraphQLEnumType modificationEnumerationType = createCustomEnumType("ModificationEnumerationType", ModificationEnumeration.class);
-    public static GraphQLEnumType transportModeEnumType = createCustomEnumType(TRANSPORT_MODE, AllPublicTransportModesEnumeration.class);
-    public static GraphQLEnumType organisationTypeEnumType = createCustomEnumType(ORGANISATION_TYPE, OrganisationTypeEnumeration.class);
+    public static GraphQLEnumType transportModeEnumType = createCustomEnumType(TYPE_TRANSPORT_MODE, AllPublicTransportModesEnumeration.class);
+    public static GraphQLEnumType organisationTypeEnumType = createCustomEnumType(TYPE_ORGANISATION_TYPE, OrganisationTypeEnumeration.class);
 
 
     public static GraphQLEnumType createCustomEnumType(String name, Class c) {
@@ -80,10 +70,10 @@ public class CustomGraphQLTypes {
     public static GraphQLObjectType embeddableMultilingualStringObjectType = newObject()
             .name(OUTPUT_TYPE_EMBEDDABLE_MULTILINGUAL_STRING)
             .field(newFieldDefinition()
-                    .name(VALUE)
+                    .name(PROPERTY_VALUE)
                     .type(GraphQLString))
             .field(newFieldDefinition()
-                    .name(LANG)
+                    .name(PROPERTY_LANG)
                     .type(GraphQLString))
             .build();
 
@@ -91,20 +81,20 @@ public class CustomGraphQLTypes {
     public static GraphQLInputObjectType embeddableMultiLingualStringInputObjectType = GraphQLInputObjectType.newInputObject()
             .name(INPUT_TYPE_EMBEDDABLE_MULTILINGUAL_STRING)
             .field(newInputObjectField()
-                    .name(VALUE)
+                    .name(PROPERTY_VALUE)
                     .type(GraphQLString))
             .field(newInputObjectField()
-                    .name(LANG)
+                    .name(PROPERTY_LANG)
                     .type(GraphQLString))
             .build();
 
     public static GraphQLObjectType keyValuesObjectType = newObject()
             .name(OUTPUT_TYPE_KEY_VALUES)
             .field(newFieldDefinition()
-                    .name(KEY)
+                    .name(PROPERTY_KEY)
                     .type(GraphQLString))
             .field(newFieldDefinition()
-                    .name(VALUES)
+                    .name(PROPERTY_VALUES)
                     .type(new GraphQLList(GraphQLString)))
             .build();
 
@@ -112,15 +102,15 @@ public class CustomGraphQLTypes {
     public static GraphQLInputObjectType keyValuesObjectInputType = GraphQLInputObjectType.newInputObject()
             .name(INPUT_TYPE_KEY_VALUES)
             .field(newInputObjectField()
-                    .name(KEY)
+                    .name(PROPERTY_KEY)
                     .type(GraphQLString))
             .field(newInputObjectField()
-                    .name(VALUES)
+                    .name(PROPERTY_VALUES)
                     .type(new GraphQLList(GraphQLString)))
             .build();
 
     public static GraphQLFieldDefinition netexIdFieldDefinition = newFieldDefinition()
-            .name(ID)
+            .name(PROPERTY_ID)
             .type(GraphQLString)
             .build();
 

@@ -20,14 +20,14 @@ import org.rutebanken.sobek.model.EmbeddableMultilingualString;
 
 import java.util.Map;
 
-import static org.rutebanken.sobek.rest.graphql.GraphQLNames.LANG;
-import static org.rutebanken.sobek.rest.graphql.GraphQLNames.VALUE;
+import static org.rutebanken.sobek.rest.graphql.GraphQLNames.PROPERTY_LANG;
+import static org.rutebanken.sobek.rest.graphql.GraphQLNames.PROPERTY_VALUE;
 
 public class EmbeddableMultilingualStringMapper {
 
     public static EmbeddableMultilingualString getEmbeddableString(Map map) {
         if (map != null) {
-            return new EmbeddableMultilingualString((String) map.get(VALUE), (String) map.get(LANG));
+            return new EmbeddableMultilingualString((String) map.get(PROPERTY_VALUE), (String) map.get(PROPERTY_LANG));
         }
         return null;
     }

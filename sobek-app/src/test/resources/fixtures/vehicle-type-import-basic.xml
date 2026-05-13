@@ -26,7 +26,41 @@
                     <Height>5000</Height>
                     <Weight>20000</Weight>
                 </VehicleType>
+                <VehicleType id="AKT:VehicleType:124" version="1">
+                    <Name lang="nb"><Text>Train</Text></Name>
+                    <PropulsionTypes>electric</PropulsionTypes>
+                    <FuelTypes>battery</FuelTypes>
+                    <MaximumVelocity>120</MaximumVelocity>
+                    <TransportMode>rail</TransportMode>
+                    <PassengerCapacity id="AKT:PassengerCapacity:124" version="1">
+                        <TotalCapacity>50</TotalCapacity>
+                        <SeatingCapacity>30</SeatingCapacity>
+                        <StandingCapacity>20</StandingCapacity>
+                    </PassengerCapacity>
+                    <Length>25000</Length>
+                    <Width>5000</Width>
+                    <Height>5000</Height>
+                    <Weight>20000</Weight>
+                </VehicleType>
             </vehicleTypes>
+            <vehicles>
+                <Vehicle id="AKT:Vehicle:bus" version="1">
+                    <ValidBetween>
+                        <FromDate>2026-04-17T00:00:00</FromDate>
+                    </ValidBetween>
+                    <Name lang="nb">Bus Vehicle</Name>
+                    <RegistrationNumber>BUS-0001</RegistrationNumber>
+                    <TransportTypeRef ref="AKT:VehicleType:123"/>
+                </Vehicle>
+                <Vehicle id="AKT:Vehicle:rail" version="1">
+                    <ValidBetween>
+                        <FromDate>2026-04-17T00:00:00</FromDate>
+                    </ValidBetween>
+                    <Name lang="nb">Rail Vehicle</Name>
+                    <RegistrationNumber>RAIL-0001</RegistrationNumber>
+                    <TransportTypeRef ref="AKT:VehicleType:124"/>
+                </Vehicle>
+            </vehicles>
         </ResourceFrame>
     </dataObjects>
 </PublicationDelivery>

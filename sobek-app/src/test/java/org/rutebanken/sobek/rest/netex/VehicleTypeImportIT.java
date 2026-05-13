@@ -67,7 +67,7 @@ class VehicleTypeImportIT {
 
     VehicleType imported =
         (VehicleType)
-            responseFrame.getVehicleTypes().getTransportType_Dummy().get(0).getValue();
+            responseFrame.getVehicleTypes().getTransportType_Dummy().getFirst().getValue();
 
     assertThat(imported.getId()).startsWith("NMR:VehicleType:");
     assertThat(imported.getVersion()).isEqualTo("1");
@@ -117,11 +117,11 @@ class VehicleTypeImportIT {
                         .orElseThrow(() -> new AssertionError("No ResourceFrame in response"));
 
         assertThat(responseFrame.getVehicleTypes()).isNotNull();
-        assertThat(responseFrame.getVehicleTypes().getTransportType_Dummy()).hasSize(1);
+        assertThat(responseFrame.getVehicleTypes().getTransportType_Dummy()).hasSize(2);
 
         VehicleType imported =
                 (VehicleType)
-                        responseFrame.getVehicleTypes().getTransportType_Dummy().get(0).getValue();
+                        responseFrame.getVehicleTypes().getTransportType_Dummy().getFirst().getValue();
 
         assertThat(imported.getId()).startsWith("AKT:VehicleType:");
         assertThat(imported.getVersion()).isEqualTo("1");

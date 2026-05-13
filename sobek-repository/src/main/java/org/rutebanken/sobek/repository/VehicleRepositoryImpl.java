@@ -6,6 +6,7 @@ import org.rutebanken.sobek.model.vehicle.Vehicle;
 import org.rutebanken.sobek.repository.utils.QueryHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -79,7 +80,7 @@ public class VehicleRepositoryImpl implements VehicleRepositoryCustom {
 
 
     @Override
-    public PageImpl<Vehicle> findCurrentFiltered(List<String> ids, List<AllPublicTransportModesEnumeration> transportModes, Pageable pageable) {
+    public Page<Vehicle> findCurrentFiltered(List<String> ids, List<AllPublicTransportModesEnumeration> transportModes, Pageable pageable) {
         Instant now = Instant.now();
 
         // Build dynamic WHERE suffix for optional filters
@@ -93,7 +94,7 @@ public class VehicleRepositoryImpl implements VehicleRepositoryCustom {
 
         String fetchJpql = "SELECT DISTINCT v FROM Vehicle v " +
                 "LEFT JOIN FETCH v.transportType vt WHERE " +
-                QueryHelper.ObjectValid_Condition("v", "now") + " AND " + QueryHelper.ObjectValid_Condition("vt", "now") + filterSuffix +
+                QueryHelper.objectValidCondition("v", "now") + " AND " + QueryHelper.objectValidCondition("vt", "now") + filterSuffix +
                 " ORDER BY v.id";
 
         if (pageable.isUnpaged()) {
@@ -106,11 +107,8 @@ public class VehicleRepositoryImpl implements VehicleRepositoryCustom {
         // Count — no Vehicle JOIN, no DISTINCT needed
         String countJpql = "SELECT COUNT(v) FROM Vehicle v " +
                 "LEFT JOIN v.transportType vt " +
-                "WHERE " + QueryHelper.ObjectValid_Condition("v", "now") +
-                " AND " + QueryHelper.ObjectValid_Condition("vt", "now") + filterSuffix;
-        if(transportModes != null && !transportModes.isEmpty()) {
-            countJpql += " AND vt.transportMode in :transportModes";
-        }
+                "WHERE " + QueryHelper.objectValidCondition("v", "now") +
+                " AND " + QueryHelper.objectValidCondition("vt", "now") + filterSuffix;
 
         TypedQuery<Long> countQuery = entityManager.createQuery(countJpql, Long.class);
         countQuery.setParameter("now", now);

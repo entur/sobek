@@ -74,7 +74,7 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
     }
 
     @Override
-    public Page<VehicleType> findCurrentFiltered(List<String> ids, AllPublicTransportModesEnumeration transportMode, Pageable pageable) {
+    public Page<VehicleType> findCurrentFiltered(List<String> ids, List<AllPublicTransportModesEnumeration> transportModes, Pageable pageable) {
         Instant now = Instant.now();
 
         // Build dynamic WHERE suffix for optional filters
@@ -82,8 +82,8 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
         if (ids != null && !ids.isEmpty()) {
             filterSuffix.append(" AND vt.netexId IN :ids");
         }
-        if (transportMode != null) {
-            filterSuffix.append(" AND vt.transportMode = :transportMode");
+        if (transportModes != null && !transportModes.isEmpty()) {
+            filterSuffix.append(" AND vt.transportMode IN :transportModes");
         }
 
         String fetchJpql = "SELECT DISTINCT vt FROM VehicleType vt " +
@@ -94,7 +94,7 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
         if (pageable.isUnpaged()) {
             TypedQuery<VehicleType> fetchQuery = entityManager.createQuery(fetchJpql, VehicleType.class);
             fetchQuery.setParameter("now", now);
-            setFilterParams(fetchQuery, ids, transportMode);
+            setFilterParams(fetchQuery, ids, transportModes);
             return new PageImpl<>(fetchQuery.getResultList());
         }
 
@@ -103,25 +103,25 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
                 VT_CURRENT_WHERE + filterSuffix;
         TypedQuery<Long> countQuery = entityManager.createQuery(countJpql, Long.class);
         countQuery.setParameter("now", now);
-        setFilterParams(countQuery, ids, transportMode);
+        setFilterParams(countQuery, ids, transportModes);
         long total = countQuery.getSingleResult();
 
         // Fetch — in-memory pagination (HHH90003004) is acceptable for this small dataset
         TypedQuery<VehicleType> fetchQuery = entityManager.createQuery(fetchJpql, VehicleType.class);
         fetchQuery.setParameter("now", now);
-        setFilterParams(fetchQuery, ids, transportMode);
+        setFilterParams(fetchQuery, ids, transportModes);
         fetchQuery.setFirstResult((int) pageable.getOffset());
         fetchQuery.setMaxResults(pageable.getPageSize());
 
         return new PageImpl<>(fetchQuery.getResultList(), pageable, total);
     }
 
-    private void setFilterParams(Query query, List<String> ids, AllPublicTransportModesEnumeration transportMode) {
+    private void setFilterParams(Query query, List<String> ids, List<AllPublicTransportModesEnumeration> transportModes) {
         if (ids != null && !ids.isEmpty()) {
             query.setParameter("ids", ids);
         }
-        if (transportMode != null) {
-            query.setParameter("transportMode", transportMode);
+        if (transportModes != null && !transportModes.isEmpty()) {
+            query.setParameter("transportModes", transportModes);
         }
     }
 

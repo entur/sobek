@@ -23,30 +23,32 @@ import static graphql.Scalars.GraphQLString;
 import static graphql.schema.GraphQLFieldDefinition.newFieldDefinition;
 import static graphql.schema.GraphQLObjectType.newObject;
 import static org.rutebanken.sobek.rest.graphql.GraphQLNames.*;
-import static org.rutebanken.sobek.rest.graphql.types.CustomGraphQLTypes.embeddableMultilingualStringObjectType;
 
 @Component
 public class VehicleObjectTypeCreator {
 
-    public GraphQLObjectType create() {
-        return newObject()
-                .name(OUTPUT_TYPE_VEHICLE)
+    public GraphQLObjectType create(String typeName, GraphQLObjectType vehicleTypeObjectType) {
+        var builder = newObject()
+                .name(typeName)
                 .field(newFieldDefinition()
                         .name(ID)
-                        .type(GraphQLString))
-                .field(newFieldDefinition()
-                        .name(DESCRIPTION)
                         .type(GraphQLString))
                 .field(newFieldDefinition()
                         .name("registrationNumber")
                         .type(GraphQLString))
                 .field(newFieldDefinition()
-                        .name(NAME)
-                        .type(embeddableMultilingualStringObjectType))
+                        .name("operationalNumber")
+                        .type(GraphQLString))
                 .field(newFieldDefinition()
                         .name(VERSION)
-                        .type(GraphQLInt))
-                .build();
+                        .type(GraphQLInt));
+        if(vehicleTypeObjectType != null) {
+                builder.field(newFieldDefinition()
+                    .name(VEHICLE_VECHILE_TYPE)
+                    .type(vehicleTypeObjectType));
+
+        }
+        return builder.build();
     }
 
 }

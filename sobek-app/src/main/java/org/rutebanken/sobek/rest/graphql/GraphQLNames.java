@@ -114,24 +114,32 @@ public class GraphQLNames {
     public static final String VEHICLE_REGISTER = "VehicleRegister";
 
     public static final String TRANSPORT_MODE = "transportMode";
+    public static final String TRANSPORT_MODES = "transportModes";
     public static final String CREATED = "created";
     public static final String CHANGED = "changed";
     public static final String FILTER = "filter";
     public static final String ORGANISATION_TYPE = "organisationType";
 
+    // Root lists in GraphQL lists
     public static final String OUTPUT_TYPE_VEHICLE_TYPE_PAGE = "VehicleTypePage";
+    public static final String OUTPUT_TYPE_VEHICLE_PAGE = "VehiclePage";
     public static final String OUTPUT_TYPE_DECK_PLAN_PAGE = "DeckPlanPage";
     public static final String OUTPUT_TYPE_ORGANISATION_PAGE = "OrganisationPage";
+
     public static final String TOTAL_ELEMENTS = "totalElements";
     public static final String INPUT_TYPE_VEHICLE_TYPE_FILTER = "VehicleTypeFilter";
+    public static final String INPUT_TYPE_VEHICLE_FILTER = "VehicleFilter";
     public static final String INPUT_TYPE_ORGANISATIONS_FILTER = "OrganisationsFilter";
 
     public static final String VEHICLE_TYPES = "vehicleTypes";
     public static final String OUTPUT_TYPE_VEHICLE_TYPE = "VehicleType";
     public static final String VEHICLE_TYPE_DECK_PLAN = "deckPlan";
+    public static final String VEHICLE_TYPE_VEHICLE = "VehicleTypeVehicle";
 
     public static final String DECK_PLANS = "deckPlans";
     public static final String OUTPUT_TYPE_DECK_PLAN = "DeckPlan";
+
+    public static final String VEHICLE_VECHILE_TYPE = "transportType";
 
     public static final String LENGTH = "length";
     public static final String WIDTH = "width";

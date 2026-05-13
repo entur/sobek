@@ -29,9 +29,9 @@ import static org.rutebanken.sobek.rest.graphql.types.CustomGraphQLTypes.*;
 @Component
 public class VehicleTypeObjectTypeCreator {
 
-    public GraphQLObjectType create(GraphQLObjectType deckPlanObjectType, GraphQLObjectType vehicleObjectType, GraphQLScalarType dateScalar) {
-        return newObject()
-                .name(OUTPUT_TYPE_VEHICLE_TYPE)
+    public GraphQLObjectType create(String typeName, GraphQLObjectType deckPlanObjectType, GraphQLObjectType vehicleObjectType, GraphQLScalarType dateScalar) {
+        var builder = newObject()
+                .name(typeName)
                 .field(newFieldDefinition()
                         .name(ID)
                         .type(GraphQLString))
@@ -69,18 +69,22 @@ public class VehicleTypeObjectTypeCreator {
                         .type(GraphQLString))
                 .field(newFieldDefinition()
                         .name(VERSION_COMMENT)
-                        .type(GraphQLString))
+                        .type(GraphQLString));
                 // TODO #85: includedIn is @Transient — needs Flyway migration to add
                 // self-referencing FK (parent VehicleType), then persist via JPA @ManyToOne,
                 // update MapStruct mappers, and wire a custom DataFetcher here.
                 // NeTEx: IncludedIn is a child-to-parent ref for VehicleType hierarchies.
-                .field(newFieldDefinition()
-                        .name(VEHICLE_TYPE_DECK_PLAN)
-                        .type(deckPlanObjectType))
-                .field(newFieldDefinition()
-                        .name(VEHICLES)
-                        .type(new GraphQLList(vehicleObjectType)))
-                .build();
+        if(deckPlanObjectType != null) {
+            builder.field(newFieldDefinition()
+                    .name(VEHICLE_TYPE_DECK_PLAN)
+                    .type(deckPlanObjectType));
+        }
+        if(vehicleObjectType != null) {
+                builder.field(newFieldDefinition()
+                    .name(VEHICLES)
+                    .type(new GraphQLList(vehicleObjectType)));
+        }
+        return builder.build();
     }
 
 }

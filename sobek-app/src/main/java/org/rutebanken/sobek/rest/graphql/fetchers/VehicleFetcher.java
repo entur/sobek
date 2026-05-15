@@ -18,7 +18,7 @@ package org.rutebanken.sobek.rest.graphql.fetchers;
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
 import org.rutebanken.sobek.model.vehicle.AllPublicTransportModesEnumeration;
-import org.rutebanken.sobek.repository.VehicleTypeRepository;
+import org.rutebanken.sobek.repository.VehicleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -31,12 +31,12 @@ import static org.rutebanken.sobek.rest.graphql.GraphQLNames.*;
 import static org.rutebanken.sobek.rest.graphql.RegisterGraphQLSchema.DEFAULT_PAGE_VALUE;
 import static org.rutebanken.sobek.rest.graphql.RegisterGraphQLSchema.DEFAULT_SIZE_VALUE;
 
-@Service("vehicleTypeFetcher")
+@Service("vehicleFetcher")
 @Transactional
-class VehicleTypeFetcher implements DataFetcher<Map<String, Object>> {
+class VehicleFetcher implements DataFetcher<Map<String, Object>> {
 
     @Autowired
-    private VehicleTypeRepository vehicleTypeRepository;
+    private VehicleRepository vehicleRepository;
 
     @Override
     @SuppressWarnings("unchecked")
@@ -53,7 +53,7 @@ class VehicleTypeFetcher implements DataFetcher<Map<String, Object>> {
             modes = (List<AllPublicTransportModesEnumeration>) filter.get(FILTER_TRANSPORT_MODES);
         }
 
-        var result = vehicleTypeRepository.findCurrentFiltered(ids, modes, PageRequest.of(page, size));
+        var result = vehicleRepository.findCurrentFiltered(ids, modes, PageRequest.of(page, size));
         return PageResult.from(result, page, size);
     }
 }

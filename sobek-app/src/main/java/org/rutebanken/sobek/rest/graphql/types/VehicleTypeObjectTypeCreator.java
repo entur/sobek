@@ -29,58 +29,62 @@ import static org.rutebanken.sobek.rest.graphql.types.CustomGraphQLTypes.*;
 @Component
 public class VehicleTypeObjectTypeCreator {
 
-    public GraphQLObjectType create(GraphQLObjectType deckPlanObjectType, GraphQLObjectType vehicleObjectType, GraphQLScalarType dateScalar) {
-        return newObject()
-                .name(OUTPUT_TYPE_VEHICLE_TYPE)
+    public GraphQLObjectType create(String typeName, GraphQLObjectType deckPlanObjectType, GraphQLObjectType vehicleObjectType, GraphQLScalarType dateScalar) {
+        var builder = newObject()
+                .name(typeName)
                 .field(newFieldDefinition()
-                        .name(ID)
+                        .name(PROPERTY_ID)
                         .type(GraphQLString))
                 .field(newFieldDefinition()
-                        .name(NAME)
+                        .name(PROPERTY_NAME)
                         .type(embeddableMultilingualStringObjectType))
                 .field(newFieldDefinition()
-                        .name(SHORT_NAME)
+                        .name(PROPERTY_SHORT_NAME)
                         .type(embeddableMultilingualStringObjectType))
                 .field(newFieldDefinition()
-                        .name(TRANSPORT_MODE)
+                        .name(PROPERTY_TRANSPORT_MODE)
                         .type(transportModeEnumType))
                 .field(newFieldDefinition()
-                        .name(LENGTH)
+                        .name(PROPERTY_LENGTH)
                         .type(GraphQLFloat))
                 .field(newFieldDefinition()
-                        .name(WIDTH)
+                        .name(PROPERTY_WIDTH)
                         .type(GraphQLFloat))
                 .field(newFieldDefinition()
-                        .name(HEIGHT)
+                        .name(PROPERTY_HEIGHT)
                         .type(GraphQLFloat))
                 .field(newFieldDefinition()
-                        .name(VERSION)
+                        .name(PROPERTY_VERSION)
                         .type(GraphQLInt))
                 .field(newFieldDefinition()
-                        .name(CREATED)
+                        .name(PROPERTY_CREATED)
                         .type(dateScalar)
                         .description(DATE_SCALAR_DESCRIPTION))
                 .field(newFieldDefinition()
-                        .name(CHANGED)
+                        .name(PROPERTY_CHANGED)
                         .type(dateScalar)
                         .description(DATE_SCALAR_DESCRIPTION))
                 .field(newFieldDefinition()
-                        .name(CHANGED_BY)
+                        .name(PROPERTY_CHANGED_BY)
                         .type(GraphQLString))
                 .field(newFieldDefinition()
-                        .name(VERSION_COMMENT)
-                        .type(GraphQLString))
+                        .name(PROPERTY_VERSION_COMMENT)
+                        .type(GraphQLString));
                 // TODO #85: includedIn is @Transient — needs Flyway migration to add
                 // self-referencing FK (parent VehicleType), then persist via JPA @ManyToOne,
                 // update MapStruct mappers, and wire a custom DataFetcher here.
                 // NeTEx: IncludedIn is a child-to-parent ref for VehicleType hierarchies.
-                .field(newFieldDefinition()
-                        .name(VEHICLE_TYPE_DECK_PLAN)
-                        .type(deckPlanObjectType))
-                .field(newFieldDefinition()
-                        .name(VEHICLES)
-                        .type(new GraphQLList(vehicleObjectType)))
-                .build();
+        if(deckPlanObjectType != null) {
+            builder.field(newFieldDefinition()
+                    .name(OUTPUT_TYPE_VEHICLE_TYPE_DECK_PLAN)
+                    .type(deckPlanObjectType));
+        }
+        if(vehicleObjectType != null) {
+                builder.field(newFieldDefinition()
+                    .name(PROPERTY_VEHICLES)
+                    .type(new GraphQLList(vehicleObjectType)));
+        }
+        return builder.build();
     }
 
 }

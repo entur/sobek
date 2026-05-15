@@ -23,30 +23,32 @@ import static graphql.Scalars.GraphQLString;
 import static graphql.schema.GraphQLFieldDefinition.newFieldDefinition;
 import static graphql.schema.GraphQLObjectType.newObject;
 import static org.rutebanken.sobek.rest.graphql.GraphQLNames.*;
-import static org.rutebanken.sobek.rest.graphql.types.CustomGraphQLTypes.embeddableMultilingualStringObjectType;
 
 @Component
 public class VehicleObjectTypeCreator {
 
-    public GraphQLObjectType create() {
-        return newObject()
-                .name(OUTPUT_TYPE_VEHICLE)
+    public GraphQLObjectType create(String typeName, GraphQLObjectType vehicleTypeObjectType) {
+        var builder = newObject()
+                .name(typeName)
                 .field(newFieldDefinition()
-                        .name(ID)
-                        .type(GraphQLString))
-                .field(newFieldDefinition()
-                        .name(DESCRIPTION)
+                        .name(PROPERTY_ID)
                         .type(GraphQLString))
                 .field(newFieldDefinition()
                         .name("registrationNumber")
                         .type(GraphQLString))
                 .field(newFieldDefinition()
-                        .name(NAME)
-                        .type(embeddableMultilingualStringObjectType))
+                        .name("operationalNumber")
+                        .type(GraphQLString))
                 .field(newFieldDefinition()
-                        .name(VERSION)
-                        .type(GraphQLInt))
-                .build();
+                        .name(PROPERTY_VERSION)
+                        .type(GraphQLInt));
+        if(vehicleTypeObjectType != null) {
+                builder.field(newFieldDefinition()
+                    .name(PROPERTY_TRANSPORT_TYPE)
+                    .type(vehicleTypeObjectType));
+
+        }
+        return builder.build();
     }
 
 }

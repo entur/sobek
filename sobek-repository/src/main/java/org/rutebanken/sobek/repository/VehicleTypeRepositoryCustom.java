@@ -26,7 +26,7 @@ public interface VehicleTypeRepositoryCustom extends DataManagedObjectStructureR
 
     List<VehicleType> findAllCurrent();
 
-    Page<VehicleType> findCurrentFiltered(List<String> ids, AllPublicTransportModesEnumeration transportMode, Pageable pageable);
+    Page<VehicleType> findCurrentFiltered(List<String> ids, List<AllPublicTransportModesEnumeration> transportModes, Pageable pageable);
 
     void moveToDeckPlan(Long fromDeckPlanId, Long toDeckPlanId);
 }

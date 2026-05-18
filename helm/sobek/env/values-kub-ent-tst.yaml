@@ -31,3 +31,7 @@ rbac:
 ingress:
   enabled: true
   domainName: .staging.entur.io
+
+netex:
+  organisations:
+    netex-http-uri: https://api.dev.entur.io/agreements/v1/adapter/transmodel/export?allOrganisations=true

@@ -95,5 +95,5 @@ data:
     server.compression.mime-types=application/json,application/xml,text/html,text/xml,text/plain
 
     # For Entur Org registry
-    netex.organisations.netex-http-uri={{ .Values.netex.organisations.netex-http-uri }}
+    netex.organisations.netex-http-uri={{ .Values.netex.organisations.netex.http.uri }}
     spring.codec.max-in-memory-size=500KB

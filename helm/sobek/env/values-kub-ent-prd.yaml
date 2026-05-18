@@ -34,4 +34,6 @@ ingress:
 
 netex:
   organisations:
-    netex-http-uri: https://api.dev.entur.io/agreements/v1/adapter/transmodel/export?allOrganisations=true
+    netex:
+      http:
+        uri: https://api.entur.io/agreements/v1/adapter/transmodel/export?allOrganisations=true

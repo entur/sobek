@@ -16,6 +16,7 @@
 package org.rutebanken.sobek.rest.graphql.types;
 
 import graphql.schema.GraphQLObjectType;
+import graphql.schema.GraphQLScalarType;
 import org.springframework.stereotype.Component;
 
 import static graphql.Scalars.GraphQLInt;
@@ -23,22 +24,40 @@ import static graphql.Scalars.GraphQLString;
 import static graphql.schema.GraphQLFieldDefinition.newFieldDefinition;
 import static graphql.schema.GraphQLObjectType.newObject;
 import static org.rutebanken.sobek.rest.graphql.GraphQLNames.*;
+import static org.rutebanken.sobek.rest.graphql.types.CustomGraphQLTypes.embeddableMultilingualStringObjectType;
 
 @Component
 public class VehicleObjectTypeCreator {
 
-    public GraphQLObjectType create(String typeName, GraphQLObjectType vehicleTypeObjectType) {
+    public GraphQLObjectType create(String typeName, GraphQLObjectType vehicleTypeObjectType, GraphQLScalarType dateScalar) {
         var builder = newObject()
                 .name(typeName)
                 .field(newFieldDefinition()
                         .name(PROPERTY_ID)
                         .type(GraphQLString))
                 .field(newFieldDefinition()
+                        .name(PROPERTY_NAME)
+                        .type(embeddableMultilingualStringObjectType))
+                .field(newFieldDefinition()
+                        .name(PROPERTY_DESCRIPTION)
+                        .type(embeddableMultilingualStringObjectType))
+                .field(newFieldDefinition()
                         .name("registrationNumber")
                         .type(GraphQLString))
                 .field(newFieldDefinition()
                         .name("operationalNumber")
                         .type(GraphQLString))
+                .field(newFieldDefinition()
+                        .name("chassisNumber")
+                        .type(GraphQLString))
+                .field(newFieldDefinition()
+                        .name("buildDate")
+                        .type(dateScalar)
+                        .description(DATE_SCALAR_DESCRIPTION))
+                .field(newFieldDefinition()
+                        .name("registrationDate")
+                        .type(dateScalar)
+                        .description(DATE_SCALAR_DESCRIPTION))
                 .field(newFieldDefinition()
                         .name(PROPERTY_VERSION)
                         .type(GraphQLInt));

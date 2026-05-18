@@ -96,7 +96,7 @@ public class RegisterGraphQLSchema {
         GraphQLObjectType deckPlanPageType = createPageType(OUTPUT_TYPE_DECK_PLAN_PAGE, deckPlanObjectType);
 
         // Create type for the vehicleTypes query, including vehicles (without vehicle type child) and deck plan in the structure
-        GraphQLObjectType vehicleTypeObjectType = vehicleTypeObjectTypeCreator.create(OUTPUT_TYPE_VEHICLE_TYPE, deckPlanObjectType, vehicleObjectTypeCreator.create(OUTPUT_TYPE_VEHICLE_TYPE_VEHICLE, null), dateScalar.getGraphQLDateScalar());
+        GraphQLObjectType vehicleTypeObjectType = vehicleTypeObjectTypeCreator.create(OUTPUT_TYPE_VEHICLE_TYPE, deckPlanObjectType, vehicleObjectTypeCreator.create(OUTPUT_TYPE_VEHICLE_TYPE_VEHICLE, null, dateScalar.getGraphQLDateScalar()), dateScalar.getGraphQLDateScalar());
         GraphQLObjectType vehicleTypePageType = createPageType(OUTPUT_TYPE_VEHICLE_TYPE_PAGE, vehicleTypeObjectType);
         GraphQLInputObjectType vehicleTypeFilterInput = newInputObject()
                 .name(INPUT_TYPE_VEHICLE_TYPE_FILTER)
@@ -114,7 +114,13 @@ public class RegisterGraphQLSchema {
                 .build();
 
         // Create type for the vehicles query, including their vehicle type, but each vehicle type doesn't include it's structure
-        GraphQLObjectType vehiclePageType = createPageType(OUTPUT_TYPE_VEHICLE_PAGE, vehicleObjectTypeCreator.create(OUTPUT_TYPE_VEHICLE, vehicleTypeObjectTypeCreator.create(OUTPUT_TYPE_VEHICLE_VEHICLE_TYPE, null, null, dateScalar.getGraphQLDateScalar())));
+        GraphQLObjectType vehiclePageType = createPageType(OUTPUT_TYPE_VEHICLE_PAGE,
+                vehicleObjectTypeCreator.create(OUTPUT_TYPE_VEHICLE,
+                        vehicleTypeObjectTypeCreator.create(OUTPUT_TYPE_VEHICLE_VEHICLE_TYPE,
+                                null,
+                                null,
+                                dateScalar.getGraphQLDateScalar()),
+                        dateScalar.getGraphQLDateScalar()));
         GraphQLInputObjectType vehicleFilterInput = newInputObject()
                 .name(INPUT_TYPE_VEHICLE_FILTER)
                 .field(newInputObjectField().name(FILTER_IDS).type(new GraphQLList(new GraphQLNonNull(GraphQLString))).description("Batch lookup by NeTEx IDs"))

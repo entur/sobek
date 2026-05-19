@@ -16,6 +16,7 @@
 package org.rutebanken.sobek.rest.graphql.types;
 
 import graphql.schema.GraphQLObjectType;
+import graphql.schema.GraphQLScalarType;
 import org.springframework.stereotype.Component;
 
 import static graphql.Scalars.GraphQLInt;
@@ -23,21 +24,50 @@ import static graphql.Scalars.GraphQLString;
 import static graphql.schema.GraphQLFieldDefinition.newFieldDefinition;
 import static graphql.schema.GraphQLObjectType.newObject;
 import static org.rutebanken.sobek.rest.graphql.GraphQLNames.*;
+import static org.rutebanken.sobek.rest.graphql.types.CustomGraphQLTypes.embeddableMultilingualStringObjectType;
 
 @Component
 public class VehicleObjectTypeCreator {
 
-    public GraphQLObjectType create(String typeName, GraphQLObjectType vehicleTypeObjectType) {
+    public GraphQLObjectType create(String typeName, GraphQLObjectType vehicleTypeObjectType, GraphQLScalarType dateScalar) {
         var builder = newObject()
                 .name(typeName)
                 .field(newFieldDefinition()
                         .name(PROPERTY_ID)
                         .type(GraphQLString))
                 .field(newFieldDefinition()
-                        .name("registrationNumber")
+                        .name(PROPERTY_NAME)
+                        .type(embeddableMultilingualStringObjectType))
+                .field(newFieldDefinition()
+                        .name(PROPERTY_DESCRIPTION)
+                        .type(embeddableMultilingualStringObjectType))
+                .field(newFieldDefinition()
+                        .name(PROPERTY_REGISTRATION_NUMBER)
                         .type(GraphQLString))
                 .field(newFieldDefinition()
-                        .name("operationalNumber")
+                        .name(PROPERTY_OPERATIONAL_NUMBER)
+                        .type(GraphQLString))
+                .field(newFieldDefinition()
+                        .name(PROPERTY_CHASSIS_NUMBER)
+                        .type(GraphQLString))
+                .field(newFieldDefinition()
+                        .name(PROPERTY_BUILD_DATE)
+                        .type(dateScalar)
+                        .description(DATE_SCALAR_DESCRIPTION))
+                .field(newFieldDefinition()
+                        .name(PROPERTY_REGISTRATION_DATE)
+                        .type(dateScalar)
+                        .description(DATE_SCALAR_DESCRIPTION))
+                .field(newFieldDefinition()
+                        .name(PROPERTY_CREATED)
+                        .type(dateScalar)
+                        .description(DATE_SCALAR_DESCRIPTION))
+                .field(newFieldDefinition()
+                        .name(PROPERTY_CHANGED)
+                        .type(dateScalar)
+                        .description(DATE_SCALAR_DESCRIPTION))
+                .field(newFieldDefinition()
+                        .name(PROPERTY_CHANGED_BY)
                         .type(GraphQLString))
                 .field(newFieldDefinition()
                         .name(PROPERTY_VERSION)

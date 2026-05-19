@@ -88,6 +88,7 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
 
         String fetchJpql = "SELECT DISTINCT vt FROM VehicleType vt " +
                 "LEFT JOIN FETCH vt.vehicles v " +
+                "LEFT JOIN FETCH vt.passengerCapacity " +
                 VT_CURRENT_WHERE + VEHICLE_CURRENT_COND + filterSuffix +
                 " ORDER BY vt.id";
 

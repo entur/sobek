@@ -110,7 +110,7 @@ class GraphQLPagedQueriesTest {
     void vehicleTypes_exposesNewFields() {
         given()
             .contentType(ContentType.JSON)
-            .body(gql("{ vehicleTypes(page: 0, size: 100, filter: { transportModes: [ bus ]  } ) { content { id, description { value }, name { value }, version, euroClass, passengerCapacity { totalCapacity, standingCapacity, seatingCapacity },  transportMode, created, fuelTypes, propulsionTypes, privateCode, formDragCoefficient, maximumRange, length, height, width, weight, vehicles { chassisNumber, id, registrationNumber }  } totalElements page size } }"))
+            .body(gql("{ vehicleTypes(page: 0, size: 100, filter: { transportModes: [ bus ]  } ) { content { id, description { value }, name { value }, version, euroClass, passengerCapacity { totalCapacity, standingCapacity, seatingCapacity },  transportMode, created, fuelTypes, propulsionTypes, privateCode { type, value}, formDragCoefficient, maximumRange, length, height, width, weight, vehicles { chassisNumber, id, registrationNumber }  } totalElements page size } }"))
                 .when()
             .post("/services/vehicles/graphql")
         .then()

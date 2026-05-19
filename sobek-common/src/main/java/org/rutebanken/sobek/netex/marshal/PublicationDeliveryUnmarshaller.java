@@ -13,7 +13,7 @@
  * limitations under the Licence.
  */
 
-package org.rutebanken.sobek.rest.netex.publicationdelivery;
+package org.rutebanken.sobek.netex.marshal;
 
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
@@ -55,7 +55,7 @@ public class PublicationDeliveryUnmarshaller {
     @Value("${publicationDeliveryUnmarshaller.validateAgainstSchema:true}")
     private boolean validateAgainstSchema;
 
-    public PublicationDeliveryUnmarshaller() throws IOException, SAXException {
+    public PublicationDeliveryUnmarshaller() {
         //TODO
     }
 

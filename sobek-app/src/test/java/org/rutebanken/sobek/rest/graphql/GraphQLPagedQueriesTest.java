@@ -78,10 +78,39 @@ class GraphQLPagedQueriesTest {
     }
 
     @Test
+    void organisations_returnsPageStructure() {
+        given()
+                .contentType(ContentType.JSON)
+                .body(gql("{ organisations(page: 0, size: 10) { content { id } totalElements page size } }"))
+                .when()
+                .post("/services/vehicles/graphql")
+                .then()
+                .statusCode(200)
+                .body("data.organisations.content", is(not(empty())))
+                .body("data.organisations.totalElements", greaterThanOrEqualTo(339))
+                .body("data.organisations.page", equalTo(0))
+                .body("data.organisations.size", equalTo(10));
+    }
+
+    @Test
+    void organisations_filterByOrganisationType() {
+        given()
+                .contentType(ContentType.JSON)
+                .body(gql("{ organisations(page: 0, size: 1000, filter: { organisationType: authority }  ) { content { id } totalElements page size } }"))
+                .when()
+                .post("/services/vehicles/graphql")
+                .then()
+                .statusCode(200)
+                .body("data.organisations.content", is(not(empty())))
+                .body("data.organisations.totalElements", greaterThanOrEqualTo(1))
+                .body("data.organisations.page", equalTo(0));
+    }
+
+    @Test
     void vehicleTypes_exposesNewFields() {
         given()
             .contentType(ContentType.JSON)
-            .body(gql("{ vehicleTypes(filter: { transportMode: bus }, page: 0, size: 10) { content { id name { value lang } shortName { value } transportMode created changed changedBy versionComment version } totalElements } }"))
+            .body(gql("{ vehicleTypes(filter: { transportModes: [ bus ] }, page: 0, size: 10) { content { id name { value lang } shortName { value } transportMode created changed changedBy versionComment version } totalElements } }"))
         .when()
             .post("/services/vehicles/graphql")
         .then()
@@ -97,7 +126,7 @@ class GraphQLPagedQueriesTest {
     void vehicleTypes_filterByTransportMode() {
         given()
             .contentType(ContentType.JSON)
-            .body(gql("{ vehicleTypes(filter: { transportMode: bus }, page: 0, size: 10) { content { id transportMode } totalElements } }"))
+            .body(gql("{ vehicleTypes(filter: { transportModes: [ bus ] }, page: 0, size: 10) { content { id transportMode } totalElements } }"))
         .when()
             .post("/services/vehicles/graphql")
         .then()
@@ -110,7 +139,7 @@ class GraphQLPagedQueriesTest {
     void vehicleTypes_filterByTransportMode_noMatch() {
         given()
             .contentType(ContentType.JSON)
-            .body(gql("{ vehicleTypes(filter: { transportMode: rail }, page: 0, size: 10) { content { id } totalElements } }"))
+            .body(gql("{ vehicleTypes(filter: { transportModes: [ trolleyBus ] }, page: 0, size: 10) { content { id } totalElements } }"))
         .when()
             .post("/services/vehicles/graphql")
         .then()
@@ -200,4 +229,18 @@ class GraphQLPagedQueriesTest {
             .body("data.deckPlans.page", equalTo(0))
             .body("data.deckPlans.size", equalTo(20));
     }
+
+    @Test
+    void vehicles_filterByTransportMode() {
+        given()
+                .contentType(ContentType.JSON)
+                .body(gql("{ vehicles(page: 0, size: 100, filter: { transportModes: [ bus ]  } ) { content { id, registrationNumber, operationalNumber, transportType { id, length, height, width, transportMode } } totalElements page size } }"))
+                .when()
+                .post("/services/vehicles/graphql")
+                .then()
+                .statusCode(200)
+                .body("data.vehicles.content", is(not(empty())))
+                .body("data.vehicles.content.transportType.transportMode", everyItem(equalTo("bus")));
+    }
+
 }

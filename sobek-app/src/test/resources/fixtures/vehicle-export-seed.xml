@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PublicationDelivery xmlns="http://www.netex.org.uk/netex" version="1.0">
+    <PublicationTimestamp>2026-04-17T10:00:00.000Z</PublicationTimestamp>
+    <ParticipantRef>TST</ParticipantRef>
+    <dataObjects>
+        <ResourceFrame id="AKT:ResourceFrame:export-seed" version="1">
+            <FrameDefaults>
+                <DefaultLocale>
+                    <TimeZone>Europe/Oslo</TimeZone>
+                </DefaultLocale>
+            </FrameDefaults>
+            <vehicleTypes>
+                <VehicleType id="AKT:VehicleType:export-seed" version="1">
+                    <ValidBetween>
+                        <FromDate>2026-04-17T00:00:00</FromDate>
+                    </ValidBetween>
+                    <Name>ExportSeed Type</Name>
+                    <TransportMode>bus</TransportMode>
+                </VehicleType>
+            </vehicleTypes>
+            <vehicles>
+                <Vehicle id="AKT:Vehicle:export-seed" version="1">
+                    <ValidBetween>
+                        <FromDate>2026-04-17T00:00:00</FromDate>
+                    </ValidBetween>
+                    <Name lang="nb">ExportSeed Vehicle</Name>
+                    <RegistrationNumber>EXP-0001</RegistrationNumber>
+                    <TransportTypeRef ref="AKT:VehicleType:export-seed"/>
+                </Vehicle>
+            </vehicles>
+        </ResourceFrame>
+    </dataObjects>
+</PublicationDelivery>

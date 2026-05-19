@@ -31,6 +31,7 @@
 - **Testcontainers 1.21.3** - Integration testing with Docker
 - **Google Cloud PubSub** - Event publishing
 - **AWS Secrets Manager** - Credential management
+- **NeTEx compatible organisation registry** - Organisation data is fetched from an external registry
 
 ### Additional Components
 - **Lombok 1.18.42** - Code generation

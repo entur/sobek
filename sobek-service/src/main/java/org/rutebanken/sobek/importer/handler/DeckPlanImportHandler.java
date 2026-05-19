@@ -34,7 +34,7 @@ import org.rutebanken.netex.model.*;
 import org.rutebanken.sobek.importer.DeckPlanImporter;
 import org.rutebanken.sobek.importer.ImportParams;
 import org.rutebanken.sobek.importer.converter.DeckPlanIdConverter;
-import org.rutebanken.sobek.netex.mapping.PublicationDeliveryHelper;
+import org.rutebanken.sobek.netex.util.PublicationDeliveryHelper;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.rutebanken.sobek.netex.mapping.mapstruct.deckplan.DeckPlanMapper;
 import org.slf4j.Logger;

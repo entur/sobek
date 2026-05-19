@@ -30,7 +30,6 @@ import org.rutebanken.sobek.auth.AuthorizationService;
 import org.rutebanken.sobek.model.DataManagedObjectStructure;
 import org.rutebanken.sobek.model.identification.IdentifiedEntity;
 import org.rutebanken.sobek.rest.graphql.fetchers.*;
-import org.rutebanken.sobek.rest.graphql.resolvers.MutableTypeResolver;
 import org.rutebanken.sobek.rest.graphql.scalars.DateScalar;
 import org.rutebanken.sobek.rest.graphql.types.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +38,6 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
-import static graphql.Scalars.GraphQLBoolean;
 import static graphql.Scalars.GraphQLInt;
 import static graphql.Scalars.GraphQLString;
 import static graphql.schema.GraphQLFieldDefinition.newFieldDefinition;
@@ -47,6 +45,7 @@ import static graphql.schema.GraphQLInputObjectField.newInputObjectField;
 import static graphql.schema.GraphQLInputObjectType.newInputObject;
 import static graphql.schema.GraphQLObjectType.newObject;
 import static org.rutebanken.sobek.rest.graphql.GraphQLNames.*;
+import static org.rutebanken.sobek.rest.graphql.types.CustomGraphQLTypes.organisationTypeEnumType;
 import static org.rutebanken.sobek.rest.graphql.types.CustomGraphQLTypes.transportModeEnumType;
 
 @Component
@@ -63,6 +62,8 @@ public class RegisterGraphQLSchema {
     private DeckPlanObjectTypeCreator deckPlanObjectTypeCreator;
     @Autowired
     private VehicleObjectTypeCreator vehicleObjectTypeCreator;
+    @Autowired
+    private OrganisationObjectTypeCreator organisationObjectTypeCreator;
 
     @Autowired
     DataFetcher vehicleTypeFetcher;
@@ -73,6 +74,12 @@ public class RegisterGraphQLSchema {
     DataFetcher deckPlanFetcher;
 
     @Autowired
+    DataFetcher organisationFetcher;
+
+    @Autowired
+    DataFetcher vehicleFetcher;
+
+    @Autowired
     DateScalar dateScalar;
 
     @Autowired
@@ -80,61 +87,69 @@ public class RegisterGraphQLSchema {
 
     @Autowired
     private AuthorizationService authorizationService;
-    @Autowired
-    private UserPermissionsFetcher userPermissionsFetcher;
 
     @PostConstruct
     public void init() {
 
-        GraphQLObjectType userPermissionsObjectType = newObject()
-                .name(OUTPUT_TYPE_USER_PERMISSIONS)
-                .field(newFieldDefinition()
-                        .name("isGuest")
-                        .type(GraphQLBoolean)
-                        .build())
-                .field(newFieldDefinition()
-                        .name("allowNewStopEverywhere")
-                        .type(GraphQLBoolean)
-                        .build())
-                .field(newFieldDefinition()
-                        .name("preferredName")
-                        .type(GraphQLString)
-                        .build())
-                .build();
-
+        // Create type for the deck plans query
         GraphQLObjectType deckPlanObjectType = deckPlanObjectTypeCreator.create();
-        GraphQLObjectType vehicleObjectType = vehicleObjectTypeCreator.create();
-        GraphQLObjectType vehicleTypeObjectType = vehicleTypeObjectTypeCreator.create(deckPlanObjectType, vehicleObjectType, dateScalar.getGraphQLDateScalar());
+        GraphQLObjectType deckPlanPageType = createPageType(OUTPUT_TYPE_DECK_PLAN_PAGE, deckPlanObjectType);
 
+        // Create type for the vehicleTypes query, including vehicles (without vehicle type child) and deck plan in the structure
+        GraphQLObjectType vehicleTypeObjectType = vehicleTypeObjectTypeCreator.create(OUTPUT_TYPE_VEHICLE_TYPE, deckPlanObjectType, vehicleObjectTypeCreator.create(OUTPUT_TYPE_VEHICLE_TYPE_VEHICLE, null), dateScalar.getGraphQLDateScalar());
         GraphQLObjectType vehicleTypePageType = createPageType(OUTPUT_TYPE_VEHICLE_TYPE_PAGE, vehicleTypeObjectType);
-
         GraphQLInputObjectType vehicleTypeFilterInput = newInputObject()
                 .name(INPUT_TYPE_VEHICLE_TYPE_FILTER)
-                .field(newInputObjectField().name(IDS).type(new GraphQLList(new GraphQLNonNull(GraphQLString))).description("Batch lookup by NeTEx IDs"))
-                .field(newInputObjectField().name(TRANSPORT_MODE).type(transportModeEnumType).description("Filter by transport mode"))
+                .field(newInputObjectField().name(FILTER_IDS).type(new GraphQLList(new GraphQLNonNull(GraphQLString))).description("Batch lookup by NeTEx IDs"))
+                .field(newInputObjectField().name(FILTER_TRANSPORT_MODES).type(new GraphQLList(transportModeEnumType)).description("Filter by transport mode"))
                 .build();
 
-        GraphQLObjectType deckPlanPageType = createPageType(OUTPUT_TYPE_DECK_PLAN_PAGE, deckPlanObjectType);
+        // Create type for the organisations query
+        GraphQLObjectType organisationType = organisationObjectTypeCreator.create();
+        GraphQLObjectType organisationPageType = createPageType(OUTPUT_TYPE_ORGANISATION_PAGE, organisationType);
+        GraphQLInputObjectType organisationsFilterInput = newInputObject()
+                .name(INPUT_TYPE_ORGANISATIONS_FILTER)
+                .field(newInputObjectField().name(FILTER_IDS).type(new GraphQLList(new GraphQLNonNull(GraphQLString))).description("Batch lookup by NeTEx IDs"))
+                .field(newInputObjectField().name(FILTER_ORGANISATION_TYPE).type(organisationTypeEnumType).description("Filter by organisation type"))
+                .build();
+
+        // Create type for the vehicles query, including their vehicle type, but each vehicle type doesn't include it's structure
+        GraphQLObjectType vehiclePageType = createPageType(OUTPUT_TYPE_VEHICLE_PAGE, vehicleObjectTypeCreator.create(OUTPUT_TYPE_VEHICLE, vehicleTypeObjectTypeCreator.create(OUTPUT_TYPE_VEHICLE_VEHICLE_TYPE, null, null, dateScalar.getGraphQLDateScalar())));
+        GraphQLInputObjectType vehicleFilterInput = newInputObject()
+                .name(INPUT_TYPE_VEHICLE_FILTER)
+                .field(newInputObjectField().name(FILTER_IDS).type(new GraphQLList(new GraphQLNonNull(GraphQLString))).description("Batch lookup by NeTEx IDs"))
+                .field(newInputObjectField().name(FILTER_TRANSPORT_MODES).type(new GraphQLList(transportModeEnumType)).description("Filter by transport mode"))
+                .build();
+
 
         GraphQLObjectType vehicleRegistryQuery = newObject()
                 .name(VEHICLE_REGISTER)
                 .description("Query and search for data")
                 .field(newFieldDefinition()
-                        .name(USER_PERMISSIONS)
-                        .description("User permissions")
-                        .type(userPermissionsObjectType)
-                        .build())
+                        .name(LIST_NAME_VEHICLES)
+                        .type(vehiclePageType)
+                        .description("Paged vehicles with optional filtering")
+                        .argument(GraphQLArgument.newArgument().name(FILTER).type(vehicleFilterInput))
+                        .arguments(createPageAndSizeArguments())
+                )
                 .field(newFieldDefinition()
-                        .name(VEHICLE_TYPES)
+                        .name(LIST_NAME_VEHICLE_TYPES)
                         .type(vehicleTypePageType)
                         .description("Paged vehicle types with optional filtering")
                         .argument(GraphQLArgument.newArgument().name(FILTER).type(vehicleTypeFilterInput))
                         .arguments(createPageAndSizeArguments())
                 )
                 .field(newFieldDefinition()
-                        .name(DECK_PLANS)
+                        .name(LIST_NAME_DECK_PLANS)
                         .type(deckPlanPageType)
                         .description("Paged deck plans")
+                        .arguments(createPageAndSizeArguments())
+                )
+                .field(newFieldDefinition()
+                        .name(LIST_NAME_ORGANISATIONS)
+                        .type(organisationPageType)
+                        .description("Paged organisations")
+                        .argument(GraphQLArgument.newArgument().name(FILTER).type(organisationsFilterInput))
                         .arguments(createPageAndSizeArguments())
                 )
                 .build();
@@ -148,16 +163,18 @@ public class RegisterGraphQLSchema {
     private GraphQLCodeRegistry buildCodeRegistry() {
         GraphQLCodeRegistry.Builder codeRegistryBuilder = GraphQLCodeRegistry.newCodeRegistry();
 
-        registerDataFetcher(codeRegistryBuilder, OUTPUT_TYPE_DECK_PLAN, ID, getNetexIdFetcher());
+        registerDataFetcher(codeRegistryBuilder, OUTPUT_TYPE_DECK_PLAN, PROPERTY_ID, getNetexIdFetcher());
 
-        registerDataFetcher(codeRegistryBuilder, OUTPUT_TYPE_VEHICLE_TYPE, KEY_VALUES, keyValuesDataFetcher);
-        registerDataFetcher(codeRegistryBuilder, VEHICLE_REGISTER, VEHICLE_TYPES, vehicleTypeFetcher);
-        registerDataFetcher(codeRegistryBuilder, OUTPUT_TYPE_VEHICLE_TYPE, ID, getNetexIdFetcher());
-        registerDataFetcher(codeRegistryBuilder, OUTPUT_TYPE_VEHICLE_TYPE, VEHICLE_TYPE_DECK_PLAN, vehicleTypeDeckPlanFetcher);
-        registerDataFetcher(codeRegistryBuilder, OUTPUT_TYPE_VEHICLE_TYPE, CHANGED_BY, getChangedByFetcher(authorizationService));
+        registerDataFetcher(codeRegistryBuilder, OUTPUT_TYPE_VEHICLE_TYPE, PROPERTY_KEY_VALUES, keyValuesDataFetcher);
+        registerDataFetcher(codeRegistryBuilder, OUTPUT_TYPE_VEHICLE_TYPE, PROPERTY_ID, getNetexIdFetcher());
+        registerDataFetcher(codeRegistryBuilder, OUTPUT_TYPE_VEHICLE_TYPE, OUTPUT_TYPE_VEHICLE_TYPE_DECK_PLAN, vehicleTypeDeckPlanFetcher);
+        registerDataFetcher(codeRegistryBuilder, OUTPUT_TYPE_VEHICLE_TYPE, PROPERTY_CHANGED_BY, getChangedByFetcher(authorizationService));
+        registerDataFetcher(codeRegistryBuilder, OUTPUT_TYPE_VEHICLE, PROPERTY_ID, getNetexIdFetcher());
 
-        registerDataFetcher(codeRegistryBuilder, VEHICLE_REGISTER, USER_PERMISSIONS, userPermissionsFetcher);
-        registerDataFetcher(codeRegistryBuilder, VEHICLE_REGISTER, DECK_PLANS, deckPlanFetcher);
+        registerDataFetcher(codeRegistryBuilder, VEHICLE_REGISTER, LIST_NAME_DECK_PLANS, deckPlanFetcher);
+        registerDataFetcher(codeRegistryBuilder, VEHICLE_REGISTER, LIST_NAME_ORGANISATIONS, organisationFetcher);
+        registerDataFetcher(codeRegistryBuilder, VEHICLE_REGISTER, LIST_NAME_VEHICLES, vehicleFetcher);
+        registerDataFetcher(codeRegistryBuilder, VEHICLE_REGISTER, LIST_NAME_VEHICLE_TYPES, vehicleTypeFetcher);
 
         return codeRegistryBuilder.build();
     }

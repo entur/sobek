@@ -38,7 +38,7 @@ import org.rutebanken.sobek.importer.ImportParams;
 import org.rutebanken.sobek.importer.converter.SchematicMapIdConverter;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.rutebanken.sobek.netex.mapping.mapstruct.SchematicMapMapper;
-import org.rutebanken.sobek.netex.mapping.PublicationDeliveryHelper;
+import org.rutebanken.sobek.netex.util.PublicationDeliveryHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

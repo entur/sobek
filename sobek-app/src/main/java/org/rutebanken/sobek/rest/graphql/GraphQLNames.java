@@ -69,18 +69,50 @@ public class GraphQLNames {
     public static final String PROPERTY_LENGTH = "length";
     public static final String PROPERTY_WIDTH = "width";
     public static final String PROPERTY_HEIGHT = "height";
+    public static final String PROPERTY_WEIGHT = "weight";
     public static final String PROPERTY_TRANSPORT_TYPE = "transportType";
     public static final String PROPERTY_VEHICLES = "vehicles";
     public static final String PROPERTY_TYPE = "type";
     public static final String PROPERTY_CHANGED_BY = "changedBy";
     public static final String PROPERTY_SHORT_NAME = "shortName";
     public static final String PROPERTY_DESCRIPTION = "description";
+    public static final String PROPERTY_PRIVATE_CODE = "privateCode";
+    
+    // For VehicleType
+    public static final String PROPERTY_EURO_CLASS = "euroClass";
+    public static final String PROPERTY_SELF_PROPELLED = "selfPropelled";
+    public static final String PROPERTY_LOW_FLOOR = "lowFloor";
+    public static final String PROPERTY_FORM_DRAG_COEFFICIENT = "formDragCoefficient";
+    public static final String PROPERTY_ROLL_RESISTANCE_COEFFICIENT = "rollResistanceCoefficient";
+    public static final String PROPERTY_MAXIMUM_ENGINE_EFFECT_KW = "maximumEngineEffectKW";
+    public static final String PROPERTY_MAXIMUM_VELOCITY = "maximumVelocity";
+    public static final String PROPERTY_MAXIMUM_RANGE = "maximumRange";
+    public static final String PROPERTY_HYBRID_CATEGORY = "hybridCategory";
+    public static final String PROPERTY_PROPULSION_TYPES = "propulsionTypes";
+    public static final String PROPERTY_FUEL_TYPES = "fuelTypes";
+    public static final String PROPERTY_PASSENGER_CAPACITY = "passengerCapacity";
+
+    // For Vehicle
+    public static final String PROPERTY_REGISTRATION_NUMBER = "registrationNumber";
+    public static final String PROPERTY_OPERATIONAL_NUMBER = "operationalNumber";
+    public static final String PROPERTY_CHASSIS_NUMBER = "chassisNumber";
+    public static final String PROPERTY_BUILD_DATE = "buildDate";
+    public static final String PROPERTY_REGISTRATION_DATE = "registrationDate";
+
+    // For PassengerCapacity
+    public static final String PROPERTY_STANDING_CAPACITY = "standingCapacity";
+    public static final String PROPERTY_SEATING_CAPACITY = "seatingCapacity";
+    public static final String PROPERTY_TOTAL_CAPACITY = "totalCapacity";
+    public static final String PROPERTY_SPECIAL_PLACE_CAPACITY = "specialPlaceCapacity";
+    public static final String PROPERTY_PUSHCHAIR_CAPACITY = "pushchairCapacity";
+    public static final String PROPERTY_WHEELCHAIR_CAPACITY = "wheelchairPlaceCapacity";
+    public static final String PROPERTY_PRAM_PLACE_CAPACITY = "pramPlaceCapacity";
+    public static final String PROPERTY_BICYCLE_RACK_CAPACITY = "bicycleRackCapacity";
 
     public static final String PROPERTY_KEY_VALUES = "keyValues";
     public static final String PROPERTY_KEY = "key";
     public static final String PROPERTY_VALUES = "values";
     public static final String PROPERTY_VERSION = "version";
-    public static final String PROPERTY_VERSION_COMMENT = "versionComment";
 
     public static final String PROPERTY_NAME = "name";
     public static final String PROPERTY_VALUE = "value";
@@ -116,6 +148,13 @@ public class GraphQLNames {
     public static final String LIST_NAME_ORGANISATIONS = "organisations";
     public static final String OUTPUT_TYPE_ORGANISATION = "Organisation";
 
+    public static final String OUTPUT_TYPE_PASSENGER_CAPACITY = "PassengerCapacity";
+
+    public static final String OUTPUT_TYPE_PRIVATE_CODE = "PrivateCode";
+
     public static final String TYPE_TRANSPORT_MODE = "transportMode";
     public static final String TYPE_ORGANISATION_TYPE = "organisationType";
+    public static final String TYPE_PROPULSION_TYPE = "propulsionType";
+    public static final String TYPE_FUEL_TYPE = "fuelType";
+    public static final String TYPE_HYBRID_CATEGORY_TYPE = "hybridCategory";
 }

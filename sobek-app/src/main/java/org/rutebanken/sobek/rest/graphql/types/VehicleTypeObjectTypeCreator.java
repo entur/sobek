@@ -74,7 +74,7 @@ public class VehicleTypeObjectTypeCreator {
                         .name(PROPERTY_CHANGED_BY)
                         .type(GraphQLString))
                 .field(newFieldDefinition()
-                        .name(PROPERTY_PRIVATE_CODES)
+                        .name(PROPERTY_PRIVATE_CODE)
                         .type(new GraphQLList(GraphQLString)))
                 .field(newFieldDefinition()
                         .name(PROPERTY_EURO_CLASS)

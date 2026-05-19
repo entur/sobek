@@ -76,7 +76,7 @@ public class GraphQLNames {
     public static final String PROPERTY_CHANGED_BY = "changedBy";
     public static final String PROPERTY_SHORT_NAME = "shortName";
     public static final String PROPERTY_DESCRIPTION = "description";
-    public static final String PROPERTY_PRIVATE_CODES = "privateCodes";
+    public static final String PROPERTY_PRIVATE_CODE = "privateCode";
     
     // For VehicleType
     public static final String PROPERTY_EURO_CLASS = "euroClass";

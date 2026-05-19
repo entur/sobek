@@ -32,9 +32,6 @@ public class PassengerCapacityObjectTypeCreator {
         return newObject()
                 .name(OUTPUT_TYPE_PASSENGER_CAPACITY)
                 .field(newFieldDefinition()
-                        .name(PROPERTY_ID)
-                        .type(GraphQLString))
-                .field(newFieldDefinition()
                         .name(PROPERTY_SEATING_CAPACITY)
                         .type(GraphQLInt))
                 .field(newFieldDefinition()
@@ -58,9 +55,6 @@ public class PassengerCapacityObjectTypeCreator {
                 .field(newFieldDefinition()
                         .name(PROPERTY_BICYCLE_RACK_CAPACITY)
                         .type(GraphQLInt))
-                .field(newFieldDefinition()
-                        .name(PROPERTY_TYPE)
-                        .type(organisationTypeEnumType))
                 .build();
     }
 }

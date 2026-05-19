@@ -185,6 +185,7 @@ public class RegisterGraphQLSchema {
         registerDataFetcher(codeRegistryBuilder, OUTPUT_TYPE_VEHICLE_TYPE, PROPERTY_ID, getNetexIdFetcher());
         registerDataFetcher(codeRegistryBuilder, OUTPUT_TYPE_VEHICLE_TYPE, OUTPUT_TYPE_VEHICLE_TYPE_DECK_PLAN, vehicleTypeDeckPlanFetcher);
         registerDataFetcher(codeRegistryBuilder, OUTPUT_TYPE_VEHICLE_TYPE, PROPERTY_CHANGED_BY, getChangedByFetcher(authorizationService));
+        registerDataFetcher(codeRegistryBuilder, OUTPUT_TYPE_VEHICLE, PROPERTY_CHANGED_BY, getChangedByFetcher(authorizationService));
         registerDataFetcher(codeRegistryBuilder, OUTPUT_TYPE_VEHICLE, PROPERTY_ID, getNetexIdFetcher());
 
         registerDataFetcher(codeRegistryBuilder, VEHICLE_REGISTER, LIST_NAME_DECK_PLANS, deckPlanFetcher);

@@ -19,11 +19,9 @@ import graphql.schema.GraphQLObjectType;
 import org.springframework.stereotype.Component;
 
 import static graphql.Scalars.GraphQLInt;
-import static graphql.Scalars.GraphQLString;
 import static graphql.schema.GraphQLFieldDefinition.newFieldDefinition;
 import static graphql.schema.GraphQLObjectType.newObject;
 import static org.rutebanken.sobek.rest.graphql.GraphQLNames.*;
-import static org.rutebanken.sobek.rest.graphql.types.CustomGraphQLTypes.organisationTypeEnumType;
 
 @Component
 public class PassengerCapacityObjectTypeCreator {

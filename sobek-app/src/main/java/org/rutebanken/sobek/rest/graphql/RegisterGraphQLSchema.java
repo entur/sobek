@@ -64,6 +64,8 @@ public class RegisterGraphQLSchema {
     private VehicleObjectTypeCreator vehicleObjectTypeCreator;
     @Autowired
     private OrganisationObjectTypeCreator organisationObjectTypeCreator;
+    @Autowired
+    private PassengerCapacityObjectTypeCreator passengerCapacityObjectTypeCreator;
 
     @Autowired
     DataFetcher vehicleTypeFetcher;
@@ -94,9 +96,16 @@ public class RegisterGraphQLSchema {
         // Create type for the deck plans query
         GraphQLObjectType deckPlanObjectType = deckPlanObjectTypeCreator.create();
         GraphQLObjectType deckPlanPageType = createPageType(OUTPUT_TYPE_DECK_PLAN_PAGE, deckPlanObjectType);
+        GraphQLObjectType passengerCapacityObjectType = passengerCapacityObjectTypeCreator.create();
 
         // Create type for the vehicleTypes query, including vehicles (without vehicle type child) and deck plan in the structure
-        GraphQLObjectType vehicleTypeObjectType = vehicleTypeObjectTypeCreator.create(OUTPUT_TYPE_VEHICLE_TYPE, deckPlanObjectType, vehicleObjectTypeCreator.create(OUTPUT_TYPE_VEHICLE_TYPE_VEHICLE, null, dateScalar.getGraphQLDateScalar()), dateScalar.getGraphQLDateScalar());
+        GraphQLObjectType vehicleTypeObjectType = vehicleTypeObjectTypeCreator.create(OUTPUT_TYPE_VEHICLE_TYPE,
+                deckPlanObjectType,
+                vehicleObjectTypeCreator.create(OUTPUT_TYPE_VEHICLE_TYPE_VEHICLE,
+                        null,
+                        dateScalar.getGraphQLDateScalar()),
+                passengerCapacityObjectType,
+                dateScalar.getGraphQLDateScalar());
         GraphQLObjectType vehicleTypePageType = createPageType(OUTPUT_TYPE_VEHICLE_TYPE_PAGE, vehicleTypeObjectType);
         GraphQLInputObjectType vehicleTypeFilterInput = newInputObject()
                 .name(INPUT_TYPE_VEHICLE_TYPE_FILTER)
@@ -119,6 +128,7 @@ public class RegisterGraphQLSchema {
                         vehicleTypeObjectTypeCreator.create(OUTPUT_TYPE_VEHICLE_VEHICLE_TYPE,
                                 null,
                                 null,
+                                passengerCapacityObjectType,
                                 dateScalar.getGraphQLDateScalar()),
                         dateScalar.getGraphQLDateScalar()));
         GraphQLInputObjectType vehicleFilterInput = newInputObject()

@@ -23,6 +23,9 @@ import graphql.schema.GraphQLNonNull;
 import graphql.schema.GraphQLObjectType;
 import org.rutebanken.netex.model.OrganisationTypeEnumeration;
 import org.rutebanken.sobek.model.vehicle.AllPublicTransportModesEnumeration;
+import org.rutebanken.sobek.model.vehicle.FuelTypeEnumeration;
+import org.rutebanken.sobek.model.vehicle.HybridCategoryEnumeration;
+import org.rutebanken.sobek.model.vehicle.PropulsionTypeEnumeration;
 
 import java.lang.reflect.Method;
 
@@ -37,6 +40,9 @@ public class CustomGraphQLTypes {
 
     public static GraphQLEnumType transportModeEnumType = createCustomEnumType(TYPE_TRANSPORT_MODE, AllPublicTransportModesEnumeration.class);
     public static GraphQLEnumType organisationTypeEnumType = createCustomEnumType(TYPE_ORGANISATION_TYPE, OrganisationTypeEnumeration.class);
+    public static GraphQLEnumType propulsionTypeEnumType = createCustomEnumType(TYPE_PROPULSION_TYPE, PropulsionTypeEnumeration.class);
+    public static GraphQLEnumType fuelTypeEnumType = createCustomEnumType(TYPE_FUEL_TYPE, FuelTypeEnumeration.class);
+    public static GraphQLEnumType hybridCategoryEnumType = createCustomEnumType(TYPE_HYBRID_CATEGORY_TYPE, HybridCategoryEnumeration.class);
 
 
     public static GraphQLEnumType createCustomEnumType(String name, Class c) {

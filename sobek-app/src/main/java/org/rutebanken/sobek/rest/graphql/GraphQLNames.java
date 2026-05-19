@@ -150,6 +150,8 @@ public class GraphQLNames {
 
     public static final String OUTPUT_TYPE_PASSENGER_CAPACITY = "PassengerCapacity";
 
+    public static final String OUTPUT_TYPE_PRIVATE_CODE = "PrivateCode";
+
     public static final String TYPE_TRANSPORT_MODE = "transportMode";
     public static final String TYPE_ORGANISATION_TYPE = "organisationType";
     public static final String TYPE_PROPULSION_TYPE = "propulsionType";

@@ -66,6 +66,8 @@ public class RegisterGraphQLSchema {
     private OrganisationObjectTypeCreator organisationObjectTypeCreator;
     @Autowired
     private PassengerCapacityObjectTypeCreator passengerCapacityObjectTypeCreator;
+    @Autowired
+    private PrivateCodeObjectTypeCreator privateCodeObjectTypeCreator;
 
     @Autowired
     DataFetcher vehicleTypeFetcher;
@@ -97,6 +99,7 @@ public class RegisterGraphQLSchema {
         GraphQLObjectType deckPlanObjectType = deckPlanObjectTypeCreator.create();
         GraphQLObjectType deckPlanPageType = createPageType(OUTPUT_TYPE_DECK_PLAN_PAGE, deckPlanObjectType);
         GraphQLObjectType passengerCapacityObjectType = passengerCapacityObjectTypeCreator.create();
+        GraphQLObjectType privateCodeObjectType = privateCodeObjectTypeCreator.create();
 
         // Create type for the vehicleTypes query, including vehicles (without vehicle type child) and deck plan in the structure
         GraphQLObjectType vehicleTypeObjectType = vehicleTypeObjectTypeCreator.create(OUTPUT_TYPE_VEHICLE_TYPE,
@@ -105,6 +108,7 @@ public class RegisterGraphQLSchema {
                         null,
                         dateScalar.getGraphQLDateScalar()),
                 passengerCapacityObjectType,
+                privateCodeObjectType,
                 dateScalar.getGraphQLDateScalar());
         GraphQLObjectType vehicleTypePageType = createPageType(OUTPUT_TYPE_VEHICLE_TYPE_PAGE, vehicleTypeObjectType);
         GraphQLInputObjectType vehicleTypeFilterInput = newInputObject()
@@ -129,6 +133,7 @@ public class RegisterGraphQLSchema {
                                 null,
                                 null,
                                 passengerCapacityObjectType,
+                                privateCodeObjectType,
                                 dateScalar.getGraphQLDateScalar()),
                         dateScalar.getGraphQLDateScalar()));
         GraphQLInputObjectType vehicleFilterInput = newInputObject()

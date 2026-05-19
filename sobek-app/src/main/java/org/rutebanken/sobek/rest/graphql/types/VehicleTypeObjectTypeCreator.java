@@ -29,7 +29,7 @@ import static org.rutebanken.sobek.rest.graphql.types.CustomGraphQLTypes.*;
 @Component
 public class VehicleTypeObjectTypeCreator {
 
-    public GraphQLObjectType create(String typeName, GraphQLObjectType deckPlanObjectType, GraphQLObjectType vehicleObjectType, GraphQLObjectType passengerCapacityObjectType, GraphQLScalarType dateScalar) {
+    public GraphQLObjectType create(String typeName, GraphQLObjectType deckPlanObjectType, GraphQLObjectType vehicleObjectType, GraphQLObjectType passengerCapacityObjectType, GraphQLObjectType privateCodeType, GraphQLScalarType dateScalar) {
         var builder = newObject()
                 .name(typeName)
                 .field(newFieldDefinition()
@@ -75,7 +75,7 @@ public class VehicleTypeObjectTypeCreator {
                         .type(GraphQLString))
                 .field(newFieldDefinition()
                         .name(PROPERTY_PRIVATE_CODE)
-                        .type(new GraphQLList(GraphQLString)))
+                        .type(privateCodeType))
                 .field(newFieldDefinition()
                         .name(PROPERTY_EURO_CLASS)
                         .type(GraphQLString))

@@ -23,7 +23,6 @@ import org.rutebanken.sobek.filter.LoggingFilter;
 import org.rutebanken.sobek.jersey.JerseyJava8TimeConverterProvider;
 import org.rutebanken.sobek.rest.exception.ErrorResponseEntityMessageBodyWriter;
 import org.rutebanken.sobek.rest.exception.GeneralExceptionMapper;
-import org.rutebanken.sobek.rest.graphql.GraphQLResource;
 import org.rutebanken.sobek.rest.health.HealthResource;
 import org.rutebanken.sobek.rest.netex.publicationdelivery.*;
 import org.rutebanken.sobek.rest.promethouse.PrometheusResource;
@@ -78,7 +77,6 @@ public class JerseyConfig {
         publicResources.add(VehicleImportResource.class);
         publicResources.add(AsyncExportResource.class);
         publicResources.add(VehicleExportResource.class);
-        publicResources.add(GraphQLResource.class);
 
         publicResources.add(GeneralExceptionMapper.class);
         publicResources.add(ErrorResponseEntityMessageBodyWriter.class);

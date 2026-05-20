@@ -21,17 +21,15 @@ import org.rutebanken.sobek.repository.DeckPlanRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 
 import static org.rutebanken.sobek.rest.graphql.GraphQLNames.*;
-import static org.rutebanken.sobek.rest.graphql.RegisterGraphQLSchema.DEFAULT_PAGE_VALUE;
-import static org.rutebanken.sobek.rest.graphql.RegisterGraphQLSchema.DEFAULT_SIZE_VALUE;
+import static org.rutebanken.sobek.rest.graphql.GraphQLNames.DEFAULT_PAGE_VALUE;
+import static org.rutebanken.sobek.rest.graphql.GraphQLNames.DEFAULT_SIZE_VALUE;
 
-@Service("deckPlanFetcher")
-@Transactional
-class DeckPlanFetcher implements DataFetcher<Map<String, Object>> {
+@Service
+public class DeckPlanFetcher implements DataFetcher<Map<String, Object>> {
 
     @Autowired
     private DeckPlanRepository deckPlanRepository;

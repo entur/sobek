@@ -1,0 +1,232 @@
+# Custom scalars
+scalar DateTime
+
+# MultilingualString type
+type MultilingualString {
+    value: String
+    lang: String
+}
+
+# Enums
+enum TransportMode {
+    ALL
+    AIR
+    ANY_MODE
+    BUS
+    CABLEWAY
+    COACH
+    FERRY
+    FUNICULAR
+    INTERCITY_RAIL
+    LIFT
+    METRO
+    OTHER
+    RAIL
+    SELF_DRIVE
+    SNOW_AND_ICE
+    TAXI
+    TRAM
+    TROLLEY_BUS
+    UNKNOWN
+    URBAN_RAIL
+    WATER
+}
+
+enum OrganisationType {
+    AUTHORITY
+    OPERATOR
+    OTHER
+}
+
+enum PropulsionType {
+    COMBUSTION
+    ELECTRIC
+    ELECTRIC_ASSIST
+    HYBRID
+    HUMAN
+    OTHER
+}
+
+enum FuelType {
+    PETROL
+    PETROL_LEADED
+    PETROL_UNLEADED
+    DIESEL
+    ELECTRICITY
+    BATTERY
+    ELECTRIC_CONTACT
+    DIESEL_BATTERY_HYBRID
+    PETROL_BATTERY_HYBRID
+    HYDROGEN
+    BIODIESEL
+    NATURAL_GAS
+    LIQUID_GAS
+    METHANE
+    TPG
+    ETHANOL
+    OTHER
+    NONE
+}
+
+enum HybridCategory {
+    CHARGEABLE
+    NONCHARGEABLE
+}
+
+# Filter inputs
+input VehicleTypeFilter {
+    ids: [String!]
+    transportModes: [TransportMode!]
+}
+
+input VehicleFilter {
+    ids: [String!]
+    transportModes: [TransportMode!]
+}
+
+input OrganisationsFilter {
+    ids: [String!]
+    organisationType: OrganisationType
+}
+
+# Page types
+type Page {
+    page: Int!
+    size: Int!
+    totalElements: Int!
+}
+
+# KeyValues type
+type KeyValues {
+    key: String!
+    values: [String!]!
+}
+
+# PrivateCode type
+type PrivateCode {
+    type: String
+    value: String!
+}
+
+# PassengerCapacity type
+type PassengerCapacity {
+    totalCapacity: Int
+    seatingCapacity: Int
+    standingCapacity: Int
+    pushchairCapacity: Int
+    wheelchairPlaceCapacity: Int
+    pramPlaceCapacity: Int
+    bicycleRackCapacity: Int
+}
+
+# DeckPlan type
+type DeckPlan {
+    id: String!
+    name: MultilingualString
+    description: MultilingualString
+    version: String
+    created: DateTime
+    changed: DateTime
+}
+
+type DeckPlanPage {
+    content: [DeckPlan!]!
+    totalElements: Int!
+    page: Int!
+    size: Int!
+}
+
+# Organisation type
+type Organisation {
+    id: String!
+    name: MultilingualString
+    legalName: String
+    organisationType: OrganisationType
+    companyNumber: String
+    contactDetails: String
+    version: String
+    created: DateTime
+    changed: DateTime
+}
+
+type OrganisationPage {
+    content: [Organisation!]!
+    totalElements: Int!
+    page: Int!
+    size: Int!
+}
+
+# Vehicle
+type Vehicle {
+    id: String!
+    name: MultilingualString
+    description: MultilingualString
+    registrationNumber: String
+    operationalNumber: String
+    transportType: VehicleType
+    chassisNumber: String
+    buildDate: DateTime
+    registrationDate: DateTime
+    version: String
+    created: DateTime
+    changed: DateTime
+    changedBy: String
+}
+
+type VehiclePage {
+    content: [Vehicle!]!
+    totalElements: Int!
+    page: Int!
+    size: Int!
+}
+
+type VehicleType {
+    id: String!
+    name: MultilingualString
+    shortName: MultilingualString
+    description: MultilingualString
+    euroClass: String
+    propulsionTypes: [PropulsionType]
+    fuelTypes: [FuelType]
+    transportMode: TransportMode
+    passengerCapacity: PassengerCapacity
+    privateCode: PrivateCode
+    keyValues: [KeyValues!]
+    deckPlan: DeckPlan
+    vehicles: [Vehicle!]
+    formDragCoefficient: Float
+    rollResistanceCoefficient: Float
+    maximumEngineEffectKW: Float
+    maximumVelocity: Float
+    maximumRange: Float
+    length: Float
+    height: Float
+    width: Float
+    weight: Float
+    lowFloor: Boolean
+    selfPropelled: Boolean
+    hybridCategory: HybridCategory
+    version: String
+    created: DateTime
+    changed: DateTime
+    changedBy: String
+}
+
+type VehicleTypePage {
+    content: [VehicleType!]!
+    totalElements: Int!
+    page: Int!
+    size: Int!
+}
+
+# Root query type
+type Query {
+    vehicles(filter: VehicleFilter, page: Int = 0, size: Int = 20): VehiclePage!
+    vehicleTypes(filter: VehicleTypeFilter, page: Int = 0, size: Int = 20): VehicleTypePage!
+    deckPlans(page: Int = 0, size: Int = 20): DeckPlanPage!
+    organisations(filter: OrganisationsFilter, page: Int = 0, size: Int = 20): OrganisationPage!
+}
+
+schema {
+    query: Query
+}

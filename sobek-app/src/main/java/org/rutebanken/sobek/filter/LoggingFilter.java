@@ -63,14 +63,21 @@ public class LoggingFilter implements Filter {
                 String clientName = httpServletRequest.getHeader(ET_CLIENT_NAME_HEADER);
                 String clientId = httpServletRequest.getHeader(ET_CLIENT_ID_HEADER);
 
-                String userName = usernameFetcher.getUserNameForAuthenticatedUser();
+                // Get username without blocking - handle failures gracefully
+                String userName = null;
+                try {
+                    userName = usernameFetcher.getUserNameForAuthenticatedUser();
+                } catch (Exception e) {
+                    // Log the error but don't block the request
+                    logger.warn("Failed to fetch username for logging: {}", e.getMessage());
+                    userName = "unknown";
+                }
 
                 if (logger.isTraceEnabled()) {
                     // If trace enabled, log all headers.
                     String allHeaders = headersAsString(httpServletRequest);
-                    logger.trace("{} User: '{}', Headers: '{}'", requestUri, userName, allHeaders.toString());
+                    logger.trace("{} User: '{}', Headers: '{}'", requestUri, userName, allHeaders);
                 } else {
-
                     logger.info("{}: User: '{}', Client: '{}', ID: '{}'", requestUri, userName, clientName, clientId);
                 }
 

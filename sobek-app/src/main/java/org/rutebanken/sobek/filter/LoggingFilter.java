@@ -33,8 +33,8 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.Enumeration;
 
-import static org.rutebanken.sobek.config.JerseyConfig.ET_CLIENT_ID_HEADER;
-import static org.rutebanken.sobek.config.JerseyConfig.ET_CLIENT_NAME_HEADER;
+import static org.rutebanken.sobek.config.HttpConfig.ET_CLIENT_ID_HEADER;
+import static org.rutebanken.sobek.config.HttpConfig.ET_CLIENT_NAME_HEADER;
 
 @Component
 public class LoggingFilter implements Filter {

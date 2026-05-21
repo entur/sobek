@@ -20,7 +20,7 @@ spec:
     metadata:
       annotations:
         cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
-        prometheus.io/path: /health/scrape
+        prometheus.io/path: /actuator/prometheus
         prometheus.io/port: "{{ .Values.service.http.internalPort }}"
         prometheus.io/scrape: 'true'
       labels:
@@ -98,7 +98,7 @@ spec:
           livenessProbe:
             failureThreshold: 3
             httpGet:
-              path: /health/live
+              path: /actuator/health/liveness
               port: {{ .Values.service.http.internalPort }}
               scheme: HTTP
             initialDelaySeconds: 120
@@ -108,7 +108,7 @@ spec:
           readinessProbe:
             failureThreshold: 3
             httpGet:
-              path: /health/ready
+              path: /actuator/health/readiness
               port: {{ .Values.service.http.internalPort }}
               scheme: HTTP
             initialDelaySeconds: 30

@@ -19,7 +19,7 @@
 - **Spring Boot** - Application framework
 - **Hibernate 6.5.3** - ORM with spatial support (hibernate-spatial)
 - **PostgreSQL/PostGIS** - Database with geospatial extensions
-- **Jersey** - REST API framework
+- **Spring MVC** - REST API framework
 - **Jackson** - JSON processing
 - **GraphQL** (graphql-java 20.9) - Primary API interface
 
@@ -62,7 +62,6 @@ org.rutebanken.sobek/
   ├── config/            - Spring configuration classes
   ├── dtoassembling/     - DTO assembly and transformation
   ├── filter/            - Data filtering utilities
-  ├── jersey/            - REST API configuration
   ├── metrics/           - Metrics configuration
   └── rest/              - REST endpoints
 
@@ -315,8 +314,6 @@ changelog.publish.enabled=false
 
 # Server
 server.port=37999
-jettyMaxThreads=10
-jettyMinThreads=1
 
 # Validation
 publicationDeliveryUnmarshaller.validateAgainstSchema=true

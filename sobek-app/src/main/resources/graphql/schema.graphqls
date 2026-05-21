@@ -7,6 +7,11 @@ type MultilingualString {
     lang: String
 }
 
+input MultilingualStringInput {
+    value: String
+    lang: String
+}
+
 # Enums
 enum TransportMode {
     ALL
@@ -101,6 +106,10 @@ type KeyValues {
     key: String!
     values: [String!]!
 }
+input KeyValuesInput {
+    key: String!
+    values: [String!]!
+}
 
 # PrivateCode type
 type PrivateCode {
@@ -108,8 +117,22 @@ type PrivateCode {
     value: String!
 }
 
+input PrivateCodeInput {
+    type: String
+    value: String!
+}
+
 # PassengerCapacity type
 type PassengerCapacity {
+    totalCapacity: Int
+    seatingCapacity: Int
+    standingCapacity: Int
+    pushchairCapacity: Int
+    wheelchairPlaceCapacity: Int
+    pramPlaceCapacity: Int
+    bicycleRackCapacity: Int
+}
+input PassengerCapacityInput {
     totalCapacity: Int
     seatingCapacity: Int
     standingCapacity: Int
@@ -127,6 +150,11 @@ type DeckPlan {
     version: String
     created: DateTime
     changed: DateTime
+}
+input DeckPlanInput {
+    id: String
+    name: MultilingualStringInput
+    description: MultilingualStringInput
 }
 
 type DeckPlanPage {
@@ -173,6 +201,20 @@ type Vehicle {
     changedBy: String
 }
 
+input VehicleInput {
+    id: String
+    name: MultilingualStringInput
+    description: MultilingualStringInput
+    registrationNumber: String
+    operationalNumber: String
+    transportType: VehicleTypeInput
+    chassisNumber: String
+    buildDate: DateTime
+    registrationDate: DateTime
+}
+
+
+
 type VehiclePage {
     content: [Vehicle!]!
     totalElements: Int!
@@ -212,6 +254,33 @@ type VehicleType {
     changedBy: String
 }
 
+input VehicleTypeInput {
+    id: String
+    name: MultilingualStringInput
+    shortName: MultilingualStringInput
+    description: MultilingualStringInput
+    euroClass: String
+    propulsionTypes: [PropulsionType]
+    fuelTypes: [FuelType]
+    transportMode: TransportMode
+    passengerCapacity: PassengerCapacityInput
+    privateCode: PrivateCodeInput
+    keyValues: [KeyValuesInput!]
+    deckPlan: DeckPlanInput
+    formDragCoefficient: Float
+    rollResistanceCoefficient: Float
+    maximumEngineEffectKW: Float
+    maximumVelocity: Float
+    maximumRange: Float
+    length: Float
+    height: Float
+    width: Float
+    weight: Float
+    lowFloor: Boolean
+    selfPropelled: Boolean
+    hybridCategory: HybridCategory
+}
+
 type VehicleTypePage {
     content: [VehicleType!]!
     totalElements: Int!
@@ -227,6 +296,13 @@ type Query {
     organisations(filter: OrganisationsFilter, page: Int = 0, size: Int = 20): OrganisationPage!
 }
 
+type Mutation {
+    createOrUpdateVehicle(input: VehicleInput!): String
+    createOrUpdateVehicleType(input: VehicleTypeInput!): String
+    createOrUpdateDeckPlan(input: DeckPlanInput!): String
+}
+
 schema {
     query: Query
+    mutation: Mutation
 }

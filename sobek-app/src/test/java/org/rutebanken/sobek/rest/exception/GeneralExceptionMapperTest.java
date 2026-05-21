@@ -16,55 +16,76 @@
 package org.rutebanken.sobek.rest.exception;
 
 import jakarta.validation.ValidationException;
-import jakarta.ws.rs.NotAuthorizedException;
-import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
+import org.rutebanken.helper.organisation.NotAuthenticatedException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.TransactionSystemException;
 
 import java.io.FileNotFoundException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 
 public class GeneralExceptionMapperTest {
 
+    private final GlobalExceptionHandler handler = new GlobalExceptionHandler();
 
     @Test
     public void rawAccessDeniedExceptionYieldsForbidden() {
-        Response rsp = new GeneralExceptionMapper().toResponse(new AccessDeniedException("Nope"));
-        assertEquals(Response.Status.FORBIDDEN.getStatusCode(), rsp.getStatus());
+        ResponseEntity<ErrorResponseEntity> rsp = handler.handleException(new AccessDeniedException("Nope"));
+        assertEquals(HttpStatus.FORBIDDEN, rsp.getStatusCode());
     }
 
     @Test
     public void nestedAccessDeniedExceptionYieldsForbidden() {
-        Response rsp = new GeneralExceptionMapper().toResponse(new TransactionSystemException("", new AccessDeniedException("Nope")));
-        assertEquals(Response.Status.FORBIDDEN.getStatusCode(), rsp.getStatus());
-        assertEquals("Nope", ((ErrorResponseEntity) rsp.getEntity()).errors.getFirst().message);
+        ResponseEntity<ErrorResponseEntity> rsp = handler.handleException(
+                new TransactionSystemException("", new AccessDeniedException("Nope")));
+        assertEquals(HttpStatus.FORBIDDEN, rsp.getStatusCode());
+        assertNotNull(rsp.getBody());
+        assertEquals("Nope", rsp.getBody().errors.getFirst().message);
     }
-
 
     @Test
     public void nestedValidationExceptionYieldsBadRequest() {
-        Response rsp = new GeneralExceptionMapper().toResponse(new TransactionSystemException("", new ValidationException()));
-        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), rsp.getStatus());
+        ResponseEntity<ErrorResponseEntity> rsp = handler.handleException(
+                new TransactionSystemException("", new ValidationException()));
+        assertEquals(HttpStatus.BAD_REQUEST, rsp.getStatusCode());
     }
 
     @Test
     public void nestedUnknownExceptionYieldsInternalServerError() {
-        Response rsp = new GeneralExceptionMapper().toResponse(new TransactionSystemException("", new RuntimeException()));
-        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), rsp.getStatus());
+        ResponseEntity<ErrorResponseEntity> rsp = handler.handleException(
+                new TransactionSystemException("", new RuntimeException()));
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, rsp.getStatusCode());
     }
 
     @Test
-    public void nestedNotAuthorizedExceptionYieldsUnauthorized() {
-        Response rsp = new GeneralExceptionMapper().toResponse(new TransactionSystemException("", new NotAuthorizedException("Njet")));
-        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), rsp.getStatus());
+    public void nestedNotAuthenticatedExceptionYieldsUnauthorized() {
+        ResponseEntity<ErrorResponseEntity> rsp = handler.handleException(
+                new TransactionSystemException("", new NotAuthenticatedException("Njet")));
+        assertEquals(HttpStatus.UNAUTHORIZED, rsp.getStatusCode());
     }
 
     @Test
     public void rawUnknownExceptionYieldsInternalServerError() {
-        Response rsp = new GeneralExceptionMapper().toResponse(new FileNotFoundException());
-        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), rsp.getStatus());
+        ResponseEntity<ErrorResponseEntity> rsp = handler.handleException(new FileNotFoundException());
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, rsp.getStatusCode());
+    }
+
+    @Test
+    public void responseContentTypeIsTextPlain() {
+        ResponseEntity<ErrorResponseEntity> rsp = handler.handleException(new RuntimeException("Test"));
+        assertEquals(MediaType.TEXT_PLAIN, rsp.getHeaders().getContentType());
+    }
+
+    @Test
+    public void errorResponseEntityContainsMessage() {
+        ResponseEntity<ErrorResponseEntity> rsp = handler.handleException(new RuntimeException("Test message"));
+        assertNotNull(rsp.getBody());
+        assertEquals("Test message", rsp.getBody().errors.getFirst().message);
     }
 }

@@ -1,33 +1,31 @@
 package org.rutebanken.sobek.rest.netex.publicationdelivery;
 
-import jakarta.ws.rs.*;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.StreamingOutput;
 import lombok.extern.slf4j.Slf4j;
 import org.rutebanken.sobek.exporter.StreamingPublicationDelivery;
 import org.rutebanken.sobek.rest.ParameterDto.ExportParametersDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 @Component
-@Produces("application/xml")
-@Path("netex")
+@RestController
+@RequestMapping("/services/vehicles/netex")
 @Slf4j
-public class VehicleExportResource {
+public class VehicleExportController {
 
     @Qualifier("syncStreamingPublicationDelivery")
     @Autowired
     private StreamingPublicationDelivery streamingPublicationDelivery;
 
-    @GET
-    @Produces(MediaType.APPLICATION_XML + "; charset=UTF-8")
-    public Response getVehicleNetex(@BeanParam ExportParametersDto exportParams) {
+    @GetMapping(produces = MediaType.APPLICATION_XML_VALUE + "; charset=UTF-8")
+    public ResponseEntity<StreamingResponseBody> getVehicleNetex(@ModelAttribute ExportParametersDto exportParams) {
         log.info("Exporting publication delivery. {}", exportParams);
 
-
-        StreamingOutput streamingOutput = outputStream -> {
+        StreamingResponseBody streamingResponseBody = outputStream -> {
             try {
                 streamingPublicationDelivery.streamVehicles(exportParams.toExportParams(), outputStream);
             } catch (Exception e) {
@@ -36,18 +34,14 @@ public class VehicleExportResource {
             }
         };
 
-        return Response.ok(streamingOutput).build();
+        return ResponseEntity.ok(streamingResponseBody);
     }
 
-
-    @GET
-    @Path("deckplans/{id}")
-    @Produces(MediaType.APPLICATION_XML + "; charset=UTF-8")
-    public Response getOneDeckPlan(@BeanParam ExportParametersDto exportParams, @PathParam("id") String id) {
+    @GetMapping(path = "deckplans/{id}", produces = MediaType.APPLICATION_XML_VALUE + "; charset=UTF-8")
+    public ResponseEntity<StreamingResponseBody> getOneDeckPlan(@ModelAttribute ExportParametersDto exportParams, @PathVariable("id") String id) {
         log.info("Exporting publication delivery. {}", exportParams);
 
-
-        StreamingOutput streamingOutput = outputStream -> {
+        StreamingResponseBody streamingResponseBody = outputStream -> {
             try {
                 streamingPublicationDelivery.streamOneDeckPlan(exportParams.toExportParams(), id, outputStream);
             } catch (Exception e) {
@@ -56,20 +50,18 @@ public class VehicleExportResource {
             }
         };
 
-        return Response.ok(streamingOutput).build();
+        return ResponseEntity.ok(streamingResponseBody);
     }
 
     // Path param is `{id}` (not `{netexId}`) for symmetry with
     // @Path("deckplans/{id}") above — both endpoints look up by NeTEx id.
     // Renaming one without the other would break the convention. If we
     // want a rename, do it to both at once (tracked under the DRY-up in #101).
-    @GET
-    @Path("vehicles/{id}")
-    @Produces(MediaType.APPLICATION_XML + "; charset=UTF-8")
-    public Response getOneVehicle(@BeanParam ExportParametersDto exportParams, @PathParam("id") String id) {
+    @GetMapping(path = "vehicles/{id}", produces = MediaType.APPLICATION_XML_VALUE + "; charset=UTF-8")
+    public ResponseEntity<StreamingResponseBody> getOneVehicle(@ModelAttribute ExportParametersDto exportParams, @PathVariable("id") String id) {
         log.info("Exporting publication delivery for Vehicle NeTEx id {}. {}", id, exportParams);
 
-        StreamingOutput streamingOutput = outputStream -> {
+        StreamingResponseBody streamingResponseBody = outputStream -> {
             try {
                 streamingPublicationDelivery.streamOneVehicle(exportParams.toExportParams(), id, outputStream);
             } catch (Exception e) {
@@ -78,6 +70,6 @@ public class VehicleExportResource {
             }
         };
 
-        return Response.ok(streamingOutput).build();
+        return ResponseEntity.ok(streamingResponseBody);
     }
 }

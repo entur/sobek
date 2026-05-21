@@ -15,12 +15,12 @@
 
 package org.rutebanken.sobek.rest.netex.publicationdelivery;
 
-import jakarta.ws.rs.core.StreamingOutput;
 import org.junit.jupiter.api.Test;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
 import org.rutebanken.sobek.SobekTestApplication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 import org.xml.sax.SAXParseException;
 
 import java.io.ByteArrayOutputStream;
@@ -43,11 +43,11 @@ public class PublicationDeliveryStreamingOutputTest {
 
         PublicationDeliveryStructure publicationDelivery = new PublicationDeliveryStructure();
 
-        StreamingOutput streamingOutput = publicationDeliveryStreamingOutput.stream(publicationDelivery);
+        StreamingResponseBody streamingResponseBody = publicationDeliveryStreamingOutput.stream(publicationDelivery);
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
         assertThatThrownBy(() -> {
-            streamingOutput.write(byteArrayOutputStream);
+            streamingResponseBody.writeTo(byteArrayOutputStream);
         }).hasRootCauseInstanceOf(SAXParseException.class);
     }
 
@@ -57,10 +57,10 @@ public class PublicationDeliveryStreamingOutputTest {
                 .withPublicationTimestamp(LocalDateTime.now())
                 .withParticipantRef("participantRef");
 
-        StreamingOutput streamingOutput = new PublicationDeliveryStreamingOutput().stream(publicationDelivery);
+        StreamingResponseBody streamingResponseBody = new PublicationDeliveryStreamingOutput().stream(publicationDelivery);
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
-        streamingOutput.write(byteArrayOutputStream);
+        streamingResponseBody.writeTo(byteArrayOutputStream);
     }
 
 }

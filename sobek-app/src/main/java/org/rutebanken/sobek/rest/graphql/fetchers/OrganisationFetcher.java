@@ -51,7 +51,7 @@ public class OrganisationFetcher implements DataFetcher<Map<String, Object>> {
             if (orgArg instanceof org.rutebanken.netex.model.OrganisationTypeEnumeration t) {
                 type = t;
             } else if (orgArg instanceof String s) {
-                type = OrganisationTypeEnumeration.fromValue(s);
+                type = OrganisationTypeEnumeration.valueOf(s.toUpperCase());
             }
         }
 

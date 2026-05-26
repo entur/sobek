@@ -45,7 +45,7 @@ public class GenericNeTExIdConverter<X extends org.rutebanken.sobek.model.DataMa
     }
 
     public X convertIncomingId(X object) {
-        // If ID alredy null - do nothing
+        // If ID already null - do nothing
         if(object.getNetexId() == null) {
             return object;
         }

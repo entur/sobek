@@ -164,7 +164,7 @@ class GraphQLPagedQueriesTest {
         // Filter by that ID — should return exactly one result
         given()
             .contentType(ContentType.JSON)
-            .body(gql("{ vehicleTypes(filter: { ids: [\"" + id + "\"] }, page: 0, size: 10) { content { id } totalElements } }"))
+            .body(gql("{ vehicleTypes(filter: { netexIds: [\"" + id + "\"] }, page: 0, size: 10) { content { id } totalElements } }"))
         .when()
             .post("/services/vehicles/graphql")
         .then()
@@ -178,7 +178,7 @@ class GraphQLPagedQueriesTest {
     void vehicleTypes_filterByIds_noMatch() {
         given()
             .contentType(ContentType.JSON)
-            .body(gql("{ vehicleTypes(filter: { ids: [\"FAKE:VehicleType:999\"] }, page: 0, size: 10) { content { id } totalElements } }"))
+            .body(gql("{ vehicleTypes(filter: { netexIds: [\"FAKE:VehicleType:999\"] }, page: 0, size: 10) { content { id } totalElements } }"))
         .when()
             .post("/services/vehicles/graphql")
         .then()

@@ -7,7 +7,6 @@ import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.stereotype.Controller;
 import org.rutebanken.sobek.rest.graphql.fetchers.*;
 import org.rutebanken.sobek.model.DataManagedObjectStructure;
-import org.rutebanken.sobek.model.identification.IdentifiedEntity;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
@@ -85,22 +84,12 @@ public class QueryController {
         return vehicleTypeDeckPlanFetcher.get(env);
     }
 
-    @SchemaMapping(typeName = "VehicleType", field = "id")
-    public String vehicleTypeId(Object source) {
-        return getNetexId(source);
-    }
-
     @SchemaMapping(typeName = "VehicleType", field = "changedBy")
     public String vehicleTypeChangedBy(Object source) {
         return getChangedBy(source);
     }
 
     // Field mappings for Vehicle
-    @SchemaMapping(typeName = "Vehicle", field = "id")
-    public String vehicleId(Object source) {
-        return getNetexId(source);
-    }
-
     @SchemaMapping(typeName = "Vehicle", field = "changedBy")
     public String vehicleChangedBy(Object source) {
         return getChangedBy(source);
@@ -113,22 +102,9 @@ public class QueryController {
     }
 
     // Field mappings for DeckPlan
-    @SchemaMapping(typeName = "DeckPlan", field = "id")
-    public String deckPlanId(Object source) {
-        return getNetexId(source);
-    }
-
     @SchemaMapping(typeName = "DeckPlan", field = "changedBy")
     public String deckPlanChangedBy(Object source) {
         return getChangedBy(source);
-    }
-
-    // Helper methods
-    private String getNetexId(Object source) {
-        if (source instanceof IdentifiedEntity identifiedEntity) {
-            return identifiedEntity.getNetexId();
-        }
-        return null;
     }
 
     private String getChangedBy(Object source) {

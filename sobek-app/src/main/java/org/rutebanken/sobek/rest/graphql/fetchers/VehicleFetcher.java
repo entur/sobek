@@ -43,12 +43,12 @@ public class VehicleFetcher implements DataFetcher<Map<String, Object>> {
         int page = env.getArgumentOrDefault(PAGE, DEFAULT_PAGE_VALUE);
         int size = env.getArgumentOrDefault(SIZE, DEFAULT_SIZE_VALUE);
 
-        List<String> ids = null;
+        List<String> netexIds = null;
         List<AllPublicTransportModesEnumeration> modes = null;
 
         Map<String, Object> filter = env.getArgument(FILTER);
         if (filter != null) {
-            ids = (List<String>) filter.get(FILTER_IDS);
+            netexIds = (List<String>) filter.get(FILTER_IDS);
             Object modesObj = filter.get(FILTER_TRANSPORT_MODES);
             if (modesObj instanceof List) {
                 List<?> modesList = (List<?>) modesObj;
@@ -72,7 +72,7 @@ public class VehicleFetcher implements DataFetcher<Map<String, Object>> {
             }
         }
 
-        var result = vehicleRepository.findCurrentFiltered(ids, modes, PageRequest.of(page, size));
+        var result = vehicleRepository.findCurrentFiltered(netexIds, modes, PageRequest.of(page, size));
         return PageResult.from(result, page, size);
     }
 }

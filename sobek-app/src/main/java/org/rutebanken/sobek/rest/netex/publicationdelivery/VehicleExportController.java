@@ -37,13 +37,13 @@ public class VehicleExportController {
         return ResponseEntity.ok(streamingResponseBody);
     }
 
-    @GetMapping(path = "deckplans/{id}", produces = MediaType.APPLICATION_XML_VALUE + "; charset=UTF-8")
-    public ResponseEntity<StreamingResponseBody> getOneDeckPlan(@ModelAttribute ExportParametersDto exportParams, @PathVariable("id") String id) {
+    @GetMapping(path = "deckplans/{netexId}", produces = MediaType.APPLICATION_XML_VALUE + "; charset=UTF-8")
+    public ResponseEntity<StreamingResponseBody> getOneDeckPlan(@ModelAttribute ExportParametersDto exportParams, @PathVariable("netexId") String netexId) {
         log.info("Exporting publication delivery. {}", exportParams);
 
         StreamingResponseBody streamingResponseBody = outputStream -> {
             try {
-                streamingPublicationDelivery.streamOneDeckPlan(exportParams.toExportParams(), id, outputStream);
+                streamingPublicationDelivery.streamOneDeckPlan(exportParams.toExportParams(), netexId, outputStream);
             } catch (Exception e) {
                 log.warn("Could not stream composite frame. {}", e.getMessage(), e);
                 throw new RuntimeException(e);
@@ -53,17 +53,13 @@ public class VehicleExportController {
         return ResponseEntity.ok(streamingResponseBody);
     }
 
-    // Path param is `{id}` (not `{netexId}`) for symmetry with
-    // @Path("deckplans/{id}") above — both endpoints look up by NeTEx id.
-    // Renaming one without the other would break the convention. If we
-    // want a rename, do it to both at once (tracked under the DRY-up in #101).
-    @GetMapping(path = "vehicles/{id}", produces = MediaType.APPLICATION_XML_VALUE + "; charset=UTF-8")
-    public ResponseEntity<StreamingResponseBody> getOneVehicle(@ModelAttribute ExportParametersDto exportParams, @PathVariable("id") String id) {
-        log.info("Exporting publication delivery for Vehicle NeTEx id {}. {}", id, exportParams);
+    @GetMapping(path = "vehicles/{netexId}", produces = MediaType.APPLICATION_XML_VALUE + "; charset=UTF-8")
+    public ResponseEntity<StreamingResponseBody> getOneVehicle(@ModelAttribute ExportParametersDto exportParams, @PathVariable("netexId") String netexId) {
+        log.info("Exporting publication delivery for Vehicle NeTEx id {}. {}", netexId, exportParams);
 
         StreamingResponseBody streamingResponseBody = outputStream -> {
             try {
-                streamingPublicationDelivery.streamOneVehicle(exportParams.toExportParams(), id, outputStream);
+                streamingPublicationDelivery.streamOneVehicle(exportParams.toExportParams(), netexId, outputStream);
             } catch (Exception e) {
                 log.warn("Could not stream vehicle. {}", e.getMessage(), e);
                 throw new RuntimeException(e);

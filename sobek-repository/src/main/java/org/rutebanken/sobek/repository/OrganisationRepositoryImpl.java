@@ -28,7 +28,7 @@ public class OrganisationRepositoryImpl implements OrganisationRepository {
     }
 
     @Override
-    public Page<Organisation> findCurrentFiltered(List<String> ids, OrganisationTypeEnumeration organisationType, Pageable pageable) {
+    public Page<Organisation> findCurrentFiltered(List<String> netexIds, OrganisationTypeEnumeration organisationType, Pageable pageable) {
         List<? extends Organisation_VersionStructure> organisations;
 
         if(organisationType == null) {
@@ -41,8 +41,8 @@ public class OrganisationRepositoryImpl implements OrganisationRepository {
             throw new IllegalArgumentException("Unsupported organisation type filter: " + organisationType);
         }
 
-        if(ids != null && !ids.isEmpty()) {
-            Set<String> idSet = new HashSet<>(ids);
+        if(netexIds != null && !netexIds.isEmpty()) {
+            Set<String> idSet = new HashSet<>(netexIds);
             organisations = organisations
                     .stream()
                     .filter(org -> idSet.contains(org.getId()))

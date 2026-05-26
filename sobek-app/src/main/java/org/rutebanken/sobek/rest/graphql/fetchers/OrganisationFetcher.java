@@ -43,10 +43,10 @@ public class OrganisationFetcher implements DataFetcher<Map<String, Object>> {
         int size = env.getArgumentOrDefault(SIZE, DEFAULT_SIZE_VALUE);
 
         Map<String, Object> filter = env.getArgument(FILTER);
-        List<String> ids = null;
+        List<String> netexIds = null;
         OrganisationTypeEnumeration type = null;
         if (filter != null) {
-            ids = (List<String>) filter.get(FILTER_IDS);
+            netexIds = (List<String>) filter.get(FILTER_IDS);
             Object orgArg = filter.get(FILTER_ORGANISATION_TYPE);
             if (orgArg instanceof org.rutebanken.netex.model.OrganisationTypeEnumeration t) {
                 type = t;
@@ -55,7 +55,7 @@ public class OrganisationFetcher implements DataFetcher<Map<String, Object>> {
             }
         }
 
-        var result = organisationRepository.findCurrentFiltered(ids, type, PageRequest.of(page, size));
+        var result = organisationRepository.findCurrentFiltered(netexIds, type, PageRequest.of(page, size));
         return PageResult.from(result, page, size);
     }
 }

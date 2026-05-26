@@ -418,6 +418,13 @@ Tip: GraphiQL UI available on https://api.dev.entur.io/graphql-explorer/vehicles
 https://github.com/graphql/graphiql
 (Use e.g. `Modify Headers` for Chrome to add bearer-token for mutations)
 
+### Schema file
+The current GraphQL schema (`schema.graphqls`) is published to GitHub Pages
+on every change merged to `main`:
+https://entur.github.io/sobek/
+
+Use it for client codegen, IDE tooling and drift checks.
+
 ## Flyway
 To create the database for sobek, download and use the flyway command line tool:
 https://flywaydb.org/documentation/commandline/

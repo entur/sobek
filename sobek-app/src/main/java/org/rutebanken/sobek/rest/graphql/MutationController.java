@@ -1,7 +1,6 @@
 package org.rutebanken.sobek.rest.graphql;
 
 import jakarta.xml.bind.ValidationException;
-import javassist.NotFoundException;
 import org.rutebanken.sobek.graphql.converter.DeckPlanNeTExIdConverter;
 import org.rutebanken.sobek.graphql.converter.VehicleNeTExIdConverter;
 import org.rutebanken.sobek.graphql.converter.VehicleTypeNeTExIdConverter;

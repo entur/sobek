@@ -46,28 +46,28 @@ public class QueryController {
     @QueryMapping
     @Transactional(readOnly = true)  // Single transaction for entire query
     public Object vehicles(@Argument Map<String, Object> filter, @Argument Integer page, @Argument Integer size) throws Exception {
-        graphql.schema.DataFetchingEnvironment env = createEnvironment("vehicles", filter, page, size);
+        graphql.schema.DataFetchingEnvironment env = createEnvironment(filter, page, size);
         return vehicleFetcher.get(env);
     }
 
     @QueryMapping
     @Transactional(readOnly = true)  // Single transaction for entire query
     public Object vehicleTypes(@Argument Map<String, Object> filter, @Argument Integer page, @Argument Integer size)  {
-        graphql.schema.DataFetchingEnvironment env = createEnvironment("vehicleTypes", filter, page, size);
+        graphql.schema.DataFetchingEnvironment env = createEnvironment(filter, page, size);
         return vehicleTypeFetcher.get(env);
     }
 
     @QueryMapping
     @Transactional(readOnly = true)  // Single transaction for entire query
     public Object deckPlans(@Argument Integer page, @Argument Integer size) {
-        graphql.schema.DataFetchingEnvironment env = createEnvironment("deckPlans", null, page, size);
+        graphql.schema.DataFetchingEnvironment env = createEnvironment(null, page, size);
         return deckPlanFetcher.get(env);
     }
 
     @QueryMapping
     @Transactional(readOnly = true)  // Single transaction for entire query
     public Object organisations(@Argument Map<String, Object> filter, @Argument Integer page, @Argument Integer size)  {
-        graphql.schema.DataFetchingEnvironment env = createEnvironment("organisations", filter, page, size);
+        graphql.schema.DataFetchingEnvironment env = createEnvironment(filter, page, size);
         return organisationFetcher.get(env);
     }
 
@@ -115,7 +115,6 @@ public class QueryController {
     }
 
     private graphql.schema.DataFetchingEnvironment createEnvironment(
-            String fieldName,
             Map<String, Object> filter,
             Integer page,
             Integer size) {

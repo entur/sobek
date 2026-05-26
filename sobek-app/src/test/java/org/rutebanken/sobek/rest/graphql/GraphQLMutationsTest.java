@@ -29,6 +29,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 import static io.restassured.RestAssured.given;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = SobekTestApplication.class)
@@ -67,9 +68,23 @@ class GraphQLMutationsTest {
     }
 
     private String gql(String query) {
-        return "{\"query\": \"" + query.replace("\"", "\\\"").replace("\n", " ") + "\"}";
+        return "{\"query\": \"" + sanitizeJson(query) + "\"}";
     }
 
+    private String sanitizeJson(String json) {
+        if (json == null) {
+            return null;
+        }
+
+        // Replace common control characters with escaped versions
+        return json.replace("\r\n", "\\n")
+                .replace("\r", "\\n")
+                .replace("\n", "\\n")
+                .replace("\t", "\\t")
+                .replace("\"", "\\\"")
+                // Remove other control characters (0x00-0x1F except those above)
+                .replaceAll("[\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F]", "");
+    }
     // --- vehicleTypes paged query ---
 
     @Test
@@ -78,26 +93,39 @@ class GraphQLMutationsTest {
         // Create a dummy vehicle
         String resultId = given()
                 .contentType(ContentType.JSON)
-                .body(getFixtureContents("/fixtures/GraphQL_VehicleMutation1.QL"))
+                .body(gql(getFixtureContents("/fixtures/GraphQL_VehicleMutation1.QL")))
                 .when()
                 .post("/services/vehicles/graphql")
                 .then()
                 .statusCode(200)
-                .body("data.createOrUpdateVehicle", is(not(empty())))
+                .body("errors", nullValue())
                 .extract().path("data.createOrUpdateVehicle");
+
+        assertThat(resultId).isNotNull().isNotEmpty();
 
         // Verify that the dummy vehicle was created and check some of it's data
         given()
                 .contentType(ContentType.JSON)
-                .body(gql("{ vehicles(page: 0, size: 10, filter: { netexIds: [ " + resultId + " ]  }) { content { netexId, registrationNumber, chassisNumber } totalElements page size } }"))
+                .body(gql("{ vehicles(page: 0, size: 10, filter: { netexIds: [ \"" + resultId + "\" ]  }) { content { netexId, registrationNumber, chassisNumber } totalElements page size } }"))
                 .when()
                 .post("/services/vehicles/graphql")
                 .then()
                 .statusCode(200)
                 .body("data.vehicles.content", is(not(empty())))
-                .body("data.vehicles.totalElements", greaterThanOrEqualTo(1))
-                .body("data.vehicleTypes.page", equalTo(0))
-                .body("data.vehicleTypes.size", equalTo(10));
+                .body("data.vehicles.totalElements", equalTo(1));
     }
 
+    @Test
+    void vehicle_mutationDummyVehicle_ShouldFail() {
+
+        // Create a dummy vehicle
+        given()
+                .contentType(ContentType.JSON)
+                .body(gql(getFixtureContents("/fixtures/GraphQL_VehicleMutation1.QL").replace("AKT:VehicleType:123", "FAKE:VehicleType:123")))
+                .when()
+                .post("/services/vehicles/graphql")
+                .then()
+                .statusCode(200)
+                .body("errors", notNullValue());
+    }
 }

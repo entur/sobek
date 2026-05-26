@@ -1,4 +1,4 @@
-mutation CreateOrUpdateVehicle {
+mutation {
   createOrUpdateVehicle(input: {
     name: {
       value: "City Bus 42"

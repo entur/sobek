@@ -1,0 +1,47 @@
+name: Publish schema docs
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'sobek-app/src/main/resources/graphql/schema.graphqls'
+      - 'docs/**'
+      - '.github/workflows/docs.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - name: Assemble site
+        run: |
+          mkdir -p _site
+          cp docs/index.html _site/index.html
+          cp sobek-app/src/main/resources/graphql/schema.graphqls _site/schema.graphqls
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    if: github.repository_owner == 'entur'
+    needs: build
+    runs-on: ubuntu-24.04
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

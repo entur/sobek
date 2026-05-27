@@ -43,7 +43,12 @@ public class DeckPlanFetcher implements DataFetcher<Map<String, Object>> {
         List<String> netexIds = null;
         Map<String, Object> filter = env.getArgument(FILTER);
         if (filter != null) {
-            netexIds = (List<String>) filter.get("netexIds");
+            Object filterIds = filter.get(FILTER_IDS);
+            if (filterIds instanceof List<?>) {
+                @SuppressWarnings("unchecked")
+                List<String> castedFilterIds = (List<String>) filterIds;
+                netexIds = castedFilterIds;
+            }
         }
         var result = deckPlanRepository.findCurrentPaged(netexIds, PageRequest.of(page, size));
         return PageResult.from(result, page, size);

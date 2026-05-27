@@ -59,8 +59,8 @@ public class QueryController {
 
     @QueryMapping
     @Transactional(readOnly = true)  // Single transaction for entire query
-    public Object deckPlans(@Argument Integer page, @Argument Integer size) {
-        graphql.schema.DataFetchingEnvironment env = createEnvironment(null, page, size);
+    public Object deckPlans(@Argument Map<String, Object> filter, @Argument Integer page, @Argument Integer size) {
+        graphql.schema.DataFetchingEnvironment env = createEnvironment(filter, page, size);
         return deckPlanFetcher.get(env);
     }
 

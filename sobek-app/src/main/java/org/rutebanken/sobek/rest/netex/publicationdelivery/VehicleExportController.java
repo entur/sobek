@@ -34,7 +34,9 @@ public class VehicleExportController {
             }
         };
 
-        return ResponseEntity.ok(streamingResponseBody);
+        return ResponseEntity.ok()
+                .contentType(MediaType.valueOf(MediaType.APPLICATION_XML_VALUE + "; charset=UTF-8"))
+                .body(streamingResponseBody);
     }
 
     @GetMapping(path = "deckplans/{netexId}", produces = MediaType.APPLICATION_XML_VALUE + "; charset=UTF-8")
@@ -50,7 +52,9 @@ public class VehicleExportController {
             }
         };
 
-        return ResponseEntity.ok(streamingResponseBody);
+        return ResponseEntity.ok()
+                .contentType(MediaType.valueOf(MediaType.APPLICATION_XML_VALUE + "; charset=UTF-8"))
+                .body(streamingResponseBody);
     }
 
     @GetMapping(path = "vehicles/{netexId}", produces = MediaType.APPLICATION_XML_VALUE + "; charset=UTF-8")
@@ -66,6 +70,8 @@ public class VehicleExportController {
             }
         };
 
-        return ResponseEntity.ok(streamingResponseBody);
+        return ResponseEntity.ok()
+                .contentType(MediaType.valueOf(MediaType.APPLICATION_XML_VALUE + "; charset=UTF-8"))
+                .body(streamingResponseBody);
     }
 }

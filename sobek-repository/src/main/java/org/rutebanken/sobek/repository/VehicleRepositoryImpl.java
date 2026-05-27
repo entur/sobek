@@ -94,7 +94,7 @@ public class VehicleRepositoryImpl implements VehicleRepositoryCustom {
 
         String fetchJpql = "SELECT DISTINCT v FROM Vehicle v " +
                 "LEFT JOIN FETCH v.transportType vt WHERE " +
-                QueryHelper.objectValidCondition("v", "now") + " AND " + QueryHelper.objectValidCondition("vt", "now") + filterSuffix +
+                QueryHelper.objectValidCondition("v", "now") + " AND (v.transportType is null or (" + QueryHelper.objectValidCondition("vt", "now") + ")) " + filterSuffix +
                 " ORDER BY v.id";
 
         if (pageable.isUnpaged()) {

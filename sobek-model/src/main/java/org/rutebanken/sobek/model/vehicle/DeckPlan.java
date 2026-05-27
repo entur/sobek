@@ -48,7 +48,7 @@ public class DeckPlan extends DataManagedObjectStructure {
 //    private DeckLevels_RelStructure deckLevels;
 
     @OneToMany(cascade = CascadeType.ALL)
-    private List<Deck> decks = new ArrayList<>();
+    private List<Deck> decks;
 
     @Override
     public void mergeWithExistingVersion(EntityInVersionStructure existingVersion) {

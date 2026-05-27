@@ -218,6 +218,20 @@ class GraphQLPagedQueriesTest {
     }
 
     @Test
+    void deckPlans_getOne() {
+        given()
+                .contentType(ContentType.JSON)
+                .body(gql("{ deckPlans(page: 0, size: 10, filter: { netexIds: [ \"NMR:DeckPlan:1\" ]} ) { content { netexId } totalElements page size } }"))
+                .when()
+                .post("/services/vehicles/graphql")
+                .then()
+                .statusCode(200)
+                .body("data.deckPlans.totalElements", equalTo(1))
+                .body("data.deckPlans.page", equalTo(0))
+                .body("data.deckPlans.size", equalTo(10));
+    }
+
+    @Test
     void deckPlans_defaultPagination() {
         given()
             .contentType(ContentType.JSON)

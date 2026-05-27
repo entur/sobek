@@ -15,12 +15,7 @@
 
 package org.rutebanken.sobek.rest.netex.publicationdelivery;
 
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.*;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 import jakarta.xml.bind.JAXBException;
 import org.rutebanken.helper.organisation.NotAuthenticatedException;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
@@ -31,7 +26,11 @@ import org.rutebanken.sobek.rest.ParameterDto.ImportParametersDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
@@ -41,13 +40,11 @@ import java.util.Set;
 /**
  * Import publication deliveries
  */
-@Component
-@Tag(name = "Import resource", description = "Import resource")
-@Produces(MediaType.APPLICATION_XML + "; charset=UTF-8")
-@Path("netex")
-public class VehicleImportResource {
+@RestController
+@RequestMapping("/services/vehicles/netex")
+public class VehicleImportController {
 
-    private static final Logger logger = LoggerFactory.getLogger(VehicleImportResource.class);
+    private static final Logger logger = LoggerFactory.getLogger(VehicleImportController.class);
 
     private final PublicationDeliveryUnmarshaller publicationDeliveryUnmarshaller;
 
@@ -58,7 +55,7 @@ public class VehicleImportResource {
     private final Set<ImportType> enabledImportTypes;
 
     @Inject
-    public VehicleImportResource(PublicationDeliveryUnmarshaller publicationDeliveryUnmarshaller,
+    public VehicleImportController(PublicationDeliveryUnmarshaller publicationDeliveryUnmarshaller,
                                  PublicationDeliveryStreamingOutput publicationDeliveryStreamingOutput,
                                  PublicationDeliveryImporter publicationDeliveryImporter,
                                  @Value("#{'${netex.import.enabled.types:ID_MATCH}'.split(',')}") Set<ImportType> enabledImportTypes) {
@@ -69,35 +66,50 @@ public class VehicleImportResource {
         this.enabledImportTypes = enabledImportTypes;
     }
 
-    @POST
-    @Consumes(MediaType.APPLICATION_XML)
-    @Produces(MediaType.APPLICATION_XML + "; charset=UTF-8")
-    public Response importPublicationDelivery(@Parameter(hidden = true) InputStream inputStream, @BeanParam ImportParametersDto importParams) throws IOException, JAXBException, SAXException {
+    @PostMapping(consumes = MediaType.APPLICATION_XML_VALUE,
+            produces = MediaType.APPLICATION_XML_VALUE)
+    public ResponseEntity<StreamingResponseBody> importPublicationDelivery(
+            HttpServletRequest request,
+            @RequestParam(required = false, defaultValue = "MERGE") String importType,
+            @RequestParam(required = false, defaultValue = "false") boolean skipOutput) throws IOException, JAXBException, SAXException {
+        
         logger.info("Received Netex publication delivery, starting to parse...");
+        
+        // Create ImportParametersDto from request parameters
+        ImportParametersDto importParams = new ImportParametersDto();
+        importParams.importType = importType;
+        importParams.skipOutput = skipOutput;
+        
         ImportType effectiveImportType = safeGetImportType(importParams);
         if (!enabledImportTypes.contains(effectiveImportType)) {
             String error = "ImportType: " + effectiveImportType + " not enabled!";
             logger.warn(error);
-            return Response.status(Response.Status.BAD_REQUEST).entity(error).build();
+            StreamingResponseBody errorBody = outputStream -> {
+                outputStream.write(error.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            };
+            return ResponseEntity.badRequest().body(errorBody);
         }
 
-        PublicationDeliveryStructure incomingPublicationDelivery = publicationDeliveryUnmarshaller.unmarshal(inputStream);
-        try {
-            PublicationDeliveryStructure responsePublicationDelivery;
-            responsePublicationDelivery = publicationDeliveryImporter.importPublicationDelivery(incomingPublicationDelivery, importParams.toImportParams());
-            if (importParams.skipOutput) {
-                return Response.ok().build();
-            } else {
-                return Response.ok(publicationDeliveryStreamingOutput.stream(responsePublicationDelivery)).build();
+        // Get InputStream directly from HttpServletRequest
+        try (InputStream inputStream = request.getInputStream()) {
+            PublicationDeliveryStructure incomingPublicationDelivery = publicationDeliveryUnmarshaller.unmarshal(inputStream);
+            try {
+                PublicationDeliveryStructure responsePublicationDelivery;
+                responsePublicationDelivery = publicationDeliveryImporter.importPublicationDelivery(incomingPublicationDelivery, importParams.toImportParams());
+                if (importParams.skipOutput) {
+                    return ResponseEntity.ok().build();
+                } else {
+                    return ResponseEntity.ok(publicationDeliveryStreamingOutput.stream(responsePublicationDelivery));
+                }
+
+
+            } catch (NotAuthenticatedException  e) {
+                logger.debug("Access denied for publication delivery: " + e.getMessage(), e);
+                throw e;
+            } catch (RuntimeException e) {
+                logger.warn("Caught exception while importing publication delivery: " + incomingPublicationDelivery, e);
+                throw e;
             }
-
-
-        } catch (NotAuthenticatedException | NotAuthorizedException e) {
-            logger.debug("Access denied for publication delivery: " + e.getMessage(), e);
-            throw e;
-        } catch (RuntimeException e) {
-            logger.warn("Caught exception while importing publication delivery: " + incomingPublicationDelivery, e);
-            throw e;
         }
     }
 

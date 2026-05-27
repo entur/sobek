@@ -15,62 +15,62 @@
 
 package org.rutebanken.sobek.rest.exception;
 
-import com.google.common.collect.Sets;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.OptimisticLockException;
 import jakarta.validation.ValidationException;
-import jakarta.ws.rs.NotAuthorizedException;
-import jakarta.ws.rs.WebApplicationException;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.ext.ExceptionMapper;
-import jakarta.ws.rs.ext.Provider;
 import org.rutebanken.helper.organisation.NotAuthenticatedException;
 import org.springframework.core.NestedRuntimeException;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
-@Provider
-public class GeneralExceptionMapper implements ExceptionMapper<Exception> {
+@ControllerAdvice
+public class GlobalExceptionHandler {
 
-    private Map<Response.Status, Set<Class<?>>> mapping;
+    private final Map<HttpStatus, Set<Class<?>>> mapping;
 
-    public GeneralExceptionMapper() {
+    public GlobalExceptionHandler() {
         mapping = new HashMap<>();
-        mapping.put(Response.Status.BAD_REQUEST,
-                Sets.newHashSet(ValidationException.class, OptimisticLockException.class, EntityNotFoundException.class, DataIntegrityViolationException.class));
-        mapping.put(Response.Status.CONFLICT, Sets.newHashSet(EntityExistsException.class));
-        mapping.put(Response.Status.FORBIDDEN, Sets.newHashSet(AccessDeniedException.class));
-        mapping.put(Response.Status.UNAUTHORIZED, Sets.newHashSet(NotAuthorizedException.class, NotAuthenticatedException.class));
+        mapping.put(HttpStatus.BAD_REQUEST,
+                Set.of(ValidationException.class, OptimisticLockException.class, 
+                       EntityNotFoundException.class, DataIntegrityViolationException.class));
+        mapping.put(HttpStatus.CONFLICT, Set.of(EntityExistsException.class));
+        mapping.put(HttpStatus.FORBIDDEN, Set.of(AccessDeniedException.class));
+        mapping.put(HttpStatus.UNAUTHORIZED, Set.of(NotAuthenticatedException.class));
+        mapping.put(HttpStatus.NOT_FOUND, Set.of(NoSuchElementException.class));
     }
 
-
-    public Response toResponse(Exception ex) {
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponseEntity> handleException(Exception ex) {
         Throwable rootCause = getRootCause(ex);
-        int status;
-        if (rootCause instanceof WebApplicationException) {
-            status = ((WebApplicationException) rootCause).getResponse().getStatus();
-        } else {
-            status = toStatus(rootCause);
-        }
-
-        return Response.status(status)
-                       .entity(new ErrorResponseEntity(rootCause.getMessage()))
-                       .build();
+        HttpStatus status = toStatus(rootCause);
+        
+        ErrorResponseEntity error = new ErrorResponseEntity(rootCause.getMessage());
+        
+        return ResponseEntity
+                .status(status)
+                .contentType(MediaType.TEXT_PLAIN)
+                .body(error);
     }
 
-    protected int toStatus(Throwable e) {
-        for (Map.Entry<Response.Status, Set<Class<?>>> entry : mapping.entrySet()) {
+    protected HttpStatus toStatus(Throwable e) {
+        for (Map.Entry<HttpStatus, Set<Class<?>>> entry : mapping.entrySet()) {
             if (entry.getValue().stream().anyMatch(c -> c.isAssignableFrom(e.getClass()))) {
-                return entry.getKey().getStatusCode();
+                return entry.getKey();
             }
         }
 
-        return Response.Status.INTERNAL_SERVER_ERROR.getStatusCode();
+        return HttpStatus.INTERNAL_SERVER_ERROR;
     }
 
     private Throwable getRootCause(Throwable e) {

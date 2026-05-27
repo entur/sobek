@@ -80,13 +80,13 @@ public class VehicleRepositoryImpl implements VehicleRepositoryCustom {
 
 
     @Override
-    public Page<Vehicle> findCurrentFiltered(List<String> ids, List<AllPublicTransportModesEnumeration> transportModes, Pageable pageable) {
+    public Page<Vehicle> findCurrentFiltered(List<String> netexIds, List<AllPublicTransportModesEnumeration> transportModes, Pageable pageable) {
         Instant now = Instant.now();
 
         // Build dynamic WHERE suffix for optional filters
         StringBuilder filterSuffix = new StringBuilder();
-        if (ids != null && !ids.isEmpty()) {
-            filterSuffix.append(" AND v.netexId IN :ids");
+        if (netexIds != null && !netexIds.isEmpty()) {
+            filterSuffix.append(" AND v.netexId IN :netexIds");
         }
         if (transportModes != null && !transportModes.isEmpty()) {
             filterSuffix.append(" AND vt.transportMode in :transportModes");
@@ -100,7 +100,7 @@ public class VehicleRepositoryImpl implements VehicleRepositoryCustom {
         if (pageable.isUnpaged()) {
             TypedQuery<Vehicle> fetchQuery = entityManager.createQuery(fetchJpql, Vehicle.class);
             fetchQuery.setParameter("now", now);
-            setFilterParams(fetchQuery, ids, transportModes);
+            setFilterParams(fetchQuery, netexIds, transportModes);
             return new PageImpl<>(fetchQuery.getResultList());
         }
 
@@ -112,22 +112,22 @@ public class VehicleRepositoryImpl implements VehicleRepositoryCustom {
 
         TypedQuery<Long> countQuery = entityManager.createQuery(countJpql, Long.class);
         countQuery.setParameter("now", now);
-        setFilterParams(countQuery, ids, transportModes);
+        setFilterParams(countQuery, netexIds, transportModes);
         long total = countQuery.getSingleResult();
 
         // Fetch — in-memory pagination (HHH90003004) is acceptable for this small dataset
         TypedQuery<Vehicle> fetchQuery = entityManager.createQuery(fetchJpql, Vehicle.class);
         fetchQuery.setParameter("now", now);
-        setFilterParams(fetchQuery, ids, transportModes);
+        setFilterParams(fetchQuery, netexIds, transportModes);
         fetchQuery.setFirstResult((int) pageable.getOffset());
         fetchQuery.setMaxResults(pageable.getPageSize());
 
         return new PageImpl<>(fetchQuery.getResultList(), pageable, total);
     }
 
-    private void setFilterParams(Query query, List<String> ids, List<AllPublicTransportModesEnumeration> transportModes) {
-        if (ids != null && !ids.isEmpty()) {
-            query.setParameter("ids", ids);
+    private void setFilterParams(Query query, List<String> netexIds, List<AllPublicTransportModesEnumeration> transportModes) {
+        if (netexIds != null && !netexIds.isEmpty()) {
+            query.setParameter("netexIds", netexIds);
         }
         if (transportModes != null && !transportModes.isEmpty()) {
             query.setParameter("transportModes", transportModes);

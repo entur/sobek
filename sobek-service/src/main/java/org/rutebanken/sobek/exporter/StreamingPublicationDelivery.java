@@ -356,8 +356,9 @@ public class StreamingPublicationDelivery {
 
             EquipmentsInFrame_RelStructure equipmentsInFrameRelStructure = new EquipmentsInFrame_RelStructure();
 
-            List<org.rutebanken.netex.model.Equipment_VersionStructure> equipments = equipmentsInDb.stream().map(vt -> equipmentMapper.mapToNetexManual(vt, mappingContext)).toList();
-            setField(Equipments_RelStructure.class, "equipments", equipmentsInFrameRelStructure, equipments);
+            List<? extends JAXBElement<? extends Equipment_VersionStructure>> equipments = equipmentsInDb.stream().map(vt -> equipmentMapper.mapToNetexJaxbEquipment(
+                                                                                                                                            equipmentMapper.mapToNetexManual(vt, mappingContext), mappingContext)).toList();
+            setField(EquipmentsInFrame_RelStructure.class, "equipment", equipmentsInFrameRelStructure, equipments);
             resourceFrame.setEquipments(equipmentsInFrameRelStructure);
         } else {
             logger.info("No equipments to export");

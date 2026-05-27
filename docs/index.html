@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Sobek GraphQL schema</title>
+  <style>
+    :root { color-scheme: light dark; }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 2rem;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      line-height: 1.6;
+      background:
+        radial-gradient(circle at 15% 0%, rgba(225, 0, 152, 0.10), transparent 55%),
+        radial-gradient(circle at 85% 100%, rgba(225, 0, 152, 0.08), transparent 55%);
+    }
+
+    .card {
+      max-width: 580px;
+      width: 100%;
+      padding: 2.5rem 2.25rem;
+      background: light-dark(#ffffff, #1a1a1a);
+      border: 1px solid light-dark(#e6e6e6, #2a2a2a);
+      border-radius: 14px;
+      box-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.04),
+        0 10px 40px rgba(0, 0, 0, 0.08);
+      text-align: center;
+    }
+
+    .logo {
+      width: 84px;
+      height: 84px;
+      margin: 0 auto 1.5rem;
+      display: block;
+    }
+
+    h1 {
+      margin: 0 0 1.25rem;
+      font-size: 1.75rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: light-dark(#161616, #f4f4f4);
+    }
+
+    p {
+      margin: 0 0 1rem;
+      color: light-dark(#444, #b8b8b8);
+      text-align: left;
+    }
+
+    code {
+      background: light-dark(#f3f3f3, #262626);
+      padding: 0.1em 0.4em;
+      border-radius: 4px;
+      font-size: 0.92em;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    .download {
+      display: inline-block;
+      margin-top: 1.5rem;
+      padding: 0.8rem 2rem;
+      background: #e10098;
+      color: #ffffff;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      transition: background 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+      box-shadow: 0 4px 14px rgba(225, 0, 152, 0.35);
+    }
+
+    .download:hover { background: #c00084; }
+    .download:active { transform: translateY(1px); box-shadow: 0 2px 8px rgba(225, 0, 152, 0.30); }
+    .download:focus-visible { outline: 3px solid #e10098; outline-offset: 3px; }
+
+    footer {
+      margin-top: 2rem;
+      font-size: 0.85rem;
+      color: light-dark(#888, #777);
+    }
+
+    footer a {
+      color: inherit;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <svg class="logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" aria-label="GraphQL logo">
+      <g fill="none" stroke="#e10098" stroke-width="11" stroke-linejoin="round">
+        <polygon points="200,30 348,115 348,285 200,370 52,285 52,115"/>
+        <polygon points="200,30 348,285 52,285"/>
+        <polygon points="200,370 348,115 52,115"/>
+      </g>
+      <g fill="#e10098">
+        <circle cx="200" cy="30"  r="18"/>
+        <circle cx="348" cy="115" r="18"/>
+        <circle cx="348" cy="285" r="18"/>
+        <circle cx="200" cy="370" r="18"/>
+        <circle cx="52"  cy="285" r="18"/>
+        <circle cx="52"  cy="115" r="18"/>
+      </g>
+    </svg>
+
+    <h1>Sobek GraphQL schema</h1>
+
+    <p>
+      This page hosts the current GraphQL schema for <strong>Sobek</strong>,
+      Entur's national vehicle register
+      (<em>Nasjonalt materiellregister</em>).
+    </p>
+    <p>
+      Use <code>schema.graphqls</code> for client codegen, IDE tooling,
+      or schema exploration. The file reflects the latest commit on
+      <code>main</code>.
+    </p>
+
+    <a class="download" href="schema.graphqls" download>Download schema.graphqls</a>
+
+    <footer>
+      Source: <a href="https://github.com/entur/sobek">github.com/entur/sobek</a>
+    </footer>
+  </main>
+</body>
+</html>

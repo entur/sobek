@@ -15,146 +15,30 @@
 
 package org.rutebanken.sobek.rest.graphql;
 
-import static org.rutebanken.sobek.rest.graphql.RegisterGraphQLSchema.DEFAULT_PAGE_VALUE;
-import static org.rutebanken.sobek.rest.graphql.RegisterGraphQLSchema.DEFAULT_SIZE_VALUE;
 import static org.rutebanken.sobek.rest.graphql.scalars.DateScalar.DATE_TIME_PATTERN;
 import static org.rutebanken.sobek.rest.graphql.scalars.DateScalar.EXAMPLE_DATE_TIME;
 
+
 public class GraphQLNames {
 
-    private static final String INPUT_TYPE_POSTFIX = "Input";
-
-    public static final String OUTPUT_TYPE_ENTITY_REF = "EntityRef";
-    public static final String INPUT_TYPE_ENTITY_REF = OUTPUT_TYPE_ENTITY_REF + INPUT_TYPE_POSTFIX;
-    public static final String ENTITY_REF_DESCRIPTION = "A reference to an entity with version";
-
-    public static final String OUTPUT_TYPE_VERSION_LESS_ENTITY_REF = "VersionLessEntityRef";
-    public static final String INPUT_TYPE_VERSION_LESS_ENTITY_REF = OUTPUT_TYPE_VERSION_LESS_ENTITY_REF + INPUT_TYPE_POSTFIX;
-    public static final String VERSION_LESS_ENTITY_REF_DESCRIPTION = "A reference to an entity without version";
-
-    public static final String ENTITY_REF_REF = "ref";
-    public static final String ENTITY_REF_REF_DESCRIPTION = "The NeTEx ID of the referenced entity. The reference must already exist";
-    public static final String ENTITY_REF_VERSION = "version";
-    public static final String ENTITY_REF_VERSION_DESCRIPTION = "The version of the referenced entity.";
+    public final static int DEFAULT_PAGE_VALUE = 0;
+    public final static int DEFAULT_SIZE_VALUE = 20;
 
     public static final String DATE_SCALAR_DESCRIPTION = "Date time using the format: " + DATE_TIME_PATTERN + ". Example: " + EXAMPLE_DATE_TIME;
-
-    public static final String OUTPUT_TYPE_EMBEDDABLE_MULTILINGUAL_STRING = "EmbeddableMultilingualString";
-    public static final String INPUT_TYPE_EMBEDDABLE_MULTILINGUAL_STRING = OUTPUT_TYPE_EMBEDDABLE_MULTILINGUAL_STRING + INPUT_TYPE_POSTFIX;
-
-    public static final String OUTPUT_TYPE_KEY_VALUES = "KeyValues";
-    public static final String INPUT_TYPE_KEY_VALUES = OUTPUT_TYPE_KEY_VALUES + INPUT_TYPE_POSTFIX;
 
     public static final String CONTENT = "content";
 
     // Pagination fields
     public static final String TOTAL_ELEMENTS = "totalElements";
     public static final String PAGE = "page";
-    public static final String PAGE_ARG_DESCRIPTION = "Page number when using pagination - default is " + DEFAULT_PAGE_VALUE;
     public static final String SIZE = "size";
-    public static final String SIZE_ARG_DESCRIPTION = "Number of hits per page when using pagination - default is " + DEFAULT_SIZE_VALUE;
-
-    public static final String VEHICLE_REGISTER = "VehicleRegister";
 
     // Filter fields
     public static final String FILTER = "filter";
     public static final String FILTER_TRANSPORT_MODES = "transportModes";
     public static final String FILTER_ORGANISATION_TYPE = "organisationType";
-    public static final String FILTER_IDS = "ids";
+    public static final String FILTER_IDS = "netexIds";
 
-    // Property names
-    public static final String PROPERTY_TRANSPORT_MODE = "transportMode";
-    public static final String PROPERTY_CREATED = "created";
-    public static final String PROPERTY_CHANGED = "changed";
-    public static final String PROPERTY_LENGTH = "length";
-    public static final String PROPERTY_WIDTH = "width";
-    public static final String PROPERTY_HEIGHT = "height";
-    public static final String PROPERTY_WEIGHT = "weight";
-    public static final String PROPERTY_TRANSPORT_TYPE = "transportType";
-    public static final String PROPERTY_VEHICLES = "vehicles";
-    public static final String PROPERTY_TYPE = "type";
-    public static final String PROPERTY_CHANGED_BY = "changedBy";
-    public static final String PROPERTY_SHORT_NAME = "shortName";
-    public static final String PROPERTY_DESCRIPTION = "description";
-    public static final String PROPERTY_PRIVATE_CODE = "privateCode";
-    
-    // For VehicleType
-    public static final String PROPERTY_EURO_CLASS = "euroClass";
-    public static final String PROPERTY_SELF_PROPELLED = "selfPropelled";
-    public static final String PROPERTY_LOW_FLOOR = "lowFloor";
-    public static final String PROPERTY_FORM_DRAG_COEFFICIENT = "formDragCoefficient";
-    public static final String PROPERTY_ROLL_RESISTANCE_COEFFICIENT = "rollResistanceCoefficient";
-    public static final String PROPERTY_MAXIMUM_ENGINE_EFFECT_KW = "maximumEngineEffectKW";
-    public static final String PROPERTY_MAXIMUM_VELOCITY = "maximumVelocity";
-    public static final String PROPERTY_MAXIMUM_RANGE = "maximumRange";
-    public static final String PROPERTY_HYBRID_CATEGORY = "hybridCategory";
-    public static final String PROPERTY_PROPULSION_TYPES = "propulsionTypes";
-    public static final String PROPERTY_FUEL_TYPES = "fuelTypes";
-    public static final String PROPERTY_PASSENGER_CAPACITY = "passengerCapacity";
 
-    // For Vehicle
-    public static final String PROPERTY_REGISTRATION_NUMBER = "registrationNumber";
-    public static final String PROPERTY_OPERATIONAL_NUMBER = "operationalNumber";
-    public static final String PROPERTY_CHASSIS_NUMBER = "chassisNumber";
-    public static final String PROPERTY_BUILD_DATE = "buildDate";
-    public static final String PROPERTY_REGISTRATION_DATE = "registrationDate";
 
-    // For PassengerCapacity
-    public static final String PROPERTY_STANDING_CAPACITY = "standingCapacity";
-    public static final String PROPERTY_SEATING_CAPACITY = "seatingCapacity";
-    public static final String PROPERTY_TOTAL_CAPACITY = "totalCapacity";
-    public static final String PROPERTY_SPECIAL_PLACE_CAPACITY = "specialPlaceCapacity";
-    public static final String PROPERTY_PUSHCHAIR_CAPACITY = "pushchairCapacity";
-    public static final String PROPERTY_WHEELCHAIR_CAPACITY = "wheelchairPlaceCapacity";
-    public static final String PROPERTY_PRAM_PLACE_CAPACITY = "pramPlaceCapacity";
-    public static final String PROPERTY_BICYCLE_RACK_CAPACITY = "bicycleRackCapacity";
-
-    public static final String PROPERTY_KEY_VALUES = "keyValues";
-    public static final String PROPERTY_KEY = "key";
-    public static final String PROPERTY_VALUES = "values";
-    public static final String PROPERTY_VERSION = "version";
-
-    public static final String PROPERTY_NAME = "name";
-    public static final String PROPERTY_VALUE = "value";
-    public static final String PROPERTY_LANG = "lang";
-
-    public static final String PROPERTY_VALID_BETWEEN_FROM_DATE = "fromDate";
-    public static final String PROPERTY_VALID_BETWEEN_TO_DATE = "toDate";
-    public static final String PROPERTY_ID = "id";
-
-    // Root lists in GraphQL lists
-    public static final String OUTPUT_TYPE_VEHICLE_TYPE_PAGE = "VehicleTypePage";
-    public static final String OUTPUT_TYPE_VEHICLE_PAGE = "VehiclePage";
-    public static final String OUTPUT_TYPE_DECK_PLAN_PAGE = "DeckPlanPage";
-    public static final String OUTPUT_TYPE_ORGANISATION_PAGE = "OrganisationPage";
-
-    public static final String INPUT_TYPE_VEHICLE_TYPE_FILTER = "VehicleTypeFilter";
-    public static final String INPUT_TYPE_VEHICLE_FILTER = "VehicleFilter";
-    public static final String INPUT_TYPE_ORGANISATIONS_FILTER = "OrganisationsFilter";
-
-    public static final String LIST_NAME_VEHICLE_TYPES = "vehicleTypes";
-    public static final String OUTPUT_TYPE_VEHICLE_TYPE = "VehicleType";
-    public static final String OUTPUT_TYPE_VEHICLE_TYPE_VEHICLE = "VehicleTypeVehicle";
-    public static final String OUTPUT_TYPE_VEHICLE_TYPE_DECK_PLAN = "deckPlan";
-
-    public static final String LIST_NAME_DECK_PLANS = "deckPlans";
-    public static final String OUTPUT_TYPE_DECK_PLAN = "DeckPlan";
-
-    public static final String OUTPUT_TYPE_VEHICLE_VEHICLE_TYPE = "VehicleVehicleType";
-
-    public static final String LIST_NAME_VEHICLES = "vehicles";
-    public static final String OUTPUT_TYPE_VEHICLE = "Vehicle";
-
-    public static final String LIST_NAME_ORGANISATIONS = "organisations";
-    public static final String OUTPUT_TYPE_ORGANISATION = "Organisation";
-
-    public static final String OUTPUT_TYPE_PASSENGER_CAPACITY = "PassengerCapacity";
-
-    public static final String OUTPUT_TYPE_PRIVATE_CODE = "PrivateCode";
-
-    public static final String TYPE_TRANSPORT_MODE = "transportMode";
-    public static final String TYPE_ORGANISATION_TYPE = "organisationType";
-    public static final String TYPE_PROPULSION_TYPE = "propulsionType";
-    public static final String TYPE_FUEL_TYPE = "fuelType";
-    public static final String TYPE_HYBRID_CATEGORY_TYPE = "hybridCategory";
 }

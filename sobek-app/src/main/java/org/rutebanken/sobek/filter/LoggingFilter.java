@@ -33,8 +33,8 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.Enumeration;
 
-import static org.rutebanken.sobek.config.JerseyConfig.ET_CLIENT_ID_HEADER;
-import static org.rutebanken.sobek.config.JerseyConfig.ET_CLIENT_NAME_HEADER;
+import static org.rutebanken.sobek.config.HttpConfig.ET_CLIENT_ID_HEADER;
+import static org.rutebanken.sobek.config.HttpConfig.ET_CLIENT_NAME_HEADER;
 
 @Component
 public class LoggingFilter implements Filter {
@@ -58,19 +58,26 @@ public class LoggingFilter implements Filter {
 
             String requestUri = httpServletRequest.getRequestURI();
 
-            if(!requestUri.startsWith("/health")) {
+            if(!requestUri.startsWith("/actuator/health")) {
 
                 String clientName = httpServletRequest.getHeader(ET_CLIENT_NAME_HEADER);
                 String clientId = httpServletRequest.getHeader(ET_CLIENT_ID_HEADER);
 
-                String userName = usernameFetcher.getUserNameForAuthenticatedUser();
+                // Get username without blocking - handle failures gracefully
+                String userName = null;
+                try {
+                    userName = usernameFetcher.getUserNameForAuthenticatedUser();
+                } catch (Exception e) {
+                    // Log the error but don't block the request
+                    logger.warn("Failed to fetch username for logging: {}", e.getMessage());
+                    userName = "unknown";
+                }
 
                 if (logger.isTraceEnabled()) {
                     // If trace enabled, log all headers.
                     String allHeaders = headersAsString(httpServletRequest);
-                    logger.trace("{} User: '{}', Headers: '{}'", requestUri, userName, allHeaders.toString());
+                    logger.trace("{} User: '{}', Headers: '{}'", requestUri, userName, allHeaders);
                 } else {
-
                     logger.info("{}: User: '{}', Client: '{}', ID: '{}'", requestUri, userName, clientName, clientId);
                 }
 

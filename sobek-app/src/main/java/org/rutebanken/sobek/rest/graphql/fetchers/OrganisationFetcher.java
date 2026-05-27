@@ -22,18 +22,16 @@ import org.rutebanken.sobek.repository.OrganisationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
 
 import static org.rutebanken.sobek.rest.graphql.GraphQLNames.*;
-import static org.rutebanken.sobek.rest.graphql.RegisterGraphQLSchema.DEFAULT_PAGE_VALUE;
-import static org.rutebanken.sobek.rest.graphql.RegisterGraphQLSchema.DEFAULT_SIZE_VALUE;
+import static org.rutebanken.sobek.rest.graphql.GraphQLNames.DEFAULT_PAGE_VALUE;
+import static org.rutebanken.sobek.rest.graphql.GraphQLNames.DEFAULT_SIZE_VALUE;
 
-@Service("organisationFetcher")
-@Transactional
-class OrganisationFetcher implements DataFetcher<Map<String, Object>> {
+@Service
+public class OrganisationFetcher implements DataFetcher<Map<String, Object>> {
 
     @Autowired
     private OrganisationRepository organisationRepository;
@@ -45,19 +43,19 @@ class OrganisationFetcher implements DataFetcher<Map<String, Object>> {
         int size = env.getArgumentOrDefault(SIZE, DEFAULT_SIZE_VALUE);
 
         Map<String, Object> filter = env.getArgument(FILTER);
-        List<String> ids = null;
+        List<String> netexIds = null;
         OrganisationTypeEnumeration type = null;
         if (filter != null) {
-            ids = (List<String>) filter.get(FILTER_IDS);
+            netexIds = (List<String>) filter.get(FILTER_IDS);
             Object orgArg = filter.get(FILTER_ORGANISATION_TYPE);
             if (orgArg instanceof org.rutebanken.netex.model.OrganisationTypeEnumeration t) {
                 type = t;
             } else if (orgArg instanceof String s) {
-                type = OrganisationTypeEnumeration.fromValue(s);
+                type = OrganisationTypeEnumeration.valueOf(s.toUpperCase());
             }
         }
 
-        var result = organisationRepository.findCurrentFiltered(ids, type, PageRequest.of(page, size));
+        var result = organisationRepository.findCurrentFiltered(netexIds, type, PageRequest.of(page, size));
         return PageResult.from(result, page, size);
     }
 }

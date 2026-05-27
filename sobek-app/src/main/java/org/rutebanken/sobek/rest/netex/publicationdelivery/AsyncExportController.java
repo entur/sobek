@@ -15,13 +15,6 @@
 
 package org.rutebanken.sobek.rest.netex.publicationdelivery;
 
-import jakarta.ws.rs.BeanParam;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 import org.rutebanken.sobek.exporter.AsyncPublicationDeliveryExporter;
 import org.rutebanken.sobek.model.job.ExportJob;
 import org.rutebanken.sobek.model.job.ExportParams;
@@ -29,71 +22,69 @@ import org.rutebanken.sobek.model.job.JobStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.InputStream;
 import java.util.Collection;
-
-import static org.rutebanken.sobek.model.job.ExportJobPath.ASYNC_JOB_PATH;
 
 /**
  * Export publication delivery data to google cloud storage. Some parts like stops and parking asynchronously
  */
 //@Tag(name="asyncExport", description = "Async export resource")
-@Produces(MediaType.APPLICATION_XML + "; charset=UTF-8")
-@Path("/netex/" + ASYNC_JOB_PATH)
-public class AsyncExportResource {
+@RestController
+@RequestMapping("/services/vehicles/netex/async")
+public class AsyncExportController {
 
-    private static final Logger logger = LoggerFactory.getLogger(AsyncExportResource.class);
+    private static final Logger logger = LoggerFactory.getLogger(AsyncExportController.class);
 
     private final AsyncPublicationDeliveryExporter asyncPublicationDeliveryExporter;
 
     @Autowired
-    public AsyncExportResource(AsyncPublicationDeliveryExporter asyncPublicationDeliveryExporter) {
+    public AsyncExportController(AsyncPublicationDeliveryExporter asyncPublicationDeliveryExporter) {
         this.asyncPublicationDeliveryExporter = asyncPublicationDeliveryExporter;
     }
 
-    @GET
+    @GetMapping
     public Collection<ExportJob> getAsyncExportJobs() {
         return asyncPublicationDeliveryExporter.getJobs();
     }
 
-    @GET
-    @Path("{id}/status")
-    public Response getAsyncExportJob(@PathParam(value = "id") long exportJobId) {
+    @GetMapping(path = "{id}/status", produces = MediaType.APPLICATION_XML_VALUE + "; charset=UTF-8")
+    public ResponseEntity<ExportJob> getAsyncExportJob(@PathVariable(value = "id") long exportJobId) {
 
         ExportJob exportJob = asyncPublicationDeliveryExporter.getExportJob(exportJobId);
 
         if (exportJob == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return ResponseEntity.notFound().build();
         }
 
         logger.info("Returning job {}", exportJob);
-        return Response.ok(exportJob).build();
+        return ResponseEntity.ok(exportJob);
     }
 
-    @GET
-    @Path("{id}/content")
-    public Response getAsyncExportJobContents(@PathParam(value = "id") long exportJobId) {
+    @GetMapping(path = "{id}/content", produces = MediaType.APPLICATION_XML_VALUE + "; charset=UTF-8")
+    public ResponseEntity getAsyncExportJobContents(@PathVariable(value = "id") long exportJobId) {
 
         ExportJob exportJob = asyncPublicationDeliveryExporter.getExportJob(exportJobId);
 
         if (exportJob == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return ResponseEntity.notFound().build();
         }
 
         logger.info("Returning result of job {}", exportJob);
         if (!exportJob.getStatus().equals(JobStatus.FINISHED)) {
-            return Response.accepted("Job status is not FINISHED for job: " + exportJob).build();
+            return ResponseEntity.accepted().body("Job status is not FINISHED for job: " + exportJob);
         }
 
         InputStream inputStream = asyncPublicationDeliveryExporter.getJobFileContent(exportJob);
-        return Response.ok(inputStream).build();
+        return ResponseEntity.ok(inputStream);
     }
 
-    @GET
-    @Path("initiate")
-    public Response asyncExport(@BeanParam ExportParams exportParams) {
+    @GetMapping(path = "initiate", produces = MediaType.APPLICATION_XML_VALUE + "; charset=UTF-8")
+    public ResponseEntity<ExportJob> asyncExport(@ModelAttribute ExportParams exportParams) {
         ExportJob exportJob = asyncPublicationDeliveryExporter.startExportJob(exportParams);
-        return Response.ok(exportJob).build();
+        return ResponseEntity.ok(exportJob);
     }
 }

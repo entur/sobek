@@ -80,17 +80,17 @@ enum HybridCategory {
 
 # Filter inputs
 input VehicleTypeFilter {
-    ids: [String!]
+    netexIds: [String!]
     transportModes: [TransportMode!]
 }
 
 input VehicleFilter {
-    ids: [String!]
+    netexIds: [String!]
     transportModes: [TransportMode!]
 }
 
 input OrganisationsFilter {
-    ids: [String!]
+    netexIds: [String!]
     organisationType: OrganisationType
 }
 
@@ -144,7 +144,7 @@ input PassengerCapacityInput {
 
 # DeckPlan type
 type DeckPlan {
-    id: String!
+    netexId: String!
     name: MultilingualString
     description: MultilingualString
     version: String
@@ -152,7 +152,7 @@ type DeckPlan {
     changed: DateTime
 }
 input DeckPlanInput {
-    id: String
+    netexId: String
     name: MultilingualStringInput
     description: MultilingualStringInput
 }
@@ -166,7 +166,7 @@ type DeckPlanPage {
 
 # Organisation type
 type Organisation {
-    id: String!
+    netexId: String!
     name: MultilingualString
     legalName: String
     organisationType: OrganisationType
@@ -186,7 +186,7 @@ type OrganisationPage {
 
 # Vehicle
 type Vehicle {
-    id: String!
+    netexId: String!
     name: MultilingualString
     description: MultilingualString
     registrationNumber: String
@@ -202,7 +202,7 @@ type Vehicle {
 }
 
 input VehicleInput {
-    id: String
+    netexId: String
     name: MultilingualStringInput
     description: MultilingualStringInput
     registrationNumber: String
@@ -213,8 +213,6 @@ input VehicleInput {
     registrationDate: DateTime
 }
 
-
-
 type VehiclePage {
     content: [Vehicle!]!
     totalElements: Int!
@@ -223,7 +221,7 @@ type VehiclePage {
 }
 
 type VehicleType {
-    id: String!
+    netexId: String!
     name: MultilingualString
     shortName: MultilingualString
     description: MultilingualString
@@ -255,7 +253,7 @@ type VehicleType {
 }
 
 input VehicleTypeInput {
-    id: String
+    netexId: String
     name: MultilingualStringInput
     shortName: MultilingualStringInput
     description: MultilingualStringInput

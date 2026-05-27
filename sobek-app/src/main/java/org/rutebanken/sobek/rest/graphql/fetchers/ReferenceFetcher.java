@@ -24,10 +24,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-@Service("referenceFetcher")
-@Transactional
+@Service
 public class ReferenceFetcher implements DataFetcher<DataManagedObjectStructure> {
 
     private static final Logger logger = LoggerFactory.getLogger(ReferenceFetcher.class);
@@ -36,7 +34,6 @@ public class ReferenceFetcher implements DataFetcher<DataManagedObjectStructure>
     private ReferenceResolver referenceResolver;
 
     @Override
-    @Transactional
     public DataManagedObjectStructure get(DataFetchingEnvironment environment) {
         VersionOfObjectRefStructure reference = (VersionOfObjectRefStructure) environment.getSource();
         logger.info("Fetching reference: {}, version: {}", reference.getRef(), reference.getVersion());

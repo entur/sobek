@@ -21,7 +21,7 @@ import org.rutebanken.netex.model.OrganisationTypeEnumeration;
 import org.rutebanken.sobek.model.EmbeddableMultilingualString;
 
 public record Organisation(
-  String id,
+  String netexId,
   EmbeddableMultilingualString name,
   OrganisationTypeEnumeration type
 ) {}

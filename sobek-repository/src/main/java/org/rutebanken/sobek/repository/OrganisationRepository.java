@@ -8,6 +8,6 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface OrganisationRepository {
-    Page<Organisation> findCurrentFiltered(List<String> ids, OrganisationTypeEnumeration organisationType, Pageable pageable);
+    Page<Organisation> findCurrentFiltered(List<String> netexIds, OrganisationTypeEnumeration organisationType, Pageable pageable);
 }
 

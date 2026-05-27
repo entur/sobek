@@ -6,10 +6,9 @@ import graphql.execution.instrumentation.parameters.InstrumentationExecutionPara
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import static org.rutebanken.sobek.config.JerseyConfig.ET_CLIENT_NAME_HEADER;
+import static org.rutebanken.sobek.config.HttpConfig.ET_CLIENT_NAME_HEADER;
 
 @Component
 public class RequestLoggingInstrumentation extends SimplePerformantInstrumentation {

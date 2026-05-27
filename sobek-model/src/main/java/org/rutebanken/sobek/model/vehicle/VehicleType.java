@@ -6,13 +6,13 @@ import lombok.Setter;
 import org.rutebanken.sobek.model.EntityInVersionStructure;
 import org.rutebanken.sobek.model.Value;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
 @Setter
 public class VehicleType extends VehicleType_VersionStructure {
+
     @OneToOne(cascade = CascadeType.ALL)
     private PassengerCapacity passengerCapacity;
 

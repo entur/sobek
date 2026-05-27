@@ -15,7 +15,6 @@
 
 package org.rutebanken.sobek.rest.netex.publicationdelivery;
 
-import jakarta.ws.rs.core.StreamingOutput;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.JAXBException;
@@ -27,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 import org.xml.sax.SAXException;
 
 import java.io.ByteArrayOutputStream;
@@ -60,7 +60,7 @@ public class PublicationDeliveryStreamingOutput {
     public PublicationDeliveryStreamingOutput() throws IOException, SAXException {
     }
 
-    public StreamingOutput stream(PublicationDeliveryStructure publicationDelivery) throws JAXBException, IOException, SAXException {
+    public StreamingResponseBody stream(PublicationDeliveryStructure publicationDelivery) throws JAXBException, IOException, SAXException {
         Marshaller marshaller = jaxbContext.createMarshaller();
 
         JAXBElement<PublicationDeliveryStructure> jaxPublicationDelivery = objectFactory.createPublicationDelivery(publicationDelivery);

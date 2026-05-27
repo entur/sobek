@@ -66,7 +66,7 @@ class GraphQLPagedQueriesTest {
     void vehicleTypes_returnsPageStructure() {
         given()
             .contentType(ContentType.JSON)
-            .body(gql("{ vehicleTypes(page: 0, size: 10) { content { id } totalElements page size } }"))
+            .body(gql("{ vehicleTypes(page: 0, size: 10) { content { netexId } totalElements page size } }"))
         .when()
             .post("/services/vehicles/graphql")
         .then()
@@ -81,7 +81,7 @@ class GraphQLPagedQueriesTest {
     void organisations_returnsPageStructure() {
         given()
                 .contentType(ContentType.JSON)
-                .body(gql("{ organisations(page: 0, size: 10) { content { id } totalElements page size } }"))
+                .body(gql("{ organisations(page: 0, size: 10) { content { netexId } totalElements page size } }"))
                 .when()
                 .post("/services/vehicles/graphql")
                 .then()
@@ -96,7 +96,7 @@ class GraphQLPagedQueriesTest {
     void organisations_filterByOrganisationType() {
         given()
                 .contentType(ContentType.JSON)
-                .body(gql("{ organisations(page: 0, size: 1000, filter: { organisationType: authority }  ) { content { id } totalElements page size } }"))
+                .body(gql("{ organisations(page: 0, size: 1000, filter: { organisationType: AUTHORITY }  ) { content { netexId } totalElements page size } }"))
                 .when()
                 .post("/services/vehicles/graphql")
                 .then()
@@ -110,13 +110,13 @@ class GraphQLPagedQueriesTest {
     void vehicleTypes_exposesNewFields() {
         given()
             .contentType(ContentType.JSON)
-            .body(gql("{ vehicleTypes(page: 0, size: 100, filter: { transportModes: [ bus ]  } ) { content { id, description { value }, name { value }, version, euroClass, passengerCapacity { totalCapacity, standingCapacity, seatingCapacity },  transportMode, created, fuelTypes, propulsionTypes, privateCode { type, value}, formDragCoefficient, maximumRange, length, height, width, weight, vehicles { chassisNumber, id, registrationNumber }  } totalElements page size } }"))
+            .body(gql("{ vehicleTypes(page: 0, size: 100, filter: { transportModes: [ BUS ]  } ) { content { netexId, description { value }, name { value }, version, euroClass, passengerCapacity { totalCapacity, standingCapacity, seatingCapacity },  transportMode, created, fuelTypes, propulsionTypes, privateCode { type, value}, formDragCoefficient, maximumRange, length, height, width, weight, vehicles { chassisNumber, netexId, registrationNumber }  } totalElements page size } }"))
                 .when()
             .post("/services/vehicles/graphql")
         .then()
             .statusCode(200)
             .body("data.vehicleTypes.content[0].name.value", equalTo("Exqui City 24"))
-            .body("data.vehicleTypes.content[0].transportMode", equalTo("bus"))
+            .body("data.vehicleTypes.content[0].transportMode", equalTo("BUS"))
             .body("data.vehicleTypes.content[0].version", notNullValue())
             // created may be null for NeTEx-imported entities (set by versioning, not import)
             .body("data.vehicleTypes.content[0]", hasKey("created"));
@@ -126,20 +126,20 @@ class GraphQLPagedQueriesTest {
     void vehicleTypes_filterByTransportMode() {
         given()
             .contentType(ContentType.JSON)
-            .body(gql("{ vehicleTypes(filter: { transportModes: [ bus ] }, page: 0, size: 10) { content { id transportMode } totalElements } }"))
+            .body(gql("{ vehicleTypes(filter: { transportModes: [ BUS ] }, page: 0, size: 10) { content { netexId transportMode } totalElements } }"))
         .when()
             .post("/services/vehicles/graphql")
         .then()
             .statusCode(200)
             .body("data.vehicleTypes.content", is(not(empty())))
-            .body("data.vehicleTypes.content.transportMode", everyItem(equalTo("bus")));
+            .body("data.vehicleTypes.content.transportMode", everyItem(equalTo("BUS")));
     }
 
     @Test
     void vehicleTypes_filterByTransportMode_noMatch() {
         given()
             .contentType(ContentType.JSON)
-            .body(gql("{ vehicleTypes(filter: { transportModes: [ trolleyBus ] }, page: 0, size: 10) { content { id } totalElements } }"))
+            .body(gql("{ vehicleTypes(filter: { transportModes: [ TROLLEY_BUS ] }, page: 0, size: 10) { content { netexId } totalElements } }"))
         .when()
             .post("/services/vehicles/graphql")
         .then()
@@ -153,24 +153,24 @@ class GraphQLPagedQueriesTest {
         // First, get the actual NeTEx ID of the imported vehicle type
         String id = given()
             .contentType(ContentType.JSON)
-            .body(gql("{ vehicleTypes(page: 0, size: 1) { content { id } } }"))
+            .body(gql("{ vehicleTypes(page: 0, size: 1) { content { netexId } } }"))
         .when()
             .post("/services/vehicles/graphql")
         .then()
             .statusCode(200)
             .body("data.vehicleTypes.content", hasSize(1))
-            .extract().path("data.vehicleTypes.content[0].id");
+            .extract().path("data.vehicleTypes.content[0].netexId");
 
         // Filter by that ID — should return exactly one result
         given()
             .contentType(ContentType.JSON)
-            .body(gql("{ vehicleTypes(filter: { ids: [\"" + id + "\"] }, page: 0, size: 10) { content { id } totalElements } }"))
+            .body(gql("{ vehicleTypes(filter: { netexIds: [\"" + id + "\"] }, page: 0, size: 10) { content { netexId } totalElements } }"))
         .when()
             .post("/services/vehicles/graphql")
         .then()
             .statusCode(200)
             .body("data.vehicleTypes.content", hasSize(1))
-            .body("data.vehicleTypes.content[0].id", equalTo(id))
+            .body("data.vehicleTypes.content[0].netexId", equalTo(id))
             .body("data.vehicleTypes.totalElements", equalTo(1));
     }
 
@@ -178,7 +178,7 @@ class GraphQLPagedQueriesTest {
     void vehicleTypes_filterByIds_noMatch() {
         given()
             .contentType(ContentType.JSON)
-            .body(gql("{ vehicleTypes(filter: { ids: [\"FAKE:VehicleType:999\"] }, page: 0, size: 10) { content { id } totalElements } }"))
+            .body(gql("{ vehicleTypes(filter: { netexIds: [\"FAKE:VehicleType:999\"] }, page: 0, size: 10) { content { netexId } totalElements } }"))
         .when()
             .post("/services/vehicles/graphql")
         .then()
@@ -191,7 +191,7 @@ class GraphQLPagedQueriesTest {
     void vehicleTypes_paginationBeyondResults() {
         given()
             .contentType(ContentType.JSON)
-            .body(gql("{ vehicleTypes(page: 999, size: 10) { content { id } totalElements page } }"))
+            .body(gql("{ vehicleTypes(page: 999, size: 10) { content { netexId } totalElements page } }"))
         .when()
             .post("/services/vehicles/graphql")
         .then()
@@ -207,7 +207,7 @@ class GraphQLPagedQueriesTest {
     void deckPlans_returnsPageStructure() {
         given()
             .contentType(ContentType.JSON)
-            .body(gql("{ deckPlans(page: 0, size: 10) { content { id } totalElements page size } }"))
+            .body(gql("{ deckPlans(page: 0, size: 10) { content { netexId } totalElements page size } }"))
         .when()
             .post("/services/vehicles/graphql")
         .then()
@@ -221,7 +221,7 @@ class GraphQLPagedQueriesTest {
     void deckPlans_defaultPagination() {
         given()
             .contentType(ContentType.JSON)
-            .body(gql("{ deckPlans { content { id } totalElements page size } }"))
+            .body(gql("{ deckPlans { content { netexId } totalElements page size } }"))
         .when()
             .post("/services/vehicles/graphql")
         .then()
@@ -234,13 +234,13 @@ class GraphQLPagedQueriesTest {
     void vehicles_filterByTransportMode() {
         given()
                 .contentType(ContentType.JSON)
-                .body(gql("{ vehicles(page: 0, size: 100, filter: { transportModes: [ bus ]  } ) { content { id, registrationNumber, operationalNumber, transportType { id, length, height, width, transportMode } } totalElements page size } }"))
+                .body(gql("{ vehicles(page: 0, size: 100, filter: { transportModes: [ BUS ]  } ) { content { netexId, registrationNumber, operationalNumber, transportType { netexId, length, height, width, transportMode } } totalElements page size } }"))
                 .when()
                 .post("/services/vehicles/graphql")
                 .then()
                 .statusCode(200)
                 .body("data.vehicles.content", is(not(empty())))
-                .body("data.vehicles.content.transportType.transportMode", everyItem(equalTo("bus")));
+                .body("data.vehicles.content.transportType.transportMode", everyItem(equalTo("BUS")));
     }
 
 }

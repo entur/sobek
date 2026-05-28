@@ -15,8 +15,10 @@
 
 package org.rutebanken.sobek.rest.exception;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ValidationException;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.rutebanken.helper.organisation.NotAuthenticatedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -36,14 +38,16 @@ public class GeneralExceptionMapperTest {
 
     @Test
     public void rawAccessDeniedExceptionYieldsForbidden() {
-        ResponseEntity<ErrorResponseEntity> rsp = handler.handleException(new AccessDeniedException("Nope"));
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        ResponseEntity<ErrorResponseEntity> rsp = handler.handleException(new AccessDeniedException("Nope"), request);
         assertEquals(HttpStatus.FORBIDDEN, rsp.getStatusCode());
     }
 
     @Test
     public void nestedAccessDeniedExceptionYieldsForbidden() {
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         ResponseEntity<ErrorResponseEntity> rsp = handler.handleException(
-                new TransactionSystemException("", new AccessDeniedException("Nope")));
+                new TransactionSystemException("", new AccessDeniedException("Nope")), request);
         assertEquals(HttpStatus.FORBIDDEN, rsp.getStatusCode());
         assertNotNull(rsp.getBody());
         assertEquals("Nope", rsp.getBody().errors.getFirst().message);
@@ -51,41 +55,82 @@ public class GeneralExceptionMapperTest {
 
     @Test
     public void nestedValidationExceptionYieldsBadRequest() {
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         ResponseEntity<ErrorResponseEntity> rsp = handler.handleException(
-                new TransactionSystemException("", new ValidationException()));
+                new TransactionSystemException("", new ValidationException()), request);
         assertEquals(HttpStatus.BAD_REQUEST, rsp.getStatusCode());
     }
 
     @Test
     public void nestedUnknownExceptionYieldsInternalServerError() {
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         ResponseEntity<ErrorResponseEntity> rsp = handler.handleException(
-                new TransactionSystemException("", new RuntimeException()));
+                new TransactionSystemException("", new RuntimeException()), request);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, rsp.getStatusCode());
     }
 
     @Test
     public void nestedNotAuthenticatedExceptionYieldsUnauthorized() {
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         ResponseEntity<ErrorResponseEntity> rsp = handler.handleException(
-                new TransactionSystemException("", new NotAuthenticatedException("Njet")));
+                new TransactionSystemException("", new NotAuthenticatedException("Njet")), request);
         assertEquals(HttpStatus.UNAUTHORIZED, rsp.getStatusCode());
     }
 
     @Test
     public void rawUnknownExceptionYieldsInternalServerError() {
-        ResponseEntity<ErrorResponseEntity> rsp = handler.handleException(new FileNotFoundException());
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        ResponseEntity<ErrorResponseEntity> rsp = handler.handleException(new FileNotFoundException(), request);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, rsp.getStatusCode());
     }
 
     @Test
-    public void responseContentTypeIsTextPlain() {
-        ResponseEntity<ErrorResponseEntity> rsp = handler.handleException(new RuntimeException("Test"));
-        assertEquals(MediaType.TEXT_PLAIN, rsp.getHeaders().getContentType());
+    public void errorResponseEntityContainsMessage() {
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        ResponseEntity<ErrorResponseEntity> rsp = handler.handleException(new RuntimeException("Test message"), request);
+        assertNotNull(rsp.getBody());
+        assertEquals("Test message", rsp.getBody().errors.getFirst().message);
     }
 
     @Test
-    public void errorResponseEntityContainsMessage() {
-        ResponseEntity<ErrorResponseEntity> rsp = handler.handleException(new RuntimeException("Test message"));
-        assertNotNull(rsp.getBody());
-        assertEquals("Test message", rsp.getBody().errors.getFirst().message);
+    public void acceptHeaderXmlReturnsXmlContentType() {
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        Mockito.when(request.getHeader("Accept")).thenReturn("application/xml");
+        
+        ResponseEntity<ErrorResponseEntity> rsp = handler.handleException(new RuntimeException("Test"), request);
+        
+        assertEquals(MediaType.APPLICATION_XML, rsp.getHeaders().getContentType());
+    }
+
+    @Test
+    public void acceptHeaderJsonReturnsJsonContentType() {
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        Mockito.when(request.getHeader("Accept")).thenReturn("application/json");
+        
+        ResponseEntity<ErrorResponseEntity> rsp = handler.handleException(new RuntimeException("Test"), request);
+        
+        assertEquals(MediaType.APPLICATION_JSON, rsp.getHeaders().getContentType());
+    }
+
+    @Test
+    public void noAcceptHeaderDefaultsToJson() {
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        Mockito.when(request.getHeader("Accept")).thenReturn(null);
+        Mockito.when(request.getContentType()).thenReturn(null);
+        
+        ResponseEntity<ErrorResponseEntity> rsp = handler.handleException(new RuntimeException("Test"), request);
+        
+        assertEquals(MediaType.APPLICATION_JSON, rsp.getHeaders().getContentType());
+    }
+
+    @Test
+    public void contentTypeXmlFallbackReturnsXml() {
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        Mockito.when(request.getHeader("Accept")).thenReturn(null);
+        Mockito.when(request.getContentType()).thenReturn("application/xml");
+        
+        ResponseEntity<ErrorResponseEntity> rsp = handler.handleException(new RuntimeException("Test"), request);
+        
+        assertEquals(MediaType.APPLICATION_XML, rsp.getHeaders().getContentType());
     }
 }

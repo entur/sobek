@@ -18,6 +18,7 @@ package org.rutebanken.sobek.rest.exception;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.OptimisticLockException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ValidationException;
 import org.rutebanken.helper.organisation.NotAuthenticatedException;
 import org.springframework.core.NestedRuntimeException;
@@ -51,15 +52,37 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponseEntity> handleException(Exception ex) {
+    public ResponseEntity<ErrorResponseEntity> handleException(Exception ex, HttpServletRequest request) {
         Throwable rootCause = getRootCause(ex);
         HttpStatus status = toStatus(rootCause);
         
         ErrorResponseEntity error = new ErrorResponseEntity(rootCause.getMessage());
         
+        // Determine content type based on what the client expects
+        MediaType contentType = determineContentType(request);
+        
         return ResponseEntity
                 .status(status)
+                .contentType(contentType)
                 .body(error);
+    }
+
+    private MediaType determineContentType(HttpServletRequest request) {
+        String acceptHeader = request.getHeader("Accept");
+        String contentTypeHeader = request.getContentType();
+        
+        // Check Accept header first
+        if (acceptHeader != null && acceptHeader.contains("application/xml")) {
+            return MediaType.APPLICATION_XML;
+        }
+        
+        // Fall back to request Content-Type (if client sent XML, respond with XML)
+        if (contentTypeHeader != null && contentTypeHeader.contains("application/xml")) {
+            return MediaType.APPLICATION_XML;
+        }
+        
+        // Default to JSON for GraphQL and other cases
+        return MediaType.APPLICATION_JSON;
     }
 
     protected HttpStatus toStatus(Throwable e) {

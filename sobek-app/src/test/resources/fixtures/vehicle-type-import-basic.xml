@@ -61,6 +61,20 @@
                     <TransportTypeRef ref="AKT:VehicleType:124"/>
                 </Vehicle>
             </vehicles>
+            <deckPlans>
+                <DeckPlan id="NMR:DeckPlan:1" version="1">
+                    <Name>
+                        <Text>
+                            Enetasjes leddet lavgulvbuss (CG)
+                        </Text>
+                    </Name>
+                    <Description>
+                        <Text>
+                            VAN HOOL ExquiCity 24 Hybrid - Enetasjes leddet lavgulvbuss (CG)
+                        </Text>
+                    </Description>
+                </DeckPlan>
+            </deckPlans>
         </ResourceFrame>
     </dataObjects>
 </PublicationDelivery>

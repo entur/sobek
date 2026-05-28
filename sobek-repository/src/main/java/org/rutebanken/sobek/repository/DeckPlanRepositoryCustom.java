@@ -25,7 +25,7 @@ public interface DeckPlanRepositoryCustom extends DataManagedObjectStructureRepo
 
     List<DeckPlan> findAllCurrent();
 
-    Page<DeckPlan> findCurrentPaged(Pageable pageable);
+    Page<DeckPlan> findCurrentPaged(List<String> netexIds, Pageable pageable);
 
 }
 

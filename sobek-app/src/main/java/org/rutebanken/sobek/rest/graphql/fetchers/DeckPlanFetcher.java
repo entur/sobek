@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.rutebanken.sobek.rest.graphql.GraphQLNames.*;
@@ -39,7 +40,17 @@ public class DeckPlanFetcher implements DataFetcher<Map<String, Object>> {
         int page = env.getArgumentOrDefault(PAGE, DEFAULT_PAGE_VALUE);
         int size = env.getArgumentOrDefault(SIZE, DEFAULT_SIZE_VALUE);
 
-        var result = deckPlanRepository.findCurrentPaged(PageRequest.of(page, size));
+        List<String> netexIds = null;
+        Map<String, Object> filter = env.getArgument(FILTER);
+        if (filter != null) {
+            Object filterIds = filter.get(FILTER_IDS);
+            if (filterIds instanceof List<?>) {
+                @SuppressWarnings("unchecked")
+                List<String> castedFilterIds = (List<String>) filterIds;
+                netexIds = castedFilterIds;
+            }
+        }
+        var result = deckPlanRepository.findCurrentPaged(netexIds, PageRequest.of(page, size));
         return PageResult.from(result, page, size);
     }
 }

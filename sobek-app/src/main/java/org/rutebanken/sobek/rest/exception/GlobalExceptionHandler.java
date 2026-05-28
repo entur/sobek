@@ -59,7 +59,6 @@ public class GlobalExceptionHandler {
         
         return ResponseEntity
                 .status(status)
-                .contentType(MediaType.TEXT_PLAIN)
                 .body(error);
     }
 

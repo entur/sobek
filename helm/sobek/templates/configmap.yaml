@@ -34,7 +34,7 @@ data:
     spring.datasource.username=sobek
     spring.datasource.platform=postgres
     graphql.query.max.depth =100
-
+    spring.graphql.http.path=/services/vehicles/graphql
 
     #flyway
     spring.flyway.table =schema_version

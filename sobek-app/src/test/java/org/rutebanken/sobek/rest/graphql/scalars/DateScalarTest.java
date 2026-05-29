@@ -21,11 +21,7 @@ import org.rutebanken.sobek.SobekTestApplication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.util.Locale;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -81,6 +77,12 @@ public class DateScalarTest {
         Instant actual = (Instant) dateScalar.getGraphQLDateScalar().getCoercing().parseValue(EXAMPLE_DATE,graphQLContext,local);
         System.out.println(actual);
         assertThat(LocalDateTime.ofInstant(actual, ZoneOffset.UTC).getDayOfMonth()).as("Day should be correct").isEqualTo(23);
+    }
+
+    @Test
+    public void serializeExampleDate() {
+        String actual = (String) dateScalar.getGraphQLDateScalar().getCoercing().serialize(LocalDate.parse(EXAMPLE_DATE).atStartOfDay().toInstant(ZoneOffset.UTC), graphQLContext, local);
+        assertThat(actual).as("Date should be formatted without time").isEqualTo(EXAMPLE_DATE);
     }
 
     @Test

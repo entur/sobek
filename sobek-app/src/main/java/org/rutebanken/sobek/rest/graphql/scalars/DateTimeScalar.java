@@ -26,31 +26,36 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
-import java.time.temporal.TemporalAccessor;
 import java.util.Locale;
 
-import static org.rutebanken.sobek.rest.graphql.GraphQLNames.DATE_SCALAR_DESCRIPTION;
+import static org.rutebanken.sobek.rest.graphql.GraphQLNames.DATE_TIME_SCALAR_DESCRIPTION;
 
 @Component
-public class DateScalar {
+public class DateTimeScalar {
 
 
-    public static final String EXAMPLE_DATE = "2017-04-23";
+    @Autowired
+    private ExportTimeZone exportTimeZone;
 
-    public static final String DATE_PATTERN = "yyyy-MM-dd";
+    public static final String EXAMPLE_DATE_TIME = "2017-04-23T18:25:43.511+0100";
 
-    public static final String PARSE_DATE_PATTERN = "[yyyyMMdd][yyyy-MM-dd][yyyy-DDD]";
+    /**
+     * Milliseconds and time zone offset is _REQUIRED_ in this scalar.
+     * Milliseconds will handle most cases for date and time.
+     * Enforcing time zone will avoid issues with making assumptions about time zones.
+     * ISO 8601 alone does not require time zone.
+     */
+    public static final String DATE_TIME_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSXXXX";
+
+    public static final String PARSE_DATE_TIME_PATTERN = "[yyyyMMdd][yyyy-MM-dd][yyyy-DDD]['T'[HHmmss][HHmm][HH:mm:ss][HH:mm][.SSSSSSSSS][.SSSSSS][.SSS][.SS][.S]][OOOO][O][z][XXXXX][XXXX]['['VV']']";
 
 
-    public static final DateTimeFormatter PARSER = new DateTimeFormatterBuilder().appendPattern(PARSE_DATE_PATTERN)
+    public static final DateTimeFormatter PARSER = new DateTimeFormatterBuilder().appendPattern(PARSE_DATE_TIME_PATTERN)
                                                            .toFormatter();
 
-    private static DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern(DATE_PATTERN);
+    private static DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
 
 
     private GraphQLScalarType graphQLDateScalar;
@@ -64,22 +69,20 @@ public class DateScalar {
 
     private GraphQLScalarType createGraphQLDateScalar() {
         return new GraphQLScalarType.Builder()
-                .name("Date")
-                .description(DATE_SCALAR_DESCRIPTION)
+                .name("DateTime")
+                .description(DATE_TIME_SCALAR_DESCRIPTION)
                 .coercing(new Coercing() {
                     @Override
                     public String serialize(Object input, GraphQLContext graphQLContext, Locale locale) {
                         if (input instanceof Instant instant) {
-                            return instant.atOffset(ZoneOffset.UTC).format(FORMATTER);
+                            return instant.atZone(exportTimeZone.getDefaultTimeZoneId()).format(FORMATTER);
                         }
                         return null;
                     }
 
                     @Override
                     public Instant parseValue(Object input, GraphQLContext graphQLContext, Locale locale) {
-                        TemporalAccessor parsed = PARSER.parse((CharSequence) input);
-                        LocalDate localDate = LocalDate.from(parsed);
-                        return localDate.atStartOfDay().atOffset(ZoneOffset.UTC).toInstant();
+                        return Instant.from(PARSER.parse((CharSequence) input));
                     }
 
                     @Override

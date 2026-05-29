@@ -1,5 +1,6 @@
 # Custom scalars
 scalar DateTime
+scalar Date
 
 # MultilingualString type
 type MultilingualString {
@@ -197,8 +198,8 @@ type Vehicle {
     operationalNumber: String
     transportType: VehicleType
     chassisNumber: String
-    buildDate: DateTime
-    registrationDate: DateTime
+    buildDate: Date
+    registrationDate: Date
     version: String
     created: DateTime
     changed: DateTime
@@ -213,8 +214,8 @@ input VehicleInput {
     operationalNumber: String
     transportType: VehicleTypeInput
     chassisNumber: String
-    buildDate: DateTime
-    registrationDate: DateTime
+    buildDate: Date
+    registrationDate: Date
 }
 
 type VehiclePage {

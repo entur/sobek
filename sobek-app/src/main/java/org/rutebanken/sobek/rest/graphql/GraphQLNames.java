@@ -15,8 +15,9 @@
 
 package org.rutebanken.sobek.rest.graphql;
 
-import static org.rutebanken.sobek.rest.graphql.scalars.DateScalar.DATE_TIME_PATTERN;
-import static org.rutebanken.sobek.rest.graphql.scalars.DateScalar.EXAMPLE_DATE_TIME;
+import static org.rutebanken.sobek.rest.graphql.scalars.DateScalar.*;
+import static org.rutebanken.sobek.rest.graphql.scalars.DateTimeScalar.DATE_TIME_PATTERN;
+import static org.rutebanken.sobek.rest.graphql.scalars.DateTimeScalar.EXAMPLE_DATE_TIME;
 
 
 public class GraphQLNames {
@@ -24,7 +25,8 @@ public class GraphQLNames {
     public final static int DEFAULT_PAGE_VALUE = 0;
     public final static int DEFAULT_SIZE_VALUE = 20;
 
-    public static final String DATE_SCALAR_DESCRIPTION = "Date time using the format: " + DATE_TIME_PATTERN + ". Example: " + EXAMPLE_DATE_TIME;
+    public static final String DATE_TIME_SCALAR_DESCRIPTION = "Date time using the format: " + DATE_TIME_PATTERN + ". Example: " + EXAMPLE_DATE_TIME;
+    public static final String DATE_SCALAR_DESCRIPTION = "Date using the format: " + DATE_PATTERN + ". Example: " + EXAMPLE_DATE;
 
     public static final String CONTENT = "content";
 

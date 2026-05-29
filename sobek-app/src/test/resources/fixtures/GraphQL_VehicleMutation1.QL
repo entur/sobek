@@ -14,7 +14,7 @@ mutation {
     registrationNumber: "AB-12345"
     operationalNumber: "BUS-042"
     chassisNumber: "CHASSIS123456789"
-    buildDate: "2024-01-15T00:00:00Z"
-    registrationDate: "2024-02-01T00:00:00Z"
+    buildDate: "2024-01-15"
+    registrationDate: "2024-02-01"
   })
 }

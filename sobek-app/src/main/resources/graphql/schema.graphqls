@@ -14,6 +14,20 @@ input MultilingualStringInput {
 }
 
 # Enums
+enum FareClass {
+    UNKNOWN
+    FIRST_CLASS
+    SECOND_CLASS
+    THIRD_CLASS
+    PREFERENTE
+    PREMIUM_CLASS
+    BUSINESS_CLASS
+    STANDARD_CLASS
+    TURISTA
+    ECONOMY_CLASS
+    ANY
+}
+
 enum TransportMode {
     ALL
     AIR
@@ -129,6 +143,8 @@ input PrivateCodeInput {
 
 # PassengerCapacity type
 type PassengerCapacity {
+    fareClass: FareClass
+    specialPlaceCapacity: Int
     totalCapacity: Int
     seatingCapacity: Int
     standingCapacity: Int
@@ -138,6 +154,8 @@ type PassengerCapacity {
     bicycleRackCapacity: Int
 }
 input PassengerCapacityInput {
+    fareClass: FareClass
+    specialPlaceCapacity: Int
     totalCapacity: Int
     seatingCapacity: Int
     standingCapacity: Int

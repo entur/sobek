@@ -19,13 +19,13 @@ import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
 import org.rutebanken.sobek.model.vehicle.AllPublicTransportModesEnumeration;
 import org.rutebanken.sobek.repository.VehicleRepository;
+import org.rutebanken.sobek.rest.graphql.helpers.FilterHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static org.rutebanken.sobek.rest.graphql.GraphQLNames.*;
 import static org.rutebanken.sobek.rest.graphql.GraphQLNames.DEFAULT_PAGE_VALUE;
@@ -43,36 +43,13 @@ public class VehicleFetcher implements DataFetcher<Map<String, Object>> {
         int page = env.getArgumentOrDefault(PAGE, DEFAULT_PAGE_VALUE);
         int size = env.getArgumentOrDefault(SIZE, DEFAULT_SIZE_VALUE);
 
-        List<String> netexIds = null;
-        List<AllPublicTransportModesEnumeration> modes = null;
 
         Map<String, Object> filter = env.getArgument(FILTER);
-        if (filter != null) {
-            netexIds = (List<String>) filter.get(FILTER_IDS);
-            Object modesObj = filter.get(FILTER_TRANSPORT_MODES);
-            if (modesObj instanceof List) {
-                List<?> modesList = (List<?>) modesObj;
-                modes = modesList.stream()
-                        .filter(obj -> obj != null)
-                        .map(obj -> {
-                            if (obj instanceof AllPublicTransportModesEnumeration) {
-                                return (AllPublicTransportModesEnumeration) obj;
-                            } else if (obj instanceof String) {
-                                try {
-                                    return AllPublicTransportModesEnumeration.valueOf(((String) obj).toUpperCase());
-                                } catch (IllegalArgumentException e) {
-                                    // Log invalid enum value and skip it
-                                    return null;
-                                }
-                            }
-                            return null;
-                        })
-                        .filter(obj -> obj != null)
-                        .collect(Collectors.toList());
-            }
-        }
+        List<String> netexIds = FilterHelper.getNetexIdsFromFilter(filter);
+        String name = FilterHelper.getNameFromFilter(filter);
+        List<AllPublicTransportModesEnumeration> modes = FilterHelper.getModesFromFilter(filter);
 
-        var result = vehicleRepository.findCurrentFiltered(netexIds, modes, PageRequest.of(page, size));
+        var result = vehicleRepository.findCurrentFiltered(netexIds, modes, name, PageRequest.of(page, size));
         return PageResult.from(result, page, size);
     }
 }

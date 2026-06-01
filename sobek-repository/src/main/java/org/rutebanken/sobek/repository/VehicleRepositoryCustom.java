@@ -28,7 +28,7 @@ public interface VehicleRepositoryCustom extends DataManagedObjectStructureRepos
 
     void healthCheck();
 
-    Page<Vehicle> findCurrentFiltered(List<String> netexIds, List<AllPublicTransportModesEnumeration> transportModes, Pageable pageable);
+    Page<Vehicle> findCurrentFiltered(List<String> netexIds, List<AllPublicTransportModesEnumeration> transportModes, String name, Pageable pageable);
 
 
 }

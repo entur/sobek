@@ -36,7 +36,7 @@ public class FilterHelper {
                             try {
                                 return AllPublicTransportModesEnumeration.valueOf(((String) obj).toUpperCase());
                             } catch (IllegalArgumentException e) {
-                                // Log invalid enum value and skip it
+                                // Skip invalid enum value and return null
                                 return null;
                             }
                         }

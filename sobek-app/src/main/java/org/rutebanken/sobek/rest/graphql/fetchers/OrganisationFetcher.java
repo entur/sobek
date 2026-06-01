@@ -19,6 +19,7 @@ import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
 import org.rutebanken.netex.model.OrganisationTypeEnumeration;
 import org.rutebanken.sobek.repository.OrganisationRepository;
+import org.rutebanken.sobek.rest.graphql.helpers.FilterHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -43,19 +44,11 @@ public class OrganisationFetcher implements DataFetcher<Map<String, Object>> {
         int size = env.getArgumentOrDefault(SIZE, DEFAULT_SIZE_VALUE);
 
         Map<String, Object> filter = env.getArgument(FILTER);
-        List<String> netexIds = null;
-        OrganisationTypeEnumeration type = null;
-        if (filter != null) {
-            netexIds = (List<String>) filter.get(FILTER_IDS);
-            Object orgArg = filter.get(FILTER_ORGANISATION_TYPE);
-            if (orgArg instanceof org.rutebanken.netex.model.OrganisationTypeEnumeration t) {
-                type = t;
-            } else if (orgArg instanceof String s) {
-                type = OrganisationTypeEnumeration.valueOf(s.toUpperCase());
-            }
-        }
+        List<String> netexIds = FilterHelper.getNetexIdsFromFilter(filter);
+        String name = FilterHelper.getNameFromFilter(filter);
+        OrganisationTypeEnumeration type = FilterHelper.getOrganisationTypeFromFilter(filter);
 
-        var result = organisationRepository.findCurrentFiltered(netexIds, type, PageRequest.of(page, size));
+        var result = organisationRepository.findCurrentFiltered(netexIds, type, name, PageRequest.of(page, size));
         return PageResult.from(result, page, size);
     }
 }

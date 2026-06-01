@@ -21,6 +21,7 @@
                         <SeatingCapacity>30</SeatingCapacity>
                         <StandingCapacity>20</StandingCapacity>
                     </PassengerCapacity>
+                    <DeckPlanRef ref="NMR:DeckPlan:1"/>
                     <Length>25000</Length>
                     <Width>5000</Width>
                     <Height>5000</Height>

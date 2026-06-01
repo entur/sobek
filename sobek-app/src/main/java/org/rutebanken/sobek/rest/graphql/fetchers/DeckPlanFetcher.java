@@ -17,8 +17,9 @@ package org.rutebanken.sobek.rest.graphql.fetchers;
 
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
+import org.rutebanken.sobek.model.vehicle.AllPublicTransportModesEnumeration;
 import org.rutebanken.sobek.repository.DeckPlanRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.rutebanken.sobek.rest.graphql.helpers.FilterHelper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -32,25 +33,22 @@ import static org.rutebanken.sobek.rest.graphql.GraphQLNames.DEFAULT_SIZE_VALUE;
 @Service
 public class DeckPlanFetcher implements DataFetcher<Map<String, Object>> {
 
-    @Autowired
-    private DeckPlanRepository deckPlanRepository;
+    private final DeckPlanRepository deckPlanRepository;
+
+    public DeckPlanFetcher(DeckPlanRepository deckPlanRepository) {
+        this.deckPlanRepository = deckPlanRepository;
+    }
 
     @Override
     public Map<String, Object> get(DataFetchingEnvironment env) {
         int page = env.getArgumentOrDefault(PAGE, DEFAULT_PAGE_VALUE);
         int size = env.getArgumentOrDefault(SIZE, DEFAULT_SIZE_VALUE);
 
-        List<String> netexIds = null;
         Map<String, Object> filter = env.getArgument(FILTER);
-        if (filter != null) {
-            Object filterIds = filter.get(FILTER_IDS);
-            if (filterIds instanceof List<?>) {
-                @SuppressWarnings("unchecked")
-                List<String> castedFilterIds = (List<String>) filterIds;
-                netexIds = castedFilterIds;
-            }
-        }
-        var result = deckPlanRepository.findCurrentPaged(netexIds, PageRequest.of(page, size));
+        List<String> netexIds = FilterHelper.getNetexIdsFromFilter(filter);
+        String name = FilterHelper.getNameFromFilter(filter);
+        List<AllPublicTransportModesEnumeration> modes = FilterHelper.getModesFromFilter(filter);
+        var result = deckPlanRepository.findCurrentFiltered(netexIds, modes, name, PageRequest.of(page, size));
         return PageResult.from(result, page, size);
     }
 }

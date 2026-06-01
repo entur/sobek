@@ -40,7 +40,5 @@ public class GraphQLNames {
     public static final String FILTER_TRANSPORT_MODES = "transportModes";
     public static final String FILTER_ORGANISATION_TYPE = "organisationType";
     public static final String FILTER_IDS = "netexIds";
-
-
-
+    public static final String FILTER_NAME = "name";
 }

@@ -3,6 +3,7 @@ package org.rutebanken.sobek.repository;
 import jakarta.persistence.*;
 import org.rutebanken.sobek.model.vehicle.AllPublicTransportModesEnumeration;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
+import org.rutebanken.sobek.repository.utils.QueryHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -86,7 +87,7 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
             filterSuffix.append(" AND vt.transportMode IN :transportModes");
         }
         if(name != null && !name.isEmpty()) {
-            name = "%" + name + "%";
+            name = "%" + QueryHelper.escapeForLike(name.toLowerCase()) + "%";
             filterSuffix.append(" AND vt.name is not null and lower(vt.name.value) LIKE :name");
         }
 

@@ -1,5 +1,6 @@
 package org.rutebanken.sobek.rest.graphql;
 
+import org.springframework.transaction.annotation.Transactional;
 import jakarta.xml.bind.ValidationException;
 import org.rutebanken.sobek.graphql.converter.DeckPlanNeTExIdConverter;
 import org.rutebanken.sobek.graphql.converter.VehicleNeTExIdConverter;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Controller;
 
 @Controller
 @SchemaMapping(typeName = "Mutation")
+@Transactional(rollbackFor = ValidationException.class)
 public class MutationController {
     private final VehicleVersionedSaverService vehicleVersionedSaverService;
     private final VehicleNeTExIdConverter vehicleIdConverter;

@@ -63,7 +63,7 @@ class OrganisationFetcher implements DataFetcher<Map<String, Object>> {
         }
 
 
-        var result = organisationRepository.findCurrentFiltered(ids, type, PageRequest.of(page, size));
+        var result = organisationRepository.findCurrentFiltered(ids, type, authorizedIds, PageRequest.of(page, size));
         return PageResult.from(result, page, size);
     }
 }

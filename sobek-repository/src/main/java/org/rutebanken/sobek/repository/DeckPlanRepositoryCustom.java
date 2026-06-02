@@ -15,6 +15,7 @@
 
 package org.rutebanken.sobek.repository;
 
+import org.rutebanken.sobek.model.vehicle.AllPublicTransportModesEnumeration;
 import org.rutebanken.sobek.model.vehicle.DeckPlan;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,7 +26,7 @@ public interface DeckPlanRepositoryCustom extends DataManagedObjectStructureRepo
 
     List<DeckPlan> findAllCurrent();
 
-    Page<DeckPlan> findCurrentPaged(List<String> netexIds, Pageable pageable);
+    Page<DeckPlan> findCurrentFiltered(List<String> netexIds, List<AllPublicTransportModesEnumeration> transportModes, String name, Pageable pageable);
 
 }
 

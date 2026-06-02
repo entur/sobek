@@ -3,6 +3,7 @@ package org.rutebanken.sobek.repository;
 import jakarta.persistence.*;
 import org.rutebanken.sobek.model.vehicle.AllPublicTransportModesEnumeration;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
+import org.rutebanken.sobek.repository.utils.QueryHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -70,11 +71,11 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
 
     @Override
     public List<VehicleType> findAllCurrent() {
-        return findCurrentFiltered(null, null, Pageable.unpaged()).getContent();
+        return findCurrentFiltered(null, null, null, Pageable.unpaged()).getContent();
     }
 
     @Override
-    public Page<VehicleType> findCurrentFiltered(List<String> netexIds, List<AllPublicTransportModesEnumeration> transportModes, Pageable pageable) {
+    public Page<VehicleType> findCurrentFiltered(List<String> netexIds, List<AllPublicTransportModesEnumeration> transportModes, String name, Pageable pageable) {
         Instant now = Instant.now();
 
         // Build dynamic WHERE suffix for optional filters
@@ -85,6 +86,10 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
         if (transportModes != null && !transportModes.isEmpty()) {
             filterSuffix.append(" AND vt.transportMode IN :transportModes");
         }
+        if(name != null && !name.isEmpty()) {
+            name = "%" + QueryHelper.escapeForLike(name.toLowerCase()) + "%";
+            filterSuffix.append(" AND vt.name is not null and lower(vt.name.value) LIKE :name");
+        }
 
         String fetchJpql = "SELECT DISTINCT vt FROM VehicleType vt " +
                 "LEFT JOIN FETCH vt.vehicles v " +
@@ -94,8 +99,7 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
 
         if (pageable.isUnpaged()) {
             TypedQuery<VehicleType> fetchQuery = entityManager.createQuery(fetchJpql, VehicleType.class);
-            fetchQuery.setParameter("now", now);
-            setFilterParams(fetchQuery, netexIds, transportModes);
+            setFilterParams(fetchQuery, netexIds, transportModes, name, now);
             return new PageImpl<>(fetchQuery.getResultList());
         }
 
@@ -103,26 +107,28 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
         String countJpql = "SELECT COUNT(vt) FROM VehicleType vt " +
                 VT_CURRENT_WHERE + filterSuffix;
         TypedQuery<Long> countQuery = entityManager.createQuery(countJpql, Long.class);
-        countQuery.setParameter("now", now);
-        setFilterParams(countQuery, netexIds, transportModes);
+        setFilterParams(countQuery, netexIds, transportModes, name, now);
         long total = countQuery.getSingleResult();
 
         // Fetch — in-memory pagination (HHH90003004) is acceptable for this small dataset
         TypedQuery<VehicleType> fetchQuery = entityManager.createQuery(fetchJpql, VehicleType.class);
-        fetchQuery.setParameter("now", now);
-        setFilterParams(fetchQuery, netexIds, transportModes);
+        setFilterParams(fetchQuery, netexIds, transportModes, name, now);
         fetchQuery.setFirstResult((int) pageable.getOffset());
         fetchQuery.setMaxResults(pageable.getPageSize());
 
         return new PageImpl<>(fetchQuery.getResultList(), pageable, total);
     }
 
-    private void setFilterParams(Query query, List<String> netexIds, List<AllPublicTransportModesEnumeration> transportModes) {
+    private void setFilterParams(Query query, List<String> netexIds, List<AllPublicTransportModesEnumeration> transportModes, String name, Instant now) {
+        query.setParameter("now", now);
         if (netexIds != null && !netexIds.isEmpty()) {
             query.setParameter("netexIds", netexIds);
         }
         if (transportModes != null && !transportModes.isEmpty()) {
             query.setParameter("transportModes", transportModes);
+        }
+        if(name != null && !name.isEmpty()) {
+            query.setParameter("name", name);
         }
     }
 

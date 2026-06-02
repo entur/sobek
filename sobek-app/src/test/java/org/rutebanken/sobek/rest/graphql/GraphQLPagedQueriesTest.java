@@ -107,6 +107,20 @@ class GraphQLPagedQueriesTest {
     }
 
     @Test
+    void organisations_filterByName() {
+        given()
+                .contentType(ContentType.JSON)
+                .body(gql("{ organisations(page: 0, size: 1000, filter: { name: \"oscarsborg\" }  ) { content { netexId } totalElements page size } }"))
+                .when()
+                .post("/services/vehicles/graphql")
+                .then()
+                .statusCode(200)
+                .body("data.organisations.content", is(not(empty())))
+                .body("data.organisations.totalElements", greaterThanOrEqualTo(1))
+                .body("data.organisations.page", equalTo(0));
+    }
+
+    @Test
     void vehicleTypes_exposesNewFields() {
         given()
             .contentType(ContentType.JSON)
@@ -133,6 +147,19 @@ class GraphQLPagedQueriesTest {
             .statusCode(200)
             .body("data.vehicleTypes.content", is(not(empty())))
             .body("data.vehicleTypes.content.transportMode", everyItem(equalTo("BUS")));
+    }
+
+    @Test
+    void vehicleTypes_filterByName() {
+        given()
+                .contentType(ContentType.JSON)
+                .body(gql("{ vehicleTypes(filter: { name: \"exqui\" }, page: 0, size: 10) { content { netexId transportMode } totalElements } }"))
+                .when()
+                .post("/services/vehicles/graphql")
+                .then()
+                .statusCode(200)
+                .body("data.vehicleTypes.content", is(not(empty())))
+                .body("data.vehicleTypes.totalElements", equalTo(1));
     }
 
     @Test
@@ -234,6 +261,46 @@ class GraphQLPagedQueriesTest {
     }
 
     @Test
+    void deckPlan_filterByTransportModes() {
+        given()
+                .contentType(ContentType.JSON)
+                .body(gql("{ deckPlans (filter: { transportModes: [ BUS ] }, page: 0, size: 10) { content { netexId  } totalElements } }"))
+                .when()
+                .post("/services/vehicles/graphql")
+                .then()
+                .statusCode(200)
+                .body("data.deckPlans.content", is(not(empty())))
+                .body("data.deckPlans.totalElements", equalTo(1));
+    }
+
+    @Test
+    void deckPlan_filterByName_VehicleType() {
+        given()
+                .contentType(ContentType.JSON)
+                .body(gql("{ deckPlans (filter: { name: \"exqui\" }, page: 0, size: 10) { content { netexId  } totalElements } }"))
+                .when()
+                .post("/services/vehicles/graphql")
+                .then()
+                .statusCode(200)
+                .body("data.deckPlans.content", is(not(empty())))
+                .body("data.deckPlans.totalElements", equalTo(1));
+    }
+
+    @Test
+    void deckPlan_filterByName_DeckPlan() {
+        given()
+                .contentType(ContentType.JSON)
+                .body(gql("{ deckPlans (filter: { name: \"enetasjes leddet\" }, page: 0, size: 10) { content { netexId  } totalElements } }"))
+                .when()
+                .post("/services/vehicles/graphql")
+                .then()
+                .statusCode(200)
+                .body("data.deckPlans.content", is(not(empty())))
+                .body("data.deckPlans.totalElements", equalTo(1));
+    }
+
+
+    @Test
     void deckPlans_defaultPagination() {
         given()
             .contentType(ContentType.JSON)
@@ -257,6 +324,32 @@ class GraphQLPagedQueriesTest {
                 .statusCode(200)
                 .body("data.vehicles.content", is(not(empty())))
                 .body("data.vehicles.content.transportType.transportMode", everyItem(equalTo("BUS")));
+    }
+
+    @Test
+    void vehicle_filterByName_VehicleType() {
+        given()
+                .contentType(ContentType.JSON)
+                .body(gql("{ vehicles(filter: { name: \"exqui\" }, page: 0, size: 10) { content { netexId registrationNumber } totalElements } }"))
+                .when()
+                .post("/services/vehicles/graphql")
+                .then()
+                .statusCode(200)
+                .body("data.vehicles.content", is(not(empty())))
+                .body("data.vehicles.totalElements", equalTo(1));
+    }
+
+    @Test
+    void vehicle_filterByName_Vehicle() {
+        given()
+                .contentType(ContentType.JSON)
+                .body(gql("{ vehicles(filter: { name: \"bus vehicle\" }, page: 0, size: 10) { content { netexId registrationNumber } totalElements } }"))
+                .when()
+                .post("/services/vehicles/graphql")
+                .then()
+                .statusCode(200)
+                .body("data.vehicles.content", is(not(empty())))
+                .body("data.vehicles.totalElements", equalTo(1));
     }
 
 }

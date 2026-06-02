@@ -42,6 +42,8 @@ class VehicleMapperTest {
     private ValidPrefixList validPrefixList;
     @Autowired
     private DataManagedObjectStructureMapper dataManagedObjectStructureMapper;
+    @Autowired
+    private OwnedEntityMapper ownedEntityMapper;
 
     @Test
     void testMapperIsInjected() {
@@ -56,6 +58,7 @@ class VehicleMapperTest {
 
         VehicleType mockVehicleType = new VehicleType();
         mockVehicleType.setNetexId("NMR:VehicleType:1");
+        mockVehicleType.setDataOwnerRef("NOG:Authority:1");
 
         ReferenceResolver referenceResolver = mock(ReferenceResolver.class);
         when(referenceResolver.resolve(any(),any(),eq(VehicleType.class))).thenReturn(mockVehicleType);
@@ -66,6 +69,8 @@ class VehicleMapperTest {
         mappingContext.setNetexIdHelper(netexIdHelper);
         mappingContext.setValidPrefixList(validPrefixList);
         mappingContext.setDataManagedObjectStructureMapper(dataManagedObjectStructureMapper);
+        mappingContext.setOwnedEntityMapper(ownedEntityMapper);
+        mappingContext.setDataOwnerRef("NOG:Authority:1");
     }
 
     @Test
@@ -102,6 +107,7 @@ class VehicleMapperTest {
         assertEquals("CHASSIS123", sobekVehicle.getChassisNumber());
         assertEquals("OP456", sobekVehicle.getOperationalNumber());
         assertEquals(temporalTypeMapper.localDateTimeToInstant(LocalDateTime.of(2023, 1, 15, 0, 0)), sobekVehicle.getRegistrationDate());
+        assertEquals("NOG:Authority:1", sobekVehicle.getDataOwnerRef());
 
         // Check that references are stored in transient fields
         assertNotNull(sobekVehicle.getVehicleModel());
@@ -109,6 +115,7 @@ class VehicleMapperTest {
 
         assertNotNull(sobekVehicle.getTransportType());
         assertEquals("NMR:VehicleType:1", sobekVehicle.getTransportType().getNetexId());
+        assertEquals("NOG:Authority:1", sobekVehicle.getTransportType().getDataOwnerRef());
     }
 
     @Test

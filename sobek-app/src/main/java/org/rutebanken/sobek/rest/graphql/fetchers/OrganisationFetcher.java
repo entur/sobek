@@ -19,20 +19,21 @@ import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
 import org.rutebanken.netex.model.OrganisationTypeEnumeration;
 import org.rutebanken.sobek.repository.OrganisationRepository;
-import org.rutebanken.sobek.rest.graphql.helpers.FilterHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
 
 import static org.rutebanken.sobek.rest.graphql.GraphQLNames.*;
-import static org.rutebanken.sobek.rest.graphql.GraphQLNames.DEFAULT_PAGE_VALUE;
-import static org.rutebanken.sobek.rest.graphql.GraphQLNames.DEFAULT_SIZE_VALUE;
+import static org.rutebanken.sobek.rest.graphql.RegisterGraphQLSchema.DEFAULT_PAGE_VALUE;
+import static org.rutebanken.sobek.rest.graphql.RegisterGraphQLSchema.DEFAULT_SIZE_VALUE;
 
-@Service
-public class OrganisationFetcher implements DataFetcher<Map<String, Object>> {
+@Service("organisationFetcher")
+@Transactional
+class OrganisationFetcher implements DataFetcher<Map<String, Object>> {
 
     @Autowired
     private OrganisationRepository organisationRepository;
@@ -44,11 +45,25 @@ public class OrganisationFetcher implements DataFetcher<Map<String, Object>> {
         int size = env.getArgumentOrDefault(SIZE, DEFAULT_SIZE_VALUE);
 
         Map<String, Object> filter = env.getArgument(FILTER);
-        List<String> netexIds = FilterHelper.getNetexIdsFromFilter(filter);
-        String name = FilterHelper.getNameFromFilter(filter);
-        OrganisationTypeEnumeration type = FilterHelper.getOrganisationTypeFromFilter(filter);
+        List<String> ids = null;
+        OrganisationTypeEnumeration type = null;
+        if (filter != null) {
+            ids = (List<String>) filter.get(IDS);
+            Object orgArg = filter.get(ORGANISATION_TYPE);
+            if (orgArg instanceof org.rutebanken.netex.model.OrganisationTypeEnumeration t) {
+                type = t;
+            } else if (orgArg instanceof String s) {
+                type = OrganisationTypeEnumeration.fromValue(s);
+            }
+        }
+        onlyAuthorized = (Boolean)filter.get(USER_AUTHORIZED);
+        List<String> authorizedIds = null;
+        if(onlyAuthorized != null && onlyAuthorized) {
+            authorizedIds = authorizationService.getOrganisationRefsUserIsAuthorizedFor();
+        }
 
-        var result = organisationRepository.findCurrentFiltered(netexIds, type, name, PageRequest.of(page, size));
+
+        var result = organisationRepository.findCurrentFiltered(ids, type, PageRequest.of(page, size));
         return PageResult.from(result, page, size);
     }
 }

@@ -17,7 +17,6 @@ package org.rutebanken.sobek.importer;
 
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
 import org.rutebanken.netex.model.ResourceFrame;
-import org.rutebanken.sobek.auth.AuthorizationService;
 import org.rutebanken.sobek.exporter.PublicationDeliveryCreator;
 import org.rutebanken.sobek.importer.handler.*;
 import org.rutebanken.sobek.importer.log.ImportLogger;
@@ -28,8 +27,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.Timer;
@@ -50,8 +47,6 @@ public class PublicationDeliveryImporter {
     private final DeckPlanImportHandler deckPlanImportHandler;
     private final EquipmentImportHandler equipmentImportHandler;
     private final VehicleModelImportHandler vehicleModelImportHandler;
-    private final AuthorizationService authorizationService;
-    private final boolean authorizationEnabled;
     private final SchematicMapImportHandler schematicMapImportHandler;
     private final MappingContext mappingContext;
 
@@ -59,8 +54,7 @@ public class PublicationDeliveryImporter {
     public PublicationDeliveryImporter(PublicationDeliveryHelper publicationDeliveryHelper,
                                        PublicationDeliveryCreator publicationDeliveryCreator,
                                        VehicleImportHandler vehicleImportHandler, VehicleTypeImportHandler vehicleTypeImportHandler, DeckPlanImportHandler deckPlanImportHandler, EquipmentImportHandler equipmentImportHandler, VehicleModelImportHandler vehicleModelImportHandler,
-                                       AuthorizationService authorizationService,
-                                       @Value("${authorization.enabled:true}") boolean authorizationEnabled, SchematicMapImportHandler schematicMapImportHandler, MappingContext mappingContext) {
+                                        SchematicMapImportHandler schematicMapImportHandler, MappingContext mappingContext) {
         this.publicationDeliveryHelper = publicationDeliveryHelper;
         this.publicationDeliveryCreator = publicationDeliveryCreator;
         this.vehicleImportHandler = vehicleImportHandler;
@@ -68,22 +62,12 @@ public class PublicationDeliveryImporter {
         this.deckPlanImportHandler = deckPlanImportHandler;
         this.equipmentImportHandler = equipmentImportHandler;
         this.vehicleModelImportHandler = vehicleModelImportHandler;
-        this.authorizationService = authorizationService;
-        this.authorizationEnabled = authorizationEnabled;
         this.schematicMapImportHandler = schematicMapImportHandler;
         this.mappingContext = mappingContext;
     }
 
 
-    public PublicationDeliveryStructure importPublicationDelivery(PublicationDeliveryStructure incomingPublicationDelivery) {
-        return importPublicationDelivery(incomingPublicationDelivery, null);
-    }
-
     public PublicationDeliveryStructure importPublicationDelivery(PublicationDeliveryStructure incomingPublicationDelivery, ImportParams importParams) {
-        if(authorizationEnabled && !authorizationService.canEditAllEntities()){
-            throw new AccessDeniedException("Insufficient privileges for operation");
-        }
-
 
         if (incomingPublicationDelivery.getDataObjects() == null) {
             String responseMessage = "Received publication delivery but it does not contain any data objects.";
@@ -111,7 +95,7 @@ public class PublicationDeliveryImporter {
         // Currently only supporting one resource frame per publication delivery
         ResourceFrame netexResourceFrame = publicationDeliveryHelper.findResourceFrame(incomingPublicationDelivery);
 
-        mappingContext.updateMappingContext(incomingPublicationDelivery);
+        mappingContext.updateMappingContext(incomingPublicationDelivery, netexResourceFrame);
 
         ResourceFrame responseResourceFrame = null;
         if(netexResourceFrame != null) {

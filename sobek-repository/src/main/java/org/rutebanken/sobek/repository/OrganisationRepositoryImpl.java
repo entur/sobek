@@ -28,7 +28,7 @@ public class OrganisationRepositoryImpl implements OrganisationRepository {
     }
 
     @Override
-    public Page<Organisation> findCurrentFiltered(List<String> netexIds, OrganisationTypeEnumeration organisationType, String name, Pageable pageable) {
+    public Page<Organisation> findCurrentFiltered(List<String> ids, OrganisationTypeEnumeration organisationType, List<String> authorizedIds, Pageable pageable) {
         List<? extends Organisation_VersionStructure> organisations;
 
         if(organisationType == null) {
@@ -41,40 +41,36 @@ public class OrganisationRepositoryImpl implements OrganisationRepository {
             throw new IllegalArgumentException("Unsupported organisation type filter: " + organisationType);
         }
 
-        if(netexIds != null && !netexIds.isEmpty()) {
-            Set<String> idSet = new HashSet<>(netexIds);
+        if(ids != null && !ids.isEmpty()) {
+            Set<String> idSet = new HashSet<>(ids);
             organisations = organisations
                     .stream()
                     .filter(org -> idSet.contains(org.getId()))
                     .toList();
         }
 
-        var mappedOrganisations = mapOrganisations(organisations);
-
-        if(name != null && !name.isEmpty()) {
-            var lowerName = name.toLowerCase();
-            mappedOrganisations = mappedOrganisations
+        if(authorizedIds != null) {
+            Set<String> idSet = new HashSet<>(authorizedIds);
+            organisations = organisations
                     .stream()
-                    .filter(org -> org.name() != null
-                            && org.name().getValue() != null
-                            && org.name().getValue().toLowerCase().contains(lowerName))
+                    .filter(org -> idSet.contains(org.getId()))
                     .toList();
         }
 
         // Handle pagination
         if (pageable.isUnpaged()) {
-            return new PageImpl<>(mappedOrganisations);
+            return new PageImpl<>(mapOrganisations(organisations));
         }
 
         int start = (int) pageable.getOffset();
-        int end = Math.min(start + pageable.getPageSize(), mappedOrganisations.size());
+        int end = Math.min(start + pageable.getPageSize(), organisations.size());
         
-        if (start >= mappedOrganisations.size()) {
-            return new PageImpl<>(List.of(), pageable, mappedOrganisations.size());
+        if (start >= organisations.size()) {
+            return new PageImpl<>(List.of(), pageable, organisations.size());
         }
 
-        List<Organisation> pagedList = mappedOrganisations.subList(start, end);
-        return new PageImpl<>(pagedList, pageable, mappedOrganisations.size());
+        List<Organisation> pagedList = mapOrganisations(organisations.subList(start, end));
+        return new PageImpl<>(pagedList, pageable, organisations.size());
     }
 
     private List<Organisation> mapOrganisations(List<? extends Organisation_VersionStructure> organisations) {

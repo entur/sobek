@@ -4,6 +4,7 @@ import org.rutebanken.sobek.model.EntityStructure;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.List;
 
 @Service
 public class DummyAuthorizationService implements AuthorizationService {
@@ -41,4 +42,8 @@ public class DummyAuthorizationService implements AuthorizationService {
     public boolean isGuest() {
         return false;
     }
+
+    @Override
+    public List<String> getOrganisationRefsUserIsAuthorizedFor() { return null; }
+
 }

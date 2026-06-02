@@ -196,13 +196,7 @@ type DeckPlanPage {
 type Organisation {
     netexId: String!
     name: MultilingualString
-    legalName: String
-    organisationType: OrganisationType
-    companyNumber: String
-    contactDetails: String
-    version: String
-    created: DateTime
-    changed: DateTime
+    type: OrganisationType
 }
 
 type OrganisationPage {

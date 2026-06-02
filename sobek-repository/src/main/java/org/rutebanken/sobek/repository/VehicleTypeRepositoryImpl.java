@@ -85,8 +85,8 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
         if (transportModes != null && !transportModes.isEmpty()) {
             filterSuffix.append(" AND vt.transportMode IN :transportModes");
         }
-        if (name != null && !name.isEmpty()) {
-            name = "%" + name.toLowerCase() + "%";
+        if(name != null && !name.isEmpty()) {
+            name = "%" + name + "%";
             filterSuffix.append(" AND vt.name is not null and lower(vt.name.value) LIKE :name");
         }
 

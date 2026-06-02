@@ -3,6 +3,7 @@ package org.rutebanken.sobek.repository;
 import jakarta.persistence.*;
 import org.rutebanken.sobek.model.vehicle.AllPublicTransportModesEnumeration;
 import org.rutebanken.sobek.model.vehicle.DeckPlan;
+import org.rutebanken.sobek.repository.utils.QueryHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -79,8 +80,8 @@ public class DeckPlanRepositoryImpl implements DeckPlanRepositoryCustom {
             filterSuffix.append(" AND exists(from VehicleType vt where vt.deckPlan=dp and vt.transportMode IN :transportModes)");
         }
         if(name != null && !name.isEmpty()) {
-            name = "%" + name.toLowerCase() + "%";
-            filterSuffix.append(" AND (dp.name is not null and lower(dp.name.value) LIKE :name or exists(from VehicleType vt where vt.deckPlan = dp and vt.name is not null and lower(vt.name.value) LIKE :name))");
+            name = "%" + QueryHelper.escapeForLike(name.toLowerCase()) + "%";
+            filterSuffix.append(" AND (dp.name is not null and lower(dp.name.value) LIKE :name ESCAPE '\\' or exists(from VehicleType vt where vt.deckPlan = dp and vt.name is not null and lower(vt.name.value) LIKE :name ESCAPE '\\'))");
         }
 
 

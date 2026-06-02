@@ -92,13 +92,16 @@ public class VehicleRepositoryImpl implements VehicleRepositoryCustom {
             filterSuffix.append(" AND vt.transportMode in :transportModes");
         }
         if(name != null && !name.isEmpty()) {
-            name = "%" + name.toLowerCase() + "%";
-            filterSuffix.append(" AND ((v.name is not null and lower(v.name.value) LIKE :name) or (v.transportType is not null and v.transportType.name is not null and lower(v.transportType.name.value) LIKE :name))");
+            name = "%" + QueryHelper.escapeForLike(name.toLowerCase()) + "%";
+            filterSuffix.append(" AND ((v.name is not null and lower(v.name.value) LIKE :name ESCAPE '\\') or (v.transportType is not null and v.transportType.name is not null and lower(v.transportType.name.value) LIKE :name ESCAPE '\\'))");
         }
 
         String fetchJpql = "SELECT DISTINCT v FROM Vehicle v " +
                 "LEFT JOIN FETCH v.transportType vt WHERE " +
-                QueryHelper.objectValidCondition("v", "now") + " AND (v.transportType is null or (" + QueryHelper.objectValidCondition("vt", "now") + ")) " + filterSuffix +
+                QueryHelper.objectValidCondition("v", "now")
+                + " AND (v.transportType is null or ("
+                    + QueryHelper.objectValidCondition("vt", "now") + ")) "
+                + filterSuffix +
                 " ORDER BY v.id";
 
         if (pageable.isUnpaged()) {
@@ -112,7 +115,9 @@ public class VehicleRepositoryImpl implements VehicleRepositoryCustom {
         String countJpql = "SELECT COUNT(v) FROM Vehicle v " +
                 "LEFT JOIN v.transportType vt " +
                 "WHERE " + QueryHelper.objectValidCondition("v", "now") +
-                " AND " + QueryHelper.objectValidCondition("vt", "now") + filterSuffix;
+                " AND (v.transportType is null or ("
+                    + QueryHelper.objectValidCondition("vt", "now") + ")) "
+                + filterSuffix;
 
         TypedQuery<Long> countQuery = entityManager.createQuery(countJpql, Long.class);
         countQuery.setParameter("now", now);

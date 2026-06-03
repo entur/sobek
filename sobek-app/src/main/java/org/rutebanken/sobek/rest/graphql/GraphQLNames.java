@@ -41,4 +41,5 @@ public class GraphQLNames {
     public static final String FILTER_ORGANISATION_TYPE = "organisationType";
     public static final String FILTER_IDS = "netexIds";
     public static final String FILTER_NAME = "name";
+    public static final String FILTER_ONLY_USER_AUTHORIZED = "onlyUserAuthorized";
 }

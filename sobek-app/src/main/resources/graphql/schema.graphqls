@@ -122,6 +122,7 @@ input OrganisationsFilter {
     netexIds: [String!]
     organisationType: OrganisationType
     name: String
+    onlyUserAuthorized: Boolean
 }
 
 input DeckPlanFilter {

@@ -28,7 +28,7 @@ public class OrganisationRepositoryImpl implements OrganisationRepository {
     }
 
     @Override
-    public Page<Organisation> findCurrentFiltered(List<String> ids, OrganisationTypeEnumeration organisationType, List<String> authorizedIds, Pageable pageable) {
+    public Page<Organisation> findCurrentFiltered(List<String> ids, OrganisationTypeEnumeration organisationType, String name, List<String> authorizedIds, Pageable pageable) {
         List<? extends Organisation_VersionStructure> organisations;
 
         if(organisationType == null) {

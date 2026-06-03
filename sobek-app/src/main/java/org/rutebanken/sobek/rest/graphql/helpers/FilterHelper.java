@@ -1,6 +1,7 @@
 package org.rutebanken.sobek.rest.graphql.helpers;
 
 import org.rutebanken.netex.model.OrganisationTypeEnumeration;
+import org.rutebanken.sobek.auth.AuthorizationService;
 import org.rutebanken.sobek.model.vehicle.AllPublicTransportModesEnumeration;
 
 import java.util.List;
@@ -60,6 +61,15 @@ public class FilterHelper {
             return t;
         } else if (orgArg instanceof String s) {
             return OrganisationTypeEnumeration.valueOf(s.toUpperCase());
+        }
+        return null;
+    }
+
+    public static List<String> getAuthorizedNetexIdsFilter(Map<String, Object> filter, AuthorizationService authorizationService) {
+        if(filter == null) { return null; }
+        Boolean onlyAuthorized = (Boolean)filter.get(FILTER_ONLY_USER_AUTHORIZED);
+        if(onlyAuthorized != null && onlyAuthorized) {
+            return authorizationService.getOrganisationRefsUserIsAuthorizedFor();
         }
         return null;
     }

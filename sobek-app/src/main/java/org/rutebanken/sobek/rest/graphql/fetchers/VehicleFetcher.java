@@ -48,8 +48,9 @@ public class VehicleFetcher implements DataFetcher<Map<String, Object>> {
         List<String> netexIds = FilterHelper.getNetexIdsFromFilter(filter);
         String name = FilterHelper.getNameFromFilter(filter);
         List<AllPublicTransportModesEnumeration> modes = FilterHelper.getModesFromFilter(filter);
+        String dataOwnerRef = FilterHelper.getDataOwnerRefFromFilter(filter);
 
-        var result = vehicleRepository.findCurrentFiltered(netexIds, modes, name, PageRequest.of(page, size));
+        var result = vehicleRepository.findCurrentFiltered(dataOwnerRef, netexIds, modes, name, PageRequest.of(page, size));
         return PageResult.from(result, page, size);
     }
 }

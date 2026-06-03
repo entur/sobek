@@ -13,10 +13,6 @@ input MultilingualStringInput {
     lang: String
 }
 
-input OrganisationReferenceInput {
-    netexId: String!
-}
-
 input VehicleTypeReferenceInput {
     netexId: String!
 }
@@ -110,12 +106,14 @@ input VehicleTypeFilter {
     netexIds: [String!]
     transportModes: [TransportMode!]
     name: String
+    dataOwnerRef: String!
 }
 
 input VehicleFilter {
     netexIds: [String!]
     transportModes: [TransportMode!]
     name: String
+    dataOwnerRef: String!
 }
 
 input OrganisationsFilter {
@@ -129,6 +127,7 @@ input DeckPlanFilter {
     netexIds: [String!]
     transportModes: [TransportMode!]
     name: String
+    dataOwnerRef: String!
 }
 
 # Page types
@@ -196,7 +195,7 @@ input DeckPlanInput {
     netexId: String
     name: MultilingualStringInput
     description: MultilingualStringInput
-    organisation: OrganisationReferenceInput!
+    dataOwnerRef: String!
 }
 
 type DeckPlanPage {
@@ -247,7 +246,7 @@ input VehicleInput {
     chassisNumber: String
     buildDate: Date
     registrationDate: Date
-    organisation: OrganisationReferenceInput!
+    dataOwnerRef: String!
 }
 
 type VehiclePage {
@@ -314,7 +313,7 @@ input VehicleTypeInput {
     lowFloor: Boolean
     selfPropelled: Boolean
     hybridCategory: HybridCategory
-    organisation: OrganisationReferenceInput!
+    dataOwnerRef: String!
 }
 
 type VehicleTypePage {

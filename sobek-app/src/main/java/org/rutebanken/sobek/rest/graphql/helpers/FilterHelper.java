@@ -54,6 +54,11 @@ public class FilterHelper {
         return (String)filter.get(FILTER_NAME);
     }
 
+    public static String getDataOwnerRefFromFilter(Map<String, Object> filter) {
+        if(filter == null) { return null; }
+        return (String)filter.get(FILTER_DATA_OWNER_REF);
+    }
+
     public static OrganisationTypeEnumeration getOrganisationTypeFromFilter(Map<String, Object> filter) {
         if(filter == null) { return null; }
         Object orgArg = filter.get(FILTER_ORGANISATION_TYPE);

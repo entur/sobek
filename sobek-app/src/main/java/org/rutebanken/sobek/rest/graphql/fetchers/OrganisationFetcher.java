@@ -18,6 +18,7 @@ package org.rutebanken.sobek.rest.graphql.fetchers;
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
 import org.rutebanken.netex.model.OrganisationTypeEnumeration;
+import org.rutebanken.sobek.auth.AuthorizationService;
 import org.rutebanken.sobek.repository.OrganisationRepository;
 import org.rutebanken.sobek.rest.graphql.helpers.FilterHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,14 +29,16 @@ import java.util.List;
 import java.util.Map;
 
 import static org.rutebanken.sobek.rest.graphql.GraphQLNames.*;
-import static org.rutebanken.sobek.rest.graphql.GraphQLNames.DEFAULT_PAGE_VALUE;
-import static org.rutebanken.sobek.rest.graphql.GraphQLNames.DEFAULT_SIZE_VALUE;
+
 
 @Service
 public class OrganisationFetcher implements DataFetcher<Map<String, Object>> {
 
     @Autowired
     private OrganisationRepository organisationRepository;
+
+    @Autowired
+    private AuthorizationService authorizationService;
 
     @Override
     @SuppressWarnings("unchecked")
@@ -47,8 +50,8 @@ public class OrganisationFetcher implements DataFetcher<Map<String, Object>> {
         List<String> netexIds = FilterHelper.getNetexIdsFromFilter(filter);
         String name = FilterHelper.getNameFromFilter(filter);
         OrganisationTypeEnumeration type = FilterHelper.getOrganisationTypeFromFilter(filter);
-
-        var result = organisationRepository.findCurrentFiltered(netexIds, type, name, PageRequest.of(page, size));
+        List<String> authorizedNetexIds = FilterHelper.getAuthorizedNetexIdsFilter(filter, authorizationService);
+        var result = organisationRepository.findCurrentFiltered(netexIds, type, name, authorizedNetexIds, PageRequest.of(page, size));
         return PageResult.from(result, page, size);
     }
 }

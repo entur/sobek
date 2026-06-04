@@ -5,12 +5,23 @@
     <dataObjects>
         <ResourceFrame version="1" id="TST:ResourceFrame:1">
             <FrameDefaults>
+                <DefaultResponsibilitySetRef ref="TST:ResponsibilitySet:1" />
                 <DefaultLocale>
                     <TimeZone>Europe/Oslo</TimeZone>
                 </DefaultLocale>
             </FrameDefaults>
+            <responsibilitySets>
+                <ResponsibilitySet id="TST:ResponsibilitySet:1" version="1">
+                    <roles>
+                        <ResponsibilityRoleAssignment id="TST:ResponsibilityRoleAssignment:1" version="1">
+                            <DataRoleType>owns</DataRoleType>
+                            <ResponsibleOrganisationRef ref="NOG:Authority:cP4aPiJ7c39"/>
+                        </ResponsibilityRoleAssignment>
+                    </roles>
+                </ResponsibilitySet>
+            </responsibilitySets>
             <vehicleTypes>
-                <VehicleType version="1" id="TST:VehicleType:1">
+                <VehicleType version="1" id="TST:VehicleType:1" >
                     <Name><Text>Exqui City 24</Text></Name>
                     <Description><Text>Van Hool articulated electric bus</Text></Description>
                     <EuroClass>Euro6</EuroClass>
@@ -32,7 +43,7 @@
                     <Height>3.40</Height>
                     <Weight>19500</Weight>
                 </VehicleType>
-                <VehicleType version="1" id="TST:VehicleType:2">
+                <VehicleType version="1" id="TST:VehicleType:2" >
                     <Name><Text>Exqui City 24</Text></Name>
                     <Description><Text>Van Hool articulated electric bus</Text></Description>
                     <EuroClass>Euro6</EuroClass>

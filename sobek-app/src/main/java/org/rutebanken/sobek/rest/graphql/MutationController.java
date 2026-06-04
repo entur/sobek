@@ -1,5 +1,6 @@
 package org.rutebanken.sobek.rest.graphql;
 
+import org.rutebanken.sobek.auth.AuthorizationService;
 import org.springframework.transaction.annotation.Transactional;
 import jakarta.xml.bind.ValidationException;
 import org.rutebanken.sobek.graphql.converter.DeckPlanNeTExIdConverter;
@@ -16,6 +17,7 @@ import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.stereotype.Controller;
+import java.util.List;
 
 @Controller
 @SchemaMapping(typeName = "Mutation")
@@ -28,6 +30,7 @@ public class MutationController {
     private final DeckPlanVersionedSaverService deckPlanVersionedSaverService;
     private final DeckPlanNeTExIdConverter deckPlanIdConverter;
     private final VehicleTypeRepository vehicleTypeRepository;
+    private final AuthorizationService authorizationService;
 
     public MutationController(
             VehicleVersionedSaverService vehicleVersionedSaverService,
@@ -36,7 +39,7 @@ public class MutationController {
             VehicleTypeNeTExIdConverter vehicleTypeIdConverter,
             DeckPlanVersionedSaverService deckPlanVersionedSaverService,
             DeckPlanNeTExIdConverter deckPlanNeTExIdConverter,
-            VehicleTypeRepository vehicleTypeRepository) {
+            VehicleTypeRepository vehicleTypeRepository, AuthorizationService authorizationService) {
         this.vehicleVersionedSaverService = vehicleVersionedSaverService;
         this.vehicleIdConverter = vehicleIdConverter;
         this.vehicleTypeVersionedSaverService = vehicleTypeVersionedSaverService;
@@ -44,12 +47,14 @@ public class MutationController {
         this.deckPlanVersionedSaverService = deckPlanVersionedSaverService;
         this.deckPlanIdConverter = deckPlanNeTExIdConverter;
         this.vehicleTypeRepository = vehicleTypeRepository;
+        this.authorizationService = authorizationService;
     }
 
     @MutationMapping
     public String createOrUpdateVehicle (
             @Argument Vehicle input
     ) throws ValidationException {
+        authorizationService.verifyCanEditEntities(List.of(input));
         input = vehicleIdConverter.convertIncomingId(input);
         if (input.getTransportType() != null) {
             VehicleType vt = vehicleTypeRepository.findFirstByNetexIdOrderByVersionDesc(input.getTransportType().getNetexId());
@@ -66,6 +71,7 @@ public class MutationController {
     public String createOrUpdateVehicleType (
             @Argument VehicleType input
     ) {
+        authorizationService.verifyCanEditEntities(List.of(input));
         input = vehicleTypeIdConverter.convertIncomingId(input);
         var output = vehicleTypeVersionedSaverService.saveNewVersion(input);
         return output.getNetexId();
@@ -75,6 +81,7 @@ public class MutationController {
     public String createOrUpdateDeckPlan (
             @Argument DeckPlan input
     ) {
+        authorizationService.verifyCanEditEntities(List.of(input));
         input = deckPlanIdConverter.convertIncomingId(input);
         var output = deckPlanVersionedSaverService.saveNewVersion(input);
         return output.getNetexId();

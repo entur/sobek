@@ -64,12 +64,7 @@ public class DeckPlanRepositoryImpl implements DeckPlanRepositoryCustom {
             "AND (dp.validBetween.toDate IS NULL OR dp.validBetween.toDate >= :now)";
 
     @Override
-    public List<DeckPlan> findAllCurrent() {
-        return findCurrentFiltered(null, null, null, Pageable.unpaged()).getContent();
-    }
-
-    @Override
-    public Page<DeckPlan> findCurrentFiltered(List<String> netexIds, List<AllPublicTransportModesEnumeration> transportModes, String name, Pageable pageable) {
+    public Page<DeckPlan> findCurrentFiltered(String dataOwnerRef, List<String> netexIds, List<AllPublicTransportModesEnumeration> transportModes, String name, Pageable pageable) {
         Instant now = Instant.now();
 
         StringBuilder filterSuffix = new StringBuilder();
@@ -83,32 +78,33 @@ public class DeckPlanRepositoryImpl implements DeckPlanRepositoryCustom {
             name = "%" + QueryHelper.escapeForLike(name.toLowerCase()) + "%";
             filterSuffix.append(" AND (dp.name is not null and lower(dp.name.value) LIKE :name ESCAPE '\\' or exists(from VehicleType vt where vt.deckPlan = dp and vt.name is not null and lower(vt.name.value) LIKE :name ESCAPE '\\'))");
         }
+        filterSuffix.append(" AND dp.dataOwnerRef = :dataOwnerRef");
 
 
         String baseJpql = "SELECT DISTINCT dp FROM DeckPlan dp " + CURRENT_BASE_WHERE + filterSuffix;
 
         if (pageable.isUnpaged()) {
             TypedQuery<DeckPlan> query = entityManager.createQuery(baseJpql, DeckPlan.class);
-            setFilterParams(query, netexIds, transportModes, name, now);
+            setFilterParams(query, dataOwnerRef, netexIds, transportModes, name, now);
             List<DeckPlan> results = query.getResultList();
             return new PageImpl<>(results);
         }
 
         String countJpql = "SELECT COUNT(DISTINCT dp) FROM DeckPlan dp " + CURRENT_BASE_WHERE + filterSuffix;
         TypedQuery<Long> countQuery = entityManager.createQuery(countJpql, Long.class);
-        setFilterParams(countQuery, netexIds, transportModes, name, now);
+        setFilterParams(countQuery, dataOwnerRef, netexIds, transportModes, name, now);
 
         long total = countQuery.getSingleResult();
 
         TypedQuery<DeckPlan> query = entityManager.createQuery(baseJpql + " ORDER BY dp.id", DeckPlan.class);
-        setFilterParams(query, netexIds, transportModes, name, now);
+        setFilterParams(query, dataOwnerRef, netexIds, transportModes, name, now);
         query.setFirstResult((int) pageable.getOffset());
         query.setMaxResults(pageable.getPageSize());
 
         return new PageImpl<>(query.getResultList(), pageable, total);
     }
 
-    private void setFilterParams(Query query, List<String> netexIds, List<AllPublicTransportModesEnumeration> transportModes, String name, Instant now) {
+    private void setFilterParams(Query query, String dataOwnerRef, List<String> netexIds, List<AllPublicTransportModesEnumeration> transportModes, String name, Instant now) {
         query.setParameter("now", now);
         if (netexIds != null && !netexIds.isEmpty()) {
             query.setParameter("netexIds", netexIds);
@@ -119,6 +115,7 @@ public class DeckPlanRepositoryImpl implements DeckPlanRepositoryCustom {
         if(name != null && !name.isEmpty()) {
             query.setParameter("name", name);
         }
+        query.setParameter("dataOwnerRef", dataOwnerRef);
     }
 
 }

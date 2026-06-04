@@ -11,11 +11,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.rutebanken.helper.organisation.AuthorizationConstants.ENTITY_CLASSIFIER_ALL_ATTRIBUTES;
-import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_DELETE_STOPS;
-import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_EDIT_STOPS;
+import static org.rutebanken.sobek.auth.AuthorizationConstants.*;
 
 public class DefaultAuthorizationService implements AuthorizationService {
     private final DataScopedAuthorizationService dataScopedAuthorizationService;
@@ -35,15 +36,13 @@ public class DefaultAuthorizationService implements AuthorizationService {
         if(hasNoAuthentications()) {
             return false;
         }
-        // For now, if the user is authenticated, we assume they can edit all entities.
-        return true;
-        // return verifyCanEditAllEntities(roleAssignmentExtractor.getRoleAssignmentsForUser());
+        return verifyCanEditAllEntities(roleAssignmentExtractor.getRoleAssignmentsForUser());
     }
 
     boolean verifyCanEditAllEntities(List<RoleAssignment> roleAssignments) {
         return roleAssignments
                 .stream()
-                .anyMatch(roleAssignment -> ROLE_EDIT_STOPS.equals(roleAssignment.getRole())
+                .anyMatch(roleAssignment -> ROLE_EDIT_VEHICLE_DATA.equals(roleAssignment.getRole())
                                              && roleAssignment.getEntityClassifications() != null
                                              && roleAssignment.getEntityClassifications().get(AuthorizationConstants.ENTITY_TYPE) != null
                                              && roleAssignment.getEntityClassifications().get(AuthorizationConstants.ENTITY_TYPE).contains(ENTITY_CLASSIFIER_ALL_ATTRIBUTES)
@@ -53,35 +52,28 @@ public class DefaultAuthorizationService implements AuthorizationService {
 
     @Override
     public boolean canEditEntities(Collection<? extends EntityStructure> entities) {
-        // For now, if the user is authenticated, we assume they can edit all entities.
-        return true;
-        //return dataScopedAuthorizationService.isAuthorized(ROLE_EDIT_STOPS, entities);
+        return dataScopedAuthorizationService.isAuthorized(ROLE_EDIT_VEHICLE_DATA, entities);
     }
 
 
     @Override
     public void verifyCanEditEntities(Collection<? extends EntityStructure> entities) {
-        // For now, if the user is authenticated, we assume they can edit all entities.
-        return;
-//        dataScopedAuthorizationService.assertAuthorized(ROLE_EDIT_STOPS, entities);
+        dataScopedAuthorizationService.assertAuthorized(ROLE_EDIT_VEHICLE_DATA, entities);
     }
 
     @Override
     public void verifyCanDeleteEntities(Collection<? extends EntityStructure> entities) {
-        // For now, if the user is authenticated, we assume they can edit all entities.
-        return;
-//        dataScopedAuthorizationService.assertAuthorized(ROLE_DELETE_STOPS, entities);
-
+        dataScopedAuthorizationService.assertAuthorized(ROLE_DELETE_VEHICLE_DATA, entities);
     }
 
     @Override
     public boolean canDeleteEntity(EntityStructure entity) {
-        return canEditDeleteEntity(entity, ROLE_DELETE_STOPS);
+        return canEditDeleteEntity(entity, ROLE_DELETE_VEHICLE_DATA);
     }
 
     @Override
     public boolean canEditEntity(EntityStructure entity) {
-        return canEditDeleteEntity(entity, ROLE_EDIT_STOPS);
+        return canEditDeleteEntity(entity, ROLE_EDIT_VEHICLE_DATA);
     }
 
     @Override
@@ -107,4 +99,24 @@ public class DefaultAuthorizationService implements AuthorizationService {
 
         return dataScopedAuthorizationService.isAuthorized(role, List.of(entity));
     }
+
+    @Override
+    public List<String> getOrganisationRefsUserIsAuthorizedFor() {
+        if(!authorizationEnabled) { return null; }
+
+        List<RoleAssignment> roleAssignments = roleAssignmentExtractor.getRoleAssignmentsForUser();
+
+        Set<String> organisationRefs = new HashSet<>();
+        roleAssignments.forEach(roleAssignment -> {
+            if(ROLE_EDIT_VEHICLE_DATA.equals(roleAssignment.getRole())
+                    && roleAssignment.getEntityClassifications() != null) {  // Maybe return also "read" or "delete"? Review this later on, for now only "edit" is needed.
+                List<String> dataOwnersAllowed = roleAssignment.getEntityClassifications().get(CLASSIFICATION_DATA_OWNER);
+                if(dataOwnersAllowed != null) {
+                    organisationRefs.addAll(dataOwnersAllowed.stream().map(dataOwner -> dataOwner.replace("/", ":")).toList());
+                }
+            }
+        });
+        return organisationRefs.stream().toList();
+    }
+
 }

@@ -28,7 +28,7 @@ public class OrganisationRepositoryImpl implements OrganisationRepository {
     }
 
     @Override
-    public Page<Organisation> findCurrentFiltered(List<String> netexIds, OrganisationTypeEnumeration organisationType, String name, Pageable pageable) {
+    public Page<Organisation> findCurrentFiltered(List<String> netexIds, OrganisationTypeEnumeration organisationType, String name, List<String> authorizedIds, Pageable pageable) {
         List<? extends Organisation_VersionStructure> organisations;
 
         if(organisationType == null) {
@@ -43,6 +43,14 @@ public class OrganisationRepositoryImpl implements OrganisationRepository {
 
         if(netexIds != null && !netexIds.isEmpty()) {
             Set<String> idSet = new HashSet<>(netexIds);
+            organisations = organisations
+                    .stream()
+                    .filter(org -> idSet.contains(org.getId()))
+                    .toList();
+        }
+
+        if(authorizedIds != null) {
+            Set<String> idSet = new HashSet<>(authorizedIds);
             organisations = organisations
                     .stream()
                     .filter(org -> idSet.contains(org.getId()))

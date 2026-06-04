@@ -128,6 +128,9 @@ See [Supported Docker Compose Profiles](#supported-docker-compose-profiles) for 
 > **Note!** You must choose at least one of the options from each category below!
 
 > **Note!** `local` profile must always be included!
+> **Note!** You need to define the following environment variables:
+> - `SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_INTERNAL_CLIENT_SECRET`
+> - `SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_INTERNAL_CLIENT_ID`
 
 ##### Storage
 

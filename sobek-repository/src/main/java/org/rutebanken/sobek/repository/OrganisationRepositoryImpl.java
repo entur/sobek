@@ -77,8 +77,8 @@ public class OrganisationRepositoryImpl implements OrganisationRepository {
         int start = (int) pageable.getOffset();
         int end = Math.min(start + pageable.getPageSize(), mappedOrganisations.size());
         
-        if (start >= organisations.size()) {
-            return new PageImpl<>(List.of(), pageable, organisations.size());
+        if (start >= mappedOrganisations.size()) {
+            return new PageImpl<>(List.of(), pageable, mappedOrganisations.size());
         }
 
         List<Organisation> pagedList = mappedOrganisations.subList(start, end);

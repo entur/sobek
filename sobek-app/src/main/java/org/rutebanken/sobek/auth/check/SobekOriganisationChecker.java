@@ -50,7 +50,7 @@ public class SobekOriganisationChecker implements OrganisationChecker {
                 return dataOwnerClassifications.stream().anyMatch(c -> c.equals(orgRef));
             }
             logger.debug("Org ref is null for entity: {}", entity);
-            return true;
+            return false;
         } else {
             logger.warn("Cannot check for organisation for entity {}", entity);
             return true;

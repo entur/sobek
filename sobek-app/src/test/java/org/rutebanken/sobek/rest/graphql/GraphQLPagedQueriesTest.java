@@ -66,7 +66,7 @@ class GraphQLPagedQueriesTest {
     void vehicleTypes_returnsPageStructure() {
         given()
             .contentType(ContentType.JSON)
-            .body(gql("{ vehicleTypes(page: 0, size: 10) { content { netexId } totalElements page size } }"))
+            .body(gql("{ vehicleTypes(page: 0, size: 10, filter: { dataOwner: \"NOG:Authority:cP4aPiJ7c39\" } ) { content { netexId } totalElements page size } }"))
         .when()
             .post("/services/vehicles/graphql")
         .then()
@@ -124,7 +124,7 @@ class GraphQLPagedQueriesTest {
     void organisations_filterByUserAuthorizedOrganisations() {
         given()
                 .contentType(ContentType.JSON)
-                .body(gql("{ organisations(page: 0, size: 1000, filter: { onlyUserAuthorized: true }  ) { content { id } totalElements page size } }"))
+                .body(gql("{ organisations(page: 0, size: 1000, filter: { onlyUserAuthorized: true }  ) { content { netexId } totalElements page size } }"))
                 .when()
                 .post("/services/vehicles/graphql")
                 .then()
@@ -138,7 +138,7 @@ class GraphQLPagedQueriesTest {
     void vehicleTypes_exposesNewFields() {
         given()
             .contentType(ContentType.JSON)
-            .body(gql("{ vehicleTypes(page: 0, size: 100, filter: { transportModes: [ BUS ]  } ) { content { netexId, description { value }, name { value }, version, euroClass, passengerCapacity { totalCapacity, standingCapacity, seatingCapacity },  transportMode, created, fuelTypes, propulsionTypes, privateCode { type, value}, formDragCoefficient, maximumRange, length, height, width, weight, vehicles { chassisNumber, netexId, registrationNumber }  } totalElements page size } }"))
+            .body(gql("{ vehicleTypes(page: 0, size: 100, filter: { transportModes: [ BUS ]  dataOwner: \"NOG:Authority:cP4aPiJ7c39\" } ) { content { netexId, description { value }, name { value }, version, euroClass, passengerCapacity { totalCapacity, standingCapacity, seatingCapacity },  transportMode, created, fuelTypes, propulsionTypes, privateCode { type, value}, formDragCoefficient, maximumRange, length, height, width, weight, vehicles { chassisNumber, netexId, registrationNumber }  } totalElements page size } }"))
                 .when()
             .post("/services/vehicles/graphql")
         .then()
@@ -154,7 +154,7 @@ class GraphQLPagedQueriesTest {
     void vehicleTypes_filterByTransportMode() {
         given()
             .contentType(ContentType.JSON)
-            .body(gql("{ vehicleTypes(filter: { transportModes: [ BUS ] }, page: 0, size: 10) { content { netexId transportMode } totalElements } }"))
+            .body(gql("{ vehicleTypes(filter: { transportModes: [ BUS ] dataOwner: \"NOG:Authority:cP4aPiJ7c39\" }, page: 0, size: 10) { content { netexId transportMode } totalElements } }"))
         .when()
             .post("/services/vehicles/graphql")
         .then()
@@ -167,7 +167,7 @@ class GraphQLPagedQueriesTest {
     void vehicleTypes_filterByName() {
         given()
                 .contentType(ContentType.JSON)
-                .body(gql("{ vehicleTypes(filter: { name: \"exqui\" }, page: 0, size: 10) { content { netexId transportMode } totalElements } }"))
+                .body(gql("{ vehicleTypes(filter: { name: \"exqui\" dataOwner: \"NOG:Authority:cP4aPiJ7c39\"  }, page: 0, size: 10) { content { netexId transportMode } totalElements } }"))
                 .when()
                 .post("/services/vehicles/graphql")
                 .then()
@@ -180,7 +180,7 @@ class GraphQLPagedQueriesTest {
     void vehicleTypes_filterByTransportMode_noMatch() {
         given()
             .contentType(ContentType.JSON)
-            .body(gql("{ vehicleTypes(filter: { transportModes: [ TROLLEY_BUS ] }, page: 0, size: 10) { content { netexId } totalElements } }"))
+            .body(gql("{ vehicleTypes(filter: { transportModes: [ TROLLEY_BUS ]  dataOwner: \"NOG:Authority:cP4aPiJ7c39\" }, page: 0, size: 10) { content { netexId } totalElements } }"))
         .when()
             .post("/services/vehicles/graphql")
         .then()
@@ -194,7 +194,7 @@ class GraphQLPagedQueriesTest {
         // First, get the actual NeTEx ID of the imported vehicle type
         String id = given()
             .contentType(ContentType.JSON)
-            .body(gql("{ vehicleTypes(page: 0, size: 1) { content { netexId } } }"))
+            .body(gql("{ vehicleTypes(page: 0, size: 1, filter: {  dataOwner: \"NOG:Authority:cP4aPiJ7c39\" } ) { content { netexId } } }"))
         .when()
             .post("/services/vehicles/graphql")
         .then()
@@ -219,7 +219,7 @@ class GraphQLPagedQueriesTest {
     void vehicleTypes_filterByIds_noMatch() {
         given()
             .contentType(ContentType.JSON)
-            .body(gql("{ vehicleTypes(filter: { netexIds: [\"FAKE:VehicleType:999\"] }, page: 0, size: 10) { content { netexId } totalElements } }"))
+            .body(gql("{ vehicleTypes(filter: { netexIds: [\"FAKE:VehicleType:999\"]  dataOwner: \"NOG:Authority:cP4aPiJ7c39\" }, page: 0, size: 10) { content { netexId } totalElements } }"))
         .when()
             .post("/services/vehicles/graphql")
         .then()
@@ -262,7 +262,7 @@ class GraphQLPagedQueriesTest {
     void deckPlans_getOne() {
         given()
                 .contentType(ContentType.JSON)
-                .body(gql("{ deckPlans(page: 0, size: 10, filter: { netexIds: [ \"NMR:DeckPlan:1\" ]} ) { content { netexId } totalElements page size } }"))
+                .body(gql("{ deckPlans(page: 0, size: 10, filter: { netexIds: [ \"NMR:DeckPlan:1\" ]  dataOwner: \"NOG:Authority:cP4aPiJ7c39\" } ) { content { netexId } totalElements page size } }"))
                 .when()
                 .post("/services/vehicles/graphql")
                 .then()
@@ -278,7 +278,7 @@ class GraphQLPagedQueriesTest {
     void deckPlan_filterByTransportModes() {
         given()
                 .contentType(ContentType.JSON)
-                .body(gql("{ deckPlans (filter: { transportModes: [ BUS ] }, page: 0, size: 10) { content { netexId  } totalElements } }"))
+                .body(gql("{ deckPlans (filter: { transportModes: [ BUS ]  dataOwner: \"NOG:Authority:cP4aPiJ7c39\" }, page: 0, size: 10) { content { netexId  } totalElements } }"))
                 .when()
                 .post("/services/vehicles/graphql")
                 .then()
@@ -291,7 +291,7 @@ class GraphQLPagedQueriesTest {
     void deckPlan_filterByName_VehicleType() {
         given()
                 .contentType(ContentType.JSON)
-                .body(gql("{ deckPlans (filter: { name: \"exqui\" }, page: 0, size: 10) { content { netexId  } totalElements } }"))
+                .body(gql("{ deckPlans (filter: { name: \"exqui\" dataOwnerRef: \"NOG:Authority:cP4aPiJ7c39\" }, page: 0, size: 10) { content { netexId  } totalElements } }"))
                 .when()
                 .post("/services/vehicles/graphql")
                 .then()
@@ -304,7 +304,7 @@ class GraphQLPagedQueriesTest {
     void deckPlan_filterByName_DeckPlan() {
         given()
                 .contentType(ContentType.JSON)
-                .body(gql("{ deckPlans (filter: { name: \"enetasjes leddet\" }, page: 0, size: 10) { content { netexId  } totalElements } }"))
+                .body(gql("{ deckPlans (filter: { name: \"enetasjes leddet\"  dataOwner: \"NOG:Authority:cP4aPiJ7c39\" }, page: 0, size: 10) { content { netexId  } totalElements } }"))
                 .when()
                 .post("/services/vehicles/graphql")
                 .then()
@@ -331,7 +331,7 @@ class GraphQLPagedQueriesTest {
     void vehicles_filterByTransportMode() {
         given()
                 .contentType(ContentType.JSON)
-                .body(gql("{ vehicles(page: 0, size: 100, filter: { transportModes: [ BUS ]  } ) { content { netexId, registrationNumber, operationalNumber, transportType { netexId, length, height, width, transportMode } } totalElements page size } }"))
+                .body(gql("{ vehicles(page: 0, size: 100, filter: { transportModes: [ BUS ]   dataOwner: \"NOG:Authority:cP4aPiJ7c39\" } ) { content { netexId, registrationNumber, operationalNumber, transportType { netexId, length, height, width, transportMode } } totalElements page size } }"))
                 .when()
                 .post("/services/vehicles/graphql")
                 .then()
@@ -344,7 +344,7 @@ class GraphQLPagedQueriesTest {
     void vehicle_filterByName_VehicleType() {
         given()
                 .contentType(ContentType.JSON)
-                .body(gql("{ vehicles(filter: { name: \"exqui\" }, page: 0, size: 10) { content { netexId registrationNumber } totalElements } }"))
+                .body(gql("{ vehicles(filter: { name: \"exqui\"  dataOwner: \"NOG:Authority:cP4aPiJ7c39\" }, page: 0, size: 10) { content { netexId registrationNumber } totalElements } }"))
                 .when()
                 .post("/services/vehicles/graphql")
                 .then()
@@ -357,7 +357,7 @@ class GraphQLPagedQueriesTest {
     void vehicle_filterByName_Vehicle() {
         given()
                 .contentType(ContentType.JSON)
-                .body(gql("{ vehicles(filter: { name: \"bus vehicle\" }, page: 0, size: 10) { content { netexId registrationNumber } totalElements } }"))
+                .body(gql("{ vehicles(filter: { name: \"bus vehicle\"  dataOwner: \"NOG:Authority:cP4aPiJ7c39\" }, page: 0, size: 10) { content { netexId registrationNumber } totalElements } }"))
                 .when()
                 .post("/services/vehicles/graphql")
                 .then()

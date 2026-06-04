@@ -132,7 +132,19 @@ public class MappingContext {
             throw new NetexMappingException("Cannot resolve responsibilitysets from resourceframe " + resourceFrame.getId());
         }
 
-        ResponsibilitySet responsibilitySet = responsibilitySets.getResponsibilitySet().getFirst();
+        if(defaults.getDefaultResponsibilitySetRef() == null || defaults.getDefaultResponsibilitySetRef().getRef() == null) {
+            throw new NetexMappingException("Cannot resolve default responsibilityset from FrameDefaults");
+        }
+
+        String responsibilitySetRef = defaults.getDefaultResponsibilitySetRef().getRef();
+
+        ResponsibilitySet responsibilitySet = responsibilitySets
+                .getResponsibilitySet()
+                .stream()
+                .filter(rs -> rs.getId().equals(responsibilitySetRef))
+                .findFirst()
+                .orElse(null);
+
         if (responsibilitySet == null) {
             throw new NetexMappingException("Cannot resolve responsibilityset from resourceframe " + resourceFrame.getId());
         }
@@ -152,10 +164,6 @@ public class MappingContext {
 
         if(roleAssignment.getResponsibleOrganisationRef() == null || roleAssignment.getResponsibleOrganisationRef().getRef() == null) {
             throw new NetexMappingException("Cannot resolve responsible organisation from responsibilityset " + responsibilitySet.getId());
-        }
-
-        if(defaults.getDefaultResponsibilitySetRef() == null || defaults.getDefaultResponsibilitySetRef().getRef() == null) {
-            throw new NetexMappingException("Cannot resolve default responsibilityset from FrameDefaults");
         }
 
         if(!responsibilitySet.getId().equals(defaults.getDefaultResponsibilitySetRef().getRef())) {

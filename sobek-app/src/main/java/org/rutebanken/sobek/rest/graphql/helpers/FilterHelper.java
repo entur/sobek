@@ -55,8 +55,10 @@ public class FilterHelper {
     }
 
     public static String getDataOwnerRefFromFilter(Map<String, Object> filter) {
-        if(filter == null) { return null; }
-        return (String)filter.get(FILTER_DATA_OWNER_REF);
+        if (filter == null || filter.get(FILTER_DATA_OWNER_REF) == null) {
+            throw new IllegalArgumentException("Missing required filter field '" + FILTER_DATA_OWNER_REF + "'");
+        }
+        return (String) filter.get(FILTER_DATA_OWNER_REF);
     }
 
     public static OrganisationTypeEnumeration getOrganisationTypeFromFilter(Map<String, Object> filter) {

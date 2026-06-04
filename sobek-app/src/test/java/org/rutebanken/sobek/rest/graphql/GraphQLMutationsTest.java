@@ -106,7 +106,7 @@ class GraphQLMutationsTest {
         // Verify that the dummy vehicle was created and check some of it's data
         given()
                 .contentType(ContentType.JSON)
-                .body(gql("{ vehicles(page: 0, size: 10, filter: { netexIds: [ \"" + resultId + "\" ]  }) { content { netexId, registrationNumber, chassisNumber } totalElements page size } }"))
+                .body(gql("{ vehicles(page: 0, size: 10, filter: { netexIds: [ \"" + resultId + "\" ], dataOwnerRef: \"NOG:Authority:cP4aPiJ7c39\"  }) { content { netexId, registrationNumber, chassisNumber } totalElements page size } }"))
                 .when()
                 .post("/services/vehicles/graphql")
                 .then()
@@ -121,7 +121,7 @@ class GraphQLMutationsTest {
         // Create a dummy vehicle
         given()
                 .contentType(ContentType.JSON)
-                .body(gql(getFixtureContents("/fixtures/GraphQL_VehicleMutation1.QL").replace("AKT:VehicleType:123", "FAKE:VehicleType:123")))
+                .body(gql(getFixtureContents("/fixtures/GraphQL_VehicleMutation1.QL").replace("AKT:VehicleType:124", "FAKE:VehicleType:123")))
                 .when()
                 .post("/services/vehicles/graphql")
                 .then()

@@ -102,6 +102,7 @@ public interface VehicleTypeMapper {
                 target.setDeckPlan(deckPlan);
             }
         }
+        context.getOwnedEntityMapper().updateSobekFromNetex(target, context);
     }
 
     /**

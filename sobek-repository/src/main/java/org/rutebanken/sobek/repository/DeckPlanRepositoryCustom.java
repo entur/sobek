@@ -24,9 +24,7 @@ import java.util.List;
 
 public interface DeckPlanRepositoryCustom extends DataManagedObjectStructureRepository<DeckPlan> {
 
-    List<DeckPlan> findAllCurrent();
-
-    Page<DeckPlan> findCurrentFiltered(List<String> netexIds, List<AllPublicTransportModesEnumeration> transportModes, String name, Pageable pageable);
+    Page<DeckPlan> findCurrentFiltered(String dataOwnerRef, List<String> netexIds, List<AllPublicTransportModesEnumeration> transportModes, String name, Pageable pageable);
 
 }
 

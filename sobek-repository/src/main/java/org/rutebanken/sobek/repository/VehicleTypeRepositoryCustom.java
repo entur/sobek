@@ -24,9 +24,7 @@ import java.util.List;
 
 public interface VehicleTypeRepositoryCustom extends DataManagedObjectStructureRepository<VehicleType> {
 
-    List<VehicleType> findAllCurrent();
-
-    Page<VehicleType> findCurrentFiltered(List<String> netexIds, List<AllPublicTransportModesEnumeration> transportModes, String name, Pageable pageable);
+    Page<VehicleType> findCurrentFiltered(String dataOwnerRef, List<String> netexIds, List<AllPublicTransportModesEnumeration> transportModes, String name, Pageable pageable);
 
     void moveToDeckPlan(Long fromDeckPlanId, Long toDeckPlanId);
 }

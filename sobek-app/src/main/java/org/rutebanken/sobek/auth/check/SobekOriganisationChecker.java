@@ -18,10 +18,12 @@ package org.rutebanken.sobek.auth.check;
 
 import org.rutebanken.helper.organisation.OrganisationChecker;
 import org.rutebanken.helper.organisation.RoleAssignment;
-import org.rutebanken.netex.model.Vehicle;
+import org.rutebanken.sobek.model.authorization.OwnedEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import static org.rutebanken.sobek.auth.AuthorizationConstants.CLASSIFICATION_DATA_OWNER;
 
 @Service
 public class SobekOriganisationChecker implements OrganisationChecker {
@@ -31,16 +33,24 @@ public class SobekOriganisationChecker implements OrganisationChecker {
     @Override
     public boolean entityMatchesOrganisationRef(RoleAssignment roleAssignment, Object entity) {
 
-        if (entity instanceof Vehicle vehicle) {
-            if (vehicle.getTransportOrganisationRef() != null) {
-                String orgRef = vehicle.getTransportOrganisationRef().getValue().getRef();
-                if (orgRef != null) {
-                    logger.debug("Found org ref {} for entity. Returning true if it matches role assignment organisation :{}", orgRef, roleAssignment.getOrganisation());
-                    return orgRef.endsWith(":" + roleAssignment.getOrganisation());
+        if (entity instanceof OwnedEntity ownedEntity) {
+            if (ownedEntity.getDataOwnerRef() != null) {
+                String orgRef = ownedEntity.getDataOwnerRef().replace(":", "/");
+                logger.debug("Found org ref {} for entity. Returning true if the role assignment contains reference to the organisation", orgRef);
+                var entityClassifications = roleAssignment.getEntityClassifications();
+                if (entityClassifications == null) {
+                    logger.warn("Role assignment has no entity classifications. Denying organisation match for org ref {}", orgRef);
+                    return false;
                 }
+                var dataOwnerClassifications = entityClassifications.get(CLASSIFICATION_DATA_OWNER);
+                if (dataOwnerClassifications == null) {
+                    logger.warn("Role assignment is missing {} classification. Denying organisation match for org ref {}", CLASSIFICATION_DATA_OWNER, orgRef);
+                    return false;
+                }
+                return dataOwnerClassifications.stream().anyMatch(c -> c.equals(orgRef));
             }
             logger.debug("Org ref is null for entity: {}", entity);
-            return true;
+            return false;
         } else {
             logger.warn("Cannot check for organisation for entity {}", entity);
             return true;

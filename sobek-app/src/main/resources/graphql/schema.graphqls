@@ -13,6 +13,14 @@ input MultilingualStringInput {
     lang: String
 }
 
+input VehicleTypeReferenceInput {
+    netexId: String!
+}
+
+input DeckPlanReferenceInput {
+    netexId: String!
+}
+
 # Enums
 enum FareClass {
     UNKNOWN
@@ -98,24 +106,28 @@ input VehicleTypeFilter {
     netexIds: [String!]
     transportModes: [TransportMode!]
     name: String
+    dataOwnerRef: String!
 }
 
 input VehicleFilter {
     netexIds: [String!]
     transportModes: [TransportMode!]
     name: String
+    dataOwnerRef: String!
 }
 
 input OrganisationsFilter {
     netexIds: [String!]
     organisationType: OrganisationType
     name: String
+    onlyUserAuthorized: Boolean
 }
 
 input DeckPlanFilter {
     netexIds: [String!]
     transportModes: [TransportMode!]
     name: String
+    dataOwnerRef: String!
 }
 
 # Page types
@@ -183,6 +195,7 @@ input DeckPlanInput {
     netexId: String
     name: MultilingualStringInput
     description: MultilingualStringInput
+    dataOwnerRef: String!
 }
 
 type DeckPlanPage {
@@ -229,10 +242,11 @@ input VehicleInput {
     description: MultilingualStringInput
     registrationNumber: String
     operationalNumber: String
-    transportType: VehicleTypeInput
+    transportType: VehicleTypeReferenceInput
     chassisNumber: String
     buildDate: Date
     registrationDate: Date
+    dataOwnerRef: String!
 }
 
 type VehiclePage {
@@ -286,7 +300,7 @@ input VehicleTypeInput {
     passengerCapacity: PassengerCapacityInput
     privateCode: PrivateCodeInput
     keyValues: [KeyValuesInput!]
-    deckPlan: DeckPlanInput
+    deckPlan: DeckPlanReferenceInput
     formDragCoefficient: Float
     rollResistanceCoefficient: Float
     maximumEngineEffectKW: Float
@@ -299,6 +313,7 @@ input VehicleTypeInput {
     lowFloor: Boolean
     selfPropelled: Boolean
     hybridCategory: HybridCategory
+    dataOwnerRef: String!
 }
 
 type VehicleTypePage {

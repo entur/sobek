@@ -27,6 +27,11 @@ public class VehicleType_VersionStructure extends TransportType_VersionStructure
     @Transient
     private VehicleTypeRefStructure includedIn;
 
+    private BigDecimal formDragCoefficient;
+    private BigDecimal rollResistanceCoefficient;
+    private BigDecimal maximumEngineEffectKW;
+    private HybridCategoryEnumeration hybridCategory;
+
     @Transient
     private VehicleModelRefStructure classifiedAsRef;
     @Transient

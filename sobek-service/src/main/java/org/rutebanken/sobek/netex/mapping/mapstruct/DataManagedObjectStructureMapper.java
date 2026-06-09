@@ -217,7 +217,9 @@ public interface DataManagedObjectStructureMapper {
 
         if(!Strings.isNullOrEmpty(keytoAdd) && !Strings.isNullOrEmpty(valueToAdd)) {
             logger.trace("Adding key {} and value {}", keytoAdd, valueToAdd);
-            sobekEntity.getOrCreateValues(keytoAdd).add(valueToAdd);
+            var values = sobekEntity.getOrCreateValues(keytoAdd);
+            values.clear();  // Clear existing values for this key
+            values.add(valueToAdd);  // Add the new value
         }
     }
 

@@ -126,7 +126,7 @@ public interface VehicleTypeMapper {
             KeyValuesHelper.SetToKeyValues(target, "FormDragCoefficient", source.getFormDragCoefficient() == null ? null : String.valueOf(source.getFormDragCoefficient()));
             KeyValuesHelper.SetToKeyValues(target, "RollResistanceCoefficient", source.getRollResistanceCoefficient() == null ? null : String.valueOf(source.getRollResistanceCoefficient()));
             KeyValuesHelper.SetToKeyValues(target, "MaximumEngineEffectKW", source.getMaximumEngineEffectKW() == null ? null : String.valueOf(source.getMaximumEngineEffectKW()));
-            KeyValuesHelper.SetToKeyValues(target, "HybridCategory", source.getHybridCategory() == null ? null : String.valueOf(source.getHybridCategory()));
+            KeyValuesHelper.SetToKeyValues(target, "HybridCategory", source.getHybridCategory() == null ? null : source.getHybridCategory().value());
         }
 
         // Handle DeckPlanRef creation from entity or transient reference

@@ -146,9 +146,16 @@ class VehicleTypeMapperTest {
         assertEquals("Euro6", netexVehicleType.getEuroClass());
 
         var keyList = netexVehicleType.getKeyList();
-        keyList.getKeyValue().stream().filter(kv -> kv.getKey().equals("FormDragCoefficient")).findFirst().ifPresent(kv -> assertEquals("0.4", kv.getValue()));
-        keyList.getKeyValue().stream().filter(kv -> kv.getKey().equals("RollResitanceCoefficient")).findFirst().ifPresent(kv -> assertNull(kv.getValue()));
-        keyList.getKeyValue().stream().filter(kv -> kv.getKey().equals("HybridCategory")).findFirst().ifPresent(kv -> assertEquals("chargeable", kv.getValue()));
+        var formDragCoefficient = keyList.getKeyValue().stream().filter(kv -> kv.getKey().equals("FormDragCoefficient")).findFirst();
+        assertTrue(formDragCoefficient.isPresent(), "FormDragCoefficient key should be present");
+        assertEquals("0.4", formDragCoefficient.get().getValue());
+
+        var rollResistanceCoefficient = keyList.getKeyValue().stream().filter(kv -> kv.getKey().equals("RollResistanceCoefficient")).findFirst();
+        assertFalse(rollResistanceCoefficient.isPresent(), "RollResistanceCoefficient key should not be present");
+
+        var hybridCategory = keyList.getKeyValue().stream().filter(kv -> kv.getKey().equals("HybridCategory")).findFirst();
+        assertTrue(hybridCategory.isPresent(), "HybridCategory key should be present");
+        assertEquals("chargeable", hybridCategory.get().getValue());
 
         // Check deck plan ref
         //assertNotNull(netexVehicleType.getDeckPlanRef());

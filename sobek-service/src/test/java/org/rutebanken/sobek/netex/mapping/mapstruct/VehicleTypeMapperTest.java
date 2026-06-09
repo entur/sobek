@@ -125,6 +125,7 @@ class VehicleTypeMapperTest {
         sobekVehicleType.setMaximumVelocity(new BigDecimal("100"));
         sobekVehicleType.setEuroClass("Euro6");
         sobekVehicleType.setFormDragCoefficient(BigDecimal.valueOf(0.4));
+        sobekVehicleType.setHybridCategory(HybridCategoryEnumeration.CHARGEABLE);
 
         // Set deck plan ref in transient field
         DeckPlanRefStructure deckPlanRef = new DeckPlanRefStructure();
@@ -147,6 +148,7 @@ class VehicleTypeMapperTest {
         var keyList = netexVehicleType.getKeyList();
         keyList.getKeyValue().stream().filter(kv -> kv.getKey().equals("FormDragCoefficient")).findFirst().ifPresent(kv -> assertEquals("0.4", kv.getValue()));
         keyList.getKeyValue().stream().filter(kv -> kv.getKey().equals("RollResitanceCoefficient")).findFirst().ifPresent(kv -> assertNull(kv.getValue()));
+        keyList.getKeyValue().stream().filter(kv -> kv.getKey().equals("HybridCategory")).findFirst().ifPresent(kv -> assertEquals("chargeable", kv.getValue()));
 
         // Check deck plan ref
         //assertNotNull(netexVehicleType.getDeckPlanRef());

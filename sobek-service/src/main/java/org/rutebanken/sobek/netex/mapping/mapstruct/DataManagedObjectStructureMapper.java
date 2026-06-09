@@ -138,9 +138,17 @@ public interface DataManagedObjectStructureMapper {
             @MappingTarget DataManagedObjectStructure netexEntity,
             @Context MappingContext context
     ) {
-        netexEntity.setKeyList(context.getKeyListStructureMapper().mapToNetex(sobekEntity.getKeyValues(), context));
-        if (netexEntity.getKeyList() == null) {
-            netexEntity.withKeyList(new KeyListStructure());
+        var keyList = context.getKeyListStructureMapper().mapToNetex(sobekEntity.getKeyValues(), context);
+        if (keyList == null) {
+            if (netexEntity.getKeyList() == null) {
+                netexEntity.withKeyList(new KeyListStructure());
+            }
+        } else {
+            if(netexEntity.getKeyList() == null) {
+                netexEntity.withKeyList(keyList);
+            } else {
+                netexEntity.getKeyList().withKeyValue(keyList.getKeyValue());
+            }
         }
 
         sobekEntityGetFunctions.forEach((property, function) ->
@@ -209,7 +217,9 @@ public interface DataManagedObjectStructureMapper {
 
         if(!Strings.isNullOrEmpty(keytoAdd) && !Strings.isNullOrEmpty(valueToAdd)) {
             logger.trace("Adding key {} and value {}", keytoAdd, valueToAdd);
-            sobekEntity.getOrCreateValues(keytoAdd).add(valueToAdd);
+            var values = sobekEntity.getOrCreateValues(keytoAdd);
+            values.clear();  // Clear existing values for this key
+            values.add(valueToAdd);  // Add the new value
         }
     }
 

@@ -5,8 +5,12 @@ import org.rutebanken.netex.model.DeckPlanRefStructure;
 import org.rutebanken.netex.model.ObjectFactory;
 import org.rutebanken.netex.model.VehicleType;
 import org.rutebanken.sobek.model.vehicle.DeckPlan;
+import org.rutebanken.sobek.model.vehicle.HybridCategoryEnumeration;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
+import org.rutebanken.sobek.netex.util.KeyValuesHelper;
+
+import java.math.BigDecimal;
 
 
 /**
@@ -86,6 +90,10 @@ public interface VehicleTypeMapper {
     ) {
         if (target != null) {
             context.getDataManagedObjectStructureMapper().afterMappingToSobek(source, target, context);
+            KeyValuesHelper.SetFromKeyValues("FormDragCoefficient", source.getKeyList(), BigDecimal::new, target::setFormDragCoefficient);
+            KeyValuesHelper.SetFromKeyValues("RollResistanceCoefficient", source.getKeyList(), BigDecimal::new, target::setRollResistanceCoefficient);
+            KeyValuesHelper.SetFromKeyValues("MaximumEngineEffectKW", source.getKeyList(), BigDecimal::new, target::setMaximumEngineEffectKW);
+            KeyValuesHelper.SetFromKeyValues("HybridCategory", source.getKeyList(), HybridCategoryEnumeration::fromValue, target::setHybridCategory);
         }
 
         // Extract and resolve DeckPlanRef if present
@@ -114,8 +122,11 @@ public interface VehicleTypeMapper {
             @MappingTarget VehicleType target,
             @Context MappingContext context
     ) {
-        if (target != null) {
-            context.getDataManagedObjectStructureMapper().afterMappingToNetex(source, target, context);
+        if(target != null) {
+            KeyValuesHelper.SetToKeyValues(target, "FormDragCoefficient", source.getFormDragCoefficient() == null ? null : String.valueOf(source.getFormDragCoefficient()));
+            KeyValuesHelper.SetToKeyValues(target, "RollResistanceCoefficient", source.getRollResistanceCoefficient() == null ? null : String.valueOf(source.getRollResistanceCoefficient()));
+            KeyValuesHelper.SetToKeyValues(target, "MaximumEngineEffectKW", source.getMaximumEngineEffectKW() == null ? null : String.valueOf(source.getMaximumEngineEffectKW()));
+            KeyValuesHelper.SetToKeyValues(target, "HybridCategory", source.getHybridCategory() == null ? null : source.getHybridCategory().value());
         }
 
         // Handle DeckPlanRef creation from entity or transient reference

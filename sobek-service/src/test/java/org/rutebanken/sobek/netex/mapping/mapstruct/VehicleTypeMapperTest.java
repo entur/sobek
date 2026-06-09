@@ -1,12 +1,8 @@
 package org.rutebanken.sobek.netex.mapping.mapstruct;
 
 import org.junit.jupiter.api.Test;
-import org.rutebanken.netex.model.AllPublicTransportModesEnumeration;
-import org.rutebanken.netex.model.DeckPlanRefStructure;
-import org.rutebanken.netex.model.FuelTypeEnumeration;
-import org.rutebanken.netex.model.PassengerCapacityStructure;
-import org.rutebanken.netex.model.PropulsionTypeEnumeration;
-import org.rutebanken.netex.model.VehicleType;
+import org.rutebanken.netex.model.*;
+import org.rutebanken.sobek.model.vehicle.HybridCategoryEnumeration;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -45,6 +41,11 @@ class VehicleTypeMapperTest {
         netexVehicleType.setMaximumVelocity(new BigDecimal("100"));
         netexVehicleType.setEuroClass("Euro6");
         netexVehicleType.setTransportMode(AllPublicTransportModesEnumeration.BUS);
+        netexVehicleType.withKeyList(new KeyListStructure().withKeyValue(
+                new KeyValueStructure().withKey("FormDragCoefficient").withValue("0.4"),
+                new KeyValueStructure().withKey("MaximumEngineEffectKW").withValue("500"),
+                new KeyValueStructure().withKey("HybridCategory").withValue("chargeable")
+        ));
 
         // Passenger capacity
         PassengerCapacityStructure capacity = new PassengerCapacityStructure();
@@ -101,6 +102,11 @@ class VehicleTypeMapperTest {
         assertNotNull(sobekVehicleType.getPropulsionTypes());
         assertEquals(2, sobekVehicleType.getPropulsionTypes().size());
 
+        assertEquals(BigDecimal.valueOf(0.4), sobekVehicleType.getFormDragCoefficient());
+        assertNull(sobekVehicleType.getRollResistanceCoefficient());
+        assertEquals(BigDecimal.valueOf(500), sobekVehicleType.getMaximumEngineEffectKW());
+        assertEquals(HybridCategoryEnumeration.CHARGEABLE, sobekVehicleType.getHybridCategory());
+
         // Check deck plan ref is stored
         //assertNotNull(sobekVehicleType.getDeckPlanRef());
         //assertEquals("DP:1", sobekVehicleType.getDeckPlanRef().getRef());
@@ -118,6 +124,8 @@ class VehicleTypeMapperTest {
         sobekVehicleType.setWeight(new BigDecimal("12000"));
         sobekVehicleType.setMaximumVelocity(new BigDecimal("100"));
         sobekVehicleType.setEuroClass("Euro6");
+        sobekVehicleType.setFormDragCoefficient(BigDecimal.valueOf(0.4));
+        sobekVehicleType.setHybridCategory(HybridCategoryEnumeration.CHARGEABLE);
 
         // Set deck plan ref in transient field
         DeckPlanRefStructure deckPlanRef = new DeckPlanRefStructure();
@@ -136,6 +144,18 @@ class VehicleTypeMapperTest {
         assertEquals(new BigDecimal("12000"), netexVehicleType.getWeight());
         assertEquals(new BigDecimal("100"), netexVehicleType.getMaximumVelocity());
         assertEquals("Euro6", netexVehicleType.getEuroClass());
+
+        var keyList = netexVehicleType.getKeyList();
+        var formDragCoefficient = keyList.getKeyValue().stream().filter(kv -> kv.getKey().equals("FormDragCoefficient")).findFirst();
+        assertTrue(formDragCoefficient.isPresent(), "FormDragCoefficient key should be present");
+        assertEquals("0.4", formDragCoefficient.get().getValue());
+
+        var rollResistanceCoefficient = keyList.getKeyValue().stream().filter(kv -> kv.getKey().equals("RollResistanceCoefficient")).findFirst();
+        assertFalse(rollResistanceCoefficient.isPresent(), "RollResistanceCoefficient key should not be present");
+
+        var hybridCategory = keyList.getKeyValue().stream().filter(kv -> kv.getKey().equals("HybridCategory")).findFirst();
+        assertTrue(hybridCategory.isPresent(), "HybridCategory key should be present");
+        assertEquals("chargeable", hybridCategory.get().getValue());
 
         // Check deck plan ref
         //assertNotNull(netexVehicleType.getDeckPlanRef());

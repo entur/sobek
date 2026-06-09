@@ -1,5 +1,7 @@
 package org.rutebanken.sobek.model.vehicle;
 
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Transient;
 import lombok.Getter;
@@ -30,6 +32,7 @@ public class VehicleType_VersionStructure extends TransportType_VersionStructure
     private BigDecimal formDragCoefficient;
     private BigDecimal rollResistanceCoefficient;
     private BigDecimal maximumEngineEffectKW;
+    @Enumerated(EnumType.STRING)
     private HybridCategoryEnumeration hybridCategory;
 
     @Transient

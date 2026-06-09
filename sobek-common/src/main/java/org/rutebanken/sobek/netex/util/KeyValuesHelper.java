@@ -19,7 +19,7 @@ public class KeyValuesHelper {
         existing.ifPresentOrElse(keyValueStructure -> keyValueStructure.setValue(value), () -> objectWithKeyValues.getKeyList().getKeyValue().add(new KeyValueStructure().withKey(propertyName).withValue(value)));
     }
 
-    public static <ObjectType, PropertyType> void SetFromKeyValues(ObjectType target, String propertyName, KeyListStructure keyList, Function<String, PropertyType> convertFunction, Consumer<PropertyType> setFunction) {
+    public static <PropertyType> void SetFromKeyValues(String propertyName, KeyListStructure keyList, Function<String, PropertyType> convertFunction, Consumer<PropertyType> setFunction) {
         if(keyList == null) {
             setFunction.accept(null);
             return;

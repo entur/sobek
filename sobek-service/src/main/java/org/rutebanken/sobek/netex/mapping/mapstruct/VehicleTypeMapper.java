@@ -122,15 +122,11 @@ public interface VehicleTypeMapper {
             @MappingTarget VehicleType target,
             @Context MappingContext context
     ) {
-        if (target != null) {
-            context.getDataManagedObjectStructureMapper().afterMappingToNetex(source, target, context);
-        }
-
         if(target != null) {
-            KeyValuesHelper.AddToKeyValues(target, "FormDragCoefficient", source.getFormDragCoefficient() == null ? null : String.valueOf(source.getFormDragCoefficient()));
-            KeyValuesHelper.AddToKeyValues(target, "RollResistanceCoefficient", source.getRollResistanceCoefficient() == null ? null : String.valueOf(source.getRollResistanceCoefficient()));
-            KeyValuesHelper.AddToKeyValues(target, "MaximumEngineEffectKW", source.getMaximumEngineEffectKW() == null ? null : String.valueOf(source.getMaximumEngineEffectKW()));
-            KeyValuesHelper.AddToKeyValues(target, "HybridCategory", source.getHybridCategory() == null ? null : String.valueOf(source.getHybridCategory()));
+            KeyValuesHelper.SetToKeyValues(target, "FormDragCoefficient", source.getFormDragCoefficient() == null ? null : String.valueOf(source.getFormDragCoefficient()));
+            KeyValuesHelper.SetToKeyValues(target, "RollResistanceCoefficient", source.getRollResistanceCoefficient() == null ? null : String.valueOf(source.getRollResistanceCoefficient()));
+            KeyValuesHelper.SetToKeyValues(target, "MaximumEngineEffectKW", source.getMaximumEngineEffectKW() == null ? null : String.valueOf(source.getMaximumEngineEffectKW()));
+            KeyValuesHelper.SetToKeyValues(target, "HybridCategory", source.getHybridCategory() == null ? null : String.valueOf(source.getHybridCategory()));
         }
 
         // Handle DeckPlanRef creation from entity or transient reference

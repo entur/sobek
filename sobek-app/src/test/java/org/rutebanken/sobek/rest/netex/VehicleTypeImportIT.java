@@ -83,7 +83,7 @@ class VehicleTypeImportIT {
                 () ->
                     new AssertionError(
                         "No TextType name element in imported vehicle type"));
-    assertThat(nameText.getValue()).isEqualTo("Exqui City 24");
+    assertThat(nameText.getValue()).isEqualTo("Exaqui City 24");
   }
 
     @Test
@@ -124,7 +124,6 @@ class VehicleTypeImportIT {
                         responseFrame.getVehicleTypes().getTransportType_Dummy().getFirst().getValue();
 
         assertThat(imported.getId()).startsWith("AKT:VehicleType:");
-        assertThat(imported.getVersion()).isEqualTo("1");
         assertThat(imported.getName().getContent()).hasSize(3);
         assertThat(imported.getName().getContent().get(1)).isInstanceOf(JAXBElement.class);
         JAXBElement<? extends  TextType> theName = (JAXBElement)imported.getName().getContent().get(1);

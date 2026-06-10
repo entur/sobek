@@ -1,6 +1,10 @@
 package org.rutebanken.sobek.rest.graphql;
 
 import org.rutebanken.sobek.auth.AuthorizationService;
+import org.rutebanken.sobek.rest.dto.DeactivateInput;
+import org.rutebanken.sobek.service.deactivate.DeckPlanDeactivator;
+import org.rutebanken.sobek.service.deactivate.VehicleDeactivator;
+import org.rutebanken.sobek.service.deactivate.VehicleTypeDeactivator;
 import org.springframework.transaction.annotation.Transactional;
 import jakarta.xml.bind.ValidationException;
 import org.rutebanken.sobek.graphql.converter.DeckPlanNeTExIdConverter;
@@ -31,6 +35,9 @@ public class MutationController {
     private final DeckPlanNeTExIdConverter deckPlanIdConverter;
     private final VehicleTypeRepository vehicleTypeRepository;
     private final AuthorizationService authorizationService;
+    private final VehicleDeactivator vehicleDeactivator;
+    private final VehicleTypeDeactivator vehicleTypeDeactivator;
+    private final DeckPlanDeactivator deckPlanDeactivator;
 
     public MutationController(
             VehicleVersionedSaverService vehicleVersionedSaverService,
@@ -39,7 +46,7 @@ public class MutationController {
             VehicleTypeNeTExIdConverter vehicleTypeIdConverter,
             DeckPlanVersionedSaverService deckPlanVersionedSaverService,
             DeckPlanNeTExIdConverter deckPlanNeTExIdConverter,
-            VehicleTypeRepository vehicleTypeRepository, AuthorizationService authorizationService) {
+            VehicleTypeRepository vehicleTypeRepository, AuthorizationService authorizationService, VehicleDeactivator vehicleDeactivator, VehicleTypeDeactivator vehicleTypeDeactivator, DeckPlanDeactivator deckPlanDeactivator) {
         this.vehicleVersionedSaverService = vehicleVersionedSaverService;
         this.vehicleIdConverter = vehicleIdConverter;
         this.vehicleTypeVersionedSaverService = vehicleTypeVersionedSaverService;
@@ -48,6 +55,9 @@ public class MutationController {
         this.deckPlanIdConverter = deckPlanNeTExIdConverter;
         this.vehicleTypeRepository = vehicleTypeRepository;
         this.authorizationService = authorizationService;
+        this.vehicleDeactivator = vehicleDeactivator;
+        this.vehicleTypeDeactivator = vehicleTypeDeactivator;
+        this.deckPlanDeactivator = deckPlanDeactivator;
     }
 
     @MutationMapping
@@ -86,4 +96,20 @@ public class MutationController {
         var output = deckPlanVersionedSaverService.saveNewVersion(input);
         return output.getNetexId();
     }
+
+    @MutationMapping
+    public Vehicle deactivateVehicle(@Argument DeactivateInput input) {
+        return vehicleDeactivator.deactivateVehicle(input.NetexId(), input.Version(), input.DeactivationDate());
+    }
+
+    @MutationMapping
+    public VehicleType deactivateVehicleType(@Argument DeactivateInput input) {
+        return vehicleTypeDeactivator.deactivateVehicleType(input.NetexId(), input.Version(), input.DeactivationDate());
+    }
+
+    @MutationMapping
+    public DeckPlan deactivateDeckPlan(@Argument DeactivateInput input) {
+        return deckPlanDeactivator.deactivateDeckPlan(input.NetexId(), input.Version(), input.DeactivationDate());
+    }
+
 }

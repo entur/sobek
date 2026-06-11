@@ -24,7 +24,7 @@ input DeckPlanReferenceInput {
 input DeactivateInput {
     netexId: String!
     version: Int!
-    deactivationDate: Date!
+    deactivateAt: DateTime!
 }
 
 # Enums

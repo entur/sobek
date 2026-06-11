@@ -5,6 +5,7 @@ import org.rutebanken.sobek.rest.dto.DeactivateInput;
 import org.rutebanken.sobek.service.deactivate.DeckPlanDeactivator;
 import org.rutebanken.sobek.service.deactivate.VehicleDeactivator;
 import org.rutebanken.sobek.service.deactivate.VehicleTypeDeactivator;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
 import jakarta.xml.bind.ValidationException;
 import org.rutebanken.sobek.graphql.converter.DeckPlanNeTExIdConverter;
@@ -25,7 +26,7 @@ import java.util.List;
 
 @Controller
 @SchemaMapping(typeName = "Mutation")
-@Transactional(rollbackFor = ValidationException.class)
+@Transactional(rollbackFor = { ValidationException.class, AccessDeniedException.class})
 public class MutationController {
     private final VehicleVersionedSaverService vehicleVersionedSaverService;
     private final VehicleNeTExIdConverter vehicleIdConverter;
@@ -98,18 +99,18 @@ public class MutationController {
     }
 
     @MutationMapping
-    public Vehicle deactivateVehicle(@Argument DeactivateInput input) {
-        return vehicleDeactivator.deactivateVehicle(input.NetexId(), input.Version(), input.DeactivationDate());
+    public Vehicle deactivateVehicle(@Argument DeactivateInput input) throws ValidationException {
+        return vehicleDeactivator.deactivateVehicle(input.netexId(), input.version(), input.deactivateAt());
     }
 
     @MutationMapping
-    public VehicleType deactivateVehicleType(@Argument DeactivateInput input) {
-        return vehicleTypeDeactivator.deactivateVehicleType(input.NetexId(), input.Version(), input.DeactivationDate());
+    public VehicleType deactivateVehicleType(@Argument DeactivateInput input) throws ValidationException {
+        return vehicleTypeDeactivator.deactivateVehicleType(input.netexId(), input.version(), input.deactivateAt());
     }
 
     @MutationMapping
-    public DeckPlan deactivateDeckPlan(@Argument DeactivateInput input) {
-        return deckPlanDeactivator.deactivateDeckPlan(input.NetexId(), input.Version(), input.DeactivationDate());
+    public DeckPlan deactivateDeckPlan(@Argument DeactivateInput input) throws ValidationException {
+        return deckPlanDeactivator.deactivateDeckPlan(input.netexId(), input.version(), input.deactivateAt());
     }
 
 }

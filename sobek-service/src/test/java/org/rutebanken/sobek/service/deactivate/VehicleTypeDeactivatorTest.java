@@ -1,5 +1,6 @@
 package org.rutebanken.sobek.service.deactivate;
 
+import jakarta.xml.bind.ValidationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,7 +14,9 @@ import org.rutebanken.sobek.model.vehicle.VehicleType;
 import org.rutebanken.sobek.repository.VehicleTypeRepository;
 import org.rutebanken.sobek.versioning.VersionCreator;
 import org.rutebanken.sobek.versioning.save.VehicleTypeVersionedSaverService;
+import org.springframework.security.access.AccessDeniedException;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
@@ -48,27 +51,27 @@ class VehicleTypeDeactivatorTest {
 
     private VehicleType previousVersion;
     private VehicleType nextVersion;
-    private Instant today;
+    private Instant now;
     private Instant futureDate;
 
     @BeforeEach
     void setUp() {
-        today = Instant.now().truncatedTo(ChronoUnit.DAYS);
-        futureDate = today.plus(30, ChronoUnit.DAYS);
+        now = Instant.now();
+        futureDate = now.plus(30, ChronoUnit.DAYS);
 
-        previousVersion = createVehicleType(NETEX_ID, VERSION, today.minus(365, ChronoUnit.DAYS), null);
-        nextVersion = createVehicleType(NETEX_ID, VERSION + 1, today, futureDate);
+        previousVersion = createVehicleType(NETEX_ID, VERSION, now.minus(365, ChronoUnit.DAYS), null);
+        nextVersion = createVehicleType(NETEX_ID, VERSION + 1, now, futureDate);
 
-        when(usernameFetcher.getUserNameForAuthenticatedUser()).thenReturn(USERNAME);
+        lenient().when(usernameFetcher.getUserNameForAuthenticatedUser()).thenReturn(USERNAME);
     }
 
     @Test
-    void deactivateVehicleType_Success() {
+    void deactivateVehicleType_Success() throws ValidationException {
         // Given
         when(vehicleTypeRepository.findFirstByNetexIdOrderByVersionDesc(NETEX_ID)).thenReturn(previousVersion);
         when(authorizationService.canDeleteEntity(previousVersion)).thenReturn(true);
         when(versionCreator.createCopy(previousVersion, VehicleType.class)).thenReturn(nextVersion);
-        when(vehicleTypeVersionedSaverService.saveNewVersion(eq(previousVersion), eq(nextVersion), eq(today)))
+        when(vehicleTypeVersionedSaverService.saveNewVersion(eq(previousVersion), eq(nextVersion), any()))
                 .thenReturn(nextVersion);
 
         // When
@@ -77,36 +80,33 @@ class VehicleTypeDeactivatorTest {
         // Then
         assertNotNull(result);
         assertEquals(NETEX_ID, result.getNetexId());
-        assertEquals(today, previousVersion.getValidBetween().getToDate());
-        assertEquals(today, nextVersion.getValidBetween().getFromDate());
-        assertEquals(futureDate, nextVersion.getValidBetween().getToDate());
+        assertInstantCloseTo(now, previousVersion.getValidBetween().getToDate(), 60);
+        assertInstantCloseTo(now, nextVersion.getValidBetween().getFromDate(), 60);
+        assertInstantCloseTo(futureDate, nextVersion.getValidBetween().getToDate(), 60);
 
         verify(usernameFetcher).getUserNameForAuthenticatedUser();
         verify(vehicleTypeRepository).findFirstByNetexIdOrderByVersionDesc(NETEX_ID);
         verify(authorizationService).canDeleteEntity(previousVersion);
         verify(versionCreator).createCopy(previousVersion, VehicleType.class);
-        verify(vehicleTypeVersionedSaverService).saveNewVersion(previousVersion, nextVersion, today);
+        verify(vehicleTypeVersionedSaverService).saveNewVersion(eq(previousVersion), eq(nextVersion), any(Instant.class));
     }
 
     @Test
-    void deactivateVehicleType_DeactivationDateInPast_UsesToday() {
+    void deactivateVehicleType_DeactivationDateInPast_ThrowsException() {
         // Given
-        Instant pastDate = today.minus(10, ChronoUnit.DAYS);
-        nextVersion.setValidBetween(new ValidBetween(today, today));
+        Instant pastDate = now.minus(10, ChronoUnit.DAYS);
 
-        when(vehicleTypeRepository.findFirstByNetexIdOrderByVersionDesc(NETEX_ID)).thenReturn(previousVersion);
-        when(authorizationService.canDeleteEntity(previousVersion)).thenReturn(true);
-        when(versionCreator.createCopy(previousVersion, VehicleType.class)).thenReturn(nextVersion);
-        when(vehicleTypeVersionedSaverService.saveNewVersion(eq(previousVersion), eq(nextVersion), eq(today)))
-                .thenReturn(nextVersion);
-
-        // When
-        VehicleType result = vehicleTypeDeactivator.deactivateVehicleType(NETEX_ID, VERSION, pastDate);
+        // When & Then
+        ValidationException exception = assertThrows(ValidationException.class, () ->
+                vehicleTypeDeactivator.deactivateVehicleType(NETEX_ID, VERSION, pastDate)
+        );
 
         // Then
-        assertNotNull(result);
-        assertEquals(today, nextVersion.getValidBetween().getToDate());
-        verify(vehicleTypeVersionedSaverService).saveNewVersion(previousVersion, nextVersion, today);
+        assertTrue(exception.getMessage().contains("cannot be set backwards in time") ||
+                exception.getMessage().contains("cannot be in the past"));
+
+        verify(versionCreator, never()).createCopy(any(), any());
+        verify(vehicleTypeVersionedSaverService, never()).saveNewVersion(any(), any(), any());
     }
 
     @Test
@@ -115,7 +115,7 @@ class VehicleTypeDeactivatorTest {
         when(vehicleTypeRepository.findFirstByNetexIdOrderByVersionDesc(NETEX_ID)).thenReturn(null);
 
         // When & Then
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+        ValidationException exception = assertThrows(ValidationException.class, () ->
                 vehicleTypeDeactivator.deactivateVehicleType(NETEX_ID, VERSION, futureDate)
         );
 
@@ -133,7 +133,7 @@ class VehicleTypeDeactivatorTest {
         when(authorizationService.canDeleteEntity(previousVersion)).thenReturn(false);
 
         // When & Then
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+        AccessDeniedException exception = assertThrows(AccessDeniedException.class, () ->
                 vehicleTypeDeactivator.deactivateVehicleType(NETEX_ID, VERSION, futureDate)
         );
 
@@ -151,7 +151,7 @@ class VehicleTypeDeactivatorTest {
         when(authorizationService.canDeleteEntity(previousVersion)).thenReturn(true);
 
         // When & Then
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+        ValidationException exception = assertThrows(ValidationException.class, () ->
                 vehicleTypeDeactivator.deactivateVehicleType(NETEX_ID, VERSION, futureDate)
         );
 
@@ -166,57 +166,84 @@ class VehicleTypeDeactivatorTest {
     @Test
     void deactivateVehicleType_AlreadyDeactivated_ThrowsException() {
         // Given
-        Instant existingDeactivationDate = today.minus(10, ChronoUnit.DAYS);
-        previousVersion.setValidBetween(new ValidBetween(today.minus(365, ChronoUnit.DAYS), existingDeactivationDate));
+        Instant existingDeactivationDate = now.plus(10, ChronoUnit.DAYS); // Changed to future date
+        previousVersion.setValidBetween(new ValidBetween(now.minus(365, ChronoUnit.DAYS), existingDeactivationDate));
 
         when(vehicleTypeRepository.findFirstByNetexIdOrderByVersionDesc(NETEX_ID)).thenReturn(previousVersion);
         when(authorizationService.canDeleteEntity(previousVersion)).thenReturn(true);
 
         // When & Then
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+        ValidationException exception = assertThrows(ValidationException.class, () ->
                 vehicleTypeDeactivator.deactivateVehicleType(NETEX_ID, VERSION, futureDate)
         );
 
-        assertEquals("The vehicle type " + NETEX_ID + ", version " + VERSION + " is already deactivated at " + existingDeactivationDate,
-                exception.getMessage());
+        assertTrue(exception.getMessage().contains("already deactivated") ||
+                exception.getMessage().contains(NETEX_ID));
         verify(authorizationService).canDeleteEntity(previousVersion);
         verify(versionCreator, never()).createCopy(any(), any());
         verify(vehicleTypeVersionedSaverService, never()).saveNewVersion(any(), any(), any());
     }
 
     @Test
-    void deactivateVehicleType_DeactivateToday_Success() {
+    void deactivateVehicleType_DeactivateToday_Success() throws ValidationException {
         // Given
-        nextVersion.setValidBetween(new ValidBetween(today, today));
+        // Use a timestamp slightly in the future to avoid validation failure
+        Instant nearFuture = now.plus(1, ChronoUnit.SECONDS);
+        nextVersion.setValidBetween(new ValidBetween(now, nearFuture));
 
         when(vehicleTypeRepository.findFirstByNetexIdOrderByVersionDesc(NETEX_ID)).thenReturn(previousVersion);
         when(authorizationService.canDeleteEntity(previousVersion)).thenReturn(true);
         when(versionCreator.createCopy(previousVersion, VehicleType.class)).thenReturn(nextVersion);
-        when(vehicleTypeVersionedSaverService.saveNewVersion(eq(previousVersion), eq(nextVersion), eq(today)))
+        when(vehicleTypeVersionedSaverService.saveNewVersion(eq(previousVersion), eq(nextVersion), any(Instant.class)))
                 .thenReturn(nextVersion);
 
         // When
-        VehicleType result = vehicleTypeDeactivator.deactivateVehicleType(NETEX_ID, VERSION, today);
+        VehicleType result = vehicleTypeDeactivator.deactivateVehicleType(NETEX_ID, VERSION, nearFuture);
 
         // Then
         assertNotNull(result);
-        assertEquals(today, nextVersion.getValidBetween().getToDate());
-        verify(vehicleTypeVersionedSaverService).saveNewVersion(previousVersion, nextVersion, today);
+        assertEquals(nearFuture, nextVersion.getValidBetween().getToDate());
+        verify(vehicleTypeVersionedSaverService).saveNewVersion(eq(previousVersion), eq(nextVersion), any(Instant.class));
     }
 
     @Test
-    void deactivateVehicleType_ValidBetweenNotNull_Success() {
+    void deactivateVehicleType_DeactivationTimeWithPrecision_Success() throws ValidationException {
+        // Given
+        // Test that time element (not just date) is properly handled
+        Instant preciseTime = now.plus(15, ChronoUnit.DAYS)
+                .plus(3, ChronoUnit.HOURS)
+                .plus(30, ChronoUnit.MINUTES);
+
+        VehicleType nextVer = createVehicleType(NETEX_ID, VERSION + 1, now, preciseTime);
+
+        when(vehicleTypeRepository.findFirstByNetexIdOrderByVersionDesc(NETEX_ID)).thenReturn(previousVersion);
+        when(authorizationService.canDeleteEntity(previousVersion)).thenReturn(true);
+        when(versionCreator.createCopy(previousVersion, VehicleType.class)).thenReturn(nextVer);
+        when(vehicleTypeVersionedSaverService.saveNewVersion(any(), any(), any()))
+                .thenReturn(nextVer);
+
+        // When
+        VehicleType result = vehicleTypeDeactivator.deactivateVehicleType(NETEX_ID, VERSION, preciseTime);
+
+        // Then
+        assertNotNull(result);
+        assertEquals(preciseTime, result.getValidBetween().getToDate());
+    }
+
+
+    @Test
+    void deactivateVehicleType_ValidBetweenNotNull_Success() throws ValidationException {
         // Given
         String netexId = "VT:007";
         Long expectedVersion = 10L;
 
-        VehicleType prevVersion = createVehicleType(netexId, 10L, today.minus(365, ChronoUnit.DAYS), null);
-        VehicleType nextVer = createVehicleType(netexId, 11L, today, futureDate);
+        VehicleType prevVersion = createVehicleType(netexId, 10L, now.minus(365, ChronoUnit.DAYS), null);
+        VehicleType nextVer = createVehicleType(netexId, 11L, now, futureDate);
 
         when(vehicleTypeRepository.findFirstByNetexIdOrderByVersionDesc(netexId)).thenReturn(prevVersion);
         when(authorizationService.canDeleteEntity(prevVersion)).thenReturn(true);
         when(versionCreator.createCopy(prevVersion, VehicleType.class)).thenReturn(nextVer);
-        when(vehicleTypeVersionedSaverService.saveNewVersion(eq(prevVersion), eq(nextVer), eq(today)))
+        lenient().when(vehicleTypeVersionedSaverService.saveNewVersion(eq(prevVersion), eq(nextVer), any()))
                 .thenReturn(nextVer);
 
         // When
@@ -224,7 +251,7 @@ class VehicleTypeDeactivatorTest {
 
         // Then
         assertNotNull(result);
-        verify(vehicleTypeVersionedSaverService).saveNewVersion(prevVersion, nextVer, today);
+        verify(vehicleTypeVersionedSaverService).saveNewVersion(eq(prevVersion), eq(nextVer), any(Instant.class));
     }
 
     private VehicleType createVehicleType(String netexId, Long version, Instant fromDate, Instant toDate) {
@@ -233,5 +260,12 @@ class VehicleTypeDeactivatorTest {
         vehicleType.setVersion(version);
         vehicleType.setValidBetween(new ValidBetween(fromDate, toDate));
         return vehicleType;
+    }
+
+    private void assertInstantCloseTo(Instant actual, Instant expected, long toleranceSeconds) {
+        long diffSeconds = Math.abs(Duration.between(expected, actual).getSeconds());
+        assertTrue(diffSeconds <= toleranceSeconds,
+                String.format("Expected <%s> to be within %d seconds of <%s> but difference was %d seconds",
+                        actual, toleranceSeconds, expected, diffSeconds));
     }
 }

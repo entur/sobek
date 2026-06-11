@@ -17,7 +17,7 @@ import org.rutebanken.sobek.netex.mapping.mapstruct.deckplan.DeckSpaceMapper;
 import org.rutebanken.sobek.netex.mapping.mapstruct.deckplan.SpotAffinityMapper;
 import org.rutebanken.sobek.netex.mapping.mapstruct.equipment.*;
 import org.rutebanken.sobek.repository.reference.ReferenceResolver;
-Reimport org.rutebanken.sobek.versioning.VersionCopyMapper;
+import org.rutebanken.sobek.versioning.VersionCopyMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +26,6 @@ import org.springframework.web.context.annotation.RequestScope;
 
 import java.time.ZoneId;
 import java.util.List;
-import java.util.Optional;
 
 
 /**

@@ -30,6 +30,7 @@ public interface VehicleRepositoryCustom extends DataManagedObjectStructureRepos
 
     Page<Vehicle> findCurrentFiltered(String dataOwnerRef, List<String> netexIds, List<AllPublicTransportModesEnumeration> transportModes, String name, Pageable pageable);
 
+    boolean existsValidWithVehicleType(String vehicleTypeNetexId, Long vehicleTypeVersion);
 
 }
 

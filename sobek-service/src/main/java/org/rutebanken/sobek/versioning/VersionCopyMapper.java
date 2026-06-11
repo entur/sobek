@@ -3,6 +3,7 @@ package org.rutebanken.sobek.versioning;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.rutebanken.sobek.model.vehicle.DeckPlan;
+import org.rutebanken.sobek.model.vehicle.PassengerCapacity;
 import org.rutebanken.sobek.model.vehicle.Vehicle;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
@@ -19,4 +20,7 @@ public interface VersionCopyMapper {
 
     @Mapping(target = "id", ignore = true)
     DeckPlan copy(DeckPlan source);
+
+    @Mapping(target = "id", ignore = true)
+    PassengerCapacity copy(PassengerCapacity source);
 }

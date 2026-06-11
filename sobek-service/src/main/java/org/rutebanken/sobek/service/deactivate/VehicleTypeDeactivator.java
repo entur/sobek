@@ -19,6 +19,7 @@ import jakarta.xml.bind.ValidationException;
 import org.rutebanken.sobek.auth.AuthorizationService;
 import org.rutebanken.sobek.auth.UsernameFetcher;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
+import org.rutebanken.sobek.repository.VehicleRepository;
 import org.rutebanken.sobek.repository.VehicleTypeRepository;
 import org.rutebanken.sobek.versioning.VersionCreator;
 import org.rutebanken.sobek.versioning.save.VehicleTypeVersionedSaverService;
@@ -30,15 +31,17 @@ public class VehicleTypeDeactivator extends GenericDeactivator<VehicleType> {
 
     private final VehicleTypeVersionedSaverService vehicleTypeVersionedSaverService;
     private final VehicleTypeRepository vehicleTypeRepository;
+    private final VehicleRepository vehicleRepository;
 
     public VehicleTypeDeactivator(VehicleTypeVersionedSaverService vehicleTypeVersionedSaverService,
                                   VehicleTypeRepository vehicleTypeRepository,
                                   UsernameFetcher usernameFetcher,
                                   VersionCreator versionCreator,
-                                  AuthorizationService authorizationService) {
+                                  AuthorizationService authorizationService, VehicleRepository vehicleRepository) {
         super(usernameFetcher, versionCreator, authorizationService, VehicleType.class);
         this.vehicleTypeVersionedSaverService = vehicleTypeVersionedSaverService;
         this.vehicleTypeRepository = vehicleTypeRepository;
+        this.vehicleRepository = vehicleRepository;
     }
 
     public VehicleType deactivateVehicleType(String netexId, Long expectedVersion, Instant suggestedTimeOfDeactivation) throws ValidationException {
@@ -49,7 +52,7 @@ public class VehicleTypeDeactivator extends GenericDeactivator<VehicleType> {
                 vehicleTypeRepository::findFirstByNetexIdOrderByVersionDesc,
                 vehicleTypeVersionedSaverService::saveNewVersion,
                 vehicleType -> {
-                    if (vehicleType.getVehicles() != null && !vehicleType.getVehicles().isEmpty()) {
+                    if(vehicleRepository.existsValidWithVehicleType(netexId, expectedVersion)) {
                         return "Cannot deactivate vehicle type " + netexId + " because it is still in use.";
                     }
                     return null;

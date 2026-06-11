@@ -11,6 +11,7 @@ import org.rutebanken.sobek.auth.AuthorizationService;
 import org.rutebanken.sobek.auth.UsernameFetcher;
 import org.rutebanken.sobek.model.ValidBetween;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
+import org.rutebanken.sobek.repository.VehicleRepository;
 import org.rutebanken.sobek.repository.VehicleTypeRepository;
 import org.rutebanken.sobek.versioning.VersionCreator;
 import org.rutebanken.sobek.versioning.save.VehicleTypeVersionedSaverService;
@@ -42,6 +43,9 @@ class VehicleTypeDeactivatorTest {
     @Mock
     private AuthorizationService authorizationService;
 
+    @Mock
+    private VehicleRepository vehicleRepository;
+
     @InjectMocks
     private VehicleTypeDeactivator vehicleTypeDeactivator;
 
@@ -69,6 +73,7 @@ class VehicleTypeDeactivatorTest {
     void deactivateVehicleType_Success() throws ValidationException {
         // Given
         when(vehicleTypeRepository.findFirstByNetexIdOrderByVersionDesc(NETEX_ID)).thenReturn(previousVersion);
+        when(vehicleRepository.existsValidWithVehicleType(NETEX_ID, VERSION)).thenReturn(false);
         when(authorizationService.canDeleteEntity(previousVersion)).thenReturn(true);
         when(versionCreator.createCopy(previousVersion, VehicleType.class)).thenReturn(nextVersion);
         when(vehicleTypeVersionedSaverService.saveNewVersion(eq(previousVersion), eq(nextVersion), any()))
@@ -185,6 +190,25 @@ class VehicleTypeDeactivatorTest {
     }
 
     @Test
+    void deactivateVehicleType_StillInUse_ThrowsException() {
+        // Given
+        when(vehicleTypeRepository.findFirstByNetexIdOrderByVersionDesc(NETEX_ID)).thenReturn(previousVersion);
+        when(authorizationService.canDeleteEntity(previousVersion)).thenReturn(true);
+        when(vehicleRepository.existsValidWithVehicleType(NETEX_ID, VERSION)).thenReturn(true);
+
+
+        // When & Then
+        ValidationException exception = assertThrows(ValidationException.class, () ->
+                vehicleTypeDeactivator.deactivateVehicleType(NETEX_ID, VERSION, futureDate)
+        );
+
+        assertTrue(exception.getMessage().contains("still in use"));
+        verify(authorizationService).canDeleteEntity(previousVersion);
+        verify(versionCreator, never()).createCopy(any(), any());
+        verify(vehicleTypeVersionedSaverService, never()).saveNewVersion(any(), any(), any());
+    }
+
+    @Test
     void deactivateVehicleType_DeactivateToday_Success() throws ValidationException {
         // Given
         // Use a timestamp slightly in the future to avoid validation failure
@@ -192,6 +216,7 @@ class VehicleTypeDeactivatorTest {
         nextVersion.setValidBetween(new ValidBetween(now, nearFuture));
 
         when(vehicleTypeRepository.findFirstByNetexIdOrderByVersionDesc(NETEX_ID)).thenReturn(previousVersion);
+        when(vehicleRepository.existsValidWithVehicleType(NETEX_ID, VERSION)).thenReturn(false);
         when(authorizationService.canDeleteEntity(previousVersion)).thenReturn(true);
         when(versionCreator.createCopy(previousVersion, VehicleType.class)).thenReturn(nextVersion);
         when(vehicleTypeVersionedSaverService.saveNewVersion(eq(previousVersion), eq(nextVersion), any(Instant.class)))
@@ -217,6 +242,7 @@ class VehicleTypeDeactivatorTest {
         VehicleType nextVer = createVehicleType(NETEX_ID, VERSION + 1, now, preciseTime);
 
         when(vehicleTypeRepository.findFirstByNetexIdOrderByVersionDesc(NETEX_ID)).thenReturn(previousVersion);
+        when(vehicleRepository.existsValidWithVehicleType(NETEX_ID, VERSION)).thenReturn(false);
         when(authorizationService.canDeleteEntity(previousVersion)).thenReturn(true);
         when(versionCreator.createCopy(previousVersion, VehicleType.class)).thenReturn(nextVer);
         when(vehicleTypeVersionedSaverService.saveNewVersion(any(), any(), any()))

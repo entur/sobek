@@ -134,9 +134,10 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
         Query query = entityManager.createNativeQuery("SELECT EXISTS (SELECT 1 FROM vehicle_type vt join deck_plan dp on vt.deck_plan_id=dp.id WHERE dp.netex_id = :deckPlanNetexId AND dp.version = :deckPlanVersion AND vt.from_date <= now() AND (vt.to_date IS NULL OR vt.to_date >= now()))");
         query.setParameter("deckPlanNetexId", deckPlanNetexId);
         query.setParameter("deckPlanVersion", deckPlanVersion);
-        boolean exists = (boolean) query.getSingleResult();
-        logger.debug("Valid VehicleType with deck plan {} exists: {}", deckPlanNetexId, exists);
-        return exists;
+Object result = query.getSingleResult();
+boolean exists = (result instanceof Boolean b) ? b : ((Number) result).intValue() == 1;
+logger.debug("Valid VehicleType with deck plan {} exists: {}", deckPlanNetexId, exists);
+return exists;
     }
 
 

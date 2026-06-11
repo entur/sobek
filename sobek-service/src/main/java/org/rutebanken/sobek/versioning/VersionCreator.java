@@ -15,14 +15,15 @@
 
 package org.rutebanken.sobek.versioning;
 
-import org.locationtech.jts.geom.Point;
 import org.rutebanken.sobek.model.EntityInVersionStructure;
+import org.rutebanken.sobek.model.vehicle.DeckPlan;
+import org.rutebanken.sobek.model.vehicle.Vehicle;
+import org.rutebanken.sobek.model.vehicle.VehicleType;
+import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.time.Instant;
 
 /**
  * Creates new version of already existing objects, by mapping with Orika and ignore primary key "id".
@@ -32,24 +33,11 @@ public class VersionCreator {
 
     private static final Logger logger = LoggerFactory.getLogger(VersionCreator.class);
 
-    private static final String ID_FIELD = "id";
-
-    private static final String VERSION_COMMENT_FIELD = "versionComment";
-    private static final String CHANGED_BY_FIELD = "changedBy";
-
-    private static final String VALID_BETWEEN = "validBetween";
-
-    private static final String MODIFICATION_ENUMERATION ="modificationEnumeration";
-
-    private final VersionIncrementor versionIncrementor;
-
-    //private final MapperFacade defaultMapperFacade;
+    private MappingContext mappingContext;
 
     @Autowired
-    public VersionCreator(VersionIncrementor versionIncrementor) {
-        this.versionIncrementor = versionIncrementor;
-
-
+    public VersionCreator(MappingContext mappingContext) {
+        this.mappingContext = mappingContext;
     }
 
     /**
@@ -60,12 +48,33 @@ public class VersionCreator {
      * @param type extends {@link EntityInVersionStructure}
      * @return a deep copied stop place with incremented version and valid between set.
      */
-    public <T extends EntityInVersionStructure> T createCopy(EntityInVersionStructure entityInVersionStructure, Class<T> type) {
+    public <T extends EntityInVersionStructure> T createCopy(T entityInVersionStructure, Class<T> type) {
         logger.debug("Create new version for entity: {}", entityInVersionStructure);
 
-        EntityInVersionStructure copy = null; //defaultMapperFacade.map(entityInVersionStructure, type);
+        T copy = null;
+        if (entityInVersionStructure instanceof Vehicle) {
+            // Copy vehicle, but keep the same transport type reference
+            Vehicle original = (Vehicle) entityInVersionStructure;
+            Vehicle vehicleCopy = mappingContext.getVersionCopyMapper().copy(original);
+            if(vehicleCopy.getTransportType() != null) {
+                vehicleCopy.getTransportType().setId(original.getTransportType().getId());
+            }
+            copy = type.cast(vehicleCopy);
+        } else if (entityInVersionStructure instanceof VehicleType) {
+            // Copy vehicle type, but keep the same deck plan reference
+            VehicleType original = (VehicleType) entityInVersionStructure;
+            VehicleType vehicleTypeCopy = mappingContext.getVersionCopyMapper().copy(original);
+            if(vehicleTypeCopy.getDeckPlan() != null) {
+                vehicleTypeCopy.getDeckPlan().setId(original.getDeckPlan().getId());
+            }
+            copy = type.cast(vehicleTypeCopy);
+        } else if (entityInVersionStructure instanceof DeckPlan) {
+            // For deck plan, we can just copy the entity as they don't have references to Vehicle or VehicleType
+            copy = type.cast(mappingContext.getVersionCopyMapper().copy((DeckPlan) entityInVersionStructure));
+        }
+
         logger.debug("Created copy of entity: {}", copy);
 
-        return type.cast(copy);
+        return copy;
     }
 }

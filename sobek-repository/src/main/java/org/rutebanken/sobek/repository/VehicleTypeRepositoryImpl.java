@@ -130,6 +130,18 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
     }
 
     @Override
+    public boolean existsValidWithDeckPlan(String deckPlanNetexId, Long deckPlanVersion) {
+        Query query = entityManager.createNativeQuery("SELECT EXISTS (SELECT 1 FROM vehicle_type vt join deck_plan dp on vt.deck_plan_id=dp.id WHERE dp.netex_id = :deckPlanNetexId AND dp.version = :deckPlanVersion AND vt.from_date <= now() AND (vt.to_date IS NULL OR vt.to_date >= now()))");
+        query.setParameter("deckPlanNetexId", deckPlanNetexId);
+        query.setParameter("deckPlanVersion", deckPlanVersion);
+Object result = query.getSingleResult();
+boolean exists = (result instanceof Boolean b) ? b : ((Number) result).intValue() == 1;
+logger.debug("Valid VehicleType with deck plan {} exists: {}", deckPlanNetexId, exists);
+return exists;
+    }
+
+
+    @Override
     public void moveToDeckPlan(Long fromDeckPlanId, Long toDeckPlanId) {
         Query query = entityManager.createNativeQuery("UPDATE vehicle_type SET deck_plan_id = :toDeckPlanId WHERE deck_plan_id = :fromDeckPlanId " +
                 " and (from_date is null or from_date <= now()) and (to_date is null or to_date >= now())");

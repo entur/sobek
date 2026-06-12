@@ -21,6 +21,12 @@ input DeckPlanReferenceInput {
     netexId: String!
 }
 
+input DeactivateInput {
+    netexId: String!
+    version: Int!
+    deactivateAt: DateTime!
+}
+
 # Enums
 enum FareClass {
     UNKNOWN
@@ -335,6 +341,10 @@ type Mutation {
     createOrUpdateVehicle(input: VehicleInput!): String
     createOrUpdateVehicleType(input: VehicleTypeInput!): String
     createOrUpdateDeckPlan(input: DeckPlanInput!): String
+
+    deactivateVehicle(input: DeactivateInput!): Vehicle
+    deactivateVehicleType(input: DeactivateInput!): VehicleType
+    deactivateDeckPlan(input: DeactivateInput!): DeckPlan
 }
 
 schema {

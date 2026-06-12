@@ -18,12 +18,14 @@ package org.rutebanken.sobek.versioning.save;
 
 import lombok.extern.java.Log;
 import org.rutebanken.sobek.model.vehicle.PassengerCapacity;
+import org.rutebanken.sobek.model.vehicle.Vehicle;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
 import org.rutebanken.sobek.repository.VehicleRepository;
 import org.rutebanken.sobek.repository.VehicleTypeRepository;
 import org.rutebanken.sobek.repository.listener.NetexIdAssigner;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.util.logging.Level;
 
 @Component
@@ -44,6 +46,14 @@ public class VehicleTypeVersionedSaverService {
     }
 
     public VehicleType saveNewVersion(VehicleType newVersion) {
+        var existingVersion = vehicleTypeRepository.findFirstByNetexIdOrderByVersionDesc(newVersion.getNetexId());
+        if (existingVersion != null) {
+            log.log(Level.FINE, "Found existing entity from netexId {}", existingVersion.getNetexId());
+        }
+        return saveNewVersion(existingVersion, newVersion, Instant.now());
+    }
+
+    public VehicleType saveNewVersion(VehicleType existingVersion, VehicleType newVersion, Instant defaultValidFrom) {
 
         // Assign netexId if not already assigned
         // PassengerCapacity doesn't have a independent lifecycle, meaning it's linked to the VehicleType at all times
@@ -53,12 +63,7 @@ public class VehicleTypeVersionedSaverService {
             netexIdAssigner.assignNetexId(passengerCapacity);
         }
 
-        var existingVersion = vehicleTypeRepository.findFirstByNetexIdOrderByVersionDesc(newVersion.getNetexId());
-        if (existingVersion != null) {
-            log.log(Level.FINE, "Found existing entity from netexId {}", existingVersion.getNetexId());
-        }
-
-        var saved = defaultVersionedSaverService.saveNewVersion(existingVersion, newVersion, vehicleTypeRepository);
+        var saved = defaultVersionedSaverService.saveNewVersion(existingVersion, newVersion, defaultValidFrom, vehicleTypeRepository);
         if(existingVersion != null && !saved.getId().equals(existingVersion.getId())) {
             vehicleRepository.moveToTransportType(existingVersion.getId(), saved.getId());
         }

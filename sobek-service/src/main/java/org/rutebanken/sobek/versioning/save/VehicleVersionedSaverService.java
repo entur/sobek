@@ -20,6 +20,8 @@ import org.rutebanken.sobek.model.vehicle.Vehicle;
 import org.rutebanken.sobek.repository.VehicleRepository;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
+
 @Component
 public class VehicleVersionedSaverService {
 
@@ -34,4 +36,9 @@ public class VehicleVersionedSaverService {
     public Vehicle saveNewVersion(Vehicle newVersion) {
         return defaultVersionedSaverService.saveNewVersion(newVersion, vehicleRepository);
     }
+
+    public Vehicle saveNewVersion(Vehicle existingVersion, Vehicle newVersion, Instant defaultValidFrom) {
+        return defaultVersionedSaverService.saveNewVersion(existingVersion, newVersion, defaultValidFrom, vehicleRepository);
+    }
+
 }

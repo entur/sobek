@@ -27,5 +27,7 @@ public interface VehicleTypeRepositoryCustom extends DataManagedObjectStructureR
     Page<VehicleType> findCurrentFiltered(String dataOwnerRef, List<String> netexIds, List<AllPublicTransportModesEnumeration> transportModes, String name, Pageable pageable);
 
     void moveToDeckPlan(Long fromDeckPlanId, Long toDeckPlanId);
+
+    boolean existsValidWithDeckPlan(String deckPlanNetexId, Long deckPlanVersion);
 }
 

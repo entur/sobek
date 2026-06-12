@@ -18,10 +18,12 @@ package org.rutebanken.sobek.versioning.save;
 
 import lombok.extern.java.Log;
 import org.rutebanken.sobek.model.vehicle.DeckPlan;
+import org.rutebanken.sobek.model.vehicle.VehicleType;
 import org.rutebanken.sobek.repository.DeckPlanRepository;
 import org.rutebanken.sobek.repository.VehicleTypeRepository;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.util.logging.Level;
 
 @Log
@@ -39,16 +41,19 @@ public class DeckPlanVersionedSaverService {
     }
 
 
+    public DeckPlan saveNewVersion(DeckPlan existingVersion, DeckPlan newVersion, Instant defaultValidFrom) {
+        var saved = defaultVersionedSaverService.saveNewVersion(existingVersion, newVersion, defaultValidFrom, deckPlanRepository);
+        if(existingVersion != null && !saved.getId().equals(existingVersion.getId())) {
+            vehicleTypeRepository.moveToDeckPlan(existingVersion.getId(), saved.getId());
+        }
+        return saved;
+    }
+
     public DeckPlan saveNewVersion(DeckPlan newVersion) {
         var existingVersion = deckPlanRepository.findFirstByNetexIdOrderByVersionDesc(newVersion.getNetexId());
         if (existingVersion != null) {
             log.log(Level.FINE, "Found existing entity from netexId {}", existingVersion.getNetexId());
         }
-
-        var saved = defaultVersionedSaverService.saveNewVersion(existingVersion, newVersion, deckPlanRepository);
-        if(existingVersion != null && !saved.getId().equals(existingVersion.getId())) {
-            vehicleTypeRepository.moveToDeckPlan(existingVersion.getId(), saved.getId());
-        }
-        return saved;
+        return saveNewVersion(existingVersion, newVersion, Instant.now());
     }
 }

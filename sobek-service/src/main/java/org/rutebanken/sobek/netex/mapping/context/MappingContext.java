@@ -17,6 +17,7 @@ import org.rutebanken.sobek.netex.mapping.mapstruct.deckplan.DeckSpaceMapper;
 import org.rutebanken.sobek.netex.mapping.mapstruct.deckplan.SpotAffinityMapper;
 import org.rutebanken.sobek.netex.mapping.mapstruct.equipment.*;
 import org.rutebanken.sobek.repository.reference.ReferenceResolver;
+import org.rutebanken.sobek.versioning.VersionCopyMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,6 @@ import org.springframework.web.context.annotation.RequestScope;
 
 import java.time.ZoneId;
 import java.util.List;
-import java.util.Optional;
 
 
 /**
@@ -59,6 +59,7 @@ public class MappingContext {
     private DataManagedObjectStructureMapper dataManagedObjectStructureMapper;
     private OwnedEntityMapper ownedEntityMapper;
     private String dataOwnerRef;
+    private VersionCopyMapper versionCopyMapper;
 
     public MappingContext() {
     }
@@ -78,7 +79,8 @@ public class MappingContext {
                           ValidPrefixList validPrefixList,
                           NetexIdHelper netexIdHelper,
                           DataManagedObjectStructureMapper dataManagedObjectStructureMapper,
-                          OwnedEntityMapper ownedEntityMapper) {
+                          OwnedEntityMapper ownedEntityMapper,
+                          VersionCopyMapper versionCopyMapper) {
         this.referenceResolver = resolver;
         this.seatEquipmentMapper = seatEquipmentMapper;
         this.bedEquipmentMapper = bedEquipmentMapper;
@@ -94,6 +96,7 @@ public class MappingContext {
         this.netexIdHelper = netexIdHelper;
         this.dataManagedObjectStructureMapper = dataManagedObjectStructureMapper;
         this.ownedEntityMapper = ownedEntityMapper;
+        this.versionCopyMapper = versionCopyMapper;
     }
 
     public void updateMappingContext(PublicationDeliveryStructure publicationDeliveryStructure, ResourceFrame resourceFrame) {

@@ -1,6 +1,7 @@
 package org.rutebanken.sobek.rest.graphql;
 
 import org.rutebanken.sobek.auth.AuthorizationService;
+import org.rutebanken.sobek.repository.DeckPlanRepository;
 import org.rutebanken.sobek.rest.dto.DeactivateInput;
 import org.rutebanken.sobek.service.deactivate.DeckPlanDeactivator;
 import org.rutebanken.sobek.service.deactivate.VehicleDeactivator;
@@ -39,6 +40,7 @@ public class MutationController {
     private final VehicleDeactivator vehicleDeactivator;
     private final VehicleTypeDeactivator vehicleTypeDeactivator;
     private final DeckPlanDeactivator deckPlanDeactivator;
+    private final DeckPlanRepository deckPlanRepository;
 
     public MutationController(
             VehicleVersionedSaverService vehicleVersionedSaverService,
@@ -47,7 +49,7 @@ public class MutationController {
             VehicleTypeNeTExIdConverter vehicleTypeIdConverter,
             DeckPlanVersionedSaverService deckPlanVersionedSaverService,
             DeckPlanNeTExIdConverter deckPlanNeTExIdConverter,
-            VehicleTypeRepository vehicleTypeRepository, AuthorizationService authorizationService, VehicleDeactivator vehicleDeactivator, VehicleTypeDeactivator vehicleTypeDeactivator, DeckPlanDeactivator deckPlanDeactivator) {
+            VehicleTypeRepository vehicleTypeRepository, AuthorizationService authorizationService, VehicleDeactivator vehicleDeactivator, VehicleTypeDeactivator vehicleTypeDeactivator, DeckPlanDeactivator deckPlanDeactivator, DeckPlanRepository deckPlanRepository) {
         this.vehicleVersionedSaverService = vehicleVersionedSaverService;
         this.vehicleIdConverter = vehicleIdConverter;
         this.vehicleTypeVersionedSaverService = vehicleTypeVersionedSaverService;
@@ -59,6 +61,7 @@ public class MutationController {
         this.vehicleDeactivator = vehicleDeactivator;
         this.vehicleTypeDeactivator = vehicleTypeDeactivator;
         this.deckPlanDeactivator = deckPlanDeactivator;
+        this.deckPlanRepository = deckPlanRepository;
     }
 
     @MutationMapping
@@ -81,9 +84,16 @@ public class MutationController {
     @MutationMapping
     public String createOrUpdateVehicleType (
             @Argument VehicleType input
-    ) {
+    ) throws ValidationException {
         authorizationService.verifyCanEditEntities(List.of(input));
         input = vehicleTypeIdConverter.convertIncomingId(input);
+        if (input.getDeckPlan() != null) {
+            DeckPlan dp = deckPlanRepository.findFirstByNetexIdOrderByVersionDesc(input.getDeckPlan().getNetexId());
+            if (dp == null) {
+                throw new ValidationException("Vehicle type refers to a deck plan that is not found in the database.");
+            }
+            input.setDeckPlan(deckPlanIdConverter.convertIncomingId(dp));
+        }
         var output = vehicleTypeVersionedSaverService.saveNewVersion(input);
         return output.getNetexId();
     }

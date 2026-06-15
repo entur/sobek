@@ -71,11 +71,12 @@ public class MutationController {
         authorizationService.verifyCanEditEntities(List.of(input));
         input = vehicleIdConverter.convertIncomingId(input);
         if (input.getTransportType() != null) {
-            VehicleType vt = vehicleTypeRepository.findFirstByNetexIdOrderByVersionDesc(input.getTransportType().getNetexId());
+            VehicleType vt = vehicleTypeIdConverter.convertIncomingId(input.getTransportType());
+            vt = vehicleTypeRepository.findFirstByNetexIdOrderByVersionDesc(vt.getNetexId());
             if (vt == null) {
-                throw new ValidationException("Vehicle refers to a vehicle type that is not found in the database.");
+                throw new ValidationException("Vehicle refers to a vehicle type that is not found in the database: " + input.getTransportType().getNetexId());
             }
-            input.setTransportType(vehicleTypeIdConverter.convertIncomingId(vt));
+            input.setTransportType(vt);
         }
         var output = vehicleVersionedSaverService.saveNewVersion(input);
         return output.getNetexId();
@@ -88,11 +89,12 @@ public class MutationController {
         authorizationService.verifyCanEditEntities(List.of(input));
         input = vehicleTypeIdConverter.convertIncomingId(input);
         if (input.getDeckPlan() != null) {
-            DeckPlan dp = deckPlanRepository.findFirstByNetexIdOrderByVersionDesc(input.getDeckPlan().getNetexId());
+            DeckPlan dp = deckPlanIdConverter.convertIncomingId(input.getDeckPlan());
+            dp = deckPlanRepository.findFirstByNetexIdOrderByVersionDesc(dp.getNetexId());
             if (dp == null) {
-                throw new ValidationException("Vehicle type refers to a deck plan that is not found in the database.");
+                throw new ValidationException("Vehicle type refers to a deck plan that is not found in the database: " + input.getDeckPlan().getNetexId());
             }
-            input.setDeckPlan(deckPlanIdConverter.convertIncomingId(dp));
+            input.setDeckPlan(dp);
         }
         var output = vehicleTypeVersionedSaverService.saveNewVersion(input);
         return output.getNetexId();

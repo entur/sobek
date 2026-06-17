@@ -19,7 +19,6 @@ package org.rutebanken.sobek.netex.util;
 
 import com.google.common.base.Strings;
 import java.util.function.Supplier;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.rutebanken.sobek.error.CodedError;
 import org.rutebanken.sobek.error.CodedIllegalArgumentException;
 
@@ -28,8 +27,8 @@ public final class Preconditions {
     public static void checkArgument(
             boolean expression,
             CodedError codedError,
-            @Nullable String errorMessageTemplate,
-            @Nullable Object... errorMessageArgs
+            String errorMessageTemplate,
+            Object... errorMessageArgs
     ) {
         if (!expression) {
             throw new CodedIllegalArgumentException(
@@ -42,8 +41,8 @@ public final class Preconditions {
     public static void checkArgument(
             boolean expression,
             Supplier<CodedError> codedErrorSupplier,
-            @Nullable String errorMessageTemplate,
-            @Nullable Object... errorMessageArgs
+            String errorMessageTemplate,
+            Object... errorMessageArgs
     ) {
         if (!expression) {
             throw new CodedIllegalArgumentException(
@@ -55,8 +54,8 @@ public final class Preconditions {
 
     public static void checkArgument(
             boolean expression,
-            @Nullable String errorMessageTemplate,
-            @Nullable Object... errorMessageArgs
+            String errorMessageTemplate,
+            Object... errorMessageArgs
     ) {
         com.google.common.base.Preconditions.checkArgument(
                 expression,

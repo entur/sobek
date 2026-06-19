@@ -109,6 +109,6 @@ public class NeTExIdMappingTest {
 
         mapper.mapNetexToSobek(netexEntity, vehicleType);
 
-        assertThat(vehicleType.getOriginalIds()).hasSize(0);
+        assertThat(vehicleType.getKeyValues().stream().filter(kv -> kv.getKey().equals(ORIGINAL_ID_KEY)).findFirst().isEmpty()).isTrue();
     }
 }

@@ -20,9 +20,7 @@ import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Transient;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 
 @MappedSuperclass
@@ -30,7 +28,7 @@ public abstract class DataManagedObjectStructure
         extends EntityInVersionStructure {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    private final Map<String, Value> keyValues = new HashMap<>();
+    private final List<KeyValue> keyValues = new ArrayList<KeyValue>();
 
     @Transient
     protected ExtensionsStructure extensions;
@@ -58,20 +56,8 @@ public abstract class DataManagedObjectStructure
         this.responsibilitySetRef = value;
     }
 
-    public Map<String, Value> getKeyValues() {
+    public List<KeyValue> getKeyValues() {
         return keyValues;
-    }
-
-    public Set<String> getOrCreateValues(String key) {
-        if (keyValues.get(key) == null) {
-            keyValues.put(key, new Value());
-        }
-
-        return keyValues.get(key).getItems();
-    }
-
-    public Set<String> getOriginalIds() {
-        return getOrCreateValues(CustomKeyValueTypes.ORIGINAL_ID_KEY);
     }
 
     public String getVersionComment() {

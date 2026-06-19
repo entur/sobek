@@ -75,4 +75,23 @@ public abstract class DataManagedObjectStructure
     public void setChangedBy(String changedBy) {
         this.changedBy = changedBy;
     }
+
+    protected void mergeKeyValues(DataManagedObjectStructure existing) {
+        if (existing.getKeyValues() != null && !existing.getKeyValues().isEmpty()) {
+            // Copy keyValues from existing version
+            for (KeyValue existingKv : existing.getKeyValues()) {
+                // Check if this key already exists in the new version
+                boolean keyExists = this.getKeyValues().stream()
+                        .anyMatch(kv -> kv.getKey().equals(existingKv.getKey()));
+
+                if (!keyExists) {
+                    // Add the existing key-value pair
+                    this.getKeyValues().add(new KeyValue(
+                            existingKv.getKey(),
+                            existingKv.getValue()
+                    ));
+                }
+            }
+        }
+    }
 }

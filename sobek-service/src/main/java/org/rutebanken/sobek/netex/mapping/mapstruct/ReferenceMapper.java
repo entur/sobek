@@ -40,7 +40,7 @@ public class ReferenceMapper {
                     refStructure.getVersion(),
                     targetClass
             );
-        } catch (IllegalArgumentException | NumberFormatException e) {
+        } catch (IllegalArgumentException e) {
             // The supplied ref is malformed or non-existent, so we return null
             return null;
         }

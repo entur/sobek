@@ -57,7 +57,23 @@ public abstract class DataManagedObjectStructure
     }
 
     public List<KeyValue> getKeyValues() {
-        return keyValues;
+        return Collections.unmodifiableList(keyValues);
+    }
+
+    public void addKeyValue(KeyValue keyValue) {
+        this.keyValues.add(keyValue);
+    }
+
+    public void addKeyValue(String key, String value) {
+        this.keyValues.add(new KeyValue(key, value));
+    }
+
+    public void removeKeyValue(KeyValue keyValue) {
+        this.keyValues.remove(keyValue);
+    }
+
+    public void clearKeyValues() {
+        this.keyValues.clear();
     }
 
     public String getVersionComment() {
@@ -81,15 +97,15 @@ public abstract class DataManagedObjectStructure
             // Copy keyValues from existing version
             for (KeyValue existingKv : existing.getKeyValues()) {
                 // Check if this key already exists in the new version
-                boolean keyExists = this.getKeyValues().stream()
+                boolean keyExists = this.keyValues.stream()
                         .anyMatch(kv -> kv.getKey().equals(existingKv.getKey()));
 
                 if (!keyExists) {
                     // Add the existing key-value pair
-                    this.getKeyValues().add(new KeyValue(
+                    this.addKeyValue(
                             existingKv.getKey(),
                             existingKv.getValue()
-                    ));
+                    );
                 }
             }
         }

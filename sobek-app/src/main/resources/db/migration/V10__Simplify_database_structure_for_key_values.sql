@@ -43,7 +43,7 @@ ALTER TABLE passenger_entrance_key_values
 CREATE TABLE key_value
 (
     id    BIGINT NOT NULL,
-    key   VARCHAR(255),
+    key   VARCHAR(255) NOT NULL,
     value VARCHAR(255),
     CONSTRAINT pk_keyvalue PRIMARY KEY (id)
 );

@@ -98,11 +98,11 @@ public interface DataManagedObjectStructureMapper {
             @Context MappingContext context
     ) {
         if (netexEntity.getKeyList() != null && netexEntity.getKeyList().getKeyValue() != null) {
-            sobekEntity.getKeyValues().clear();
+            sobekEntity.clearKeyValues();
             if (!netexEntity.getKeyList().getKeyValue().isEmpty()) {
                 List<KeyValue> mappedKeyValues = context.getKeyListStructureMapper().mapToSobek(netexEntity.getKeyList(), context);
                 if (mappedKeyValues != null && !mappedKeyValues.isEmpty()) {
-                    sobekEntity.getKeyValues().addAll(mappedKeyValues);
+                    mappedKeyValues.forEach(kv -> sobekEntity.addKeyValue(kv.getKey(), kv.getValue()));
                 }
 
                 // Handle special keyValue processing
@@ -112,7 +112,7 @@ public interface DataManagedObjectStructureMapper {
                         sobekEntitySetFunctions.get(keyValueStructure.getKey()).accept(keyValueStructure.getValue(), sobekEntity);
 
                         // Remove the KeyValue with this key from the list
-                        sobekEntity.getKeyValues().removeIf(kv -> kv.getKey().equals(keyValueStructure.getKey()));
+                        sobekEntity.removeKeyValue(keyValueStructure.getKey());
                     }
                 });
             }
@@ -229,7 +229,7 @@ public interface DataManagedObjectStructureMapper {
                 logger.debug("Key {} already exists. Will overwrite it", keytoAdd);
                 existing.get().setValue(valueToAdd);
             } else {
-                sobekEntity.getKeyValues().add(new KeyValue(keytoAdd, valueToAdd));
+                sobekEntity.addKeyValue(keytoAdd, valueToAdd);
             }
         }
     }

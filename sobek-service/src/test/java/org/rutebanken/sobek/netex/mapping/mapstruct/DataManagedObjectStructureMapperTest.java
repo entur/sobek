@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.rutebanken.netex.model.KeyListStructure;
 import org.rutebanken.netex.model.KeyValueStructure;
 import org.rutebanken.netex.model.VehicleType;
-import org.rutebanken.sobek.model.KeyValue;
 import org.rutebanken.sobek.netex.id.NetexIdHelper;
 import org.rutebanken.sobek.netex.id.ValidPrefixList;
 import org.rutebanken.sobek.netex.util.PublicationDeliveryHelper;
@@ -34,7 +33,7 @@ public class DataManagedObjectStructureMapperTest {
     @Autowired
     private ValidPrefixList validPrefixList;
 
-    private PublicationDeliveryHelper publicationDeliveryHelper = new PublicationDeliveryHelper();
+    private final PublicationDeliveryHelper publicationDeliveryHelper = new PublicationDeliveryHelper();
 
     private MappingContext context;
 
@@ -330,13 +329,13 @@ public class DataManagedObjectStructureMapperTest {
 
     // Converted from Orika KeyValuesToKeyListConverterTest
     @Test
-    public void convertFrom() throws Exception {
+    public void convertFrom() {
 
         org.rutebanken.sobek.model.DataManagedObjectStructure sobekEntity = new org.rutebanken.sobek.model.vehicle.VehicleType();
-        sobekEntity.getKeyValues().add(new KeyValue("key","value"));
+        sobekEntity.addKeyValue("key","value");
 
         VehicleType netexEntity = new VehicleType();
-        mapper.mapToNetex(sobekEntity, (org.rutebanken.netex.model.DataManagedObjectStructure) netexEntity, context);
+        mapper.mapToNetex(sobekEntity, netexEntity, context);
         KeyListStructure keyValueStructure = netexEntity.getKeyList();
         assertThat(keyValueStructure.getKeyValue())
                 .isNotEmpty()

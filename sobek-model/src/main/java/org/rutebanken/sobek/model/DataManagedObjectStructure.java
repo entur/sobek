@@ -57,7 +57,7 @@ public abstract class DataManagedObjectStructure
     }
 
     public List<KeyValue> getKeyValues() {
-        return Collections.unmodifiableList(keyValues);
+        return keyValues;
     }
 
     public void addKeyValue(KeyValue keyValue) {
@@ -70,6 +70,10 @@ public abstract class DataManagedObjectStructure
 
     public void removeKeyValue(KeyValue keyValue) {
         this.keyValues.remove(keyValue);
+    }
+
+    public void removeKeyValue(String key) {
+        this.keyValues.removeIf(kv -> kv.getKey().equals(key));
     }
 
     public void clearKeyValues() {

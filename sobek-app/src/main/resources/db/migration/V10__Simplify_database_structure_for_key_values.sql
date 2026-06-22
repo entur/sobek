@@ -232,9 +232,8 @@ ALTER TABLE vehicle_type_key_values
 
 
 CREATE SEQUENCE public.key_value_seq
+    START WITH 5000
     INCREMENT BY 10
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
-
-SELECT setval('public.key_value_seq', (SELECT COALESCE(MAX(id), 0) FROM key_value));

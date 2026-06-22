@@ -73,11 +73,14 @@ public class ReferenceResolver {
 
         String prefix = netexIdHelper.extractIdPrefix(ref);
 
-        final String netexId;
+        String netexId;
         if (!validPrefixList.isValidPrefixForType(prefix, memberClass)) {
             logger.debug("Detected ID without valid prefix: {} and type {}. Will try to find it from original ID: {}.", prefix, memberClass, ref);
             Set<String> valuesArgument = new HashSet<>(Collections.singleton(ref));
             netexId = genericEntityInVersionRepository.findByKeyValue(CustomKeyValueTypes.ORIGINAL_ID_KEY, valuesArgument, clazz);
+            if(netexId == null) {
+                throw new IllegalArgumentException("Could not find object with ID: " + ref);
+            }
         } else {
             netexId = ref;
         }
@@ -118,6 +121,9 @@ public class ReferenceResolver {
             logger.debug("Detected ID without valid prefix: {} and type {}. Will try to find it from original ID: {}.", prefix, memberClass, ref);
             Set<String> valuesArgument = new HashSet<>(Collections.singleton(ref));
             netexId = genericEntityInVersionRepository.findByKeyValue(CustomKeyValueTypes.ORIGINAL_ID_KEY, valuesArgument, clazz);
+            if(netexId == null) {
+                throw new IllegalArgumentException("Could not find object with ID: " + ref);
+            }
         } else {
             netexId = ref;
         }

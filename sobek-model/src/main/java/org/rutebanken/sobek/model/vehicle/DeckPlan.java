@@ -12,13 +12,9 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
-import org.rutebanken.sobek.model.DataManagedObjectStructure;
-import org.rutebanken.sobek.model.EmbeddableMultilingualString;
-import org.rutebanken.sobek.model.EntityInVersionStructure;
-import org.rutebanken.sobek.model.Value;
+import org.rutebanken.sobek.model.*;
 import org.rutebanken.sobek.model.authorization.OwnedEntity;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -64,12 +60,8 @@ public class DeckPlan extends DataManagedObjectStructure implements OwnedEntity 
 
     @Override
     public void mergeWithExistingVersion(EntityInVersionStructure existingVersion) {
-        if(existingVersion instanceof DeckPlan) {
-            if (((DeckPlan) existingVersion).getKeyValues() != null) {
-                ((DeckPlan) existingVersion).getKeyValues().forEach((key, value) -> {
-                    this.getKeyValues().put(key, new Value(value.getItems().stream().toList()));
-                });
-            }
+        if(existingVersion instanceof DeckPlan dpExisting) {
+            mergeKeyValues(dpExisting);
         }
     }
 }

@@ -1,19 +1,17 @@
 package org.rutebanken.sobek.repository;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.NoResultException;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.Query;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Set;
 
 @Repository
 public class SchematicMapRepositoryImpl implements SchematicMapRepositoryCustom {
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    private final DataManagedObjectStructureRepositoryImpl dataManagedObjectStructureRepository;
+
+    public SchematicMapRepositoryImpl(DataManagedObjectStructureRepositoryImpl dataManagedObjectStructureRepository) {
+        this.dataManagedObjectStructureRepository = dataManagedObjectStructureRepository;
+    }
 
     /**
      * Find deck plan's netex ID by key value
@@ -24,30 +22,6 @@ public class SchematicMapRepositoryImpl implements SchematicMapRepositoryCustom 
      */
     @Override
     public String findFirstByKeyValues(String key, Set<String> values) {
-
-        Query query = entityManager.createNativeQuery("SELECT o.netex_id " +
-                "FROM schematic_map o " +
-                "INNER JOIN schematic_map_key_values okv " +
-                "ON okv.schematic_map_id = o.id " +
-                "INNER JOIN value_items v " +
-                "ON okv.key_values_id = v.value_id " +
-                "WHERE okv.key_values_key = :key " +
-                "AND v.items IN ( :values ) " +
-                "AND o.version = (SELECT MAX(oc.version) FROM schematic_map oc WHERE oc.netex_id = o.netex_id)");
-
-        query.setParameter("key", key);
-        query.setParameter("values", values);
-
-        try {
-            @SuppressWarnings("unchecked")
-            List<String> results = query.getResultList();
-            if (results.isEmpty()) {
-                return null;
-            } else {
-                return results.getFirst();
-            }
-        } catch (NoResultException noResultException) {
-            return null;
-        }
+        return dataManagedObjectStructureRepository.findFirstByKeyValues("schematic_map", key, values);
     }
 }

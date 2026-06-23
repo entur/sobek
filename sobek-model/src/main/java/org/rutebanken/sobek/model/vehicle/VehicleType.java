@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.rutebanken.sobek.model.EntityInVersionStructure;
-import org.rutebanken.sobek.model.Value;
 
 import java.util.List;
 
@@ -22,12 +21,9 @@ public class VehicleType extends VehicleType_VersionStructure {
     @Override
     public void mergeWithExistingVersion(EntityInVersionStructure existingVersion) {
         if(existingVersion instanceof VehicleType vtExisting) {
-            if (vtExisting.getKeyValues() != null) {
-                vtExisting.getKeyValues().forEach((key, value) -> {
-                    this.getKeyValues().put(key, new Value(value.getItems().stream().toList()));
-                });
+            if (vtExisting.getKeyValues() != null && !vtExisting.getKeyValues().isEmpty()) {
+                mergeKeyValues(vtExisting);
             }
-
         }
     }
 }

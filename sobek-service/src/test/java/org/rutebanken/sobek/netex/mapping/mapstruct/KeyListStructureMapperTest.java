@@ -18,17 +18,11 @@ package org.rutebanken.sobek.netex.mapping.mapstruct;
 import org.junit.jupiter.api.Test;
 import org.rutebanken.netex.model.KeyListStructure;
 import org.rutebanken.netex.model.KeyValueStructure;
-import org.rutebanken.sobek.model.Value;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 
 @SpringBootTest
@@ -44,14 +38,13 @@ public class KeyListStructureMapperTest {
                         .withKey("myKey")
                         .withValue("myValue"));
         var keyValues = mapper.mapToSobek(keyListStructure, mock(MappingContext.class));
-        assertThat(keyValues).containsKeys("myKey");
-        assertThat(keyValues.get("myKey").getItems()).contains("myValue");
+        assertThat(keyValues.stream().anyMatch(kv -> kv.getKey().equals("myKey") && kv.getValue().equals("myValue"))).isTrue();
     }
 
     @Test
     public void mapEmpty() {
         KeyListStructure keyListStructure = new KeyListStructure();
         var keyValues = mapper.mapToSobek(keyListStructure, mock(MappingContext.class));
-        assertNull(keyValues);
+        assertThat(keyValues).isEmpty();
     }
 }

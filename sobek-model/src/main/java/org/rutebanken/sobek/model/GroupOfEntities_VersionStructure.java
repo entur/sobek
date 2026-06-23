@@ -90,8 +90,4 @@ public abstract class GroupOfEntities_VersionStructure
     public void setPrivateCode(PrivateCodeStructure value) {
         this.privateCode = value;
     }
-
-    public String importedIdAndNameToString() {
-        return getOriginalIds() + " - " + (getName() != null ? getName().getValue() : "");
-    }
 }

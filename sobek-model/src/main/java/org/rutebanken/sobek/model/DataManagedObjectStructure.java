@@ -20,9 +20,7 @@ import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Transient;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 
 @MappedSuperclass
@@ -30,7 +28,7 @@ public abstract class DataManagedObjectStructure
         extends EntityInVersionStructure {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    private final Map<String, Value> keyValues = new HashMap<>();
+    private final List<KeyValue> keyValues = new ArrayList<KeyValue>();
 
     @Transient
     protected ExtensionsStructure extensions;
@@ -58,20 +56,28 @@ public abstract class DataManagedObjectStructure
         this.responsibilitySetRef = value;
     }
 
-    public Map<String, Value> getKeyValues() {
+    public List<KeyValue> getKeyValues() {
         return keyValues;
     }
 
-    public Set<String> getOrCreateValues(String key) {
-        if (keyValues.get(key) == null) {
-            keyValues.put(key, new Value());
-        }
-
-        return keyValues.get(key).getItems();
+    public void addKeyValue(KeyValue keyValue) {
+        this.keyValues.add(keyValue);
     }
 
-    public Set<String> getOriginalIds() {
-        return getOrCreateValues(CustomKeyValueTypes.ORIGINAL_ID_KEY);
+    public void addKeyValue(String key, String value) {
+        this.keyValues.add(new KeyValue(key, value));
+    }
+
+    public void removeKeyValue(KeyValue keyValue) {
+        this.keyValues.remove(keyValue);
+    }
+
+    public void removeKeyValue(String key) {
+        this.keyValues.removeIf(kv -> kv.getKey().equals(key));
+    }
+
+    public void clearKeyValues() {
+        this.keyValues.clear();
     }
 
     public String getVersionComment() {
@@ -88,5 +94,24 @@ public abstract class DataManagedObjectStructure
 
     public void setChangedBy(String changedBy) {
         this.changedBy = changedBy;
+    }
+
+    protected void mergeKeyValues(DataManagedObjectStructure existing) {
+        if (existing.getKeyValues() != null && !existing.getKeyValues().isEmpty()) {
+            // Copy keyValues from existing version
+            for (KeyValue existingKv : existing.getKeyValues()) {
+                // Check if this key already exists in the new version
+                boolean keyExists = this.keyValues.stream()
+                        .anyMatch(kv -> kv.getKey().equals(existingKv.getKey()));
+
+                if (!keyExists) {
+                    // Add the existing key-value pair
+                    this.addKeyValue(
+                            existingKv.getKey(),
+                            existingKv.getValue()
+                    );
+                }
+            }
+        }
     }
 }

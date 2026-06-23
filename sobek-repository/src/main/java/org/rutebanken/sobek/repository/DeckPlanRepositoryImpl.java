@@ -23,6 +23,12 @@ public class DeckPlanRepositoryImpl implements DeckPlanRepositoryCustom {
     @PersistenceContext
     private EntityManager entityManager;
 
+    private final DataManagedObjectStructureRepositoryImpl dataManagedObjectStructureRepository;
+
+    public DeckPlanRepositoryImpl(DataManagedObjectStructureRepositoryImpl dataManagedObjectStructureRepository) {
+        this.dataManagedObjectStructureRepository = dataManagedObjectStructureRepository;
+    }
+
     /**
      * Find deck plan's netex ID by key value
      *
@@ -32,31 +38,7 @@ public class DeckPlanRepositoryImpl implements DeckPlanRepositoryCustom {
      */
     @Override
     public String findFirstByKeyValues(String key, Set<String> values) {
-
-        Query query = entityManager.createNativeQuery("SELECT o.netex_id " +
-                "FROM deck_plan o " +
-                "INNER JOIN deck_plan_key_values okv " +
-                "ON okv.deck_plan_id = o.id " +
-                "INNER JOIN value_items v " +
-                "ON okv.key_values_id = v.value_id " +
-                "WHERE okv.key_values_key = :key " +
-                "AND v.items IN ( :values ) " +
-                "AND o.version = (SELECT MAX(oc.version) FROM deck_plan oc WHERE oc.netex_id = o.netex_id)");
-
-        query.setParameter("key", key);
-        query.setParameter("values", values);
-
-        try {
-            @SuppressWarnings("unchecked")
-            List<String> results = query.getResultList();
-            if (results.isEmpty()) {
-                return null;
-            } else {
-                return results.getFirst();
-            }
-        } catch (NoResultException noResultException) {
-            return null;
-        }
+        return dataManagedObjectStructureRepository.findFirstByKeyValues("deck_plan", key, values);
     }
 
     private static final String CURRENT_BASE_WHERE =

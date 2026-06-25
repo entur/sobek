@@ -1,6 +1,6 @@
 # Contains main description of bulk of terraform?
 terraform {
-  required_version = ">= 0.13.2"
+  required_version = ">= 1.5.0"
 }
 
 provider "google" {}
@@ -8,21 +8,21 @@ provider "google" {}
 # Create database
 # OBS: Intentionally  commented out config, create database and replicas manually
 resource "google_sql_database_instance" "db_instance" {
-  name = var.db_instance_name
+  name             = var.db_instance_name
   database_version = var.db_version
-  project = var.cloudsql_project
-  region = var.db_region
+  project          = var.cloudsql_project
+  region           = var.db_region
 
   settings {
     location_preference {
       zone = var.db_zone
     }
-    tier = var.db_tier
-    user_labels = var.labels
+    tier              = var.db_tier
+    user_labels       = var.labels
     availability_type = var.db_availability
-    disk_size = var.db_disk_size
+    disk_size         = var.db_disk_size
     backup_configuration {
-      enabled = true
+      enabled                        = true
       point_in_time_recovery_enabled = true
       transaction_log_retention_days = var.transaction_log_retention_days
       // 01:00 UTC
@@ -35,14 +35,14 @@ resource "google_sql_database_instance" "db_instance" {
       // Sunday
       day = 7
       // 02:00 UTC
-      hour = 2
+      hour         = 2
       update_track = "stable"
     }
     insights_config {
-      query_insights_enabled = true
-      query_string_length = 2048
+      query_insights_enabled  = true
+      query_string_length     = 2048
       record_application_tags = false
-      record_client_address = false
+      record_client_address   = false
     }
     ip_configuration {
       ssl_mode = "TRUSTED_CLIENT_CERTIFICATE_REQUIRED"
@@ -52,8 +52,8 @@ resource "google_sql_database_instance" "db_instance" {
 }
 
 resource "google_sql_database" "db" {
-  name = var.db_instance_name
-  project = var.cloudsql_project
+  name     = var.db_instance_name
+  project  = var.cloudsql_project
   instance = google_sql_database_instance.db_instance.name
 }
 
@@ -64,8 +64,8 @@ data "google_secret_manager_secret_version" "db_password" {
 
 
 resource "google_sql_user" "db-user" {
-  name = var.ror-sobek-db-username
-  project = var.cloudsql_project
+  name     = var.ror-sobek-db-username
+  project  = var.cloudsql_project
   instance = google_sql_database_instance.db_instance.name
   password = data.google_secret_manager_secret_version.db_password.secret_data
 }

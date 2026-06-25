@@ -22,10 +22,13 @@ on:
           - dev
           - tst
           - prd
+      # gha-helm/deploy.yml expects the image on the form `app:tag` and prepends the
+      # registry itself — so this is the bare app name WITHOUT the registry prefix.
+      # (Passing a full `eu.gcr.io/.../sobek` path here doubles the registry.)
       image_name:
-        description: "Image registry path (override only if it differs from the default)"
+        description: "Image name without registry, on the form `app` (override only if it differs from the default)"
         required: false
-        default: "eu.gcr.io/entur-system-1287/sobek"
+        default: "sobek"
         type: string
 
 # Avoid two concurrent manual deploys racing the same environment.

@@ -8,23 +8,17 @@ on:
       - main
 jobs:
   maven-verify:
-    env:
-      JFROG_USER: ${{ secrets.ARTIFACTORY_AUTH_USER }}
-      JFROG_PASS: ${{ secrets.ARTIFACTORY_AUTH_TOKEN }}
     runs-on: ubuntu-24.04
     permissions:
       contents: read
     steps:
       - uses: actions/checkout@v7
-      - name: Copy maven settings
-        run: |
-          wget https://raw.githubusercontent.com/entur/ror-maven-settings/master/.m2/settings.xml -O .github/workflows/settings.xml
       - uses: actions/setup-java@v5
         with:
           java-version: 21
           distribution: temurin
           cache: 'maven'
-      - run: mvn verify -s .github/workflows/settings.xml
+      - run: mvn verify
       - uses: actions/upload-artifact@v7.0.1
         with:
           name: 'artifact'

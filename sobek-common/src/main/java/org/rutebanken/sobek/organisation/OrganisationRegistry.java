@@ -91,4 +91,11 @@ public interface OrganisationRegistry {
      */
     void validateGeneralOrganisationRef(String generalOrganisationRef);
 
+    /**
+     * Check if the organisation represented by the reference id is a valid organisation of any type (authority, operator, general)
+     * @param organisationRef The organisation id
+     * @throws CodedIllegalArgumentException if the organisation is not a valid organisation
+     */
+    void validateOrganisationRef(String organisationRef);
+
 }

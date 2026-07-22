@@ -24,8 +24,10 @@ import java.util.List;
 import java.util.Optional;
 import javax.xml.transform.Source;
 
+import com.google.common.base.Strings;
 import org.rutebanken.netex.model.*;
 import org.rutebanken.sobek.error.CodedError;
+import org.rutebanken.sobek.error.CodedIllegalArgumentException;
 import org.rutebanken.sobek.error.ErrorCodeEnumeration;
 import org.rutebanken.sobek.netex.marshal.NetexUnmarshaller;
 import org.rutebanken.sobek.netex.marshal.NetexUnmarshallerUnmarshalFromSourceException;
@@ -231,5 +233,23 @@ public abstract class NetexPublicationDeliveryOrganisationRegistry
             );
     }
 
+    @Override
+    public void validateOrganisationRef(String organisationRef) {
+        if (Strings.isNullOrEmpty(organisationRef) || organisationRef.isBlank()) {
+            throw new CodedIllegalArgumentException(
+                    "Organisation ref is null or blank",
+                    CodedError.fromErrorCode(ErrorCodeEnumeration.ORGANISATION_REF_NULL)
+            );
+        }
+        ensureFreshData();
+        Preconditions.checkArgument(
+                organisations.stream().anyMatch(org -> organisationRef.equals(org.getId())),
+                CodedError.fromErrorCode(
+                        ErrorCodeEnumeration.ORGANISATION_NOT_IN_ORGANISATION_REGISTRY
+                ),
+                "Organisation with ref %s not found in organisation registry",
+                organisationRef
+        );
+    }
 
 }

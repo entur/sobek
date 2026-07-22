@@ -126,7 +126,7 @@ class GraphQLMutationsTest {
                 .post("/services/vehicles/graphql")
                 .then()
                 .statusCode(200)
-                .body("errors", notNullValue());
+                .body("errors", is(not(empty())));
     }
 
     @Test

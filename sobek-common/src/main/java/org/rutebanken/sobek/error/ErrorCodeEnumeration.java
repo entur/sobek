@@ -77,7 +77,7 @@ public enum ErrorCodeEnumeration implements ErrorCode {
      */
     FLEXIBLE_AREA_VALIDATION_FAILED,
     /**
-     * Organisation ref is null
+     * Organisation ref is null or blank
      */
     ORGANISATION_REF_NULL,
 }

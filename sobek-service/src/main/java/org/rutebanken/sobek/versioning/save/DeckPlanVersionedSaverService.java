@@ -53,7 +53,6 @@ public class DeckPlanVersionedSaverService {
     }
 
     public DeckPlan saveNewVersion(DeckPlan newVersion) {
-        organisationRegistry.validateOrganisationRef(newVersion.getDataOwnerRef());
         var existingVersion = deckPlanRepository.findFirstByNetexIdOrderByVersionDesc(newVersion.getNetexId());
         if (existingVersion != null) {
             log.log(Level.FINE, "Found existing entity from netexId {}", existingVersion.getNetexId());

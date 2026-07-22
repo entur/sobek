@@ -92,7 +92,9 @@ public abstract class NetexPublicationDeliveryOrganisationRegistry
                 }
             }
         } else if (shouldRefreshProactively()) {
-            CompletableFuture.runAsync(this::loadOrganisations);
+            // Grace period - refresh asynchronously in background
+            logger.debug("Entering grace period, triggering background refresh");
+            refreshInBackground();
         }
     }
 
@@ -100,6 +102,22 @@ public abstract class NetexPublicationDeliveryOrganisationRegistry
         long cacheAgeSeconds = Duration.between(lastLoadTime, Instant.now()).getSeconds();
         long thresholdSeconds = (long) (CACHE_DURATION.getSeconds() * REFRESH_THRESHOLD);
         return cacheAgeSeconds >= thresholdSeconds;
+    }
+
+    private void refreshInBackground() {
+        // Use CompletableFuture to avoid blocking
+        java.util.concurrent.CompletableFuture.runAsync(() -> {
+            synchronized (this) {
+                // Check again in case another thread already refreshed
+                if (shouldRefreshProactively() || Instant.now().isAfter(lastLoadTime.plus(CACHE_DURATION))) {
+                    logger.info("Background refresh: reloading organisations");
+                    loadOrganisations();
+                }
+            }
+        }).exceptionally(ex -> {
+            logger.error("Error during background refresh of organisations", ex);
+            return null;
+        });
     }
 
     private void loadOrganisations() {

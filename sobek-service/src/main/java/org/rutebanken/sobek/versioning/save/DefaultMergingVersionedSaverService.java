@@ -20,6 +20,8 @@ import org.rutebanken.sobek.auth.UsernameFetcher;
 import org.rutebanken.sobek.diff.SobekObjectDiffer;
 import org.rutebanken.sobek.model.DataManagedObjectStructure;
 import org.rutebanken.sobek.model.EntityInVersionStructure;
+import org.rutebanken.sobek.model.authorization.OwnedEntity;
+import org.rutebanken.sobek.organisation.OrganisationRegistry;
 import org.rutebanken.sobek.repository.EntityInVersionRepository;
 import org.rutebanken.sobek.repository.listener.NetexIdAssigner;
 import org.rutebanken.sobek.versioning.ValidityUpdater;
@@ -40,31 +42,27 @@ public class DefaultMergingVersionedSaverService {
 
     public static final int MILLIS_BETWEEN_VERSIONS = 1;
 
-    @Autowired
-    private UsernameFetcher usernameFetcher;
-
-    @Autowired
-    private ValidityUpdater validityUpdater;
-
-    @Autowired
-    private SobekObjectDiffer sobekObjectDiffer;
-
-    @Autowired
-    private VersionIncrementor versionIncrementor;
-
+    private final UsernameFetcher usernameFetcher;
+    private final ValidityUpdater validityUpdater;
+    private final SobekObjectDiffer sobekObjectDiffer;
+    private final VersionIncrementor versionIncrementor;
     private final NetexIdAssigner netexIdAssigner;
-
 //    @Autowired
 //    private PrometheusMetricsService prometheusMetricsService;
 
-    @Autowired
-    private AuthorizationService authorizationService;
+    private final AuthorizationService authorizationService;
+    private final VersionValidator versionValidator;
+    private final OrganisationRegistry organisationRegistry;
 
-    @Autowired
-    private VersionValidator versionValidator;
-
-    public DefaultMergingVersionedSaverService(NetexIdAssigner netexIdAssigner) {
+    public DefaultMergingVersionedSaverService(UsernameFetcher usernameFetcher, ValidityUpdater validityUpdater, SobekObjectDiffer sobekObjectDiffer, VersionIncrementor versionIncrementor, NetexIdAssigner netexIdAssigner, AuthorizationService authorizationService, VersionValidator versionValidator, OrganisationRegistry organisationRegistry) {
+        this.usernameFetcher = usernameFetcher;
+        this.validityUpdater = validityUpdater;
+        this.sobekObjectDiffer = sobekObjectDiffer;
+        this.versionIncrementor = versionIncrementor;
         this.netexIdAssigner = netexIdAssigner;
+        this.authorizationService = authorizationService;
+        this.versionValidator = versionValidator;
+        this.organisationRegistry = organisationRegistry;
     }
 
     public <T extends EntityInVersionStructure> T saveNewVersion(T newVersion, EntityInVersionRepository<T> entityInVersionRepository) {
@@ -76,6 +74,10 @@ public class DefaultMergingVersionedSaverService {
     }
 
     public <T extends EntityInVersionStructure> T saveNewVersion(T existingVersion, T newVersion, Instant defaultValidFrom, EntityInVersionRepository<T> entityInVersionRepository) {
+
+        if(newVersion instanceof OwnedEntity) {
+            organisationRegistry.validateOrganisationRef(((OwnedEntity)newVersion).getDataOwnerRef());
+        }
 
         versionValidator.validate(existingVersion, newVersion);
 

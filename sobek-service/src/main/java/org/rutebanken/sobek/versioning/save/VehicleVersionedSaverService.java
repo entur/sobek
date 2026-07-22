@@ -17,7 +17,6 @@ package org.rutebanken.sobek.versioning.save;
 
 
 import org.rutebanken.sobek.model.vehicle.Vehicle;
-import org.rutebanken.sobek.organisation.OrganisationRegistry;
 import org.rutebanken.sobek.repository.VehicleRepository;
 import org.springframework.stereotype.Component;
 
@@ -28,21 +27,17 @@ public class VehicleVersionedSaverService {
 
     private final VehicleRepository vehicleRepository;
     private final DefaultMergingVersionedSaverService defaultVersionedSaverService;
-    private final OrganisationRegistry organisationRegistry;
 
-    public VehicleVersionedSaverService(VehicleRepository vehicleRepository, DefaultMergingVersionedSaverService defaultVersionedSaverService, OrganisationRegistry organisationRegistry) {
+    public VehicleVersionedSaverService(VehicleRepository vehicleRepository, DefaultMergingVersionedSaverService defaultVersionedSaverService) {
         this.vehicleRepository = vehicleRepository;
         this.defaultVersionedSaverService = defaultVersionedSaverService;
-        this.organisationRegistry = organisationRegistry;
     }
 
     public Vehicle saveNewVersion(Vehicle newVersion) {
-        organisationRegistry.validateOrganisationRef(newVersion.getDataOwnerRef());
         return defaultVersionedSaverService.saveNewVersion(newVersion, vehicleRepository);
     }
 
     public Vehicle saveNewVersion(Vehicle existingVersion, Vehicle newVersion, Instant defaultValidFrom) {
-        organisationRegistry.validateOrganisationRef(newVersion.getDataOwnerRef());
         return defaultVersionedSaverService.saveNewVersion(existingVersion, newVersion, defaultValidFrom, vehicleRepository);
     }
 

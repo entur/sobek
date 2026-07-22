@@ -66,7 +66,11 @@ public abstract class NetexPublicationDeliveryOrganisationRegistry
     @PostConstruct
     public void init() {
         logger.info("Initializing organisation registry on application startup");
-        loadOrganisations();
+        try {
+            loadOrganisations();
+        } catch (Exception e) {
+            logger.warn("Failed to initialize organisation registry on startup; will retry on demand", e);
+        }
     }
 
     private final Logger logger = LoggerFactory.getLogger(

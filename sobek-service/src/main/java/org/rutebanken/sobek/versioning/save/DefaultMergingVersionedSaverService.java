@@ -75,8 +75,8 @@ public class DefaultMergingVersionedSaverService {
 
     public <T extends EntityInVersionStructure> T saveNewVersion(T existingVersion, T newVersion, Instant defaultValidFrom, EntityInVersionRepository<T> entityInVersionRepository) {
 
-        if(newVersion instanceof OwnedEntity) {
-            organisationRegistry.validateOrganisationRef(((OwnedEntity)newVersion).getDataOwnerRef());
+        if (newVersion instanceof OwnedEntity ownedEntity) {
+            organisationRegistry.validateOrganisationRef(ownedEntity.getDataOwnerRef());
         }
 
         versionValidator.validate(existingVersion, newVersion);

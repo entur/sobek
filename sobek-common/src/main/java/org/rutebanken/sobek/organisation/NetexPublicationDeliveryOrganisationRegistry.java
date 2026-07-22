@@ -235,21 +235,21 @@ public abstract class NetexPublicationDeliveryOrganisationRegistry
 
     @Override
     public void validateOrganisationRef(String organisationRef) {
-        if(organisationRef == null) {
+        if (Strings.isNullOrEmpty(organisationRef) || organisationRef.isBlank()) {
             throw new CodedIllegalArgumentException(
-                    "Organisation ref is null",
+                    "Organisation ref is null or blank",
                     CodedError.fromErrorCode(ErrorCodeEnumeration.ORGANISATION_REF_NULL)
             );
         }
         ensureFreshData();
         Preconditions.checkArgument(
-                organisations.stream().anyMatch(org -> org.getId().equals(organisationRef)),
+                organisations.stream().anyMatch(org -> organisationRef.equals(org.getId())),
                 CodedError.fromErrorCode(
                         ErrorCodeEnumeration.ORGANISATION_NOT_IN_ORGANISATION_REGISTRY
                 ),
                 "Organisation with ref %s not found in organisation registry",
                 organisationRef
-            );
+        );
     }
 
 }

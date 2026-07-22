@@ -22,7 +22,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.xml.transform.Source;
 
 import com.google.common.base.Strings;
@@ -83,6 +83,7 @@ public abstract class NetexPublicationDeliveryOrganisationRegistry
     private volatile List<Organisation_VersionStructure> organisations = List.of();
 
     private volatile Instant lastLoadTime;
+    private final AtomicBoolean refreshInProgress = new AtomicBoolean(false);
 
     private void ensureFreshData() {
         if (lastLoadTime == null || Instant.now().isAfter(lastLoadTime.plus(CACHE_DURATION))) {
@@ -108,7 +109,11 @@ public abstract class NetexPublicationDeliveryOrganisationRegistry
         // Use CompletableFuture to avoid blocking
         java.util.concurrent.CompletableFuture.runAsync(() -> {
             synchronized (this) {
-                // Check again in case another thread already refreshed
+                // Only schedule one background refresh at a time
+                if (!refreshInProgress.compareAndSet(false, true)) {
+                    logger.debug("Background refresh already in progress, skipping");
+                    return;
+                }
                 if (shouldRefreshProactively() || Instant.now().isAfter(lastLoadTime.plus(CACHE_DURATION))) {
                     logger.info("Background refresh: reloading organisations");
                     loadOrganisations();

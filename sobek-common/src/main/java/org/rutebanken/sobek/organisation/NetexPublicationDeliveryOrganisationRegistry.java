@@ -22,9 +22,11 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import javax.xml.transform.Source;
 
 import com.google.common.base.Strings;
+import jakarta.annotation.PostConstruct;
 import org.rutebanken.netex.model.*;
 import org.rutebanken.sobek.error.CodedError;
 import org.rutebanken.sobek.error.CodedIllegalArgumentException;
@@ -40,6 +42,8 @@ public abstract class NetexPublicationDeliveryOrganisationRegistry
         implements OrganisationRegistry {
 
     private final Duration CACHE_DURATION;
+    private static final double REFRESH_THRESHOLD = 0.9; // Start refresh at 90% of cache duration
+
 
     public NetexPublicationDeliveryOrganisationRegistry(
             @Value("${netex.organisations.cache-duration-seconds:3600}") String cacheDurationSeconds
@@ -59,6 +63,12 @@ public abstract class NetexPublicationDeliveryOrganisationRegistry
         this.CACHE_DURATION = Duration.ofSeconds(cacheDuration);
     }
 
+    @PostConstruct
+    public void init() {
+        logger.info("Initializing organisation registry on application startup");
+        loadOrganisations();
+    }
+
     private final Logger logger = LoggerFactory.getLogger(
             NetexPublicationDeliveryOrganisationRegistry.class
     );
@@ -73,13 +83,19 @@ public abstract class NetexPublicationDeliveryOrganisationRegistry
     private void ensureFreshData() {
         if (lastLoadTime == null || Instant.now().isAfter(lastLoadTime.plus(CACHE_DURATION))) {
             synchronized (this) {
-                // Double-check locking pattern
                 if (lastLoadTime == null || Instant.now().isAfter(lastLoadTime.plus(CACHE_DURATION))) {
-                    logger.info("Cache expired or empty, reloading organisations");
                     loadOrganisations();
                 }
             }
+        } else if (shouldRefreshProactively()) {
+            CompletableFuture.runAsync(this::loadOrganisations);
         }
+    }
+
+    private boolean shouldRefreshProactively() {
+        long cacheAgeSeconds = Duration.between(lastLoadTime, Instant.now()).getSeconds();
+        long thresholdSeconds = (long) (CACHE_DURATION.getSeconds() * REFRESH_THRESHOLD);
+        return cacheAgeSeconds >= thresholdSeconds;
     }
 
     private void loadOrganisations() {

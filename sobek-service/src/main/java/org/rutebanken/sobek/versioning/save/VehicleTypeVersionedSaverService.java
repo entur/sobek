@@ -48,7 +48,6 @@ public class VehicleTypeVersionedSaverService {
     }
 
     public VehicleType saveNewVersion(VehicleType newVersion) {
-        organisationRegistry.validateOrganisationRef(newVersion.getDataOwnerRef());
         var existingVersion = vehicleTypeRepository.findFirstByNetexIdOrderByVersionDesc(newVersion.getNetexId());
         if (existingVersion != null) {
             log.log(Level.FINE, "Found existing entity from netexId {}", existingVersion.getNetexId());

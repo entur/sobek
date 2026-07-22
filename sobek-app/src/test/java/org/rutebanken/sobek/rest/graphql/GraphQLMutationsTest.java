@@ -116,12 +116,26 @@ class GraphQLMutationsTest {
     }
 
     @Test
-    void vehicle_mutationDummyVehicle_ShouldFail() {
+    void vehicle_mutationDummyVehicle_ShouldFail_FakeVehicleType() {
 
         // Create a dummy vehicle
         given()
                 .contentType(ContentType.JSON)
                 .body(gql(getFixtureContents("/fixtures/GraphQL_VehicleMutation1.QL").replace("AKT:VehicleType:124", "FAKE:VehicleType:123")))
+                .when()
+                .post("/services/vehicles/graphql")
+                .then()
+                .statusCode(200)
+                .body("errors", notNullValue());
+    }
+
+    @Test
+    void vehicle_mutationDummyVehicle_ShouldFail_FakeOrganisation() {
+
+        // Create a dummy vehicle
+        given()
+                .contentType(ContentType.JSON)
+                .body(gql(getFixtureContents("/fixtures/GraphQL_VehicleMutation1.QL").replace("NOG:Authority:cP4aPiJ7c39", "FAKE:Authority:cP4aPiJ7c39")))
                 .when()
                 .post("/services/vehicles/graphql")
                 .then()

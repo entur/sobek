@@ -16,6 +16,8 @@
 package org.rutebanken.sobek;
 
 import org.rutebanken.sobek.exporter.AsyncPublicationDeliveryExporter;
+import org.rutebanken.sobek.organisation.NetexPublicationDeliveryFileOrganisationRegistry;
+import org.rutebanken.sobek.organisation.OrganisationRegistry;
 import org.rutebanken.sobek.repository.OrganisationRepository;
 import org.springframework.beans.factory.config.CustomScopeConfigurer;
 import org.springframework.boot.SpringApplication;

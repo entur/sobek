@@ -18,8 +18,8 @@ package org.rutebanken.sobek.versioning.save;
 
 import lombok.extern.java.Log;
 import org.rutebanken.sobek.model.vehicle.PassengerCapacity;
-import org.rutebanken.sobek.model.vehicle.Vehicle;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
+import org.rutebanken.sobek.organisation.OrganisationRegistry;
 import org.rutebanken.sobek.repository.VehicleRepository;
 import org.rutebanken.sobek.repository.VehicleTypeRepository;
 import org.rutebanken.sobek.repository.listener.NetexIdAssigner;
@@ -36,16 +36,19 @@ public class VehicleTypeVersionedSaverService {
     private final VehicleRepository vehicleRepository;
     private final DefaultMergingVersionedSaverService defaultVersionedSaverService;
     private final NetexIdAssigner netexIdAssigner;
+    private final OrganisationRegistry organisationRegistry;
 
 
-    public VehicleTypeVersionedSaverService(VehicleTypeRepository vehicleTypeRepository, VehicleRepository vehicleRepository, DefaultMergingVersionedSaverService defaultVersionedSaverService, NetexIdAssigner netexIdAssigner) {
+    public VehicleTypeVersionedSaverService(VehicleTypeRepository vehicleTypeRepository, VehicleRepository vehicleRepository, DefaultMergingVersionedSaverService defaultVersionedSaverService, NetexIdAssigner netexIdAssigner, OrganisationRegistry organisationRegistry) {
         this.vehicleTypeRepository = vehicleTypeRepository;
         this.vehicleRepository = vehicleRepository;
         this.defaultVersionedSaverService = defaultVersionedSaverService;
         this.netexIdAssigner = netexIdAssigner;
+        this.organisationRegistry = organisationRegistry;
     }
 
     public VehicleType saveNewVersion(VehicleType newVersion) {
+        organisationRegistry.validateOrganisationRef(newVersion.getDataOwnerRef());
         var existingVersion = vehicleTypeRepository.findFirstByNetexIdOrderByVersionDesc(newVersion.getNetexId());
         if (existingVersion != null) {
             log.log(Level.FINE, "Found existing entity from netexId {}", existingVersion.getNetexId());
@@ -54,6 +57,7 @@ public class VehicleTypeVersionedSaverService {
     }
 
     public VehicleType saveNewVersion(VehicleType existingVersion, VehicleType newVersion, Instant defaultValidFrom) {
+        organisationRegistry.validateOrganisationRef(newVersion.getDataOwnerRef());
 
         // Assign netexId if not already assigned
         // PassengerCapacity doesn't have a independent lifecycle, meaning it's linked to the VehicleType at all times

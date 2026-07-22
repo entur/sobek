@@ -76,4 +76,8 @@ public enum ErrorCodeEnumeration implements ErrorCode {
      * Flexible area validation failed - area marked as UnrestrictedPublicTransportAreas must contain valid stop places
      */
     FLEXIBLE_AREA_VALIDATION_FAILED,
+    /**
+     * Organisation ref is null
+     */
+    ORGANISATION_REF_NULL,
 }

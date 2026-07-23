@@ -19,3 +19,4 @@ jobs:
       use_setup_java: true
       java_version: "21"
       java_distribution: "temurin"
+      ignore_language: 'javascript'

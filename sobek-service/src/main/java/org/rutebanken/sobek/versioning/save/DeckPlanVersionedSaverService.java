@@ -18,7 +18,6 @@ package org.rutebanken.sobek.versioning.save;
 
 import lombok.extern.java.Log;
 import org.rutebanken.sobek.model.vehicle.DeckPlan;
-import org.rutebanken.sobek.organisation.OrganisationRegistry;
 import org.rutebanken.sobek.repository.DeckPlanRepository;
 import org.rutebanken.sobek.repository.VehicleTypeRepository;
 import org.springframework.stereotype.Component;
@@ -33,18 +32,15 @@ public class DeckPlanVersionedSaverService {
     private final DeckPlanRepository deckPlanRepository;
     private final VehicleTypeRepository vehicleTypeRepository;
     private final DefaultMergingVersionedSaverService defaultVersionedSaverService;
-    private final OrganisationRegistry organisationRegistry;
 
-    public DeckPlanVersionedSaverService(DeckPlanRepository deckPlanRepository, VehicleTypeRepository vehicleTypeRepository, DefaultMergingVersionedSaverService defaultVersionedSaverService, OrganisationRegistry organisationRegistry) {
+    public DeckPlanVersionedSaverService(DeckPlanRepository deckPlanRepository, VehicleTypeRepository vehicleTypeRepository, DefaultMergingVersionedSaverService defaultVersionedSaverService) {
         this.deckPlanRepository = deckPlanRepository;
         this.vehicleTypeRepository = vehicleTypeRepository;
         this.defaultVersionedSaverService = defaultVersionedSaverService;
-        this.organisationRegistry = organisationRegistry;
     }
 
 
     public DeckPlan saveNewVersion(DeckPlan existingVersion, DeckPlan newVersion, Instant defaultValidFrom) {
-        organisationRegistry.validateOrganisationRef(newVersion.getDataOwnerRef());
         var saved = defaultVersionedSaverService.saveNewVersion(existingVersion, newVersion, defaultValidFrom, deckPlanRepository);
         if(existingVersion != null && !saved.getId().equals(existingVersion.getId())) {
             vehicleTypeRepository.moveToDeckPlan(existingVersion.getId(), saved.getId());

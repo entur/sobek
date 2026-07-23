@@ -114,9 +114,13 @@ public abstract class NetexPublicationDeliveryOrganisationRegistry
                     logger.debug("Background refresh already in progress, skipping");
                     return;
                 }
-                if (shouldRefreshProactively() || Instant.now().isAfter(lastLoadTime.plus(CACHE_DURATION))) {
-                    logger.info("Background refresh: reloading organisations");
-                    loadOrganisations();
+                try {
+                    if (shouldRefreshProactively() || Instant.now().isAfter(lastLoadTime.plus(CACHE_DURATION))) {
+                        logger.info("Background refresh: reloading organisations");
+                        loadOrganisations();
+                    }
+                } finally {
+                    refreshInProgress.set(false);
                 }
             }
         }).exceptionally(ex -> {

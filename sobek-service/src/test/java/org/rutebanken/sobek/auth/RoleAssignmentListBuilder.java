@@ -21,6 +21,9 @@ import org.rutebanken.helper.organisation.RoleAssignment;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.rutebanken.sobek.auth.AuthorizationConstants.ROLE_DELETE_VEHICLE_DATA;
+import static org.rutebanken.sobek.auth.AuthorizationConstants.ROLE_EDIT_VEHICLE_DATA;
+
 public class RoleAssignmentListBuilder {
 
     private List<RoleAssignment> roleAssignments = new ArrayList<>();
@@ -34,8 +37,8 @@ public class RoleAssignmentListBuilder {
     }
 
     public RoleAssignmentListBuilder withAccessAllAreas() {
-        return withRole(AuthorizationConstants.ROLE_EDIT_STOPS, AuthorizationConstants.ENTITY_CLASSIFIER_ALL_TYPES)
-                .withRole(AuthorizationConstants.ROLE_DELETE_STOPS, AuthorizationConstants.ENTITY_CLASSIFIER_ALL_TYPES);
+        return withRole(ROLE_EDIT_VEHICLE_DATA, AuthorizationConstants.ENTITY_CLASSIFIER_ALL_TYPES)
+                .withRole(ROLE_DELETE_VEHICLE_DATA, AuthorizationConstants.ENTITY_CLASSIFIER_ALL_TYPES);
     }
 
     private RoleAssignmentListBuilder withRole(String roleName, String entityType) {

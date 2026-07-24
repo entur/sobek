@@ -13,28 +13,24 @@
  * limitations under the Licence.
  */
 
-package org.rutebanken.sobek.importer;
+package org.rutebanken.sobek.netex.util;
 
-import org.junit.Test;
-import org.rutebanken.netex.model.CompositeFrame;
-import org.rutebanken.netex.model.Frames_RelStructure;
-import org.rutebanken.netex.model.ObjectFactory;
-import org.rutebanken.netex.model.PublicationDeliveryStructure;
-import org.rutebanken.netex.model.SiteFrame;
-import org.rutebanken.sobek.SobekIntegrationTest;
-import org.rutebanken.sobek.netex.mapping.PublicationDeliveryHelper;
+import org.junit.jupiter.api.Test;
+import org.rutebanken.netex.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-public class PublicationDeliveryImporterTest extends SobekIntegrationTest {
+@SpringBootTest
+public class PublicationDeliveryHelperTest {
 
     @Autowired
     private PublicationDeliveryHelper publicationDeliveryHelper;
 
     @SuppressWarnings("unchecked")
     @Test
-    public void findSiteFrameFromCompositeFrame() {
+    public void findResourceFrameFromCompositeFrame() {
         ObjectFactory objectFactory = new ObjectFactory();
 
         PublicationDeliveryStructure publicationDeliveryStructure = new PublicationDeliveryStructure()
@@ -44,25 +40,25 @@ public class PublicationDeliveryImporterTest extends SobekIntegrationTest {
                                         objectFactory.createCompositeFrame(
                                                 new CompositeFrame()
                                                         .withFrames(new Frames_RelStructure()
-                                                            .withCommonFrame(objectFactory.createCommonFrame(new SiteFrame()))))));
+                                                            .withCommonFrame(objectFactory.createCommonFrame(new ResourceFrame()))))));
 
-        SiteFrame siteFrame = publicationDeliveryHelper.findSiteFrame(publicationDeliveryStructure);
-        assertThat(siteFrame).isNotNull();
+        ResourceFrame resourceFrame = publicationDeliveryHelper.findResourceFrame(publicationDeliveryStructure);
+        assertThat(resourceFrame).isNotNull();
     }
 
     @SuppressWarnings("unchecked")
     @Test
-    public void findSiteFrameFromCommonFrame() {
+    public void findResourceFrameFromCommonFrame() {
         ObjectFactory objectFactory = new ObjectFactory();
 
         PublicationDeliveryStructure publicationDeliveryStructure = new PublicationDeliveryStructure()
                 .withDataObjects(
                         new PublicationDeliveryStructure.DataObjects()
                                 .withCompositeFrameOrCommonFrame(
-                                        objectFactory.createCommonFrame(new SiteFrame())));
+                                        objectFactory.createCommonFrame(new ResourceFrame())));
 
-        SiteFrame siteFrame = publicationDeliveryHelper.findSiteFrame(publicationDeliveryStructure);
-        assertThat(siteFrame).isNotNull();
+        ResourceFrame resourceFrame = publicationDeliveryHelper.findResourceFrame(publicationDeliveryStructure);
+        assertThat(resourceFrame).isNotNull();
     }
 
 }

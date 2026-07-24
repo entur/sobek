@@ -17,16 +17,18 @@ package org.rutebanken.sobek.diff.generic;
 
 
 import com.google.common.collect.Sets;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Geometry;
 
 import org.rutebanken.sobek.model.EmbeddableMultilingualString;
 import org.rutebanken.sobek.model.vehicle.Vehicle;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@SpringBootTest
 public class GenericObjectDifferTest {
 
     private static final GenericObjectDiffer genericObjectDiffer = new GenericObjectDiffer();

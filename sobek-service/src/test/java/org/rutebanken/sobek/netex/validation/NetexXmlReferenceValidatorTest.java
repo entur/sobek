@@ -15,10 +15,12 @@
 
 package org.rutebanken.sobek.netex.validation;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.ByteArrayInputStream;
 
+@SpringBootTest
 public class NetexXmlReferenceValidatorTest {
     @Test
     public void validateNetexReferences() throws Exception {

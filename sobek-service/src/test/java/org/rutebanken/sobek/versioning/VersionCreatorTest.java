@@ -15,74 +15,28 @@
 
 package org.rutebanken.sobek.versioning;
 
-import org.junit.Ignore;
-import org.junit.Test;
-import org.rutebanken.sobek.SobekIntegrationTest;
-import org.rutebanken.sobek.model.ValidBetween;
+import org.junit.jupiter.api.Test;
 import org.rutebanken.sobek.model.identification.IdentifiedEntity;
 import org.rutebanken.sobek.model.vehicle.Vehicle;
-import org.rutebanken.sobek.netex.id.RandomizedTestNetexIdGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.lang.reflect.Field;
 import java.time.Instant;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.rutebanken.sobek.model.CustomKeyValueTypes.ORIGINAL_ID_KEY;
 
-@Transactional
-public class VersionCreatorTest extends SobekIntegrationTest {
+@SpringBootTest
+public class VersionCreatorTest {
 
     @Autowired
     private VersionCreator versionCreator;
 
     @Autowired
-    private RandomizedTestNetexIdGenerator randomizedTestNetexIdGenerator;
-
-    @Autowired
     private org.rutebanken.sobek.repository.VehicleRepository vehicleRepository;
 
     @Test
-    @Ignore("Versioning in Sobek needs a review")
-    public void versionCommentShouldNotBeCopied() {
-        Vehicle vehicle = new Vehicle();
-        vehicle.setVersion(1L);
-        vehicle.setVersionComment("stopp flyttet 100 meter nordover");
-        vehicle = vehicleRepository.save(vehicle);
-
-        Vehicle newVersion = versionCreator.createCopy(vehicle, Vehicle.class);
-        assertThat(newVersion.getVersionComment()).isNull();
-    }
-
-
-    @Test
-    @Ignore("Versioning in Sobek needs a review")
-    public void changedByShouldNotBeCopied() {
-        Vehicle Vehicle = new Vehicle();
-        Vehicle.setVersion(1L);
-        Vehicle.setChangedBy("testuser");
-        Vehicle = vehicleRepository.save(Vehicle);
-
-        Vehicle newVersion = versionCreator.createCopy(Vehicle, Vehicle.class);
-        assertThat(newVersion.getChangedBy()).isNull();
-    }
-
-    @Test
-    @Ignore("Versioning in Sobek needs a review")
-    public void validbetweenShouldNotBeCopied() {
-        Vehicle Vehicle = new Vehicle();
-
-        Vehicle.setValidBetween(new ValidBetween(Instant.EPOCH, Instant.now()));
-
-        Vehicle = vehicleRepository.save(Vehicle);
-
-        Vehicle newVersion = versionCreator.createCopy(Vehicle, Vehicle.class);
-        assertThat(newVersion.getValidBetween()).isNull();
-    }
-
-
-    @Test
-    @Ignore("Versioning in Sobek needs a review")
     public void unsavedNewVersionShouldNotHavePrimaryKey() throws NoSuchFieldException, IllegalAccessException {
         Vehicle Vehicle = new Vehicle();
         Vehicle.setVersion(1L);
@@ -98,16 +52,15 @@ public class VersionCreatorTest extends SobekIntegrationTest {
         assertThat(actualVehicleId).isNull();
     }
 
-    @Ignore
     @Test
     public void deepCopiedObjectShouldHaveOriginalId() {
         Vehicle Vehicle = new Vehicle();
         Vehicle.setVersion(1L);
-        Vehicle.getOriginalIds().add("original-id");
+        Vehicle.addKeyValue(ORIGINAL_ID_KEY, "original-id");
         Vehicle = vehicleRepository.save(Vehicle);
 
         Vehicle newVersion = versionCreator.createCopy(Vehicle, Vehicle.class);
-        assertThat(newVersion.getOriginalIds()).hasSize(1);
+        assertThat(newVersion.getKeyValues().stream().anyMatch(kv -> kv.getKey().equals(ORIGINAL_ID_KEY) && kv.getValue().equals("original-id"))).isTrue();
     }
 
     private Object getIdValue(IdentifiedEntity entity) throws NoSuchFieldException, IllegalAccessException {

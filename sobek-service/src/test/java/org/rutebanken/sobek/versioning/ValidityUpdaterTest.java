@@ -15,17 +15,19 @@
 
 package org.rutebanken.sobek.versioning;
 
-import org.junit.Test;
-import org.rutebanken.sobek.SobekIntegrationTest;
-import org.rutebanken.sobek.model.vehicle.Vehicle;
+import org.junit.jupiter.api.Test;
 import org.rutebanken.sobek.model.ValidBetween;
+import org.rutebanken.sobek.model.vehicle.Vehicle;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.Instant;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class ValidityUpdaterTest extends SobekIntegrationTest {
+@SpringBootTest
+public class ValidityUpdaterTest {
 
     @Autowired
     private ValidityUpdater validityUpdater;
@@ -85,44 +87,50 @@ public class ValidityUpdaterTest extends SobekIntegrationTest {
     }
 
 
-    @Test(expected = IllegalArgumentException.class)
-    public void doNotAcceptFromDateAfterToDate() {
-        Vehicle Vehicle = new Vehicle();
-        Vehicle.setVersion(1L);
-        Instant now = Instant.now();
-        Vehicle.setValidBetween(new ValidBetween(now, now.minusSeconds(10)));
+    @Test
+    void doNotAcceptFromDateAfterToDate() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            Vehicle Vehicle = new Vehicle();
+            Vehicle.setVersion(1L);
+            Instant now = Instant.now();
+            Vehicle.setValidBetween(new ValidBetween(now, now.minusSeconds(10)));
 
-        validityUpdater.updateValidBetween(Vehicle, now);
+            validityUpdater.updateValidBetween(Vehicle, now);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void doNotAcceptFromDateBeforePreviousVersionEndDate() {
-        Vehicle previousVersion = new Vehicle();
-        previousVersion.setVersion(1L);
-        Instant now = Instant.now();
-        previousVersion.setValidBetween(new ValidBetween(now.minusSeconds(1000), now));
+        assertThrows(IllegalArgumentException.class, () -> {
+            Vehicle previousVersion = new Vehicle();
+            previousVersion.setVersion(1L);
+            Instant now = Instant.now();
+            previousVersion.setValidBetween(new ValidBetween(now.minusSeconds(1000), now));
 
-        Vehicle newVersion = new Vehicle();
-        newVersion.setVersion(2L);
-        newVersion.setValidBetween(new ValidBetween(previousVersion.getValidBetween().getToDate().minusSeconds(10)));
+            Vehicle newVersion = new Vehicle();
+            newVersion.setVersion(2L);
+            newVersion.setValidBetween(new ValidBetween(previousVersion.getValidBetween().getToDate().minusSeconds(10)));
 
-        validityUpdater.updateValidBetween(previousVersion, newVersion, now);
+            validityUpdater.updateValidBetween(previousVersion, newVersion, now);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void doNotAcceptFromDateBeforePreviousVersionFromDate() {
-        Vehicle previousVersion = new Vehicle();
-        previousVersion.setVersion(1L);
-        Instant now = Instant.now();
+        assertThrows(IllegalArgumentException.class, () -> {
+            Vehicle previousVersion = new Vehicle();
+            previousVersion.setVersion(1L);
+            Instant now = Instant.now();
 
-        // No to date
-        previousVersion.setValidBetween(new ValidBetween(now.minusSeconds(1000), null));
+            // No to date
+            previousVersion.setValidBetween(new ValidBetween(now.minusSeconds(1000), null));
 
-        Vehicle newVersion = new Vehicle();
-        newVersion.setVersion(2L);
-        newVersion.setValidBetween(new ValidBetween(previousVersion.getValidBetween().getFromDate().minusSeconds(10)));
+            Vehicle newVersion = new Vehicle();
+            newVersion.setVersion(2L);
+            newVersion.setValidBetween(new ValidBetween(previousVersion.getValidBetween().getFromDate().minusSeconds(10)));
 
-        validityUpdater.updateValidBetween(previousVersion, newVersion, now);
+            validityUpdater.updateValidBetween(previousVersion, newVersion, now);
+        });
     }
 
     @Test

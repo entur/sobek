@@ -13,22 +13,24 @@
  * limitations under the Licence.
  */
 
-package org.rutebanken.sobek.versioning.util;
+package org.rutebanken.sobek.model;
 
-import org.junit.Test;
-import org.rutebanken.sobek.model.AccessibilityAssessment;
-
-import java.util.ArrayList;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class MobilityImpairedAccessCalculatorTest {
 
+@SpringBootTest
+public class VersionOfObjectRefStructureTest {
     @Test
-    public void testDefaultUnknown() {
-        AccessibilityAssessment accessibilityAssessment = new AccessibilityAssessment();
-        accessibilityAssessment.setLimitations(new ArrayList<>());
-        MobilityImpairedAccessCalculator.calculateAndSetMobilityImpairedAccess(accessibilityAssessment);
-        assertThat(accessibilityAssessment.getMobilityImpairedAccess()).isNotNull();
+    public void equals() throws Exception {
+
+        VersionOfObjectRefStructure ref1 = new VersionOfObjectRefStructure("ref", "version");
+        VersionOfObjectRefStructure ref2 = new VersionOfObjectRefStructure("ref", "version2");
+
+        // Should two references with different versions be equal? NO
+        assertThat(ref1).isNotEqualTo(ref2);
     }
+
 }

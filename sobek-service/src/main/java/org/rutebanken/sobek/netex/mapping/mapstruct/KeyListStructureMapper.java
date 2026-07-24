@@ -5,54 +5,61 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Named;
 import org.rutebanken.netex.model.KeyListStructure;
 import org.rutebanken.netex.model.KeyValueStructure;
-import org.rutebanken.sobek.model.Value;
+import org.rutebanken.sobek.model.KeyValue;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Mapper(config = SobekMapperConfig.class)
 public interface KeyListStructureMapper {
     @Named("mapKeyListToSobek")
-    default Map<String, Value> mapToSobek(
+    default List<KeyValue> mapToSobek(
             KeyListStructure source,
             @Context MappingContext context
     ) {
-        if(source != null && source.getKeyValue() != null && !source.getKeyValue().isEmpty()) {
-            HashMap<String, Value> stringValueMap = new HashMap<>();
-            for(KeyValueStructure keyValueStructure : source.getKeyValue()) {
-                stringValueMap.put(keyValueStructure.getKey(), new Value(keyValueStructure.getValue()));
-            }
-            return stringValueMap;
+        if (source == null || source.getKeyValue() == null) {
+            return new ArrayList<>();
         }
-        return null;
-    };
+
+        return source.getKeyValue().stream()
+                .map(this::mapKeyValueStructureToKeyValue)
+                .collect(Collectors.toList());
+    }
+
+    default KeyValue mapKeyValueStructureToKeyValue(KeyValueStructure netexKeyValue) {
+        if (netexKeyValue == null) {
+            return null;
+        }
+
+        KeyValue keyValue = new KeyValue();
+        keyValue.setKey(netexKeyValue.getKey());
+        keyValue.setValue(netexKeyValue.getValue());
+        return keyValue;
+    }
 
     @Named("mapKeyListToNetex")
     default KeyListStructure mapToNetex(
-            Map<String, Value> source,
+            List<KeyValue> source,
             @Context MappingContext context
     ) {
-        if(source != null) {
-            KeyListStructure keyListStructure = new KeyListStructure();
-            for (String key : source.keySet()) {
-                Value values = source.get(key);
-                if(values != null && values.getItems() != null) {
-                    String value = String.join(",", values.getItems());
-                    keyListStructure.getKeyValue().add(new KeyValueStructure().withKey(key).withValue(value));
-                } else {
-                    // No values
-                    keyListStructure.getKeyValue().add(new KeyValueStructure().withKey(key));
-                }
-            }
-            if(keyListStructure.getKeyValue().isEmpty()) {
-                return null;
-            }
-            return keyListStructure;
+        if (source == null || source.isEmpty()) {
+            return null;
         }
-        return null;
-    };
+
+        KeyListStructure keyList = new KeyListStructure();
+
+        for (KeyValue kv : source) {
+            KeyValueStructure netexKeyValue = new KeyValueStructure();
+            netexKeyValue.setKey(kv.getKey());
+            netexKeyValue.setValue(kv.getValue());
+            keyList.getKeyValue().add(netexKeyValue);
+        }
+
+        return keyList;
+    }
 
 }
 

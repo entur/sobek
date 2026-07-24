@@ -59,6 +59,6 @@ public class GenericEntityInVersionRepository {
         if (netexId != null) {
             return netexId;
         }
-        throw new IllegalArgumentException("Cannot find " + clazz.getSimpleName() + " from key: '" + key + "', value: '" + values);
+        return null;
     }
 }

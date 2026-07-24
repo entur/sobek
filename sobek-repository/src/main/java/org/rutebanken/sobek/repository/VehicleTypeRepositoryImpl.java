@@ -20,8 +20,14 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
 
     private static final Logger logger = LoggerFactory.getLogger(VehicleTypeRepositoryCustom.class);
 
+    private final DataManagedObjectStructureRepositoryImpl dataManagedObjectStructureRepository;
+
     @PersistenceContext
     private EntityManager entityManager;
+
+    public VehicleTypeRepositoryImpl(DataManagedObjectStructureRepositoryImpl dataManagedObjectStructureRepository) {
+        this.dataManagedObjectStructureRepository = dataManagedObjectStructureRepository;
+    }
 
     /**
      * Find stop place's netex ID by key value
@@ -32,31 +38,7 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
      */
     @Override
     public String findFirstByKeyValues(String key, Set<String> values) {
-
-        Query query = entityManager.createNativeQuery("SELECT vt.netex_id " +
-                "FROM vehicle_type vt " +
-                "INNER JOIN vehicle_type_key_values vtkv " +
-                "ON vtkv.vehicle_type_id = vt.id " +
-                "INNER JOIN value_items v " +
-                "ON vtkv.key_values_id = v.value_id " +
-                "WHERE vtkv.key_values_key = :key " +
-                "AND v.items IN ( :values ) " +
-                "AND vt.version = (SELECT MAX(pv.version) FROM vehicle_type pv WHERE pv.netex_id = vt.netex_id)");
-
-        query.setParameter("key", key);
-        query.setParameter("values", values);
-
-        try {
-            @SuppressWarnings("unchecked")
-            List<String> results = query.getResultList();
-            if (results.isEmpty()) {
-                return null;
-            } else {
-                return results.getFirst();
-            }
-        } catch (NoResultException noResultException) {
-            return null;
-        }
+        return dataManagedObjectStructureRepository.findFirstByKeyValues("vehicle_type", key, values);
     }
 
     /** VehicleType-only validity — no Vehicle join needed. */

@@ -274,9 +274,6 @@ sobek.oauth2.resourceserver.auth0.entur.internal.jwt.audience=hathor
 
 spring.cloud.gcp.pubsub.enabled=false
 
-aspect.enabled=true
-
-
 server.port=1888
 
 blobstore.gcs.blob.path=exports

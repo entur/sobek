@@ -3,37 +3,37 @@ variable "cloudsql_project" {
 }
 variable "db_region" {
   description = "GCP  region"
-  default = "europe-west1"
+  default     = "europe-west1"
 }
 variable "db_zone" {
   description = "GCP zone"
-  default = "europe-west1-b"
+  default     = "europe-west1-b"
 }
 
 variable "db_tier" {
   description = "Database instance tier"
-  default = "db-perf-optimized-N-4"
+  default     = "db-perf-optimized-N-4"
 }
 variable "db_availability" {
   description = "Database availability"
-  default = "ZONAL"
+  default     = "ZONAL"
 }
 
 variable "labels" {
   description = "Labels used in all resources"
   type        = map(string)
-     default = {
-       manager = "terraform"
-       team    = "ror"
-       slack   = "talk-ror"
-       app     = "sobek"
-     }
+  default = {
+    manager = "terraform"
+    team    = "ror"
+    slack   = "talk-ror"
+    app     = "sobek"
+  }
 }
 
 
 variable "db_instance_name" {
   description = "Database instance name"
-  default = "sobek-db-1"
+  default     = "sobek-db-1"
 }
 
 variable "ror-sobek-db-username" {
@@ -41,11 +41,11 @@ variable "ror-sobek-db-username" {
 }
 variable "db_disk_size" {
   description = "Database disk size"
-  default = "20"
+  default     = "20"
 }
 variable "db_version" {
   description = "postgres version"
-  default = "POSTGRES_17"
+  default     = "POSTGRES_17"
 }
 
 variable "transaction_log_retention_days" {

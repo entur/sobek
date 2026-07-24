@@ -8,12 +8,12 @@ variable "location" {
 variable "labels" {
   description = "Labels used in all resources"
   type        = map(string)
-     default = {
-       manager = "terraform"
-       team    = "ror"
-       slack   = "talk-ror"
-       app     = "sobek"
-     }
+  default = {
+    manager = "terraform"
+    team    = "ror"
+    slack   = "talk-ror"
+    app     = "sobek"
+  }
 }
 
 variable "bucket_instance_suffix" {

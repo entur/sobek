@@ -259,11 +259,6 @@ class SeatEquipmentMapperTest {
         assertThat(sobekSeatEquipment.getKeyValues())
                 .isNotNull()
                 .isNotEmpty()
-                .containsKey("key");
-        assertThat(sobekSeatEquipment.getKeyValues().getOrDefault("key", null)
-                .getItems())
-                .anyMatch(item -> item.equals("value"));
+                .anyMatch(kv -> kv.getKey().equals("key") && kv.getValue().equals("value"));
     }
-
-
 }

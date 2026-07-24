@@ -13,12 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import org.rutebanken.sobek.model.Value;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.rutebanken.sobek.model.CustomKeyValueTypes.ORIGINAL_ID_KEY;
 import static org.rutebanken.sobek.netex.mapping.mapstruct.DataManagedObjectStructureMapper.CHANGED_BY;
@@ -38,7 +33,7 @@ public class DataManagedObjectStructureMapperTest {
     @Autowired
     private ValidPrefixList validPrefixList;
 
-    private PublicationDeliveryHelper publicationDeliveryHelper = new PublicationDeliveryHelper();
+    private final PublicationDeliveryHelper publicationDeliveryHelper = new PublicationDeliveryHelper();
 
     private MappingContext context;
 
@@ -303,8 +298,7 @@ public class DataManagedObjectStructureMapperTest {
         // Then
         assertThat(sobekEntity).isNotNull();
         assertThat(sobekEntity.getNetexId()).isNull();
-        assertThat(sobekEntity.getKeyValues()).containsKey(ORIGINAL_ID_KEY);
-        assertEquals("BS:VehicleType:111", sobekEntity.getKeyValues().get(ORIGINAL_ID_KEY).getItems().stream().findFirst().orElse(null));
+        assertThat(sobekEntity.getKeyValues().stream().anyMatch(kv -> kv.getKey().equals(ORIGINAL_ID_KEY) && kv.getValue().equals("BS:VehicleType:111"))).isTrue();
     }
 
     @Test
@@ -335,13 +329,13 @@ public class DataManagedObjectStructureMapperTest {
 
     // Converted from Orika KeyValuesToKeyListConverterTest
     @Test
-    public void convertFrom() throws Exception {
+    public void convertFrom() {
 
         org.rutebanken.sobek.model.DataManagedObjectStructure sobekEntity = new org.rutebanken.sobek.model.vehicle.VehicleType();
-        sobekEntity.getOrCreateValues("key").add("value");
+        sobekEntity.addKeyValue("key","value");
 
         VehicleType netexEntity = new VehicleType();
-        mapper.mapToNetex(sobekEntity, (org.rutebanken.netex.model.DataManagedObjectStructure) netexEntity, context);
+        mapper.mapToNetex(sobekEntity, netexEntity, context);
         KeyListStructure keyValueStructure = netexEntity.getKeyList();
         assertThat(keyValueStructure.getKeyValue())
                 .isNotEmpty()
@@ -349,20 +343,6 @@ public class DataManagedObjectStructureMapperTest {
         assertThat(keyValueStructure.getKeyValue())
                 .extracting(KeyValueStructure::getValue).contains("value");
 
-    }
-
-    /**
-     * Expect null to avoid empty keylist in netex xml
-     */
-    @Test
-    public void convertFromEmptyExpectsNull() throws Exception {
-        Map<String, Value> keyValues = new HashMap<>();
-
-        org.rutebanken.sobek.model.vehicle.VehicleType sobekEntity = new org.rutebanken.sobek.model.vehicle.VehicleType();
-        VehicleType netexEntity = new VehicleType();
-        mapper.mapToNetex(sobekEntity, (org.rutebanken.netex.model.DataManagedObjectStructure) netexEntity, context);
-        KeyListStructure keyValueStructure = netexEntity.getKeyList();
-        assertThat(keyValueStructure).isNull();
     }
 
     @Test

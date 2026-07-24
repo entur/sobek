@@ -108,7 +108,6 @@ org.rutebanken.sobek/
 #### 3. ID Generation & Mapping
 - Configurable via `netex.validPrefix` property
 - Tracks old-to-new ID mappings in database
-- Uses Hazelcast for distributed coordination (GaplessIdGeneratorService)
 - Handles both auto-generated and externally-assigned IDs
 
 #### 4. Versioning & History
@@ -271,7 +270,6 @@ curl -XPOST -H "Content-Type: application/xml" \
 ### Monitoring
 - Actuator endpoints: `/actuator/info`, `/actuator/env`, `/actuator/metrics`
 - Prometheus metrics: enabled
-- Performance monitoring via Hazelcast (configurable delay)
 
 ## Configuration
 
@@ -300,10 +298,6 @@ netex.profile.version=2.0:NO-NeTEx:2.0
 authorization.enabled=true
 sobek.oauth2.resourceserver.auth0.entur.internal.jwt.issuer-uri=http://localhost:8082/realms/entur
 sobek.oauth2.resourceserver.auth0.entur.internal.jwt.audience=hathor
-
-# Hazelcast
-hazelcast.performance.monitoring.enabled=true
-hazelcast.performance.monitoring.delay.seconds=2
 
 # Blob Storage
 blobstore.local.folder=/tmp/local-gcs-storage/sobek/export
@@ -360,7 +354,6 @@ TRUNCATE deck_plan CASCADE;
 
 ### Kubernetes
 - Helm charts available in `/helm/sobek/`
-- Uses Hazelcast for service discovery
 - Configurable via `rutebanken.kubernetes.enabled`
 - Multi-instance ready
 
@@ -400,7 +393,6 @@ Workflows located in `.github/workflows/`:
 - **Metrics**: Micrometer with Prometheus registry
 - **Logging**: Logback with Logstash encoder (JSON structured logs)
 - **Graphite**: Integration for metrics reporting
-- **Hazelcast Monitoring**: Performance tracking enabled
 
 ## Related Projects
 
@@ -425,11 +417,6 @@ Workflows located in `.github/workflows/`:
 
 4. **Parallel import authentication errors**
    - Set: `-Dspring.security.strategy=MODE_INHERITABLETHREADLOCAL`
-
-5. **Hazelcast cluster issues**
-   - Check network configuration
-   - Review `hazelcast.xml` settings
-   - Verify Kubernetes service discovery
 
 ## Development Tips
 

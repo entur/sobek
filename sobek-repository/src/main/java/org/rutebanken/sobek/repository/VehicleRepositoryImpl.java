@@ -20,8 +20,14 @@ public class VehicleRepositoryImpl implements VehicleRepositoryCustom {
 
     private static final Logger logger = LoggerFactory.getLogger(VehicleRepositoryImpl.class);
 
+    private final DataManagedObjectStructureRepositoryImpl dataManagedObjectStructureRepository;
+
     @PersistenceContext
     private EntityManager entityManager;
+
+    public VehicleRepositoryImpl(DataManagedObjectStructureRepositoryImpl dataManagedObjectStructureRepository) {
+        this.dataManagedObjectStructureRepository = dataManagedObjectStructureRepository;
+    }
 
     /**
      * Find vehicle's netex ID by key value
@@ -32,33 +38,8 @@ public class VehicleRepositoryImpl implements VehicleRepositoryCustom {
      */
     @Override
     public String findFirstByKeyValues(String key, Set<String> values) {
-
-        Query query = entityManager.createNativeQuery("SELECT o.netex_id " +
-                "FROM vehicle o " +
-                "INNER JOIN vehicle_key_values okv " +
-                "ON okv.vehicle_id = o.id " +
-                "INNER JOIN value_items v " +
-                "ON okv.key_values_id = v.value_id " +
-                "WHERE okv.key_values_key = :key " +
-                "AND v.items IN ( :values ) " +
-                "AND o.version = (SELECT MAX(oc.version) FROM vehicle oc WHERE oc.netex_id = o.netex_id)");
-
-        query.setParameter("key", key);
-        query.setParameter("values", values);
-
-        try {
-            @SuppressWarnings("unchecked")
-            List<String> results = query.getResultList();
-            if (results.isEmpty()) {
-                return null;
-            } else {
-                return results.getFirst();
-            }
-        } catch (NoResultException noResultException) {
-            return null;
-        }
+        return dataManagedObjectStructureRepository.findFirstByKeyValues("vehicle", key, values);
     }
-
 
     @Override
     public void moveToTransportType(Long fromTransportTypeId, Long toTransportTypeId) {
@@ -153,10 +134,13 @@ public class VehicleRepositoryImpl implements VehicleRepositoryCustom {
         Query query = entityManager.createNativeQuery("SELECT EXISTS (SELECT 1 FROM vehicle v join vehicle_type vt on v.transport_type_id=vt.id WHERE vt.netex_id = :vehicleTypeNetexId AND vt.version = :vehicleTypeVersion AND v.from_date <= now() AND (v.to_date IS NULL OR v.to_date >= now()))");
         query.setParameter("vehicleTypeNetexId", vehicleTypeNetexId);
         query.setParameter("vehicleTypeVersion", vehicleTypeVersion);
-Object result = query.getSingleResult();
-boolean exists = (result instanceof Boolean b) ? b : ((Number) result).intValue() == 1;
-logger.debug("Valid Vehicle with vehicle type {} exists: {}", vehicleTypeNetexId, exists);
-return exists;
+        Object result = query.getSingleResult();
+
+        boolean exists = (result instanceof Boolean b) ? b : ((Number) result).intValue() == 1;
+
+        logger.debug("Valid Vehicle with vehicle type {} exists: {}", vehicleTypeNetexId, exists);
+
+        return exists;
     }
 
 

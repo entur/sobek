@@ -22,7 +22,6 @@ public class QueryController {
     private final DeckPlanFetcher deckPlanFetcher;
     private final OrganisationFetcher organisationFetcher;
     private final VehicleTypeDeckPlanFetcher vehicleTypeDeckPlanFetcher;
-    private final KeyValuesDataFetcher keyValuesDataFetcher;
     private final AuthorizationService authorizationService;
 
     public QueryController(
@@ -31,14 +30,12 @@ public class QueryController {
             DeckPlanFetcher deckPlanFetcher,
             OrganisationFetcher organisationFetcher,
             VehicleTypeDeckPlanFetcher vehicleTypeDeckPlanFetcher,
-            KeyValuesDataFetcher keyValuesDataFetcher,
             AuthorizationService authorizationService) {
         this.vehicleFetcher = vehicleFetcher;
         this.vehicleTypeFetcher = vehicleTypeFetcher;
         this.deckPlanFetcher = deckPlanFetcher;
         this.organisationFetcher = organisationFetcher;
         this.vehicleTypeDeckPlanFetcher = vehicleTypeDeckPlanFetcher;
-        this.keyValuesDataFetcher = keyValuesDataFetcher;
         this.authorizationService = authorizationService;
     }
 
@@ -69,13 +66,6 @@ public class QueryController {
     public Object organisations(@Argument Map<String, Object> filter, @Argument Integer page, @Argument Integer size)  {
         graphql.schema.DataFetchingEnvironment env = createEnvironment(filter, page, size);
         return organisationFetcher.get(env);
-    }
-
-    // Field mappings for VehicleType
-    @SchemaMapping(typeName = "VehicleType", field = "keyValues")
-    public Object vehicleTypeKeyValues(Object source)  {
-        graphql.schema.DataFetchingEnvironment env = createFieldEnvironment(source);
-        return keyValuesDataFetcher.get(env);
     }
 
     @SchemaMapping(typeName = "VehicleType", field = "deckPlan")

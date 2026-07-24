@@ -1,19 +1,22 @@
 # Contains main description of bulk of terraform?
 terraform {
-  required_version = ">= 0.13.2"
+  required_version = ">= 1.5.0"
+  required_providers {
+    google = {
+      source  = "hashicorp/google"
+      version = "~> 6.49.0"
+    }
+  }
 }
 
-provider "google" {
-  version = "~> 4.84.0"
-}
 # Create bucket
 resource "google_storage_bucket" "storage_bucket" {
-  name               = "${var.bucket_instance_prefix}-${var.bucket_instance_suffix}"
-  force_destroy      = var.force_destroy
-  location           = var.location
-  project            = var.storage_project
-  storage_class      = var.storage_class
-  labels             = var.labels
+  name                        = "${var.bucket_instance_prefix}-${var.bucket_instance_suffix}"
+  force_destroy               = var.force_destroy
+  location                    = var.location
+  project                     = var.storage_project
+  storage_class               = var.storage_class
+  labels                      = var.labels
   uniform_bucket_level_access = true
   versioning {
     enabled = var.versioning
@@ -25,7 +28,7 @@ resource "google_storage_bucket" "storage_bucket" {
 }
 # Create folder in a bucket
 resource "google_storage_bucket_object" "content_folder" {
-  name          = "export/"
-  content       = "Not really a directory, but it's empty."
-  bucket        = google_storage_bucket.storage_bucket.name
+  name    = "export/"
+  content = "Not really a directory, but it's empty."
+  bucket  = google_storage_bucket.storage_bucket.name
 }

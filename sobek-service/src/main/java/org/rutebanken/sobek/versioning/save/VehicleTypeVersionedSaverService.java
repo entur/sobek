@@ -18,7 +18,6 @@ package org.rutebanken.sobek.versioning.save;
 
 import lombok.extern.java.Log;
 import org.rutebanken.sobek.model.vehicle.PassengerCapacity;
-import org.rutebanken.sobek.model.vehicle.Vehicle;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
 import org.rutebanken.sobek.repository.VehicleRepository;
 import org.rutebanken.sobek.repository.VehicleTypeRepository;
@@ -54,7 +53,6 @@ public class VehicleTypeVersionedSaverService {
     }
 
     public VehicleType saveNewVersion(VehicleType existingVersion, VehicleType newVersion, Instant defaultValidFrom) {
-
         // Assign netexId if not already assigned
         // PassengerCapacity doesn't have a independent lifecycle, meaning it's linked to the VehicleType at all times
         // Therefore, if the client doesn't control the netexId, we assign it here.

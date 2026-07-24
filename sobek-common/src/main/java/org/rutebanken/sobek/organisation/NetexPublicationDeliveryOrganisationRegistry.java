@@ -22,10 +22,14 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.xml.transform.Source;
 
+import com.google.common.base.Strings;
+import jakarta.annotation.PostConstruct;
 import org.rutebanken.netex.model.*;
 import org.rutebanken.sobek.error.CodedError;
+import org.rutebanken.sobek.error.CodedIllegalArgumentException;
 import org.rutebanken.sobek.error.ErrorCodeEnumeration;
 import org.rutebanken.sobek.netex.marshal.NetexUnmarshaller;
 import org.rutebanken.sobek.netex.marshal.NetexUnmarshallerUnmarshalFromSourceException;
@@ -38,6 +42,8 @@ public abstract class NetexPublicationDeliveryOrganisationRegistry
         implements OrganisationRegistry {
 
     private final Duration CACHE_DURATION;
+    private static final double REFRESH_THRESHOLD = 0.9; // Start refresh at 90% of cache duration
+
 
     public NetexPublicationDeliveryOrganisationRegistry(
             @Value("${netex.organisations.cache-duration-seconds:3600}") String cacheDurationSeconds
@@ -57,6 +63,16 @@ public abstract class NetexPublicationDeliveryOrganisationRegistry
         this.CACHE_DURATION = Duration.ofSeconds(cacheDuration);
     }
 
+    @PostConstruct
+    public void init() {
+        logger.info("Initializing organisation registry on application startup");
+        try {
+            loadOrganisations();
+        } catch (Exception e) {
+            logger.warn("Failed to initialize organisation registry on startup; will retry on demand", e);
+        }
+    }
+
     private final Logger logger = LoggerFactory.getLogger(
             NetexPublicationDeliveryOrganisationRegistry.class
     );
@@ -67,17 +83,50 @@ public abstract class NetexPublicationDeliveryOrganisationRegistry
     private volatile List<Organisation_VersionStructure> organisations = List.of();
 
     private volatile Instant lastLoadTime;
+    private final AtomicBoolean refreshInProgress = new AtomicBoolean(false);
 
     private void ensureFreshData() {
         if (lastLoadTime == null || Instant.now().isAfter(lastLoadTime.plus(CACHE_DURATION))) {
             synchronized (this) {
-                // Double-check locking pattern
                 if (lastLoadTime == null || Instant.now().isAfter(lastLoadTime.plus(CACHE_DURATION))) {
-                    logger.info("Cache expired or empty, reloading organisations");
                     loadOrganisations();
                 }
             }
+        } else if (shouldRefreshProactively()) {
+            // Grace period - refresh asynchronously in background
+            logger.debug("Entering grace period, triggering background refresh");
+            refreshInBackground();
         }
+    }
+
+    private boolean shouldRefreshProactively() {
+        long cacheAgeSeconds = Duration.between(lastLoadTime, Instant.now()).getSeconds();
+        long thresholdSeconds = (long) (CACHE_DURATION.getSeconds() * REFRESH_THRESHOLD);
+        return cacheAgeSeconds >= thresholdSeconds;
+    }
+
+    private void refreshInBackground() {
+        // Use CompletableFuture to avoid blocking
+        java.util.concurrent.CompletableFuture.runAsync(() -> {
+            synchronized (this) {
+                // Only schedule one background refresh at a time
+                if (!refreshInProgress.compareAndSet(false, true)) {
+                    logger.debug("Background refresh already in progress, skipping");
+                    return;
+                }
+                try {
+                    if (shouldRefreshProactively() || Instant.now().isAfter(lastLoadTime.plus(CACHE_DURATION))) {
+                        logger.info("Background refresh: reloading organisations");
+                        loadOrganisations();
+                    }
+                } finally {
+                    refreshInProgress.set(false);
+                }
+            }
+        }).exceptionally(ex -> {
+            logger.error("Error during background refresh of organisations", ex);
+            return null;
+        });
     }
 
     private void loadOrganisations() {
@@ -231,5 +280,23 @@ public abstract class NetexPublicationDeliveryOrganisationRegistry
             );
     }
 
+    @Override
+    public void validateOrganisationRef(String organisationRef) {
+        if (Strings.isNullOrEmpty(organisationRef) || organisationRef.isBlank()) {
+            throw new CodedIllegalArgumentException(
+                    "Organisation ref is null or blank",
+                    CodedError.fromErrorCode(ErrorCodeEnumeration.ORGANISATION_REF_NULL)
+            );
+        }
+        ensureFreshData();
+        Preconditions.checkArgument(
+                organisations.stream().anyMatch(org -> organisationRef.equals(org.getId())),
+                CodedError.fromErrorCode(
+                        ErrorCodeEnumeration.ORGANISATION_NOT_IN_ORGANISATION_REGISTRY
+                ),
+                "Organisation with ref %s not found in organisation registry",
+                organisationRef
+        );
+    }
 
 }

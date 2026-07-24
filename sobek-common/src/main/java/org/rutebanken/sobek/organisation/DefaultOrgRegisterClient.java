@@ -4,14 +4,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.unit.DataSize;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
 public class DefaultOrgRegisterClient {
 
-    @Value("${netex.organisations.max-in-memory-size-kb:500}")
-    String maxInMemorySizeKB;
+    @Value("${netex.organisations.max-in-memory-size:500KB}")
+    DataSize maxInMemorySize;
 
     @Bean("orgRegisterClient")
     @ConditionalOnMissingBean(name = "orgRegisterClient")
@@ -22,18 +23,8 @@ public class DefaultOrgRegisterClient {
                         .builder()
                         .codecs(codecs -> codecs
                                 .defaultCodecs()
-                                .maxInMemorySize(resolveMaxInMemorySizeBytes()))
+                                .maxInMemorySize((int)maxInMemorySize.toBytes()))
                         .build())
                 .build();
-    }
-
-    private int resolveMaxInMemorySizeBytes() {
-        long maxInMemorySizeKb;
-        try {
-            maxInMemorySizeKb = Long.parseLong(maxInMemorySizeKB);
-        } catch (NumberFormatException e) {
-            maxInMemorySizeKb = 500L;
-        }
-        return (int) (maxInMemorySizeKb * 1024);
     }
 }

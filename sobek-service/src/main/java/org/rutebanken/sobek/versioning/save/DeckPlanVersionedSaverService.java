@@ -18,7 +18,6 @@ package org.rutebanken.sobek.versioning.save;
 
 import lombok.extern.java.Log;
 import org.rutebanken.sobek.model.vehicle.DeckPlan;
-import org.rutebanken.sobek.model.vehicle.VehicleType;
 import org.rutebanken.sobek.repository.DeckPlanRepository;
 import org.rutebanken.sobek.repository.VehicleTypeRepository;
 import org.springframework.stereotype.Component;

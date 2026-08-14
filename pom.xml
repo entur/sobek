@@ -46,7 +46,7 @@
     <properties>
         <java.version>21</java.version>
         <spring-cloud-gcp.version>8.1.0</spring-cloud-gcp.version>
-        <geotools.version>35.0</geotools.version>
+        <geotools.version>35.1</geotools.version>
         <graphql-java.version>25.0</graphql-java.version>
         <graphql-java-extended-scalars.version>24.0</graphql-java-extended-scalars.version>
         <netex-java-model.version>3.0.0-SNAPSHOT</netex-java-model.version>
@@ -58,7 +58,7 @@
         <postgis.version>2.5.1</postgis.version>
         <mapstruct.version>1.6.3</mapstruct.version>
         <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
-        <spring-cloud-aws-secrets-manager.version>4.0.2</spring-cloud-aws-secrets-manager.version>
+        <spring-cloud-aws-secrets-manager.version>4.1.0</spring-cloud-aws-secrets-manager.version>
     </properties>
 
     <repositories>

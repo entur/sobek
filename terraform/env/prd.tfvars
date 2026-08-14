@@ -1,5 +1,0 @@
-storage_project        = "ent-sobek-prd"
-kube_namespace         = "sobek"
-bucket_instance_suffix = "prd"
-location               = "europe-west1"
-bucket_instance_prefix = "ror-sobek"

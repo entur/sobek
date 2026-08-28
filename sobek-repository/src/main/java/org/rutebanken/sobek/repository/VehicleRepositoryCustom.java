@@ -32,5 +32,6 @@ public interface VehicleRepositoryCustom extends DataManagedObjectStructureRepos
 
     boolean existsValidWithVehicleType(String vehicleTypeNetexId, Long vehicleTypeVersion);
 
+    List<String> findCurrentNeTExIds();
 }
 

@@ -1,0 +1,23 @@
+### Get OAuth2 Token
+# @name getToken
+POST https://internal.dev.entur.org/oauth/token
+Content-Type: application/json
+Accept: application/json
+
+{
+  "client_id": "{{clientId}}",
+  "client_secret": "{{clientSecret}}",
+  "audience": "https://api.dev.entur.io",
+  "grant_type": "client_credentials"
+}
+
+> {%
+    client.log("Access token: " + response.body.access_token);
+    client.global.set("auth_token", response.body.access_token);
+%}
+
+### Get the list of valid NeTEx Ids
+GET http://localhost:37999/services/validation/netexids
+Authorization: Bearer {{auth_token}}
+
+###

@@ -116,6 +116,15 @@ public class VehicleRepositoryImpl implements VehicleRepositoryCustom {
         return new PageImpl<>(fetchQuery.getResultList(), pageable, total);
     }
 
+    @Override
+    public List<String> findCurrentNeTExIds() {
+        String fetchJpql = "SELECT DISTINCT v.netexId FROM Vehicle v WHERE " +
+                QueryHelper.objectValidCondition("v", "now");
+        TypedQuery<String> fetchQuery = entityManager.createQuery(fetchJpql, String.class);
+        fetchQuery.setParameter("now", Instant.now());
+        return fetchQuery.getResultList();
+    }
+
     private void setFilterParams(Query query, String dataOwnerRef, List<String> netexIds, List<AllPublicTransportModesEnumeration> transportModes, String name) {
         if (netexIds != null && !netexIds.isEmpty()) {
             query.setParameter("netexIds", netexIds);

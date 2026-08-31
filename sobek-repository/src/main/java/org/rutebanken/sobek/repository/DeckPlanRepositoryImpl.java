@@ -100,4 +100,13 @@ public class DeckPlanRepositoryImpl implements DeckPlanRepositoryCustom {
         query.setParameter("dataOwnerRef", dataOwnerRef);
     }
 
+    @Override
+    public List<String> findCurrentNeTExIds() {
+        String fetchJpql = "SELECT DISTINCT d.netexId FROM DeckPlan d WHERE " +
+                QueryHelper.objectValidCondition("d", "now");
+        TypedQuery<String> fetchQuery = entityManager.createQuery(fetchJpql, String.class);
+        fetchQuery.setParameter("now", Instant.now());
+        return fetchQuery.getResultList();
+    }
+
 }

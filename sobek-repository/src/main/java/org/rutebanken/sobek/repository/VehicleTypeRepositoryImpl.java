@@ -134,4 +134,13 @@ return exists;
         query.executeUpdate();
     }
 
+    @Override
+    public List<String> findCurrentNeTExIds() {
+        String fetchJpql = "SELECT DISTINCT vt.netexId FROM VehicleType vt WHERE " +
+                QueryHelper.objectValidCondition("vt", "now");
+        TypedQuery<String> fetchQuery = entityManager.createQuery(fetchJpql, String.class);
+        fetchQuery.setParameter("now", Instant.now());
+        return fetchQuery.getResultList();
+    }
+
 }

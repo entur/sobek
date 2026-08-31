@@ -29,5 +29,7 @@ public interface VehicleTypeRepositoryCustom extends DataManagedObjectStructureR
     void moveToDeckPlan(Long fromDeckPlanId, Long toDeckPlanId);
 
     boolean existsValidWithDeckPlan(String deckPlanNetexId, Long deckPlanVersion);
+
+    List<String> findCurrentNeTExIds();
 }
 

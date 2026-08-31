@@ -26,5 +26,6 @@ public interface DeckPlanRepositoryCustom extends DataManagedObjectStructureRepo
 
     Page<DeckPlan> findCurrentFiltered(String dataOwnerRef, List<String> netexIds, List<AllPublicTransportModesEnumeration> transportModes, String name, Pageable pageable);
 
+    List<String> findCurrentNeTExIds();
 }
 

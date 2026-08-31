@@ -45,12 +45,12 @@
 
     <properties>
         <java.version>21</java.version>
-        <spring-cloud-gcp.version>8.1.0</spring-cloud-gcp.version>
-        <geotools.version>35.0</geotools.version>
+        <spring-cloud-gcp.version>8.1.1</spring-cloud-gcp.version>
+        <geotools.version>35.1</geotools.version>
         <graphql-java.version>25.0</graphql-java.version>
         <graphql-java-extended-scalars.version>24.0</graphql-java-extended-scalars.version>
         <netex-java-model.version>3.0.0-SNAPSHOT</netex-java-model.version>
-        <entur.helpers.version>7.2.0</entur.helpers.version>
+        <entur.helpers.version>7.3.0</entur.helpers.version>
         <jts-core.version>1.20.0</jts-core.version>
         <groovy-all.version>4.0.28</groovy-all.version>
         <rest-assured.version>6.0.1</rest-assured.version>
@@ -58,7 +58,7 @@
         <postgis.version>2.5.1</postgis.version>
         <mapstruct.version>1.6.3</mapstruct.version>
         <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
-        <spring-cloud-aws-secrets-manager.version>4.0.2</spring-cloud-aws-secrets-manager.version>
+        <spring-cloud-aws-secrets-manager.version>4.1.1</spring-cloud-aws-secrets-manager.version>
     </properties>
 
     <repositories>

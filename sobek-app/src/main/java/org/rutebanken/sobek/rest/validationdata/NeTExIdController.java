@@ -10,7 +10,7 @@ import java.util.List;
 
 @Component
 @RestController
-@RequestMapping("/services/validation/netexids")
+@RequestMapping("/services/vehicles/validation/netexids")
 @Slf4j
 public class NeTExIdController {
 

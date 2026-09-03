@@ -17,7 +17,7 @@ Accept: application/json
 %}
 
 ### Get the list of valid NeTEx Ids
-GET http://localhost:37999/services/validation/netexids
+GET http://localhost:37999/services/vehicles/validation/netexids
 Authorization: Bearer {{auth_token}}
 
 ###

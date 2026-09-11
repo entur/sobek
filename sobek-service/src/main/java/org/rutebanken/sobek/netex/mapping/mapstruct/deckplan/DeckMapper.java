@@ -59,9 +59,9 @@ public interface DeckMapper {
                                  @Context MappingContext context) {
         if(target != null) {
             context.getZoneMapper().afterMapToSobek(source, target, context);
+            context.setCurrentSobekDeck(target);
+            target.setDeckSpaces(context.getDeckSpaceMapper().mapNetexRelStructureToSobekList(source.getDeckSpaces(), context));
         }
-        context.setCurrentSobekDeck(target);
-        target.setDeckSpaces(context.getDeckSpaceMapper().mapNetexRelStructureToSobekList(source.getDeckSpaces(), context));
     }
 
     @AfterMapping
@@ -70,8 +70,8 @@ public interface DeckMapper {
                                  @Context MappingContext context) {
         if(target != null) {
             context.getZoneMapper().afterMapToNetex(source, target, context);
+            target.setDeckSpaces(context.getDeckSpaceMapper().mapSobekListToNetexRelStructure(source.getDeckSpaces(), context));
         }
-        target.setDeckSpaces(context.getDeckSpaceMapper().mapSobekListToNetexRelStructure(source.getDeckSpaces(), context));
     }
 
     /**

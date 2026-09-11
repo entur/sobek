@@ -131,14 +131,14 @@ public interface PassengerSpotMapper {
     ) {
         if (target != null) {
             context.getZoneMapper().afterMapToNetex(source, target, context);
-        }
 
-        if(source.getSpotColumn() != null) {
-            target.setSpotColumnRef(new SpotColumnRefStructure().withRef(source.getSpotColumn().getNetexId()) );
-        }
+            if(source.getSpotColumn() != null) {
+                target.setSpotColumnRef(new SpotColumnRefStructure().withRef(source.getSpotColumn().getNetexId()) );
+            }
 
-        if(source.getSpotRow() != null) {
-            target.setSpotRowRef(new SpotRowRefStructure().withRef(source.getSpotRow().getNetexId()) );
+            if(source.getSpotRow() != null) {
+                target.setSpotRowRef(new SpotRowRefStructure().withRef(source.getSpotRow().getNetexId()) );
+            }
         }
     }
 }

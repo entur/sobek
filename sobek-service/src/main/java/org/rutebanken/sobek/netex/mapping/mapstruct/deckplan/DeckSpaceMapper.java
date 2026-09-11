@@ -86,10 +86,12 @@ public interface DeckSpaceMapper {
                                  @Context MappingContext context) {
         if(target != null) {
             context.getZoneMapper().afterMapToNetex(source, target, context);
-        }
-        target.setSpotAffinities(context.getSpotAffinityMapper().mapListToNetex(source.getSpotAffinities(), context));
-        if(source.getParentDeckSpace() != null) {
-            target.setParentDeckSpaceRef(new DeckSpaceRefStructure().withRef(source.getParentDeckSpace().getNetexId()));
+
+            target.setSpotAffinities(context.getSpotAffinityMapper().mapListToNetex(source.getSpotAffinities(), context));
+
+            if(source.getParentDeckSpace() != null) {
+                target.setParentDeckSpaceRef(new DeckSpaceRefStructure().withRef(source.getParentDeckSpace().getNetexId()));
+            }
         }
     }
 

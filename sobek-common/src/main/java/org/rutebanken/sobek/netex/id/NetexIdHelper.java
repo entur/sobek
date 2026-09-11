@@ -91,8 +91,7 @@ public class NetexIdHelper {
     public String extractIdPrefix(String netexId) {
         long colonCount = netexId.chars().filter(ch -> ch == ':').count();
         if (colonCount != 2) {
-            return "";
-            //throw new IllegalArgumentException("Number of colons in ID is not two: " + netexId);
+            throw new IllegalArgumentException("Number of colons in ID is not two: " + netexId);
         }
 
         return netexId.substring(0, netexId.indexOf(':'));

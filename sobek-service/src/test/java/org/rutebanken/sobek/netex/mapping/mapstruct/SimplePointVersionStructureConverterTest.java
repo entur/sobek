@@ -96,13 +96,17 @@ public class SimplePointVersionStructureConverterTest {
     public void nullCheckLatitude() {
         SimplePoint_VersionStructure simplePointversionStructure = new SimplePoint_VersionStructure()
                 .withLocation(new LocationStructure().withLongitude(BigDecimal.valueOf(10.00)));
-        simplePointVersionStructureConverter.simplePointToPoint(simplePointversionStructure, mappingContext);
+        assertThrows(RuntimeException.class, () ->
+                simplePointVersionStructureConverter.simplePointToPoint(simplePointversionStructure, mappingContext),
+            "Expected RuntimeException due to using latitude and longitude, but none was thrown.");
     }
 
     @Test
     public void nullCheckLongitude() {
         SimplePoint_VersionStructure simplePointversionStructure = new SimplePoint_VersionStructure()
                 .withLocation(new LocationStructure().withLatitude(BigDecimal.valueOf(10.00)));
-        simplePointVersionStructureConverter.simplePointToPoint(simplePointversionStructure, mappingContext);
+        assertThrows(RuntimeException.class, () ->
+                simplePointVersionStructureConverter.simplePointToPoint(simplePointversionStructure, mappingContext),
+            "Expected RuntimeException due to using latitude and longitude, but none was thrown.");
     }
 }

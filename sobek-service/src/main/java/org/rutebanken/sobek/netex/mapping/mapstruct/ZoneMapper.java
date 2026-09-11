@@ -125,7 +125,6 @@ public interface ZoneMapper {
     source = "polygon",
     qualifiedByName = "polygonTypeToPolygonZ"
   )
-  @Mapping(target = "members", ignore = true) // Ignore for now TODO implement
   @interface ToSobekMappings {
   }
 

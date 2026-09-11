@@ -6,10 +6,7 @@ import org.rutebanken.netex.model.*;
 import org.rutebanken.sobek.model.vehicle.Deck;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
-import org.rutebanken.sobek.netex.mapping.mapstruct.DataManagedObjectStructureMapper;
-import org.rutebanken.sobek.netex.mapping.mapstruct.PointRefStructureMapper;
-import org.rutebanken.sobek.netex.mapping.mapstruct.PolygonMapper;
-import org.rutebanken.sobek.netex.mapping.mapstruct.SimplePointMapper;
+import org.rutebanken.sobek.netex.mapping.mapstruct.ZoneMapper;
 import org.rutebanken.sobek.netex.mapping.mapstruct.equipment.ActualVehicleEquipmentMapper;
 
 import java.util.List;
@@ -21,10 +18,7 @@ import java.util.List;
 @Mapper(
         config = SobekMapperConfig.class,
         uses = {
-                DataManagedObjectStructureMapper.class,
-                PointRefStructureMapper.class,
-                SimplePointMapper.class,
-                PolygonMapper.class,
+                ZoneMapper.class,
                 ActualVehicleEquipmentMapper.class
         }
 )
@@ -33,8 +27,7 @@ public interface PassengerSpotMapper {
     /**
      * Maps from NeTEx PassengerSpot to Sobek entity.
      */
-    @DataManagedObjectStructureMapper.ToSobekMappings
-    @Mapping(target = "polygon", source = "polygon", qualifiedByName = "polygonTypeToPolygon")
+    @ZoneMapper.ToSobekMappings
     org.rutebanken.sobek.model.vehicle.PassengerSpot mapToSobek(
             PassengerSpot source,
             @Context MappingContext context
@@ -43,7 +36,7 @@ public interface PassengerSpotMapper {
     /**
      * Maps from Sobek entity back to NeTEx PassengerSpot.
      */
-    @DataManagedObjectStructureMapper.ToNetexMappings
+    @ZoneMapper.ToNetexMappings
     @Mapping(target = "typeOfLocatableSpotRef", ignore = true) // TODO: Implement when needed
     PassengerSpot mapToNetex(
             org.rutebanken.sobek.model.vehicle.PassengerSpot source,
@@ -53,8 +46,7 @@ public interface PassengerSpotMapper {
     /**
      * Updates an existing Sobek entity from NeTEx structure.
      */
-    @DataManagedObjectStructureMapper.ToSobekMappings
-    @Mapping(target = "polygon", source = "polygon", qualifiedByName = "polygonTypeToPolygon")
+    @ZoneMapper.ToSobekMappings
     @Mapping(target = "actualVehicleEquipments", ignore = true)
     void updateSobekFromNetex(
             PassengerSpot source,
@@ -105,7 +97,7 @@ public interface PassengerSpotMapper {
             @Context MappingContext context
     ) {
         if (target != null) {
-            context.getDataManagedObjectStructureMapper().afterMappingToSobek(source, target, context);
+            context.getZoneMapper().afterMapToSobek(source, target, context);
         }
         Deck currentSobekDeck = context.getCurrentSobekDeck();
         if(source.getSpotColumnRef() != null &&
@@ -138,7 +130,7 @@ public interface PassengerSpotMapper {
             @Context MappingContext context
     ) {
         if (target != null) {
-            context.getDataManagedObjectStructureMapper().afterMappingToNetex(source, target, context);
+            context.getZoneMapper().afterMapToNetex(source, target, context);
         }
 
         if(source.getSpotColumn() != null) {

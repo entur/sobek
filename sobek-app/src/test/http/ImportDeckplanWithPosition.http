@@ -1,0 +1,84 @@
+### Get OAuth2 Token
+# @name getToken
+POST https://internal.dev.entur.org/oauth/token
+Content-Type: application/json
+Accept: application/json
+
+{
+  "client_id": "{{clientId}}",
+  "client_secret": "{{clientSecret}}",
+  "audience": "https://api.dev.entur.io",
+  "grant_type": "client_credentials"
+}
+
+> {%
+    client.log("Access token: " + response.body.access_token);
+    client.global.set("auth_token", response.body.access_token);
+%}
+
+### Import NeTEx XML
+POST http://localhost:37999/services/vehicles/netex
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ik4wSkROakJHTVVKQ1F6bERNRFZFUlRFNE5USTRNREEwTnpVM01VUTBRekpCTlRNMU1qaENOdyJ9.eyJodHRwczovL2VudHVyLmlvL29yZ2FuaXNhdGlvbklEIjoxLCJpc3MiOiJodHRwczovL3BhcnRuZXIuZGV2LmVudHVyLm9yZy8iLCJzdWIiOiJ3YWFkfENUTTdXVnhDNXJZVGNyNTJHX2R4bGJtdDV6MzFZR3RzZV9WMDdrdTRQc2siLCJhdWQiOlsiaHR0cHM6Ly9hcGkuZGV2LmVudHVyLmlvIiwiaHR0cHM6Ly9wYXJ0bmVyLWVudHVyLWRldi5ldS5hdXRoMC5jb20vdXNlcmluZm8iXSwiaWF0IjoxNzg5MTE0OTY3LCJleHAiOjE3ODkyMDEzNjcsInNjb3BlIjoib3BlbmlkIiwiYXpwIjoiMGdRVng3eHBTa2c3bEpEWXVld01TcjFzWEtyN09KM3oifQ.YpMViSToCP9YWtHSWjtR9k7vTcdfNBphBUvGKATxbkD7w2DC8RMQp9yN341VfBza0WjhABtz5bU1VB3ie167-X5uu7-_F0QxgeOixt6da4yjYLRnb0K3bJYRhC686cuFfG3MywRx706Gg6a1i2DrOFNn5XBLkIwjd7TtD5f07iNc5VwVKTwKRpxZ8qkEq-TjriEOeD0dFiEhkCG6COyoI3MN9EGGZ6T1imchdtJ_jniE6ERNdh8-NLItk6Toj9kzUoYmYju8RfSObbvCbhLhlkQ5nrI8RIl6Eeebu-pyuJ8cS1npdFWPgLafulsRfc11V5M8YxazlavPIhBrhHpF6w
+Content-Type: application/xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<PublicationDelivery xmlns="http://www.netex.org.uk/netex"
+                     xmlns:gml="http://www.opengis.net/gml/3.2"
+                     version="1.2.2" schemaLocation="http://www.netex.org.uk/netex file:///home/robin/Projekte/NeTEx/xsd/NeTEx_publication.xsd">
+  <PublicationTimestamp>2020-12-17T09:30:47.0Z</PublicationTimestamp>
+  <ParticipantRef>SYS001</ParticipantRef>
+  <dataObjects>
+    <CompositeFrame version="any" id="CompositeFrame/id/1">
+            <FrameDefaults>
+                <DefaultLocale>
+                    <TimeZone>Europe/Oslo</TimeZone>
+                    <DefaultLanguage>nor</DefaultLanguage>
+                </DefaultLocale>
+                <DefaultResponsibilitySetRef ref="NMR:ResponsibilitySet:1"/>
+            </FrameDefaults>
+      <frames>
+        <ResourceFrame version="any" id="ResourceFrame/id/1">
+          <deckPlans>
+            <DeckPlan id="DeckPlan/id/1" version="any">
+              <decks>
+                <Deck id="Deck/id/1" version="any">
+                  <deckSpaces>
+                    <PassengerSpace id="seating-area_1779021502009" version="1">
+                      <Name>Area 1</Name>
+                      <PassengerSpaceType>seatingArea</PassengerSpaceType>
+                      <passengerSpots>
+                        <PassengerSpot id="seat_1778937092812" version="1">
+                          <Label>77</Label>
+                          <Orientation>backwards</Orientation>
+                          <IsByWindow>true</IsByWindow>
+                          <Centroid>
+                            <Location>
+                              <gml:pos>3.3902046783625726 0.206842</gml:pos>
+                            </Location>
+                          </Centroid>
+                          <Width>0.35</Width>
+                          <Length>0.35</Length>
+                        </PassengerSpot>
+                      </passengerSpots>
+                    </PassengerSpace>
+                  </deckSpaces>
+                </Deck>
+              </decks>
+            </DeckPlan>
+          </deckPlans>
+          <responsibilitySets>
+            <ResponsibilitySet id="NMR:ResponsibilitySet:1" version="1">
+              <roles>
+                <ResponsibilityRoleAssignment id="NMR:ResponsibilityRoleAssignment:1" version="1">
+                  <DataRoleType>owns</DataRoleType>
+                  <ResponsibleOrganisationRef ref="NOG:Authority:cP4aPiJ7c39"/>
+                </ResponsibilityRoleAssignment>
+              </roles>
+            </ResponsibilitySet>
+          </responsibilitySets>
+          </ResourceFrame>
+      </frames>
+    </CompositeFrame>
+  </dataObjects>
+</PublicationDelivery>
+###

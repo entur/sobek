@@ -5,10 +5,7 @@ import org.rutebanken.netex.model.Deck;
 import org.rutebanken.netex.model.Decks_RelStructure;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
-import org.rutebanken.sobek.netex.mapping.mapstruct.DataManagedObjectStructureMapper;
-import org.rutebanken.sobek.netex.mapping.mapstruct.PointRefStructureMapper;
-import org.rutebanken.sobek.netex.mapping.mapstruct.PolygonMapper;
-import org.rutebanken.sobek.netex.mapping.mapstruct.SimplePointMapper;
+import org.rutebanken.sobek.netex.mapping.mapstruct.ZoneMapper;
 
 import java.util.List;
 
@@ -18,10 +15,7 @@ import java.util.List;
  */
 @Mapper(
         config = SobekMapperConfig.class,
-        uses = {PointRefStructureMapper.class,
-                DataManagedObjectStructureMapper.class,
-                PolygonMapper.class,
-                SimplePointMapper.class,
+        uses = {ZoneMapper.class,
                 SpotRowMapper.class,
                 SpotColumnMapper.class
         }
@@ -31,8 +25,7 @@ public interface DeckMapper {
     /**
      * Maps from NeTEx Deck to Sobek entity.
      */
-    @DataManagedObjectStructureMapper.ToSobekMappings
-    @Mapping(target = "polygon", source = "polygon", qualifiedByName = "polygonTypeToPolygon")
+    @ZoneMapper.ToSobekMappings
     @Mapping(target = "deckSpaces", ignore = true) // Handled by DeckSpaceMapper. This is to ensure that this mapping happens AFTER SpotRowMapper and SpotColumnMapper.
     org.rutebanken.sobek.model.vehicle.Deck mapToSobek(
             Deck source,
@@ -42,8 +35,7 @@ public interface DeckMapper {
     /**
      * Maps from Sobek entity back to NeTEx Deck.
      */
-    @DataManagedObjectStructureMapper.ToNetexMappings
-    @Mapping(target = "polygon", source = "polygon", qualifiedByName = "polygonToPolygonType")
+    @ZoneMapper.ToNetexMappings
     @Mapping(target = "deckSpaces", ignore = true) // Handled by AfterMapping. This is to ensure that this mapping happens AFTER SpotRowMapper and SpotColumnMapper.
     Deck mapToNetex(
             org.rutebanken.sobek.model.vehicle.Deck source,
@@ -53,8 +45,7 @@ public interface DeckMapper {
     /**
      * Updates an existing Sobek entity from NeTEx structure.
      */
-    @DataManagedObjectStructureMapper.ToSobekMappings
-    @Mapping(target = "polygon", source = "polygon", qualifiedByName = "polygonTypeToPolygon")
+    @ZoneMapper.ToSobekMappings
     @Mapping(target = "deckSpaces", ignore = true) // Handled by AfterMapping. This is to ensure that this mapping happens AFTER SpotRowMapper and SpotColumnMapper.
     void updateSobekFromNetex(
             Deck source,
@@ -67,7 +58,7 @@ public interface DeckMapper {
                                  @MappingTarget org.rutebanken.sobek.model.vehicle.Deck target,
                                  @Context MappingContext context) {
         if(target != null) {
-            context.getDataManagedObjectStructureMapper().afterMappingToSobek(source, target, context);
+            context.getZoneMapper().afterMapToSobek(source, target, context);
         }
         context.setCurrentSobekDeck(target);
         target.setDeckSpaces(context.getDeckSpaceMapper().mapNetexRelStructureToSobekList(source.getDeckSpaces(), context));
@@ -78,7 +69,7 @@ public interface DeckMapper {
                                  @MappingTarget Deck target,
                                  @Context MappingContext context) {
         if(target != null) {
-            context.getDataManagedObjectStructureMapper().afterMappingToNetex(source, target, context);
+            context.getZoneMapper().afterMapToNetex(source, target, context);
         }
         target.setDeckSpaces(context.getDeckSpaceMapper().mapSobekListToNetexRelStructure(source.getDeckSpaces(), context));
     }

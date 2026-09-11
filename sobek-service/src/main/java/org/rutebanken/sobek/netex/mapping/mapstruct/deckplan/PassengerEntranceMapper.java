@@ -6,10 +6,7 @@ import org.rutebanken.netex.model.ObjectFactory;
 import org.rutebanken.netex.model.DeckEntrances_RelStructure;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
-import org.rutebanken.sobek.netex.mapping.mapstruct.DataManagedObjectStructureMapper;
-import org.rutebanken.sobek.netex.mapping.mapstruct.PointRefStructureMapper;
-import org.rutebanken.sobek.netex.mapping.mapstruct.PolygonMapper;
-import org.rutebanken.sobek.netex.mapping.mapstruct.SimplePointMapper;
+import org.rutebanken.sobek.netex.mapping.mapstruct.*;
 import org.rutebanken.sobek.netex.mapping.mapstruct.equipment.ActualVehicleEquipmentMapper;
 
 import java.util.List;
@@ -21,10 +18,7 @@ import java.util.List;
 @Mapper(
         config = SobekMapperConfig.class,
         uses = {
-                DataManagedObjectStructureMapper.class,
-                PointRefStructureMapper.class,
-                PolygonMapper.class,
-                SimplePointMapper.class,
+                ZoneMapper.class,
                 ActualVehicleEquipmentMapper.class
         }
 )
@@ -34,8 +28,7 @@ public interface PassengerEntranceMapper {
     /**
      * Maps from NeTEx PassengerEntrance to Sobek entity.
      */
-    @DataManagedObjectStructureMapper.ToSobekMappings
-    @Mapping(target = "polygon", source = "polygon", qualifiedByName = "polygonTypeToPolygon")
+    @ZoneMapper.ToSobekMappings
     org.rutebanken.sobek.model.vehicle.PassengerEntrance mapToSobek(
             PassengerEntrance source,
             @Context MappingContext context
@@ -44,7 +37,7 @@ public interface PassengerEntranceMapper {
     /**
      * Maps from Sobek entity back to NeTEx PassengerEntrance.
      */
-    @DataManagedObjectStructureMapper.ToNetexMappings
+    @ZoneMapper.ToNetexMappings
     @Mapping(target = "sensorsInEntrance", ignore = true) // TODO: Implement when needed
     @Mapping(target = "typeOfDeckEntranceUsageRef", ignore = true) // TODO: Implement when needed
     PassengerEntrance mapToNetex(
@@ -55,9 +48,8 @@ public interface PassengerEntranceMapper {
     /**
      * Updates an existing Sobek entity from NeTEx structure.
      */
-    @DataManagedObjectStructureMapper.ToSobekMappings
+    @ZoneMapper.ToSobekMappings
     @Mapping(target = "actualVehicleEquipments", ignore = true)
-    @Mapping(target = "polygon", source = "polygon", qualifiedByName = "polygonTypeToPolygon")
     void updateSobekFromNetex(
             PassengerEntrance source,
             @MappingTarget org.rutebanken.sobek.model.vehicle.PassengerEntrance target,
@@ -71,7 +63,7 @@ public interface PassengerEntranceMapper {
             @Context MappingContext context
     ) {
         if (target != null) {
-            context.getDataManagedObjectStructureMapper().afterMappingToSobek(source, target, context);
+            context.getZoneMapper().afterMapToSobek(source, target, context);
         }
     }
     @AfterMapping
@@ -81,7 +73,7 @@ public interface PassengerEntranceMapper {
             @Context MappingContext context
     ) {
         if (target != null) {
-            context.getDataManagedObjectStructureMapper().afterMappingToNetex(source, target, context);
+            context.getZoneMapper().afterMapToNetex(source, target, context);
         }
     }
 

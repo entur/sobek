@@ -23,7 +23,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class GeometryFactoryConfig {
 
-    private static final int SRID = 4326;
+    private static final int SRID = 0; // Cartesian coordinates for vehicle-local positions
 
     @Bean
     public GeometryFactory geometryFactory() {

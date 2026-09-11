@@ -18,17 +18,14 @@ package org.rutebanken.sobek.model;
 import java.util.ArrayList;
 import java.util.List;
 
+public class Versions_RelStructure extends ContainmentAggregationStructure {
 
-public class Versions_RelStructure
-        extends ContainmentAggregationStructure {
+  protected List<Object> versionRefOrVersion;
 
-    protected List<Object> versionRefOrVersion;
-
-    public List<Object> getVersionRefOrVersion() {
-        if (versionRefOrVersion == null) {
-            versionRefOrVersion = new ArrayList<>();
-        }
-        return this.versionRefOrVersion;
+  public List<Object> getVersionRefOrVersion() {
+    if (versionRefOrVersion == null) {
+      versionRefOrVersion = new ArrayList<>();
     }
-
+    return this.versionRefOrVersion;
+  }
 }

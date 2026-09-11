@@ -24,74 +24,74 @@ import lombok.ToString;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 
-
 @MappedSuperclass
 @ToString
-public class Zone_VersionStructure
-        extends GroupOfPoints_VersionStructure {
+public class Zone_VersionStructure extends GroupOfPoints_VersionStructure {
 
-    protected Point centroid;
+  protected Point centroid;
 
-    /**
-     * Polygon is wrapped in PersistablePolygon.
-     * Because we want to fetch polygons lazily and using lazy property fetching with byte code enhancement breaks tests.
-     */
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    protected PersistablePolygon polygon;
+  /**
+   * Polygon is wrapped in PersistablePolygon.
+   * Because we want to fetch polygons lazily and using lazy property fetching with byte code enhancement breaks tests.
+   */
+  @OneToOne(
+    fetch = FetchType.LAZY,
+    cascade = CascadeType.ALL,
+    orphanRemoval = true
+  )
+  protected PersistablePolygon polygon;
 
-    @Transient
-    protected Projections_RelStructure projections;
+  @Transient
+  protected Projections_RelStructure projections;
 
-    @Transient
-    protected ZoneRefStructure parentZoneRef;
+  @Transient
+  protected ZoneRefStructure parentZoneRef;
 
-    public Zone_VersionStructure() {
+  public Zone_VersionStructure() {}
+
+  public Zone_VersionStructure(EmbeddableMultilingualString name) {
+    super(name);
+  }
+
+  public Polygon getPolygon() {
+    if (polygon != null) {
+      return polygon.getPolygon();
     }
+    return null;
+  }
 
-    public Zone_VersionStructure(EmbeddableMultilingualString name) {
-        super(name);
+  public void setPolygon(Polygon polygon) {
+    if (this.polygon == null) {
+      this.polygon = new PersistablePolygon();
     }
+    this.polygon.setPolygon(polygon);
+  }
 
-    public Polygon getPolygon() {
-        if (polygon != null) {
-            return polygon.getPolygon();
-        }
-        return null;
-    }
+  public Point getCentroid() {
+    return centroid;
+  }
 
-    public void setPolygon(Polygon polygon) {
-        if (this.polygon == null) {
-            this.polygon = new PersistablePolygon();
-        }
-        this.polygon.setPolygon(polygon);
-    }
+  public void setCentroid(Point value) {
+    this.centroid = value;
+  }
 
-    public Point getCentroid() {
-        return centroid;
-    }
+  public Projections_RelStructure getProjections() {
+    return projections;
+  }
 
-    public void setCentroid(Point value) {
-        this.centroid = value;
-    }
+  public void setProjections(Projections_RelStructure value) {
+    this.projections = value;
+  }
 
-    public Projections_RelStructure getProjections() {
-        return projections;
-    }
+  public ZoneRefStructure getParentZoneRef() {
+    return parentZoneRef;
+  }
 
-    public void setProjections(Projections_RelStructure value) {
-        this.projections = value;
-    }
+  public void setParentZoneRef(ZoneRefStructure value) {
+    this.parentZoneRef = value;
+  }
 
-    public ZoneRefStructure getParentZoneRef() {
-        return parentZoneRef;
-    }
-
-    public void setParentZoneRef(ZoneRefStructure value) {
-        this.parentZoneRef = value;
-    }
-
-    public boolean hasCoordinates() {
-        return centroid != null;
-    }
-
+  public boolean hasCoordinates() {
+    return centroid != null;
+  }
 }

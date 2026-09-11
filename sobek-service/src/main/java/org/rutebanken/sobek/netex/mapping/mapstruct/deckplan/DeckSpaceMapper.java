@@ -75,9 +75,9 @@ public interface DeckSpaceMapper {
                                  @Context MappingContext context) {
         if(target != null) {
             context.getZoneMapper().afterMapToSobek(source, target, context);
+            context.setCurrentSobekDeckSpace(target);
+            target.setSpotAffinities(context.getSpotAffinityMapper().mapListToSobek(source.getSpotAffinities(), context));
         }
-        context.setCurrentSobekDeckSpace(target);
-        target.setSpotAffinities(context.getSpotAffinityMapper().mapListToSobek(source.getSpotAffinities(), context));
     }
 
     @AfterMapping

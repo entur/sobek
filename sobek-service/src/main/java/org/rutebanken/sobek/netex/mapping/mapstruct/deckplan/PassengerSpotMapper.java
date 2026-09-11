@@ -98,27 +98,27 @@ public interface PassengerSpotMapper {
     ) {
         if (target != null) {
             context.getZoneMapper().afterMapToSobek(source, target, context);
-        }
-        Deck currentSobekDeck = context.getCurrentSobekDeck();
-        if(source.getSpotColumnRef() != null &&
-                source.getSpotColumnRef().getRef() != null) {
-            if (currentSobekDeck != null && currentSobekDeck.getSpotColumns() != null) {
-                String refId = source.getSpotColumnRef().getRef();
-                currentSobekDeck.getSpotColumns().stream()
-                        .filter(column -> refId.equals(column.getNetexId()))
-                        .findFirst()
-                        .ifPresent(target::setSpotColumn);
+            Deck currentSobekDeck = context.getCurrentSobekDeck();
+            if(source.getSpotColumnRef() != null &&
+                    source.getSpotColumnRef().getRef() != null) {
+                if (currentSobekDeck != null && currentSobekDeck.getSpotColumns() != null) {
+                    String refId = source.getSpotColumnRef().getRef();
+                    currentSobekDeck.getSpotColumns().stream()
+                            .filter(column -> refId.equals(column.getNetexId()))
+                            .findFirst()
+                            .ifPresent(target::setSpotColumn);
+                }
             }
-        }
 
-        if(source.getSpotRowRef() != null &&
-                source.getSpotRowRef().getRef() != null) {
-            if (currentSobekDeck != null && currentSobekDeck.getSpotRows() != null) {
-                String refId = source.getSpotRowRef().getRef();
-                currentSobekDeck.getSpotRows().stream()
-                        .filter(column -> refId.equals(column.getNetexId()))
-                        .findFirst()
-                        .ifPresent(target::setSpotRow);
+            if(source.getSpotRowRef() != null &&
+                    source.getSpotRowRef().getRef() != null) {
+                if (currentSobekDeck != null && currentSobekDeck.getSpotRows() != null) {
+                    String refId = source.getSpotRowRef().getRef();
+                    currentSobekDeck.getSpotRows().stream()
+                            .filter(column -> refId.equals(column.getNetexId()))
+                            .findFirst()
+                            .ifPresent(target::setSpotRow);
+                }
             }
         }
     }

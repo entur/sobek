@@ -67,7 +67,7 @@ public abstract class SimplePointMapper {
 
     private boolean hasLongLat(SimplePoint_VersionStructure simplePoint) {
         return simplePoint.getLocation().getLongitude() != null
-                && simplePoint.getLocation().getLatitude() != null;
+                || simplePoint.getLocation().getLatitude() != null;
     }
 
     private boolean noPosSet(SimplePoint_VersionStructure simplePoint) {

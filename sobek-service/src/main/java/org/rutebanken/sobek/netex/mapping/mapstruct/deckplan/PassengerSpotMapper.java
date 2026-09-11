@@ -6,6 +6,7 @@ import org.rutebanken.netex.model.*;
 import org.rutebanken.sobek.model.vehicle.Deck;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
+import org.rutebanken.sobek.netex.mapping.mapstruct.PointRefStructureMapper;
 import org.rutebanken.sobek.netex.mapping.mapstruct.ZoneMapper;
 import org.rutebanken.sobek.netex.mapping.mapstruct.equipment.ActualVehicleEquipmentMapper;
 
@@ -19,7 +20,8 @@ import java.util.List;
         config = SobekMapperConfig.class,
         uses = {
                 ZoneMapper.class,
-                ActualVehicleEquipmentMapper.class
+                ActualVehicleEquipmentMapper.class,
+                PointRefStructureMapper.class
         }
 )
 public interface PassengerSpotMapper {

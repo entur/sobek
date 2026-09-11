@@ -136,7 +136,6 @@ public interface ZoneMapper {
     source = "polygon",
     qualifiedByName = "polygonToPolygonTypeZ"
   )
-  @Mapping(target = "members", ignore = true) // Ignore for now TODO implement
   @interface ToNetexMappings {
   }
 

@@ -22,7 +22,8 @@ import java.util.List;
                 DeckSpaceCapacityMapper.class,
                 PassengerSpotMapper.class,
                 LuggageSpotMapper.class,
-                ActualVehicleEquipmentMapper.class
+                ActualVehicleEquipmentMapper.class,
+                PointRefStructureMapper.class
         }
 )
 public interface DeckSpaceMapper {

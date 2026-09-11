@@ -19,7 +19,8 @@ import java.util.List;
         config = SobekMapperConfig.class,
         uses = {
                 ZoneMapper.class,
-                ActualVehicleEquipmentMapper.class
+                ActualVehicleEquipmentMapper.class,
+                PointRefStructureMapper.class
         }
 )
 public interface LuggageSpotMapper {

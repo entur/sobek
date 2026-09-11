@@ -18,7 +18,7 @@ Accept: application/json
 
 ### Import NeTEx XML
 POST http://localhost:37999/services/vehicles/netex
-Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ik4wSkROakJHTVVKQ1F6bERNRFZFUlRFNE5USTRNREEwTnpVM01VUTBRekpCTlRNMU1qaENOdyJ9.eyJodHRwczovL2VudHVyLmlvL29yZ2FuaXNhdGlvbklEIjoxLCJpc3MiOiJodHRwczovL3BhcnRuZXIuZGV2LmVudHVyLm9yZy8iLCJzdWIiOiJ3YWFkfENUTTdXVnhDNXJZVGNyNTJHX2R4bGJtdDV6MzFZR3RzZV9WMDdrdTRQc2siLCJhdWQiOlsiaHR0cHM6Ly9hcGkuZGV2LmVudHVyLmlvIiwiaHR0cHM6Ly9wYXJ0bmVyLWVudHVyLWRldi5ldS5hdXRoMC5jb20vdXNlcmluZm8iXSwiaWF0IjoxNzg5MTE0OTY3LCJleHAiOjE3ODkyMDEzNjcsInNjb3BlIjoib3BlbmlkIiwiYXpwIjoiMGdRVng3eHBTa2c3bEpEWXVld01TcjFzWEtyN09KM3oifQ.YpMViSToCP9YWtHSWjtR9k7vTcdfNBphBUvGKATxbkD7w2DC8RMQp9yN341VfBza0WjhABtz5bU1VB3ie167-X5uu7-_F0QxgeOixt6da4yjYLRnb0K3bJYRhC686cuFfG3MywRx706Gg6a1i2DrOFNn5XBLkIwjd7TtD5f07iNc5VwVKTwKRpxZ8qkEq-TjriEOeD0dFiEhkCG6COyoI3MN9EGGZ6T1imchdtJ_jniE6ERNdh8-NLItk6Toj9kzUoYmYju8RfSObbvCbhLhlkQ5nrI8RIl6Eeebu-pyuJ8cS1npdFWPgLafulsRfc11V5M8YxazlavPIhBrhHpF6w
+Authorization: {{bearerToken}}
 Content-Type: application/xml
 
 <?xml version="1.0" encoding="utf-8"?>
@@ -53,7 +53,7 @@ Content-Type: application/xml
                           <IsByWindow>true</IsByWindow>
                           <Centroid>
                             <Location>
-                              <gml:pos>3.3902046783625726 0.206842</gml:pos>
+                              <gml:pos>3.390 0.206</gml:pos>
                             </Location>
                           </Centroid>
                           <Width>0.35</Width>

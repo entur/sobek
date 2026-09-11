@@ -45,13 +45,15 @@ public abstract class SimplePointMapper {
             return null;
         }
 
+        // Throw error if the format is wrong
+        if (hasLongLat(simplePoint)) {
+            throw new RuntimeException("Positions in the vehicle registry are not allowed to have long/lat values, use pos instead.");
+        }
+
+        // If no pos is set, treat it as "no data"
         if (noPosSet(simplePoint)) {
             logger.warn("Could not find pos from location: {}", simplePoint.getLocation());
             return null;
-        }
-
-        if (hasLongLat(simplePoint)) {
-            throw new RuntimeException("Positions in the vehicle registry are not allowed to have long/lat values, use pos instead.");
         }
 
         List<Double> values = simplePoint.getLocation().getPos().getValue();

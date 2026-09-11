@@ -61,10 +61,12 @@ public interface ZoneMapper {
       context
         .getDataManagedObjectStructureMapper()
         .afterMappingToSobek(source, target, context);
-      Point point = context
-        .getSimplePointMapper()
-        .simplePointToPoint(source.getCentroid(), context);
-      target.setCentroid(point);
+      if (source.getCentroid() != null) {
+        Point point = context
+          .getSimplePointMapper()
+          .simplePointToPoint(source.getCentroid(), context);
+        target.setCentroid(point);
+      }
     }
   }
 

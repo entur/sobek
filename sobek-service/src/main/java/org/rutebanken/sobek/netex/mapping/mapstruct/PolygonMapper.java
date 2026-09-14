@@ -134,8 +134,8 @@ public abstract class PolygonMapper {
     protected List<Double> toList(Coordinate[] coordinates) {
         List<Double> values = new ArrayList<>(coordinates.length * 2);
         for (Coordinate coordinate : coordinates) {
-            values.add(coordinate.y);
             values.add(coordinate.x);
+            values.add(coordinate.y);
         }
         return values;
     }

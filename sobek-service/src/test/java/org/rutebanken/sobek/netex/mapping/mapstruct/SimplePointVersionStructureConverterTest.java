@@ -15,6 +15,7 @@
 
 package org.rutebanken.sobek.netex.mapping.mapstruct;
 
+import jakarta.xml.bind.ValidationException;
 import net.opengis.gml._3.DirectPositionType;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
@@ -50,7 +51,7 @@ public class SimplePointVersionStructureConverterTest {
                 .withLocation(new LocationStructure()
                         .withLongitude(BigDecimal.valueOf(longitude))
                         .withLatitude(BigDecimal.valueOf(latitude)));
-        assertThrows(RuntimeException.class, () ->
+        assertThrows(ValidationException.class, () ->
                         simplePointVersionStructureConverter.simplePointToPoint(simplePointversionStructure, mappingContext),
                     "Expected RuntimeException due to using latitude and longitude, but none was thrown.");
     }
@@ -68,7 +69,7 @@ public class SimplePointVersionStructureConverterTest {
     }
 
     @Test
-    public void parsePos2PosEnum() {
+    public void parsePos2PosEnum() throws ValidationException {
         double longitude = 10.1;
         double latitude = 20.1;
         SimplePoint_VersionStructure simplePointversionStructure = new SimplePoint_VersionStructure()
@@ -81,13 +82,13 @@ public class SimplePointVersionStructureConverterTest {
     }
 
     @Test
-    public void nullCheckLocation() {
+    public void nullCheckLocation() throws ValidationException {
         SimplePoint_VersionStructure simplePointversionStructure = new SimplePoint_VersionStructure();
         simplePointVersionStructureConverter.simplePointToPoint(simplePointversionStructure, mappingContext);
     }
 
     @Test
-    public void nullCheckSimplePoint() {
+    public void nullCheckSimplePoint() throws ValidationException {
         SimplePoint_VersionStructure simplePointversionStructure = null;
         simplePointVersionStructureConverter.simplePointToPoint(simplePointversionStructure, mappingContext);
     }
@@ -96,7 +97,7 @@ public class SimplePointVersionStructureConverterTest {
     public void nullCheckLatitude() {
         SimplePoint_VersionStructure simplePointversionStructure = new SimplePoint_VersionStructure()
                 .withLocation(new LocationStructure().withLongitude(BigDecimal.valueOf(10.00)));
-        assertThrows(RuntimeException.class, () ->
+        assertThrows(ValidationException.class, () ->
                 simplePointVersionStructureConverter.simplePointToPoint(simplePointversionStructure, mappingContext),
             "Expected RuntimeException due to using latitude and longitude, but none was thrown.");
     }
@@ -105,7 +106,7 @@ public class SimplePointVersionStructureConverterTest {
     public void nullCheckLongitude() {
         SimplePoint_VersionStructure simplePointversionStructure = new SimplePoint_VersionStructure()
                 .withLocation(new LocationStructure().withLatitude(BigDecimal.valueOf(10.00)));
-        assertThrows(RuntimeException.class, () ->
+        assertThrows(ValidationException.class, () ->
                 simplePointVersionStructureConverter.simplePointToPoint(simplePointversionStructure, mappingContext),
             "Expected RuntimeException due to using latitude and longitude, but none was thrown.");
     }

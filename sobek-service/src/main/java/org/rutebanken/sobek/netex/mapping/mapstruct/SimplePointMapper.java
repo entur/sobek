@@ -1,6 +1,5 @@
 package org.rutebanken.sobek.netex.mapping.mapstruct;
 
-import jakarta.xml.bind.ValidationException;
 import net.opengis.gml._3.DirectPositionType;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -9,6 +8,7 @@ import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.rutebanken.netex.model.LocationStructure;
 import org.rutebanken.netex.model.SimplePoint_VersionStructure;
+import org.rutebanken.sobek.netex.mapping.NetexMappingException;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.slf4j.Logger;
@@ -41,14 +41,14 @@ public abstract class SimplePointMapper {
     /**
      * Converts a NeTEx SimplePoint_VersionStructure to JTS Point
      */
-    public Point simplePointToPoint(SimplePoint_VersionStructure simplePoint, @Context MappingContext context) throws ValidationException {
+    public Point simplePointToPoint(SimplePoint_VersionStructure simplePoint, @Context MappingContext context) {
         if (simplePoint == null || simplePoint.getLocation() == null) {
             return null;
         }
 
         // Throw error if the format is wrong
         if (hasLongLat(simplePoint)) {
-            throw new ValidationException("Positions in the vehicle registry are not allowed to have long/lat values, use pos instead.");
+            throw new NetexMappingException("Positions in the vehicle registry are not allowed to have long/lat values, use pos instead.");
         }
 
         // If no pos is set, treat it as "no data"

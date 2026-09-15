@@ -37,11 +37,11 @@ Content-Type: application/xml
                 <DefaultResponsibilitySetRef ref="NMR:ResponsibilitySet:1"/>
             </FrameDefaults>
       <frames>
-        <ResourceFrame version="any" id="ResourceFrame/id/1">
+        <ResourceFrame id="NMR:ResourceFrame:1">
           <deckPlans>
-            <DeckPlan id="DeckPlan/id/1" version="any">
+            <DeckPlan id="NMR:DeckPlan:1">
               <decks>
-                <Deck id="Deck/id/1" version="any">
+                <Deck id="NMR:Deck:1">
                   <deckSpaces>
                     <PassengerSpace id="seating-area_1779021502009" version="1">
                       <Name>Area 1</Name>
@@ -53,6 +53,8 @@ Content-Type: application/xml
                           <IsByWindow>true</IsByWindow>
                           <Centroid>
                             <Location>
+                                <Longitude>1</Longitude>
+                                <Latitude>2</Latitude>
                               <gml:pos>3.390 0.206</gml:pos>
                             </Location>
                           </Centroid>

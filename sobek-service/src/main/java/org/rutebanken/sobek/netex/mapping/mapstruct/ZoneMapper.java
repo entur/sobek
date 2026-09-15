@@ -1,7 +1,6 @@
 package org.rutebanken.sobek.netex.mapping.mapstruct;
 
 import com.google.common.primitives.Longs;
-import jakarta.xml.bind.ValidationException;
 import net.opengis.gml._3.PolygonType;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
@@ -57,7 +56,7 @@ public interface ZoneMapper {
     Zone_VersionStructure source,
     @MappingTarget org.rutebanken.sobek.model.Zone_VersionStructure target,
     @Context MappingContext context
-  ) throws ValidationException {
+  ) {
     if (target != null) {
       context
         .getDataManagedObjectStructureMapper()

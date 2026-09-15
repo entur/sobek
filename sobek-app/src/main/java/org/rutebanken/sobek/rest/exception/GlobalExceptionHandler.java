@@ -21,6 +21,7 @@ import jakarta.persistence.OptimisticLockException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ValidationException;
 import org.rutebanken.helper.organisation.NotAuthenticatedException;
+import org.rutebanken.sobek.netex.mapping.NetexMappingException;
 import org.springframework.core.NestedRuntimeException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -44,7 +45,7 @@ public class GlobalExceptionHandler {
         mapping = new HashMap<>();
         mapping.put(HttpStatus.BAD_REQUEST,
                 Set.of(ValidationException.class, OptimisticLockException.class, 
-                       EntityNotFoundException.class, DataIntegrityViolationException.class));
+                       EntityNotFoundException.class, DataIntegrityViolationException.class, NetexMappingException.class));
         mapping.put(HttpStatus.CONFLICT, Set.of(EntityExistsException.class));
         mapping.put(HttpStatus.FORBIDDEN, Set.of(AccessDeniedException.class));
         mapping.put(HttpStatus.UNAUTHORIZED, Set.of(NotAuthenticatedException.class));

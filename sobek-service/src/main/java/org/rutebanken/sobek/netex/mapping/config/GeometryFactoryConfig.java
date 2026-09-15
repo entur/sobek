@@ -20,10 +20,17 @@ import org.locationtech.jts.geom.PrecisionModel;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * Configuration for JTS GeometryFactory.
+ *
+ * <p>Uses SRID = 0 (Cartesian coordinate system) because Sobek deals with
+ * vehicle-local positions rather than geographic locations. All coordinates
+ * represent positions within a vehicle, not geographic coordinates on Earth.
+ */
 @Configuration
 public class GeometryFactoryConfig {
 
-    private static final int SRID = 4326;
+    private static final int SRID = 0; // Cartesian coordinates for vehicle-local positions
 
     @Bean
     public GeometryFactory geometryFactory() {

@@ -10,9 +10,7 @@ import org.rutebanken.sobek.model.vehicle.DeckSpace;
 import org.rutebanken.sobek.netex.id.NetexIdHelper;
 import org.rutebanken.sobek.netex.id.ValidPrefixList;
 import org.rutebanken.sobek.netex.mapping.NetexMappingException;
-import org.rutebanken.sobek.netex.mapping.mapstruct.DataManagedObjectStructureMapper;
-import org.rutebanken.sobek.netex.mapping.mapstruct.KeyListStructureMapper;
-import org.rutebanken.sobek.netex.mapping.mapstruct.OwnedEntityMapper;
+import org.rutebanken.sobek.netex.mapping.mapstruct.*;
 import org.rutebanken.sobek.netex.mapping.mapstruct.deckplan.DeckSpaceMapper;
 import org.rutebanken.sobek.netex.mapping.mapstruct.deckplan.SpotAffinityMapper;
 import org.rutebanken.sobek.netex.mapping.mapstruct.equipment.*;
@@ -57,9 +55,12 @@ public class MappingContext {
     private ValidPrefixList validPrefixList;
     private NetexIdHelper netexIdHelper;
     private DataManagedObjectStructureMapper dataManagedObjectStructureMapper;
+    private SimplePointMapper simplePointMapper;
     private OwnedEntityMapper ownedEntityMapper;
     private String dataOwnerRef;
     private VersionCopyMapper versionCopyMapper;
+    private ZoneMapper zoneMapper;
+    private PolygonMapper polygonMapper;
 
     public MappingContext() {
     }
@@ -80,7 +81,10 @@ public class MappingContext {
                           NetexIdHelper netexIdHelper,
                           DataManagedObjectStructureMapper dataManagedObjectStructureMapper,
                           OwnedEntityMapper ownedEntityMapper,
-                          VersionCopyMapper versionCopyMapper) {
+                          VersionCopyMapper versionCopyMapper,
+                          SimplePointMapper simplePointMapper,
+                          ZoneMapper zoneMapper,
+                          PolygonMapper polygonMapper) {
         this.referenceResolver = resolver;
         this.seatEquipmentMapper = seatEquipmentMapper;
         this.bedEquipmentMapper = bedEquipmentMapper;
@@ -97,6 +101,9 @@ public class MappingContext {
         this.dataManagedObjectStructureMapper = dataManagedObjectStructureMapper;
         this.ownedEntityMapper = ownedEntityMapper;
         this.versionCopyMapper = versionCopyMapper;
+        this.simplePointMapper = simplePointMapper;
+        this.zoneMapper = zoneMapper;
+        this.polygonMapper = polygonMapper;
     }
 
     public void updateMappingContext(PublicationDeliveryStructure publicationDeliveryStructure, ResourceFrame resourceFrame) {

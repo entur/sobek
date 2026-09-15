@@ -6,10 +6,7 @@ import org.rutebanken.netex.model.LuggageSpot;
 import org.rutebanken.netex.model.LuggageSpots_RelStructure;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
-import org.rutebanken.sobek.netex.mapping.mapstruct.DataManagedObjectStructureMapper;
-import org.rutebanken.sobek.netex.mapping.mapstruct.PointRefStructureMapper;
-import org.rutebanken.sobek.netex.mapping.mapstruct.PolygonMapper;
-import org.rutebanken.sobek.netex.mapping.mapstruct.SimplePointMapper;
+import org.rutebanken.sobek.netex.mapping.mapstruct.*;
 import org.rutebanken.sobek.netex.mapping.mapstruct.equipment.ActualVehicleEquipmentMapper;
 
 import java.util.List;
@@ -21,11 +18,11 @@ import java.util.List;
 @Mapper(
         config = SobekMapperConfig.class,
         uses = {
-                DataManagedObjectStructureMapper.class,
+                ZoneMapper.class,
+                ActualVehicleEquipmentMapper.class,
                 PointRefStructureMapper.class,
-                SimplePointMapper.class,
-                PolygonMapper.class,
-                ActualVehicleEquipmentMapper.class
+                EntityInVersionMapper.class,
+                PolygonMapper.class
         }
 )
 public interface LuggageSpotMapper {
@@ -33,8 +30,7 @@ public interface LuggageSpotMapper {
     /**
      * Maps from NeTEx LuggageSpot to Sobek entity.
      */
-    @DataManagedObjectStructureMapper.ToSobekMappings
-    @Mapping(target = "polygon", source = "polygon", qualifiedByName = "polygonTypeToPolygon")
+    @ZoneMapper.ToSobekMappings
     org.rutebanken.sobek.model.vehicle.LuggageSpot mapToSobek(
             LuggageSpot source,
             @Context MappingContext context
@@ -43,7 +39,7 @@ public interface LuggageSpotMapper {
     /**
      * Maps from Sobek entity back to NeTEx LuggageSpot.
      */
-    @DataManagedObjectStructureMapper.ToNetexMappings
+    @ZoneMapper.ToNetexMappings
     @Mapping(target = "typeOfLocatableSpotRef", ignore = true) // TODO: Implement when needed
     LuggageSpot mapToNetex(
             org.rutebanken.sobek.model.vehicle.LuggageSpot source,
@@ -53,8 +49,7 @@ public interface LuggageSpotMapper {
     /**
      * Updates an existing Sobek entity from NeTEx structure.
      */
-    @DataManagedObjectStructureMapper.ToSobekMappings
-    @Mapping(target = "polygon", source = "polygon", qualifiedByName = "polygonTypeToPolygon")
+    @ZoneMapper.ToSobekMappings
     void updateSobekFromNetex(
             LuggageSpot source,
             @MappingTarget org.rutebanken.sobek.model.vehicle.LuggageSpot target,
@@ -68,7 +63,7 @@ public interface LuggageSpotMapper {
             @Context MappingContext context
     ) {
         if (target != null) {
-            context.getDataManagedObjectStructureMapper().afterMappingToSobek(source, target, context);
+            context.getZoneMapper().afterMapToSobek(source, target, context);
         }
     }
     @AfterMapping
@@ -78,7 +73,7 @@ public interface LuggageSpotMapper {
             @Context MappingContext context
     ) {
         if (target != null) {
-            context.getDataManagedObjectStructureMapper().afterMappingToNetex(source, target, context);
+            context.getZoneMapper().afterMapToNetex(source, target, context);
         }
     }
 

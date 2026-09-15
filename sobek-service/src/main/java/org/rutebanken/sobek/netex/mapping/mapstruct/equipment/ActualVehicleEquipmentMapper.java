@@ -3,12 +3,12 @@ package org.rutebanken.sobek.netex.mapping.mapstruct.equipment;
 import jakarta.xml.bind.JAXBElement;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
 import org.rutebanken.netex.model.*;
 import org.rutebanken.sobek.model.vehicle.Equipment;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.rutebanken.sobek.netex.mapping.mapstruct.DataManagedObjectStructureMapper;
+import org.rutebanken.sobek.netex.mapping.mapstruct.EntityInVersionMapper;
 import org.rutebanken.sobek.netex.mapping.mapstruct.ReferenceMapper;
 
 import java.util.List;
@@ -17,7 +17,8 @@ import java.util.Objects;
 @Mapper(
         config = SobekMapperConfig.class,
         uses = {
-                DataManagedObjectStructureMapper.class
+                DataManagedObjectStructureMapper.class,
+                EntityInVersionMapper.class
         }
 )
 public interface ActualVehicleEquipmentMapper {

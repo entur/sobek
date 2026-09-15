@@ -3,14 +3,12 @@ package org.rutebanken.sobek.netex.mapping.mapstruct;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.primitives.Longs;
 import org.mapstruct.*;
 import org.rutebanken.netex.model.DataManagedObjectStructure;
 import org.rutebanken.netex.model.KeyListStructure;
 import org.rutebanken.netex.model.KeyValueStructure;
 import org.rutebanken.sobek.model.KeyValue;
 import org.rutebanken.sobek.netex.id.NetexIdHelper;
-import org.rutebanken.sobek.netex.mapping.NetexMappingException;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.slf4j.Logger;
@@ -30,7 +28,8 @@ import static org.rutebanken.sobek.model.CustomKeyValueTypes.ORIGINAL_ID_KEY;
 @Mapper(
         config = SobekMapperConfig.class,
         uses = {
-                KeyListStructureMapper.class
+                KeyListStructureMapper.class,
+                EntityInVersionMapper.class
         }
 )
 public interface DataManagedObjectStructureMapper {
@@ -176,30 +175,9 @@ public interface DataManagedObjectStructureMapper {
                         .withValue(value));
     }
 
-    @Named("versionToSobekDMO")
-    default Long versionToSobek(String version) {
-        if (version != null) {
-            if (version.equals("any")) {
-                return -1L; // Need to handle this value in import.
-            } else {
-                Long longVersion = Longs.tryParse(version);
-                if (longVersion != null) {
-                    return longVersion;
-                } else {
-                    throw new NetexMappingException("Received version in netex format. " +
-                            "But cannot parse version. Expecting a long value or the String 'any'. " +
-                            "Value is: " + version);
-                }
-            }
-        } else {
-            return null;
-        }
-    }
-
-
     @Mapping(target = "id", ignore = true) // Handle in AfterMapping
     @Mapping(target = "netexId", ignore = true) // Handle in AfterMapping
-    @Mapping(target = "version", source = "version", qualifiedByName = "versionToSobekDMO")
+    @Mapping(target = "version", source = "version", qualifiedByName = "versionToSobek")
     @Mapping(target = "keyValues", ignore = true) // Handle in AfterMapping
     @interface ToSobekMappings {
     }

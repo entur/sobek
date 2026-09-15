@@ -17,15 +17,15 @@ import java.util.List;
 @Mapper(
         config = SobekMapperConfig.class,
         uses = {
-                DataManagedObjectStructureMapper.class,
-                PolygonMapper.class,
-                PointRefStructureMapper.class,
-                SimplePointMapper.class,
+                ZoneMapper.class,
                 PassengerEntranceMapper.class,
                 DeckSpaceCapacityMapper.class,
                 PassengerSpotMapper.class,
                 LuggageSpotMapper.class,
-                ActualVehicleEquipmentMapper.class
+                ActualVehicleEquipmentMapper.class,
+                PointRefStructureMapper.class,
+                EntityInVersionMapper.class,
+                PolygonMapper.class
         }
 )
 public interface DeckSpaceMapper {
@@ -35,8 +35,7 @@ public interface DeckSpaceMapper {
     /**
      * Maps from NeTEx DeckSpace to Sobek entity.
      */
-    @DataManagedObjectStructureMapper.ToSobekMappings
-    @Mapping(target = "polygon", source = "polygon", qualifiedByName = "polygonTypeToPolygon")
+    @ZoneMapper.ToSobekMappings
     @Mapping(target = "incomingId", source = "id")
     @Mapping(target = "spotAffinities", ignore = true) // Handled by AfterMapping.
     @Mapping(target = "parentDeckSpace", ignore = true) // Handled by AfterMapping.
@@ -48,8 +47,7 @@ public interface DeckSpaceMapper {
     /**
      * Maps from Sobek entity back to NeTEx DeckSpace.
      */
-    @DataManagedObjectStructureMapper.ToNetexMappings
-    @Mapping(target = "polygon", source = "polygon", qualifiedByName = "polygonToPolygonType")
+    @ZoneMapper.ToNetexMappings
     @Mapping(target = "typeOfDeckSpaceRef", ignore = true) // TODO: Implement when needed
     @Mapping(target = "deckEntranceCouples", ignore = true) // TODO: Implement when needed
     @Mapping(target = "deckEntranceUsages", ignore = true) // TODO: Implement when needed
@@ -64,8 +62,7 @@ public interface DeckSpaceMapper {
     /**
      * Updates an existing Sobek entity from NeTEx structure.
      */
-    @DataManagedObjectStructureMapper.ToSobekMappings
-    @Mapping(target = "polygon", source = "polygon", qualifiedByName = "polygonTypeToPolygon")
+    @ZoneMapper.ToSobekMappings
     @Mapping(target = "incomingId", source = "id")
     @Mapping(target = "spotAffinities", ignore = true) // Handled by AfterMapping.
     @Mapping(target = "parentDeckSpace", ignore = true) // Handled by AfterMapping.
@@ -80,10 +77,10 @@ public interface DeckSpaceMapper {
                                  @MappingTarget org.rutebanken.sobek.model.vehicle.PassengerSpace target,
                                  @Context MappingContext context) {
         if(target != null) {
-            context.getDataManagedObjectStructureMapper().afterMappingToSobek(source, target, context);
+            context.getZoneMapper().afterMapToSobek(source, target, context);
+            context.setCurrentSobekDeckSpace(target);
+            target.setSpotAffinities(context.getSpotAffinityMapper().mapListToSobek(source.getSpotAffinities(), context));
         }
-        context.setCurrentSobekDeckSpace(target);
-        target.setSpotAffinities(context.getSpotAffinityMapper().mapListToSobek(source.getSpotAffinities(), context));
     }
 
     @AfterMapping
@@ -91,11 +88,13 @@ public interface DeckSpaceMapper {
                                  @MappingTarget PassengerSpace target,
                                  @Context MappingContext context) {
         if(target != null) {
-            context.getDataManagedObjectStructureMapper().afterMappingToNetex(source, target, context);
-        }
-        target.setSpotAffinities(context.getSpotAffinityMapper().mapListToNetex(source.getSpotAffinities(), context));
-        if(source.getParentDeckSpace() != null) {
-            target.setParentDeckSpaceRef(new DeckSpaceRefStructure().withRef(source.getParentDeckSpace().getNetexId()));
+            context.getZoneMapper().afterMapToNetex(source, target, context);
+
+            target.setSpotAffinities(context.getSpotAffinityMapper().mapListToNetex(source.getSpotAffinities(), context));
+
+            if(source.getParentDeckSpace() != null) {
+                target.setParentDeckSpaceRef(new DeckSpaceRefStructure().withRef(source.getParentDeckSpace().getNetexId()));
+            }
         }
     }
 

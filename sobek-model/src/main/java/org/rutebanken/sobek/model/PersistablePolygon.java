@@ -16,9 +16,12 @@
 package org.rutebanken.sobek.model;
 
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import org.locationtech.jts.geom.Polygon;
 
 import java.io.Serializable;
@@ -30,6 +33,8 @@ public class PersistablePolygon implements Serializable {
     @GeneratedValue(generator = "sequence_per_table_generator")
     protected Long id;
 
+    @JdbcTypeCode(SqlTypes.GEOMETRY)
+    @Column(columnDefinition = "geometry(Polygon)")
     private Polygon polygon;
 
     public Polygon getPolygon() {

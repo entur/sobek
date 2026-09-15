@@ -6,10 +6,10 @@ import org.rutebanken.netex.model.*;
 import org.rutebanken.sobek.model.vehicle.Deck;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
-import org.rutebanken.sobek.netex.mapping.mapstruct.DataManagedObjectStructureMapper;
+import org.rutebanken.sobek.netex.mapping.mapstruct.EntityInVersionMapper;
 import org.rutebanken.sobek.netex.mapping.mapstruct.PointRefStructureMapper;
 import org.rutebanken.sobek.netex.mapping.mapstruct.PolygonMapper;
-import org.rutebanken.sobek.netex.mapping.mapstruct.SimplePointMapper;
+import org.rutebanken.sobek.netex.mapping.mapstruct.ZoneMapper;
 import org.rutebanken.sobek.netex.mapping.mapstruct.equipment.ActualVehicleEquipmentMapper;
 
 import java.util.List;
@@ -21,11 +21,11 @@ import java.util.List;
 @Mapper(
         config = SobekMapperConfig.class,
         uses = {
-                DataManagedObjectStructureMapper.class,
+                ZoneMapper.class,
+                ActualVehicleEquipmentMapper.class,
                 PointRefStructureMapper.class,
-                SimplePointMapper.class,
-                PolygonMapper.class,
-                ActualVehicleEquipmentMapper.class
+                EntityInVersionMapper.class,
+                PolygonMapper.class
         }
 )
 public interface PassengerSpotMapper {
@@ -33,8 +33,7 @@ public interface PassengerSpotMapper {
     /**
      * Maps from NeTEx PassengerSpot to Sobek entity.
      */
-    @DataManagedObjectStructureMapper.ToSobekMappings
-    @Mapping(target = "polygon", source = "polygon", qualifiedByName = "polygonTypeToPolygon")
+    @ZoneMapper.ToSobekMappings
     org.rutebanken.sobek.model.vehicle.PassengerSpot mapToSobek(
             PassengerSpot source,
             @Context MappingContext context
@@ -43,7 +42,7 @@ public interface PassengerSpotMapper {
     /**
      * Maps from Sobek entity back to NeTEx PassengerSpot.
      */
-    @DataManagedObjectStructureMapper.ToNetexMappings
+    @ZoneMapper.ToNetexMappings
     @Mapping(target = "typeOfLocatableSpotRef", ignore = true) // TODO: Implement when needed
     PassengerSpot mapToNetex(
             org.rutebanken.sobek.model.vehicle.PassengerSpot source,
@@ -53,8 +52,7 @@ public interface PassengerSpotMapper {
     /**
      * Updates an existing Sobek entity from NeTEx structure.
      */
-    @DataManagedObjectStructureMapper.ToSobekMappings
-    @Mapping(target = "polygon", source = "polygon", qualifiedByName = "polygonTypeToPolygon")
+    @ZoneMapper.ToSobekMappings
     @Mapping(target = "actualVehicleEquipments", ignore = true)
     void updateSobekFromNetex(
             PassengerSpot source,
@@ -105,28 +103,28 @@ public interface PassengerSpotMapper {
             @Context MappingContext context
     ) {
         if (target != null) {
-            context.getDataManagedObjectStructureMapper().afterMappingToSobek(source, target, context);
-        }
-        Deck currentSobekDeck = context.getCurrentSobekDeck();
-        if(source.getSpotColumnRef() != null &&
-                source.getSpotColumnRef().getRef() != null) {
-            if (currentSobekDeck != null && currentSobekDeck.getSpotColumns() != null) {
-                String refId = source.getSpotColumnRef().getRef();
-                currentSobekDeck.getSpotColumns().stream()
-                        .filter(column -> refId.equals(column.getNetexId()))
-                        .findFirst()
-                        .ifPresent(target::setSpotColumn);
+            context.getZoneMapper().afterMapToSobek(source, target, context);
+            Deck currentSobekDeck = context.getCurrentSobekDeck();
+            if(source.getSpotColumnRef() != null &&
+                    source.getSpotColumnRef().getRef() != null) {
+                if (currentSobekDeck != null && currentSobekDeck.getSpotColumns() != null) {
+                    String refId = source.getSpotColumnRef().getRef();
+                    currentSobekDeck.getSpotColumns().stream()
+                            .filter(column -> refId.equals(column.getNetexId()))
+                            .findFirst()
+                            .ifPresent(target::setSpotColumn);
+                }
             }
-        }
 
-        if(source.getSpotRowRef() != null &&
-                source.getSpotRowRef().getRef() != null) {
-            if (currentSobekDeck != null && currentSobekDeck.getSpotRows() != null) {
-                String refId = source.getSpotRowRef().getRef();
-                currentSobekDeck.getSpotRows().stream()
-                        .filter(column -> refId.equals(column.getNetexId()))
-                        .findFirst()
-                        .ifPresent(target::setSpotRow);
+            if(source.getSpotRowRef() != null &&
+                    source.getSpotRowRef().getRef() != null) {
+                if (currentSobekDeck != null && currentSobekDeck.getSpotRows() != null) {
+                    String refId = source.getSpotRowRef().getRef();
+                    currentSobekDeck.getSpotRows().stream()
+                            .filter(column -> refId.equals(column.getNetexId()))
+                            .findFirst()
+                            .ifPresent(target::setSpotRow);
+                }
             }
         }
     }
@@ -138,15 +136,15 @@ public interface PassengerSpotMapper {
             @Context MappingContext context
     ) {
         if (target != null) {
-            context.getDataManagedObjectStructureMapper().afterMappingToNetex(source, target, context);
-        }
+            context.getZoneMapper().afterMapToNetex(source, target, context);
 
-        if(source.getSpotColumn() != null) {
-            target.setSpotColumnRef(new SpotColumnRefStructure().withRef(source.getSpotColumn().getNetexId()) );
-        }
+            if(source.getSpotColumn() != null) {
+                target.setSpotColumnRef(new SpotColumnRefStructure().withRef(source.getSpotColumn().getNetexId()) );
+            }
 
-        if(source.getSpotRow() != null) {
-            target.setSpotRowRef(new SpotRowRefStructure().withRef(source.getSpotRow().getNetexId()) );
+            if(source.getSpotRow() != null) {
+                target.setSpotRowRef(new SpotRowRefStructure().withRef(source.getSpotRow().getNetexId()) );
+            }
         }
     }
 }

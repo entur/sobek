@@ -15,8 +15,4 @@
 
 package org.rutebanken.sobek.model;
 
-public class VersionRefStructure
-        extends VersionOfObjectRefStructure {
-
-
-}
+public class VersionRefStructure extends VersionOfObjectRefStructure {}

@@ -17,10 +17,5 @@ package org.rutebanken.sobek.model;
 
 import jakarta.persistence.MappedSuperclass;
 
-
 @MappedSuperclass
-public class ZoneRefStructure
-        extends GroupOfPointsRefStructure {
-
-
-}
+public class ZoneRefStructure extends GroupOfPointsRefStructure {}

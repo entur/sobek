@@ -33,8 +33,7 @@ public class DoubleValuesToCoordinateSequence {
         Coordinate[] coordinates = new Coordinate[values.size()/2];
         int coordinateIndex = 0;
         for (int index = 0; index < values.size(); index += 2) {
-            // Swap coordinates. Sobek uses x,y. Netex is usually y,x
-            Coordinate coordinate = new Coordinate(values.get(index+1), values.get(index));
+            Coordinate coordinate = new Coordinate(values.get(index), values.get(index+1));
             logger.debug("Parsed coordinate: {}", coordinate);
             coordinates[coordinateIndex++] = coordinate;
         }

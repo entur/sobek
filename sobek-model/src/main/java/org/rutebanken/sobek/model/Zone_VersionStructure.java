@@ -15,12 +15,10 @@
 
 package org.rutebanken.sobek.model;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Transient;
+import jakarta.persistence.*;
 import lombok.ToString;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 
@@ -28,7 +26,9 @@ import org.locationtech.jts.geom.Polygon;
 @ToString
 public class Zone_VersionStructure extends GroupOfPoints_VersionStructure {
 
-  protected Point centroid;
+    @JdbcTypeCode(SqlTypes.GEOMETRY)
+    @Column(columnDefinition = "geometry(Point)")
+    protected Point centroid;
 
   /**
    * Polygon is wrapped in PersistablePolygon.

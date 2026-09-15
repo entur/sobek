@@ -54,16 +54,14 @@ public interface ZoneMapper {
     @MappingTarget org.rutebanken.sobek.model.Zone_VersionStructure target,
     @Context MappingContext context
   ) {
-    if (target != null) {
+    if (target != null && source != null) {
       context
         .getDataManagedObjectStructureMapper()
         .afterMappingToSobek(source, target, context);
-      if (source.getCentroid() != null) {
-        Point point = context
-          .getSimplePointMapper()
-          .simplePointToPoint(source.getCentroid(), context);
-        target.setCentroid(point);
-      }
+      Point point = context
+        .getSimplePointMapper()
+        .simplePointToPoint(source.getCentroid(), context);
+      target.setCentroid(point);
     }
   }
 

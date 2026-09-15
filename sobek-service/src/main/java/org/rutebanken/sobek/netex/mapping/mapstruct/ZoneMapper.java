@@ -1,9 +1,6 @@
 package org.rutebanken.sobek.netex.mapping.mapstruct;
 
-import com.google.common.primitives.Longs;
-import net.opengis.gml._3.PolygonType;
 import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.Polygon;
 import org.mapstruct.*;
 import org.rutebanken.netex.model.Zone_VersionStructure;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;

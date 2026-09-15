@@ -46,7 +46,7 @@ public class PolygonConverterTest {
     private GeometryFactory geometryFactory;
 
     @Test
-    public void convertFrom() throws Exception {
+    public void convertFrom() {
         List<Double> values = new ArrayList<>();
         // Square
         values.add(0.0);
@@ -79,7 +79,7 @@ public class PolygonConverterTest {
     }
 
     @Test
-    public void convertFromAndCalculateArea() throws Exception {
+    public void convertFromAndCalculateArea()  {
         List<Double> values = new ArrayList<>();
         // Triangle
         values.add(0.0);
@@ -110,7 +110,7 @@ public class PolygonConverterTest {
     }
 
     @Test
-    public void convertTo() throws Exception {
+    public void convertTo()  {
 
         // Square
         Coordinate[] coordinates = new Coordinate[]{
@@ -143,7 +143,7 @@ public class PolygonConverterTest {
     }
 
     @Test
-    public void convertToWithHoles() throws Exception {
+    public void convertToWithHoles()  {
 
         Coordinate[] coordinates = new Coordinate[]{
                 // Triangle
@@ -174,12 +174,4 @@ public class PolygonConverterTest {
             assertEquals(expectedExteriorValues.get(counter++), coordinate.y, description + " y coordinate");
         }
     }
-
-    private void assertInteriorRingsMatch(Polygon actual, List<List<Double>> expectedInteriorValues) {
-        for (int interiorIndex = 0; interiorIndex < actual.getNumInteriorRing(); interiorIndex++) {
-            assertCoordinatesMatch(actual.getInteriorRingN(interiorIndex), expectedInteriorValues.getFirst(), "interior ring number " + interiorIndex);
-        }
-    }
-
-
 }

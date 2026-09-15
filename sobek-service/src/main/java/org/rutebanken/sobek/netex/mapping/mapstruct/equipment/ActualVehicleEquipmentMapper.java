@@ -3,7 +3,6 @@ package org.rutebanken.sobek.netex.mapping.mapstruct.equipment;
 import jakarta.xml.bind.JAXBElement;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
 import org.rutebanken.netex.model.*;
 import org.rutebanken.sobek.model.vehicle.Equipment;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;

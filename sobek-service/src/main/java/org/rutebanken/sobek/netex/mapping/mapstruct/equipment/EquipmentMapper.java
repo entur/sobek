@@ -57,7 +57,7 @@ public interface EquipmentMapper {
             case org.rutebanken.sobek.model.vehicle.StaircaseEquipment staircaseEquipment -> context.getStaircaseEquipmentMapper().mapToNetex(staircaseEquipment, context);
             default -> null;
         };
-    };
+    }
 
     @DataManagedObjectStructureMapper.ToSobekMappings
     default org.rutebanken.sobek.model.vehicle.Equipment mapToSobekManual(
@@ -74,7 +74,7 @@ public interface EquipmentMapper {
             case StaircaseEquipment staircaseEquipment -> context.getStaircaseEquipmentMapper().mapToSobek(staircaseEquipment, context);
             default -> null;
         };
-    };
+    }
 
     @AfterMapping
     default void afterMapToSobek(

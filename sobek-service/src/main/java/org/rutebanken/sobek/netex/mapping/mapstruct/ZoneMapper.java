@@ -6,7 +6,6 @@ import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.mapstruct.*;
 import org.rutebanken.netex.model.Zone_VersionStructure;
-import org.rutebanken.sobek.netex.mapping.NetexMappingException;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 
@@ -20,6 +19,7 @@ import org.rutebanken.sobek.netex.mapping.context.MappingContext;
     DataManagedObjectStructureMapper.class,
     PointRefStructureMapper.class,
     PolygonMapper.class,
+    EntityInVersionMapper.class
   }
 )
 public interface ZoneMapper {
@@ -88,42 +88,19 @@ public interface ZoneMapper {
     }
   }
 
-  @Named("versionToSobekZ")
-  default Long versionToSobek(String version) {
-    if (version != null) {
-      if (version.equals("any")) {
-        return -1L; // Need to handle this value in import.
-      } else {
-        Long longVersion = Longs.tryParse(version);
-        if (longVersion != null) {
-          return longVersion;
-        } else {
-          throw new NetexMappingException(
-            "Received version in netex format. " +
-            "But cannot parse version. Expecting a long value or the String 'any'. " +
-            "Value is: " +
-            version
-          );
-        }
-      }
-    } else {
-      return null;
-    }
-  }
-
   @Mapping(target = "id", ignore = true) // Handle in AfterMapping
   @Mapping(target = "netexId", ignore = true) // Handle in AfterMapping
   @Mapping(
     target = "version",
     source = "version",
-    qualifiedByName = "versionToSobekZ"
+    qualifiedByName = "versionToSobek"
   )
   @Mapping(target = "keyValues", ignore = true) // Handle in AfterMapping
   @Mapping(target = "centroid", ignore = true) // Handle in AfterMapping
   @Mapping(
     target = "polygon",
     source = "polygon",
-    qualifiedByName = "polygonTypeToPolygonZ"
+    qualifiedByName = "polygonTypeToPolygon"
   )
   @interface ToSobekMappings {
   }
@@ -134,24 +111,8 @@ public interface ZoneMapper {
   @Mapping(
     target = "polygon",
     source = "polygon",
-    qualifiedByName = "polygonToPolygonTypeZ"
+    qualifiedByName = "polygonToPolygonType"
   )
   @interface ToNetexMappings {
-  }
-
-  @Named("polygonTypeToPolygonZ")
-  default Polygon polygonTypeToPolygonZ(
-    PolygonType polygonType,
-    @Context MappingContext context
-  ) {
-    return context.getPolygonMapper().polygonTypeToPolygon(polygonType);
-  }
-
-  @Named("polygonToPolygonTypeZ")
-  default PolygonType polygonToPolygonTypeZ(
-    Polygon polygon,
-    @Context MappingContext context
-  ) {
-    return context.getPolygonMapper().polygonToPolygonType(polygon);
   }
 }

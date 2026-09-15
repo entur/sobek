@@ -19,7 +19,7 @@ import java.util.List;
  */
 @Mapper(
         config = SobekMapperConfig.class,
-        uses = DataManagedObjectStructureMapper.class
+        uses = {DataManagedObjectStructureMapper.class, EntityInVersionMapper.class}
 )
 public interface VehicleModelMapper {
 

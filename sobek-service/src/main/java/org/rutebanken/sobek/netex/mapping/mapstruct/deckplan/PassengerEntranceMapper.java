@@ -20,7 +20,9 @@ import java.util.List;
         uses = {
                 ZoneMapper.class,
                 ActualVehicleEquipmentMapper.class,
-                PointRefStructureMapper.class
+                PointRefStructureMapper.class,
+                EntityInVersionMapper.class,
+                PolygonMapper.class
         }
 )
 public interface PassengerEntranceMapper {

@@ -10,6 +10,7 @@ import org.rutebanken.netex.model.DeckPlan;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.rutebanken.sobek.netex.mapping.mapstruct.DataManagedObjectStructureMapper;
+import org.rutebanken.sobek.netex.mapping.mapstruct.EntityInVersionMapper;
 
 import java.util.List;
 
@@ -19,7 +20,7 @@ import java.util.List;
  */
 @Mapper(
         config = SobekMapperConfig.class,
-        uses = { DataManagedObjectStructureMapper.class, DeckMapper.class }
+        uses = { DataManagedObjectStructureMapper.class, DeckMapper.class, EntityInVersionMapper.class }
 )
 public interface DeckPlanMapper {
 

@@ -11,7 +11,7 @@ import org.rutebanken.sobek.netex.mapping.context.MappingContext;
  */
 @Mapper(
         config = SobekMapperConfig.class,
-        uses = DataManagedObjectStructureMapper.class
+        uses = { DataManagedObjectStructureMapper.class, EntityInVersionMapper.class}
 )
 public interface PassengerCapacityMapper {
     /**

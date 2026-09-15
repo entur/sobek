@@ -8,6 +8,7 @@ import org.rutebanken.sobek.model.vehicle.LocatableSpot;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.rutebanken.sobek.netex.mapping.mapstruct.DataManagedObjectStructureMapper;
+import org.rutebanken.sobek.netex.mapping.mapstruct.EntityInVersionMapper;
 
 import java.util.List;
 import java.util.Objects;
@@ -15,7 +16,9 @@ import java.util.stream.Collectors;
 
 @Mapper(
         config = SobekMapperConfig.class,
-        uses = {DataManagedObjectStructureMapper.class
+        uses = {
+            DataManagedObjectStructureMapper.class,
+            EntityInVersionMapper.class
         }
 )
 public interface SpotAffinityMapper {

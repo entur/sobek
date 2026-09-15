@@ -22,7 +22,7 @@ import java.util.List;
         uses = {
                 DataManagedObjectStructureMapper.class,
                 VehicleTypeMapper.class,
-                VehicleModelMapper.class
+                VehicleModelMapper.class, EntityInVersionMapper.class
         }
 )
 public interface VehicleMapper {

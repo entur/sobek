@@ -5,7 +5,9 @@ import org.rutebanken.netex.model.Deck;
 import org.rutebanken.netex.model.Decks_RelStructure;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
+import org.rutebanken.sobek.netex.mapping.mapstruct.EntityInVersionMapper;
 import org.rutebanken.sobek.netex.mapping.mapstruct.PointRefStructureMapper;
+import org.rutebanken.sobek.netex.mapping.mapstruct.PolygonMapper;
 import org.rutebanken.sobek.netex.mapping.mapstruct.ZoneMapper;
 
 import java.util.List;
@@ -19,7 +21,9 @@ import java.util.List;
         uses = {ZoneMapper.class,
                 SpotRowMapper.class,
                 SpotColumnMapper.class,
-                PointRefStructureMapper.class
+                PointRefStructureMapper.class,
+                EntityInVersionMapper.class,
+                PolygonMapper.class
         }
 )
 public interface DeckMapper {

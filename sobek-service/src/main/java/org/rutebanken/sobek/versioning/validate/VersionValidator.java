@@ -21,24 +21,37 @@ import org.springframework.stereotype.Service;
 @Service
 public class VersionValidator {
 
-    public void validate(EntityInVersionStructure existingVersion, EntityInVersionStructure newVersion) {
-
-        if(newVersion == null) {
-            throw new IllegalArgumentException("Cannot save new version if it's null");
-        }
-
-        if (existingVersion == newVersion) {
-            throw new IllegalArgumentException("Existing and new version must be different objects");
-        }
-
-        if(existingVersion != null) {
-            if (existingVersion.getNetexId() == null) {
-                throw new IllegalArgumentException("Existing entity must have netexId set: " + existingVersion);
-            }
-
-            if (!existingVersion.getNetexId().equals(newVersion.getNetexId())) {
-                throw new IllegalArgumentException("Existing and new entity do not match: " + existingVersion.getNetexId() + " != " + newVersion.getNetexId());
-            }
-        }
+  public void validate(
+    EntityInVersionStructure existingVersion,
+    EntityInVersionStructure newVersion
+  ) {
+    if (newVersion == null) {
+      throw new IllegalArgumentException(
+        "Cannot save new version if it's null"
+      );
     }
+
+    if (existingVersion == newVersion) {
+      throw new IllegalArgumentException(
+        "Existing and new version must be different objects"
+      );
+    }
+
+    if (existingVersion != null) {
+      if (existingVersion.getNetexId() == null) {
+        throw new IllegalArgumentException(
+          "Existing entity must have netexId set: " + existingVersion
+        );
+      }
+
+      if (!existingVersion.getNetexId().equals(newVersion.getNetexId())) {
+        throw new IllegalArgumentException(
+          "Existing and new entity do not match: " +
+          existingVersion.getNetexId() +
+          " != " +
+          newVersion.getNetexId()
+        );
+      }
+    }
+  }
 }

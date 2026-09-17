@@ -47,11 +47,11 @@ public abstract class PolygonMapper {
             return null;
         }
 
-        Optional<List<Double>> optionalExteriorValues = Optional.ofNullable(polygonType)
+        Optional<List<Double>> optionalExteriorValues = Optional.of(polygonType)
                 .map(PolygonType::getExterior)
                 .map(this::extractValues);
 
-        Optional<List<List<Double>>> interiorValues = Optional.ofNullable(polygonType)
+        Optional<List<List<Double>>> interiorValues = Optional.of(polygonType)
                 .map(PolygonType::getInterior)
                 .map(list -> list.stream()
                         .map(this::extractValues)
@@ -86,7 +86,7 @@ public abstract class PolygonMapper {
             return null;
         }
 
-        Optional<Coordinate[]> optionalCoordinates = Optional.ofNullable(polygon)
+        Optional<Coordinate[]> optionalCoordinates = Optional.of(polygon)
                 .map(Polygon::getExteriorRing)
                 .map(LineString::getCoordinates)
                 .filter(coordinates -> coordinates.length > 0);
@@ -134,8 +134,8 @@ public abstract class PolygonMapper {
     protected List<Double> toList(Coordinate[] coordinates) {
         List<Double> values = new ArrayList<>(coordinates.length * 2);
         for (Coordinate coordinate : coordinates) {
-            values.add(coordinate.y);
             values.add(coordinate.x);
+            values.add(coordinate.y);
         }
         return values;
     }

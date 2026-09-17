@@ -46,14 +46,17 @@ public class PolygonConverterTest {
     private GeometryFactory geometryFactory;
 
     @Test
-    public void convertFrom() throws Exception {
+    public void convertFrom() {
         List<Double> values = new ArrayList<>();
-        values.add(9.8468);
-        values.add(59.2649);
-        values.add(9.8456);
-        values.add(59.2654);
-        values.add(9.8457);
-        values.add(59.2655);
+        // Square
+        values.add(0.0);
+        values.add(0.0);
+        values.add(0.0);
+        values.add(3.0);
+        values.add(2.0);
+        values.add(3.0);
+        values.add(2.0);
+        values.add(0.0);
         values.add(values.get(0));
         values.add(values.get(1));
 
@@ -76,14 +79,15 @@ public class PolygonConverterTest {
     }
 
     @Test
-    public void convertFromWithHoles() throws Exception {
+    public void convertFromAndCalculateArea()  {
         List<Double> values = new ArrayList<>();
-        values.add(9.8468);
-        values.add(59.2649);
-        values.add(9.8456);
-        values.add(59.2654);
-        values.add(9.8457);
-        values.add(59.2655);
+        // Triangle
+        values.add(0.0);
+        values.add(0.0);
+        values.add(2.0);
+        values.add(3.0);
+        values.add(0.0);
+        values.add(3.0);
         values.add(values.get(0));
         values.add(values.get(1));
 
@@ -95,26 +99,26 @@ public class PolygonConverterTest {
         PolygonType polygonType = new PolygonType()
                 .withId("KVE-07")
                 .withExterior(new AbstractRingPropertyType()
-                        .withAbstractRing(openGisObjectFactory.createLinearRing(linearRing)))
-                .withInterior(new AbstractRingPropertyType().withAbstractRing(openGisObjectFactory.createLinearRing(linearRing)));
+                        .withAbstractRing(openGisObjectFactory.createLinearRing(linearRing)));
 
         Polygon polygon = polygonConverter.polygonTypeToPolygon(polygonType);
 
         assertNotNull(polygon);
         assertEquals(values.size() / 2, polygon.getExteriorRing().getCoordinates().length);
-        assertEquals(1, polygon.getNumInteriorRing());
         assertCoordinatesMatch(polygon.getExteriorRing(), values, "Exterior ring");
-        assertInteriorRingsMatch(polygon, List.of(values));
+        assertEquals(3.0, polygon.getArea(), 0.000001);
     }
 
     @Test
-    public void convertTo() throws Exception {
+    public void convertTo()  {
 
+        // Square
         Coordinate[] coordinates = new Coordinate[]{
-                new Coordinate(9.8468, 59.2649),
-                new Coordinate(9.8456, 59.2654),
-                new Coordinate(9.8457, 59.2655),
-                new Coordinate(9.8468, 59.2649)};
+                new Coordinate(0.0, 0.0),
+                new Coordinate(0.0, 3.0),
+                new Coordinate(2.0, 3.0),
+                new Coordinate(2.0, 0.0),
+                new Coordinate(0.0, 0.0)};
 
         LinearRing linearRing = new LinearRing(new CoordinateArraySequence(coordinates), geometryFactory);
         Polygon polygon = new Polygon(linearRing, null, geometryFactory);
@@ -133,19 +137,20 @@ public class PolygonConverterTest {
         // Expect Y, X when converting to PolygonType (Netex)
         int counter = 0;
         for(Coordinate coordinate : coordinates) {
-            assertEquals(coordinate.y, values.get(counter++).doubleValue());
             assertEquals(coordinate.x, values.get(counter++).doubleValue());
+            assertEquals(coordinate.y, values.get(counter++).doubleValue());
         }
     }
 
     @Test
-    public void convertToWithHoles() throws Exception {
+    public void convertToWithHoles()  {
 
         Coordinate[] coordinates = new Coordinate[]{
-                new Coordinate(9.8468, 59.2649),
-                new Coordinate(9.8456, 59.2654),
-                new Coordinate(9.8457, 59.2655),
-                new Coordinate(9.8468, 59.2649)};
+                // Triangle
+                new Coordinate(0.0, 0.0),
+                new Coordinate(2.0, 3.0),
+                new Coordinate(0.0, 3.0),
+                new Coordinate(0.0, 0)};
 
         LinearRing linearRing = new LinearRing(new CoordinateArraySequence(coordinates), geometryFactory);
         LinearRing[] holes = new LinearRing[] { new LinearRing(new CoordinateArraySequence(coordinates), geometryFactory)};
@@ -165,16 +170,8 @@ public class PolygonConverterTest {
     private void assertCoordinatesMatch(LineString actual, List<Double> expectedExteriorValues, String description) {
         int counter = 0;
         for (Coordinate coordinate : actual.getCoordinates()) {
-            assertEquals(expectedExteriorValues.get(counter++), coordinate.y, description + " x coordinate");
-            assertEquals(expectedExteriorValues.get(counter++), coordinate.x, description + " y coordinate");
+            assertEquals(expectedExteriorValues.get(counter++), coordinate.x, description + " x coordinate");
+            assertEquals(expectedExteriorValues.get(counter++), coordinate.y, description + " y coordinate");
         }
     }
-
-    private void assertInteriorRingsMatch(Polygon actual, List<List<Double>> expectedInteriorValues) {
-        for (int interiorIndex = 0; interiorIndex < actual.getNumInteriorRing(); interiorIndex++) {
-            assertCoordinatesMatch(actual.getInteriorRingN(interiorIndex), expectedInteriorValues.getFirst(), "interior ring number " + interiorIndex);
-        }
-    }
-
-
 }

@@ -7,6 +7,7 @@ import org.rutebanken.netex.model.ObjectFactory;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.rutebanken.sobek.netex.mapping.mapstruct.DataManagedObjectStructureMapper;
+import org.rutebanken.sobek.netex.mapping.mapstruct.EntityInVersionMapper;
 
 /**
  * MapStruct mapper for Equipment.
@@ -15,7 +16,8 @@ import org.rutebanken.sobek.netex.mapping.mapstruct.DataManagedObjectStructureMa
 @Mapper(
         config = SobekMapperConfig.class,
         uses = {
-                DataManagedObjectStructureMapper.class
+                DataManagedObjectStructureMapper.class,
+                EntityInVersionMapper.class
         }
 )
 public interface EquipmentMapper {
@@ -55,7 +57,7 @@ public interface EquipmentMapper {
             case org.rutebanken.sobek.model.vehicle.StaircaseEquipment staircaseEquipment -> context.getStaircaseEquipmentMapper().mapToNetex(staircaseEquipment, context);
             default -> null;
         };
-    };
+    }
 
     @DataManagedObjectStructureMapper.ToSobekMappings
     default org.rutebanken.sobek.model.vehicle.Equipment mapToSobekManual(
@@ -72,7 +74,7 @@ public interface EquipmentMapper {
             case StaircaseEquipment staircaseEquipment -> context.getStaircaseEquipmentMapper().mapToSobek(staircaseEquipment, context);
             default -> null;
         };
-    };
+    }
 
     @AfterMapping
     default void afterMapToSobek(

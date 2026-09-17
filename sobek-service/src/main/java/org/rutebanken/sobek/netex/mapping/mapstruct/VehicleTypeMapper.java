@@ -21,7 +21,8 @@ import java.math.BigDecimal;
 @Mapper(
         config = SobekMapperConfig.class,
         uses = { PassengerCapacityMapper.class,
-                DataManagedObjectStructureMapper.class
+                DataManagedObjectStructureMapper.class,
+                EntityInVersionMapper.class
         }
 )
 public interface VehicleTypeMapper {

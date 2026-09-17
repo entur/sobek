@@ -1,0 +1,84 @@
+### Get OAuth2 Token
+# @name getToken
+POST https://internal.dev.entur.org/oauth/token
+Content-Type: application/json
+Accept: application/json
+
+{
+  "client_id": "{{clientId}}",
+  "client_secret": "{{clientSecret}}",
+  "audience": "https://api.dev.entur.io",
+  "grant_type": "client_credentials"
+}
+
+> {%
+    client.log("Access token: " + response.body.access_token);
+    client.global.set("auth_token", response.body.access_token);
+%}
+
+### Import NeTEx XML
+POST http://localhost:37999/services/vehicles/netex
+Authorization: {{bearerToken}}
+Content-Type: application/xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<PublicationDelivery xmlns="http://www.netex.org.uk/netex"
+                     xmlns:gml="http://www.opengis.net/gml/3.2"
+                     version="1.2.2">
+  <PublicationTimestamp>2020-12-17T09:30:47.0Z</PublicationTimestamp>
+  <ParticipantRef>SYS001</ParticipantRef>
+  <dataObjects>
+    <CompositeFrame version="any" id="CompositeFrame/id/1">
+            <FrameDefaults>
+                <DefaultResponsibilitySetRef ref="NMR:ResponsibilitySet:1"/>
+                <DefaultLocale>
+                    <TimeZone>Europe/Oslo</TimeZone>
+                    <DefaultLanguage>nor</DefaultLanguage>
+                </DefaultLocale>
+            </FrameDefaults>
+      <frames>
+        <ResourceFrame id="NMR:ResourceFrame:1" version="any">
+            <responsibilitySets>
+                <ResponsibilitySet id="NMR:ResponsibilitySet:1" version="1">
+                    <roles>
+                        <ResponsibilityRoleAssignment id="NMR:ResponsibilityRoleAssignment:1" version="1">
+                            <DataRoleType>owns</DataRoleType>
+                            <ResponsibleOrganisationRef ref="NOG:Authority:cP4aPiJ7c39"/>
+                        </ResponsibilityRoleAssignment>
+                    </roles>
+                </ResponsibilitySet>
+            </responsibilitySets>
+          <deckPlans>
+            <DeckPlan id="NMR:DeckPlan:1" version="any">
+              <decks>
+                <Deck id="NMR:Deck:1" version="any">
+                  <deckSpaces>
+                    <PassengerSpace id="seating-area_1779021502009" version="1">
+                      <Name>Area 1</Name>
+                      <PassengerSpaceType>seatingArea</PassengerSpaceType>
+                      <passengerSpots>
+                        <PassengerSpot id="seat_1778937092812" version="1">
+                          <Centroid>
+                            <Location>
+                              <gml:pos>3.390 0.206</gml:pos>
+                            </Location>
+                          </Centroid>
+                          <Label>77</Label>
+                          <Orientation>backwards</Orientation>
+                          <Width>0.35</Width>
+                          <Length>0.35</Length>
+                          <IsByWindow>true</IsByWindow>
+                        </PassengerSpot>
+                      </passengerSpots>
+                    </PassengerSpace>
+                  </deckSpaces>
+                </Deck>
+              </decks>
+            </DeckPlan>
+          </deckPlans>
+          </ResourceFrame>
+      </frames>
+    </CompositeFrame>
+  </dataObjects>
+</PublicationDelivery>
+###

@@ -22,14 +22,14 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.rutebanken.netex.model.LocationStructure;
 import org.rutebanken.netex.model.SimplePoint_VersionStructure;
+import org.rutebanken.sobek.netex.mapping.NetexMappingException;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigDecimal;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 public class SimplePointVersionStructureConverterTest {
@@ -44,55 +44,41 @@ public class SimplePointVersionStructureConverterTest {
     private GeometryFactory geometryFactory;
 
     @Test
-    public void convertNetexPositionToPoint() {
+    public void convertingLongLatShouldThrowException() {
         double longitude = 10.01;
         double latitude = 20.24;
         SimplePoint_VersionStructure simplePointversionStructure = new SimplePoint_VersionStructure()
                 .withLocation(new LocationStructure()
                         .withLongitude(BigDecimal.valueOf(longitude))
                         .withLatitude(BigDecimal.valueOf(latitude)));
-        Point point = simplePointVersionStructureConverter.simplePointToPoint(simplePointversionStructure, mappingContext);
-        assertNotNull(point);
-        assertEquals(longitude, point.getX());
-        assertEquals(latitude, point.getY());
+        assertThrows(NetexMappingException.class, () ->
+                        simplePointVersionStructureConverter.simplePointToPoint(simplePointversionStructure, mappingContext),
+                    "Expected RuntimeException due to using latitude and longitude, but none was thrown.");
     }
 
     @Test
-    public void convertPointToNetex() {
-        double longitude = 10.01;
-        double latitude = 20.24;
-        Point point = geometryFactory.createPoint(new Coordinate(longitude, latitude));
-        SimplePoint_VersionStructure simplePointVersionStructure = simplePointVersionStructureConverter.pointToSimplePoint(point, mappingContext);
-        assertNotNull(simplePointVersionStructure);
-        assertEquals(latitude, simplePointVersionStructure.getLocation().getLatitude().doubleValue());
-        assertEquals(longitude, simplePointVersionStructure.getLocation().getLongitude().doubleValue());
-
-    }
-
-    @Test
-    public void allowMaxSixDecimalsWhenConvertingToNetex() {
+    public void usePos() {
         double longitude = 10.123456789;
         double latitude = 20.123123123123;
         Point point = geometryFactory.createPoint(new Coordinate(longitude, latitude));
 
         SimplePoint_VersionStructure simplePointversionStructure =  simplePointVersionStructureConverter.pointToSimplePoint(point, mappingContext);
 
-        assertEquals(10.123457, simplePointversionStructure.getLocation().getLongitude().doubleValue());
-        assertEquals(20.123123, simplePointversionStructure.getLocation().getLatitude().doubleValue());
+        assertEquals(10.123456789, simplePointversionStructure.getLocation().getPos().getValue().get(0));
+        assertEquals(20.123123123123, simplePointversionStructure.getLocation().getPos().getValue().get(1));
     }
 
     @Test
-    public void allowMaxSixDecimalsWhenConvertingToPoint() {
-        double longitude = 10.123456789;
-        double latitude = 20.123123123123;
+    public void parsePos2PosEnum() {
+        double longitude = 10.1;
+        double latitude = 20.1;
         SimplePoint_VersionStructure simplePointversionStructure = new SimplePoint_VersionStructure()
                 .withLocation(new LocationStructure()
-                        .withLongitude(BigDecimal.valueOf(longitude))
-                        .withLatitude(BigDecimal.valueOf(latitude)));
+                        .withPos(new DirectPositionType().withValue(longitude, latitude)));
         Point point = simplePointVersionStructureConverter.simplePointToPoint(simplePointversionStructure, mappingContext);
 
-        assertEquals(10.123457, point.getX());
-        assertEquals(20.123123, point.getY());
+        assertEquals(10.1, point.getX());
+        assertEquals(20.1, point.getY());
     }
 
     @Test
@@ -111,31 +97,17 @@ public class SimplePointVersionStructureConverterTest {
     public void nullCheckLatitude() {
         SimplePoint_VersionStructure simplePointversionStructure = new SimplePoint_VersionStructure()
                 .withLocation(new LocationStructure().withLongitude(BigDecimal.valueOf(10.00)));
-        simplePointVersionStructureConverter.simplePointToPoint(simplePointversionStructure, mappingContext);
+        assertThrows(NetexMappingException.class, () ->
+                simplePointVersionStructureConverter.simplePointToPoint(simplePointversionStructure, mappingContext),
+            "Expected RuntimeException due to using latitude and longitude, but none was thrown.");
     }
 
     @Test
     public void nullCheckLongitude() {
         SimplePoint_VersionStructure simplePointversionStructure = new SimplePoint_VersionStructure()
                 .withLocation(new LocationStructure().withLatitude(BigDecimal.valueOf(10.00)));
-        simplePointVersionStructureConverter.simplePointToPoint(simplePointversionStructure, mappingContext);
-    }
-
-    @Test
-    public void importUtmGML() {
-
-        SimplePoint_VersionStructure simplePointversionStructure = new SimplePoint_VersionStructure()
-                .withLocation(
-                        new LocationStructure()
-                                .withPos(
-                                        new DirectPositionType()
-                                                .withValue(6583758.0, 514477.0)
-                                                .withSrsName("EPSG:32632")));
-
-        Point point = simplePointVersionStructureConverter.simplePointToPoint(simplePointversionStructure, mappingContext);
-        assertNotNull(point);
-
-        assertEquals(9.25, point.getX(), 9.25 * 0.02);
-        assertEquals(59.39, point.getY(), 59.39 * 0.02);
+        assertThrows(NetexMappingException.class, () ->
+                simplePointVersionStructureConverter.simplePointToPoint(simplePointversionStructure, mappingContext),
+            "Expected RuntimeException due to using latitude and longitude, but none was thrown.");
     }
 }

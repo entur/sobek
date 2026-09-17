@@ -1,6 +1,5 @@
 package org.rutebanken.sobek.netex.mapping.mapstruct;
 
-import jakarta.xml.bind.JAXBElement;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
@@ -22,7 +21,7 @@ import java.util.List;
         uses = {
                 DataManagedObjectStructureMapper.class,
                 VehicleTypeMapper.class,
-                VehicleModelMapper.class
+                VehicleModelMapper.class, EntityInVersionMapper.class
         }
 )
 public interface VehicleMapper {

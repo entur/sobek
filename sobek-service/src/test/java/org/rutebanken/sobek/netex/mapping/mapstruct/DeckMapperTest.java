@@ -27,6 +27,10 @@ public class DeckMapperTest {
     private ValidPrefixList validPrefixList;
     @Autowired
     DataManagedObjectStructureMapper dataManagedObjectStructureMapper;
+    @Autowired
+    ZoneMapper zoneMapper;
+    @Autowired
+    SimplePointMapper simplePointMapper;
 
 
     private MappingContext context;
@@ -39,6 +43,8 @@ public class DeckMapperTest {
         context.setNetexIdHelper(netexIdHelper);
         context.setValidPrefixList(validPrefixList);
         context.setDataManagedObjectStructureMapper(dataManagedObjectStructureMapper);
+        context.setZoneMapper(zoneMapper);
+        context.setSimplePointMapper(simplePointMapper);
     }
 
     @Test

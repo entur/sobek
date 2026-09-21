@@ -118,7 +118,7 @@ public abstract class DataManagedObjectStructure
     /**
      * Checks if the given netexId is equal to the id of this entity OR the netexId is equal to one of the imported-id values in this entity's keyValues.
      * @param netexId
-     * @return
+     * @return true if the given netexId is equal to the id of this entity OR the netexId is equal to one of the imported-id values in this entity's keyValues.
      */
     public boolean netexIdEquals(String netexId) {
         if(netexId == null) {

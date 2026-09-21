@@ -33,6 +33,7 @@ public class DeckLevel extends DataManagedObjectStructure {
         @AttributeOverride(name = "value", column = @Column(name = "description_value")),
         @AttributeOverride(name = "lang", column = @Column(name = "description_lang", length = 5))
     })
+    @Embedded
     private EmbeddableMultilingualString description;
 
     private Boolean publicUse;

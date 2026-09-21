@@ -31,8 +31,14 @@ CREATE TABLE deck_plan_deck_levels
     deck_levels_id BIGINT NOT NULL
 );
 
+ALTER TABLE deck_plan_deck_levels
+    ADD CONSTRAINT uc_deck_plan_deck_levels_decklevel UNIQUE (deck_levels_id),
+    ADD CONSTRAINT fk_deck_plan_deck_levels_on_plan FOREIGN KEY (deck_plan_id) REFERENCES deck_plan (id),
+    ADD CONSTRAINT fk_deck_plan_deck_levels_on_level FOREIGN KEY (deck_levels_id) REFERENCES deck_level (id);
+
 ALTER TABLE deck
-    ADD deck_level_id BIGINT;
+    ADD deck_level_id BIGINT,
+    ADD CONSTRAINT fk_deck_on_deck_level FOREIGN KEY (deck_level_id) REFERENCES deck_level (id);
 
 ALTER TABLE deck_level_key_values
     ADD CONSTRAINT uc_deck_level_key_values_keyvalues UNIQUE (key_values_id);

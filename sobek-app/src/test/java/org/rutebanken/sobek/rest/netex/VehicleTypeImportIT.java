@@ -71,19 +71,16 @@ class VehicleTypeImportIT {
 
     assertThat(imported.getId()).startsWith("NMR:VehicleType:");
     assertThat(imported.getVersion()).isEqualTo("1");
-    TextType nameText =
-        imported.getName().getContent().stream()
-            .filter(JAXBElement.class::isInstance)
-            .map(JAXBElement.class::cast)
-            .map(JAXBElement::getValue)
-            .filter(TextType.class::isInstance)
-            .map(TextType.class::cast)
-            .findFirst()
-            .orElseThrow(
-                () ->
-                    new AssertionError(
-                        "No TextType name element in imported vehicle type"));
-    assertThat(nameText.getValue()).isEqualTo("Exaqui City 24");
+      String nameText =
+          imported.getName().getContent().stream()
+              .filter(String.class::isInstance)
+              .map(String.class::cast)
+              .findFirst()
+              .orElseThrow(
+                  () ->
+                      new AssertionError(
+                          "No String name element in imported vehicle type"));
+      assertThat(nameText).isEqualTo("Exaqui City 24");
   }
 
     @Test
@@ -124,10 +121,10 @@ class VehicleTypeImportIT {
                         responseFrame.getVehicleTypes().getTransportType_Dummy().getFirst().getValue();
 
         assertThat(imported.getId()).startsWith("AKT:VehicleType:");
-        assertThat(imported.getName().getContent()).hasSize(3);
-        assertThat(imported.getName().getContent().get(1)).isInstanceOf(JAXBElement.class);
-        JAXBElement<? extends  TextType> theName = (JAXBElement)imported.getName().getContent().get(1);
-        assertThat(theName.getValue().getValue()).isEqualTo("Exqui City 24");
+        assertThat(imported.getName().getContent()).hasSize(1);
+        assertThat(imported.getName().getContent().getFirst()).isInstanceOf(String.class);
+        String theName = (String)imported.getName().getContent().getFirst();
+        assertThat(theName).isEqualTo("Exqui City 24");
     }
 
     private static final JAXBContext jaxbContext;

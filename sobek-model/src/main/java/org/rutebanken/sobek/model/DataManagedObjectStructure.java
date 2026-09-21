@@ -114,4 +114,25 @@ public abstract class DataManagedObjectStructure
             }
         }
     }
+
+    /**
+     * Checks if the given netexId is equal to the id of this entity OR the netexId is equal to one of the imported-id values in this entity's keyValues.
+     * @param netexId
+     * @return
+     */
+    public boolean netexIdEquals(String netexId) {
+        if(netexId == null) {
+            return false;
+        }
+
+        if(netexId.equals(getNetexId())) {
+            return true;
+        }
+
+        if(getKeyValues() != null) {
+            return getKeyValues().stream().anyMatch(kv -> kv.getKey().equals("imported-id") && kv.getValue().equals(netexId));
+        }
+
+        return false;
+    }
 }

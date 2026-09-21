@@ -6,11 +6,13 @@ import lombok.Getter;
 import lombok.Setter;
 import org.rutebanken.netex.model.*;
 import org.rutebanken.sobek.model.vehicle.Deck;
+import org.rutebanken.sobek.model.vehicle.DeckPlan;
 import org.rutebanken.sobek.model.vehicle.DeckSpace;
 import org.rutebanken.sobek.netex.id.NetexIdHelper;
 import org.rutebanken.sobek.netex.id.ValidPrefixList;
 import org.rutebanken.sobek.netex.mapping.NetexMappingException;
 import org.rutebanken.sobek.netex.mapping.mapstruct.*;
+import org.rutebanken.sobek.netex.mapping.mapstruct.deckplan.DeckMapper;
 import org.rutebanken.sobek.netex.mapping.mapstruct.deckplan.DeckSpaceMapper;
 import org.rutebanken.sobek.netex.mapping.mapstruct.deckplan.SpotAffinityMapper;
 import org.rutebanken.sobek.netex.mapping.mapstruct.equipment.*;
@@ -48,6 +50,7 @@ public class MappingContext {
     private EntranceEquipmentMapper entranceEquipmentMapper;
     private KeyListStructureMapper keyListStructureMapper;
     private Deck currentSobekDeck;
+    private DeckPlan currentSobekDeckPlan;
     private DeckSpace currentSobekDeckSpace;
     private DeckSpaceMapper deckSpaceMapper;
     private SpotAffinityMapper spotAffinityMapper;
@@ -61,6 +64,7 @@ public class MappingContext {
     private VersionCopyMapper versionCopyMapper;
     private ZoneMapper zoneMapper;
     private PolygonMapper polygonMapper;
+    private DeckMapper deckMapper;
 
     public MappingContext() {
     }
@@ -84,7 +88,8 @@ public class MappingContext {
                           VersionCopyMapper versionCopyMapper,
                           SimplePointMapper simplePointMapper,
                           ZoneMapper zoneMapper,
-                          PolygonMapper polygonMapper) {
+                          PolygonMapper polygonMapper,
+                          DeckMapper deckMapper) {
         this.referenceResolver = resolver;
         this.seatEquipmentMapper = seatEquipmentMapper;
         this.bedEquipmentMapper = bedEquipmentMapper;
@@ -104,6 +109,7 @@ public class MappingContext {
         this.simplePointMapper = simplePointMapper;
         this.zoneMapper = zoneMapper;
         this.polygonMapper = polygonMapper;
+        this.deckMapper = deckMapper;
     }
 
     public void updateMappingContext(PublicationDeliveryStructure publicationDeliveryStructure, ResourceFrame resourceFrame) {

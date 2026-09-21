@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.rutebanken.netex.model.Deck;
 import org.rutebanken.netex.model.MultilingualString;
+import org.rutebanken.sobek.model.vehicle.DeckPlan;
 import org.rutebanken.sobek.netex.id.NetexIdHelper;
 import org.rutebanken.sobek.netex.id.ValidPrefixList;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
@@ -45,6 +46,7 @@ public class DeckMapperTest {
         context.setDataManagedObjectStructureMapper(dataManagedObjectStructureMapper);
         context.setZoneMapper(zoneMapper);
         context.setSimplePointMapper(simplePointMapper);
+        context.setCurrentSobekDeckPlan(new DeckPlan());
     }
 
     @Test

@@ -1,12 +1,7 @@
 package org.rutebanken.sobek.model.vehicle;
 
-import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.AttributeOverrides;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
+
 import java.util.List;
 
 import lombok.Getter;
@@ -34,8 +29,10 @@ public class Deck extends Zone_VersionStructure {
     @OneToMany(cascade = CascadeType.ALL)
     private List<SpotColumn> spotColumns;
 
+    @ManyToOne
+    protected DeckLevel deckLevel;
+
     // TODO - TBD
-//    protected DeckLevelRefStructure deckLevelRef;
 //    protected DeckPathJunctionRefs_RelStructure deckPathJunctions;
 //    protected DeckPathLinkRefs_RelStructure deckPathLinks;
 //    protected DeckNavigationPaths_RelStructure deckNavigationPaths;

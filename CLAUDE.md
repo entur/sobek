@@ -352,13 +352,21 @@ TRUNCATE deck_plan CASCADE;
 
 ## Deployment
 
+Deployment config lives in a separate repo:
+[entur/sobek-deployment-config](https://github.com/entur/sobek-deployment-config).
+Nothing below is in this repo.
+
 ### Kubernetes
-- Helm charts available in `/helm/sobek/`
+- Helm chart at `helm/sobek/`, per-environment values in `helm/sobek/env/values-kub-ent-{dev,tst,prd}.yaml`
+- Runtime properties are rendered by `helm/sobek/templates/configmap.yaml` — this is where a
+  deployed sobek gets `netex.validPrefix` and `netex.valid.codespaces.list`. The copies in
+  `application-local.properties` and the test properties apply only locally; the deployed values
+  are hardcoded in the template and identical across dev/tst/prd
 - Configurable via `rutebanken.kubernetes.enabled`
 - Multi-instance ready
 
 ### Infrastructure
-- Terraform configurations in `/terraform/`
+- Terraform at `terraform/`, per-environment tfvars in `terraform/env/` and `terraform/database/env/`
 - Cloud platform support (GCP focus)
 - AWS support via Spring Cloud AWS
 

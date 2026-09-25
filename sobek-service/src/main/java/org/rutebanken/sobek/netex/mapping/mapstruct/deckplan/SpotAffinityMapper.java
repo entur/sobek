@@ -9,6 +9,7 @@ import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.rutebanken.sobek.netex.mapping.mapstruct.DataManagedObjectStructureMapper;
 import org.rutebanken.sobek.netex.mapping.mapstruct.EntityInVersionMapper;
+import org.rutebanken.sobek.netex.mapping.mapstruct.ReferenceFinderUtil;
 
 import java.util.List;
 import java.util.Objects;
@@ -122,10 +123,7 @@ public interface SpotAffinityMapper {
         if(locatableSpots == null) {
             return null;
         }
-        return locatableSpots.stream()
-                .filter(spot -> spot.getNetexId().equals(locatableSpotRefStructure.getRef()))
-                .findFirst()
-                .orElse(null);
+        return ReferenceFinderUtil.findByNetexId(locatableSpots, locatableSpotRefStructure.getRef(), "LocatableSpot");
     }
     default JAXBElement<? extends LocatableSpotRefStructure> mapToNetexRef(LocatableSpot spot) {
         ObjectFactory objectFactory = new ObjectFactory();

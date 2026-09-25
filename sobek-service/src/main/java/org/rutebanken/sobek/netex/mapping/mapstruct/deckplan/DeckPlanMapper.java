@@ -47,6 +47,7 @@ public interface DeckPlanMapper {
      */
     @DataManagedObjectStructureMapper.ToSobekMappings
     @Mapping(target = "configurationConditions", ignore = true)
+    @Mapping(target = "decks", ignore = true) // Map decks manually in afterMapping to ensure proper context
     void updateSobekFromNetex(
             DeckPlan source,
             @MappingTarget org.rutebanken.sobek.model.vehicle.DeckPlan target,

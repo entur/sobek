@@ -62,6 +62,7 @@
         <prettier-java.version>2.1.0</prettier-java.version>
         <prettier-maven-plugin.version>0.22</prettier-maven-plugin.version>
         <plugin.prettier.goal>write</plugin.prettier.goal>
+        <flyway.version>11.14.1</flyway.version>
     </properties>
 
     <repositories>
@@ -189,6 +190,28 @@
                             </goals>
                         </execution>
                     </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.flywaydb</groupId>
+                    <artifactId>flyway-maven-plugin</artifactId>
+                    <version>${flyway.version}</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.flywaydb</groupId>
+                            <artifactId>flyway-core</artifactId>
+                            <version>${flyway.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.flywaydb</groupId>
+                            <artifactId>flyway-database-postgresql</artifactId>
+                            <version>${flyway.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.postgresql</groupId>
+                            <artifactId>postgresql</artifactId>
+                            <version>42.7.10</version>
+                        </dependency>
+                    </dependencies>
                 </plugin>
             </plugins>
         </pluginManagement>

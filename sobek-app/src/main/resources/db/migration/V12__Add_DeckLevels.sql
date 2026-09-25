@@ -55,6 +55,7 @@ CREATE SEQUENCE public.deck_level_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
+ALTER SEQUENCE public.deck_level_seq OWNER TO sobek;
 
 CREATE SEQUENCE IF NOT EXISTS netex_deck_level_seq
     START WITH 1

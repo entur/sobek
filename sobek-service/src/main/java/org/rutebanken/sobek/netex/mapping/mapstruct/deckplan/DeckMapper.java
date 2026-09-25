@@ -1,14 +1,11 @@
 package org.rutebanken.sobek.netex.mapping.mapstruct.deckplan;
 
+import jakarta.xml.bind.JAXBElement;
 import org.mapstruct.*;
-import org.rutebanken.netex.model.Deck;
-import org.rutebanken.netex.model.Decks_RelStructure;
+import org.rutebanken.netex.model.*;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
-import org.rutebanken.sobek.netex.mapping.mapstruct.EntityInVersionMapper;
-import org.rutebanken.sobek.netex.mapping.mapstruct.PointRefStructureMapper;
-import org.rutebanken.sobek.netex.mapping.mapstruct.PolygonMapper;
-import org.rutebanken.sobek.netex.mapping.mapstruct.ZoneMapper;
+import org.rutebanken.sobek.netex.mapping.mapstruct.*;
 
 import java.util.List;
 
@@ -67,6 +64,7 @@ public interface DeckMapper {
             context.getZoneMapper().afterMapToSobek(source, target, context);
             context.setCurrentSobekDeck(target);
             target.setDeckSpaces(context.getDeckSpaceMapper().mapNetexRelStructureToSobekList(source.getDeckSpaces(), context));
+            target.setDeckLevel(mapNetexRef2Sobek(source.getDeckLevelRef(), context.getCurrentSobekDeckPlan().getDeckLevels()));
         }
     }
 
@@ -77,6 +75,7 @@ public interface DeckMapper {
         if(target != null) {
             context.getZoneMapper().afterMapToNetex(source, target, context);
             target.setDeckSpaces(context.getDeckSpaceMapper().mapSobekListToNetexRelStructure(source.getDeckSpaces(), context));
+            target.setDeckLevelRef(mapToNetexRef(source.getDeckLevel()));
         }
     }
 
@@ -115,4 +114,24 @@ public interface DeckMapper {
                 .map(netexDeck -> mapToSobek(netexDeck, context))
                 .collect(java.util.stream.Collectors.toList());
     }
+
+
+    default org.rutebanken.sobek.model.vehicle.DeckLevel mapNetexRef2Sobek(DeckLevelRefStructure deckLevelRefStructure, List<org.rutebanken.sobek.model.vehicle.DeckLevel> deckLevels) {
+        if (deckLevelRefStructure == null || deckLevelRefStructure.getRef() == null || deckLevelRefStructure.getRef().isEmpty()) {
+            return null;
+        }
+
+        if(deckLevels == null) {
+            return null;
+        }
+        return ReferenceFinderUtil.findByNetexId(deckLevels, deckLevelRefStructure.getRef(), "DeckLevel");
+    }
+
+    default DeckLevelRefStructure mapToNetexRef(org.rutebanken.sobek.model.vehicle.DeckLevel level) {
+        if(level == null) {
+            return null;
+        }
+        return new DeckLevelRefStructure().withRef(level.getNetexId());
+    }
+
 }

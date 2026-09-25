@@ -1,11 +1,7 @@
 
 package org.rutebanken.sobek.netex.mapping.mapstruct.deckplan;
 
-import org.mapstruct.AfterMapping;
-import org.mapstruct.Context;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
+import org.mapstruct.*;
 import org.rutebanken.netex.model.DeckPlan;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
@@ -20,7 +16,7 @@ import java.util.List;
  */
 @Mapper(
         config = SobekMapperConfig.class,
-        uses = { DataManagedObjectStructureMapper.class, DeckMapper.class, EntityInVersionMapper.class }
+        uses = { DataManagedObjectStructureMapper.class, DeckMapper.class, EntityInVersionMapper.class, DeckLevelMapper.class }
 )
 public interface DeckPlanMapper {
 
@@ -29,6 +25,8 @@ public interface DeckPlanMapper {
      */
     @DataManagedObjectStructureMapper.ToSobekMappings
     @Mapping(target = "configurationConditions", ignore = true) // Transient field
+    @Mapping(target = "deckLevels", source = "deckLevels.deckLevel")
+    @Mapping(target = "decks", ignore = true) // Map decks manually in afterMapping to ensure proper context
     org.rutebanken.sobek.model.vehicle.DeckPlan mapToSobek(
             DeckPlan source,
             @Context MappingContext context
@@ -49,6 +47,7 @@ public interface DeckPlanMapper {
      */
     @DataManagedObjectStructureMapper.ToSobekMappings
     @Mapping(target = "configurationConditions", ignore = true)
+    @Mapping(target = "decks", ignore = true) // Map decks manually in afterMapping to ensure proper context
     void updateSobekFromNetex(
             DeckPlan source,
             @MappingTarget org.rutebanken.sobek.model.vehicle.DeckPlan target,
@@ -66,6 +65,8 @@ public interface DeckPlanMapper {
     ) {
         if(target != null) {
             context.getDataManagedObjectStructureMapper().afterMappingToSobek(source, target, context);
+            context.setCurrentSobekDeckPlan(target);
+            target.setDecks(context.getDeckMapper().mapNetexRelStructureToSobekList(source.getDecks(), context));
         }
         context.getOwnedEntityMapper().updateSobekFromNetex(target, context);
     }

@@ -433,6 +433,12 @@ Migrations are executed when sobek is started.
 Create a new file according to the flyway documentation in the folder `resources/db/migrations`.
 Commit the migration together with code changes that requires this schema change. Follow the naming convention.
 
+Tip: If you have run a migration on your local database and need to make a small change to it, you have two options to make the change:
+1. Manually reverse the migration and run it again
+2. Do the change  in your local database and then (to fix flyway status):
+```
+   mvn flyway:repair -Dflyway.url=jdbc:postgresql://localhost:37433/sobek   -Dflyway.user=sobek   -Dflyway.password=<password for sobek user> -Dflyway.table=schema_version
+```
 
 ## Organisation registry
 

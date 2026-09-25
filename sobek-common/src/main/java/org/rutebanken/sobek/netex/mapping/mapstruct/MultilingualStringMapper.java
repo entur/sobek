@@ -84,14 +84,8 @@ public interface MultilingualStringMapper {
         }
 
         MultilingualString netexString = new MultilingualString();
-        netexString.withContent(List.of(createTextType(source.getLang(), source.getValue())));
+        netexString.setLang(source.getLang());
+        netexString.withContent(List.of(source.getValue()));
         return netexString;
     }
-
-    private JAXBElement<? extends TextType> createTextType (String lang, String value){
-        return OBJECT_FACTORY.createMultilingualStringText(new TextType()
-                .withLang(lang)
-                .withValue(value));
-    }
-
 }

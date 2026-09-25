@@ -52,8 +52,9 @@ public class DeckPlan extends DataManagedObjectStructure implements OwnedEntity 
     public void setDataOwnerRef(String dataOwnerRef) {
         this.dataOwnerRef = dataOwnerRef;
     }
-    // TODO - TBD
-//    private DeckLevels_RelStructure deckLevels;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<DeckLevel> deckLevels;
 
     @OneToMany(cascade = CascadeType.ALL)
     private List<Deck> decks;

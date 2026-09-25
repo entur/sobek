@@ -22,6 +22,8 @@ import jakarta.persistence.Transient;
 
 import java.util.*;
 
+import static org.rutebanken.sobek.model.CustomKeyValueTypes.ORIGINAL_ID_KEY;
+
 
 @MappedSuperclass
 public abstract class DataManagedObjectStructure
@@ -130,9 +132,9 @@ public abstract class DataManagedObjectStructure
         }
 
         if(getKeyValues() != null) {
-            return getKeyValues().stream().anyMatch(kv -> kv.getKey().equals("imported-id") && kv.getValue().equals(netexId));
+            return getKeyValues().stream()
+                .anyMatch(kv -> ORIGINAL_ID_KEY.equals(kv.getKey()) && netexId.equals(kv.getValue()));
         }
-
         return false;
     }
 }

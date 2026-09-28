@@ -27,6 +27,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.xml.sax.SAXException;
 
+import javax.xml.XMLConstants;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParserFactory;
+import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -78,9 +82,47 @@ public class PublicationDeliveryUnmarshaller {
 
         logger.debug("Unmarshalling incoming publication delivery structure. Schema validation enabled: {}", validateAgainstSchema);
 
-        JAXBElement<PublicationDeliveryStructure> jaxbElement = jaxbUnmarshaller.unmarshal(new StreamSource(inputStream), PublicationDeliveryStructure.class);
+        // Create XXE-protected SAXSource
+        SAXSource saxSource = createSecureSAXSource(inputStream);
+
+        JAXBElement<PublicationDeliveryStructure> jaxbElement = jaxbUnmarshaller.unmarshal(saxSource, PublicationDeliveryStructure.class);
         PublicationDeliveryStructure publicationDeliveryStructure = jaxbElement.getValue();
         logger.debug("Done unmarshalling incoming publication delivery structure with schema validation enabled: {}", validateAgainstSchema);
         return publicationDeliveryStructure;
+    }
+
+    /**
+     * Creates a secure SAXSource with XXE protection enabled.
+     * This prevents XML External Entity (XXE) attacks by disabling external entity processing.
+     *
+     * @param inputStream the input stream containing XML data
+     * @return a secure SAXSource
+     * @throws SAXException if a SAX error occurs
+     */
+    private SAXSource createSecureSAXSource(InputStream inputStream) throws SAXException {
+        try {
+            SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
+            
+            // Disable external entity processing to prevent XXE attacks
+            saxParserFactory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            saxParserFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+            saxParserFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            
+            // Disable DTD processing entirely
+            saxParserFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            
+            // Enable secure processing
+            saxParserFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+            
+            // Disable XInclude processing
+            saxParserFactory.setNamespaceAware(true);
+            saxParserFactory.setXIncludeAware(false);
+            
+            // Create the SAXSource with the secure parser
+            return new SAXSource(saxParserFactory.newSAXParser().getXMLReader(), new org.xml.sax.InputSource(inputStream));
+            
+        } catch (ParserConfigurationException e) {
+            throw new SAXException("Failed to configure secure XML parser", e);
+        }
     }
 }

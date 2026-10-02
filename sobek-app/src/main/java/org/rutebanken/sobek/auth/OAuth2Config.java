@@ -1,5 +1,7 @@
 package org.rutebanken.sobek.auth;
 
+import org.entur.auth.permission.client.AuthorizeTenant;
+import org.entur.auth.permission.client.spring.bean.UserInformationProvider;
 import org.entur.oauth2.AuthorizedWebClientBuilder;
 import org.entur.oauth2.JwtRoleAssignmentExtractor;
 import org.entur.oauth2.multiissuer.MultiIssuerAuthenticationManagerResolver;
@@ -9,6 +11,8 @@ import org.entur.ror.permission.RemoteBabaRoleAssignmentExtractor;
 import org.entur.ror.permission.RemoteBabaUserInfoExtractor;
 import org.rutebanken.helper.organisation.RoleAssignmentExtractor;
 import org.rutebanken.helper.organisation.user.UserInfoExtractor;
+import org.rutebanken.sobek.permission.PermissionStoreRoleAssignmentExtractor;
+import org.rutebanken.sobek.permission.PermissionStoreUserInfoExtractor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.security.oauth2.client.autoconfigure.OAuth2ClientProperties;
@@ -47,6 +51,33 @@ public class OAuth2Config {
             @Value("${sobek.user.permission.rest.service.url}") String url
     ) {
         return new RemoteBabaUserInfoExtractor(webClient, url);
+    }
+
+    /**
+     * Extract user info from the Entur user repository.
+     *
+     */
+    @ConditionalOnProperty(
+        value = "sobek.security.role.assignment.extractor",
+        havingValue = "entur-partner"
+    )
+    @Bean
+    public UserInfoExtractor partnerUserInfoExtractor(UserInformationProvider userInformationProvider) {
+        return new PermissionStoreUserInfoExtractor(userInformationProvider);
+    }
+
+    /**
+     * Extract role assignments from a JWT token.
+     *
+     */
+    @ConditionalOnProperty(
+            value = "sobek.security.role.assignment.extractor",
+            havingValue = "entur-partner",
+            matchIfMissing = false
+    )
+    @Bean
+    public RoleAssignmentExtractor partnerRoleAssignmentExtractor(AuthorizeTenant authorizeTenant, PermissionStoreUserInfoExtractor permissionStoreUserInfoExtractor) {
+        return new PermissionStoreRoleAssignmentExtractor(authorizeTenant, permissionStoreUserInfoExtractor);
     }
 
     /**

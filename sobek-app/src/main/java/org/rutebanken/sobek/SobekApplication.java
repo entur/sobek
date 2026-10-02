@@ -15,16 +15,22 @@
 
 package org.rutebanken.sobek;
 
+import org.entur.auth.permission.client.spring.AuthPermissionProperties;
+import org.entur.auth.permission.client.spring.bean.PermissionClientAutoConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @SpringBootApplication
 @Configuration
 @EnableTransactionManagement
-@ComponentScan(basePackages = { "org.entur", "org.rutebanken.sobek"})
+@ComponentScan(basePackages = { "org.entur", "org.rutebanken.sobek"},
+    excludeFilters = {
+        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = AuthPermissionProperties.class)
+    })
 public class SobekApplication {
 
     public static void main(String[] args) {

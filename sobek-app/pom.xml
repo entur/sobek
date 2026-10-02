@@ -26,6 +26,10 @@
             <groupId>org.rutebanken.sobek</groupId>
             <artifactId>sobek-common</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.rutebanken.sobek</groupId>
+            <artifactId>sobek-permission</artifactId>
+        </dependency>
 
         <!-- Spring Boot Starter Web -->
         <dependency>
@@ -146,6 +150,10 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.rutebanken.sobek</groupId>
+            <artifactId>sobek-permission</artifactId>
         </dependency>
     </dependencies>
 

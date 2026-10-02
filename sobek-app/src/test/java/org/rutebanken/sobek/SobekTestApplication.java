@@ -1,5 +1,6 @@
 package org.rutebanken.sobek;
 
+import org.entur.auth.permission.client.spring.AuthPermissionProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration;
@@ -15,7 +16,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
     excludeFilters = {
       @ComponentScan.Filter(
           type = FilterType.ASSIGNABLE_TYPE,
-          value = SobekApplication.class)
+          value = SobekApplication.class),
+        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = AuthPermissionProperties.class)
     },
     basePackages = {"org.entur", "org.rutebanken.sobek"})
 public class SobekTestApplication {

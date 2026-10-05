@@ -28,24 +28,16 @@ public class OrganisationRepositoryImpl implements OrganisationRepository {
     }
 
     @Override
-    public Page<Organisation> findCurrentFiltered(List<String> netexIds, OrganisationTypeEnumeration organisationType, String name, List<String> authorizedIds, Pageable pageable) {
-        List<? extends Organisation_VersionStructure> organisations;
+    public Page<Organisation> findCurrentFiltered(List<String> netexIds, String name, List<String> authorizedIds, Pageable pageable) {
+        List<Organisation> organisations;
 
-        if(organisationType == null) {
-            organisations = organisationRegistry.getOrganisations();
-        } else if(organisationType == OrganisationTypeEnumeration.AUTHORITY) {
-            organisations = organisationRegistry.getAuthorities();
-        } else if (organisationType == OrganisationTypeEnumeration.OPERATOR) {
-            organisations = organisationRegistry.getOperators();
-        } else {
-            throw new IllegalArgumentException("Unsupported organisation type filter: " + organisationType);
-        }
+        organisations = organisationRegistry.getOrganisations();
 
         if(netexIds != null && !netexIds.isEmpty()) {
             Set<String> idSet = new HashSet<>(netexIds);
             organisations = organisations
                     .stream()
-                    .filter(org -> idSet.contains(org.getId()))
+                    .filter(org -> idSet.contains(org.netexId()))
                     .toList();
         }
 
@@ -53,15 +45,13 @@ public class OrganisationRepositoryImpl implements OrganisationRepository {
             Set<String> idSet = new HashSet<>(authorizedIds);
             organisations = organisations
                     .stream()
-                    .filter(org -> idSet.contains(org.getId()))
+                    .filter(org -> idSet.contains(org.netexId()))
                     .toList();
         }
 
-        var mappedOrganisations = mapOrganisations(organisations);
-
         if(name != null && !name.isEmpty()) {
             var lowerName = name.toLowerCase();
-            mappedOrganisations = mappedOrganisations
+            organisations = organisations
                     .stream()
                     .filter(org -> org.name() != null
                             && org.name().getValue() != null
@@ -71,18 +61,18 @@ public class OrganisationRepositoryImpl implements OrganisationRepository {
 
         // Handle pagination
         if (pageable.isUnpaged()) {
-            return new PageImpl<>(mappedOrganisations);
+            return new PageImpl<>(organisations);
         }
 
         int start = (int) pageable.getOffset();
-        int end = Math.min(start + pageable.getPageSize(), mappedOrganisations.size());
+        int end = Math.min(start + pageable.getPageSize(), organisations.size());
         
-        if (start >= mappedOrganisations.size()) {
-            return new PageImpl<>(List.of(), pageable, mappedOrganisations.size());
+        if (start >= organisations.size()) {
+            return new PageImpl<>(List.of(), pageable, organisations.size());
         }
 
-        List<Organisation> pagedList = mappedOrganisations.subList(start, end);
-        return new PageImpl<>(pagedList, pageable, mappedOrganisations.size());
+        List<Organisation> pagedList = organisations.subList(start, end);
+        return new PageImpl<>(pagedList, pageable, organisations.size());
     }
 
     private List<Organisation> mapOrganisations(List<? extends Organisation_VersionStructure> organisations) {

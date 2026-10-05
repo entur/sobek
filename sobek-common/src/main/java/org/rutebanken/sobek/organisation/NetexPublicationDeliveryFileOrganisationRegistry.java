@@ -33,7 +33,7 @@ public class NetexPublicationDeliveryFileOrganisationRegistry
 
     public NetexPublicationDeliveryFileOrganisationRegistry(
             @Value("${netex.organisations.netex-file-uri}") String netexFileUri,
-            @Value("${netex.organisations.cache-duration-seconds:3600}") String cacheDurationSeconds
+            @Value("${sobek.organisations.cache-duration-seconds:3600}") String cacheDurationSeconds
     ) {
         super(cacheDurationSeconds);
         this.netexFileUri = netexFileUri;

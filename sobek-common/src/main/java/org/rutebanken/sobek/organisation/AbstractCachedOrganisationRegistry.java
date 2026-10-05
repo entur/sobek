@@ -54,7 +54,7 @@ public abstract class AbstractCachedOrganisationRegistry implements Organisation
         } catch (NumberFormatException e) {
             cacheDuration = 3600L;
             logger.warn(
-                "Invalid value for entur.organisations.cache-duration-seconds: '{}'. Falling back to default {} seconds.",
+                "Invalid value for sobek.organisations.cache-duration-seconds: '{}'. Falling back to default {} seconds.",
                 cacheDurationSeconds,
                 cacheDuration,
                 e

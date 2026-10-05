@@ -48,7 +48,7 @@ public abstract class NetexPublicationDeliveryOrganisationRegistry
     );
 
     public NetexPublicationDeliveryOrganisationRegistry(
-        @Value("${netex.organisations.cache-duration-seconds:3600}") String cacheDurationSeconds
+        @Value("${sobek.organisations.cache-duration-seconds:3600}") String cacheDurationSeconds
     ) {
         super(cacheDurationSeconds);
     }

@@ -442,25 +442,13 @@ Tip: If you have run a migration on your local database and need to make a small
 
 ## Organisation registry
 
-Sobek needs an organisation registry in order to populate authority and operator references. You may
-provide a NeTEx file of organisations with
+Sobek needs an organisation registry in order to populate authority and operator references. Entur will use Baba/Ninkasi as organisation registry.
+The organisation registry needs to provide at least ID, name and type of each organisation.
+
 
 ```properties
-netex.organisations.netex-file-uri=<path-to-file>
+nanna.organisations.url=<path-to-organisation-registry-api>
 ```
-
-Alternatively, organisations data can be fetched over HTTP in NeTEx xml format:
-
-```properties
-netex.organisations.netex-http-uri=<path-to-http-endpoint>
-```
-
-Note that the HTTP strategy requires an organisations api WebClient bean called
-`orgRegisterClient`. A basic default is provided, but if you need anything more
-than that, you should provide your own bean.
-
-Refer to [`sobek-common/src/test/resources/fixtures/organisations-netex-dev.xml`](sobek-common/src/test/resources/fixtures/organisations-netex-dev.xml) for an example
-of a NeTEx file with organisations.
 
 You can also provide your own implementation of the [`OrganisationRegistry`](sobek-common/src/main/java/org/rutebanken/sobek/organisation/OrganisationRegistry.java)
 interface.

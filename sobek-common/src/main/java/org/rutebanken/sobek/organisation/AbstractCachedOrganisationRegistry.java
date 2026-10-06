@@ -129,6 +129,7 @@ public abstract class AbstractCachedOrganisationRegistry implements Organisation
 
             if (loadedOrganisations == null || loadedOrganisations.isEmpty()) {
                 logger.info("No organisations loaded from source");
+                this.organisations = List.of();
                 return;
             }
 

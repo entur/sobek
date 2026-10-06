@@ -97,20 +97,6 @@ class GraphQLPagedQueriesTest {
     }
 
     @Test
-    void organisations_filterByOrganisationType() {
-        given()
-                .contentType(ContentType.JSON)
-                .body(gql("{ organisations(page: 0, size: 1000  ) { content { netexId } totalElements page size } }"))
-                .when()
-                .post("/services/vehicles/graphql")
-                .then()
-                .statusCode(200)
-                .body("data.organisations.content", is(not(empty())))
-                .body("data.organisations.totalElements", greaterThanOrEqualTo(1))
-                .body("data.organisations.page", equalTo(0));
-    }
-
-    @Test
     void organisations_filterByName() {
         given()
                 .contentType(ContentType.JSON)

@@ -96,7 +96,7 @@
         <dependency>
             <groupId>org.entur.ror.helpers</groupId>
             <artifactId>oauth2</artifactId>
-            <scope>compile</scope>
+            <version>${entur.helpers.version}</version>
         </dependency>
 
 

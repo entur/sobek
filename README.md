@@ -447,7 +447,7 @@ The organisation registry needs to provide at least ID, name and type of each or
 
 
 ```properties
-nanna.organisations.url=<path-to-organisation-registry-api>
+nanna.organisations.uri=<path-to-organisation-registry-api>
 ```
 
 You can also provide your own implementation of the [`OrganisationRegistry`](sobek-common/src/main/java/org/rutebanken/sobek/organisation/OrganisationRegistry.java)

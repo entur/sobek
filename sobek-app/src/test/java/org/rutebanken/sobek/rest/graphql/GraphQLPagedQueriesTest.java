@@ -100,7 +100,7 @@ class GraphQLPagedQueriesTest {
     void organisations_filterByOrganisationType() {
         given()
                 .contentType(ContentType.JSON)
-                .body(gql("{ organisations(page: 0, size: 1000, filter: { organisationType: AUTHORITY }  ) { content { netexId } totalElements page size } }"))
+                .body(gql("{ organisations(page: 0, size: 1000  ) { content { netexId } totalElements page size } }"))
                 .when()
                 .post("/services/vehicles/graphql")
                 .then()

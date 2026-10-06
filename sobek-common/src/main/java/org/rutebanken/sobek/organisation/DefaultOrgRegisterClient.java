@@ -33,6 +33,7 @@ public class DefaultOrgRegisterClient {
 
     @Bean("authorizedOrgRegisterClient")
     @ConditionalOnMissingBean(name = "authorizedOrgRegisterClient")
+    @org.springframework.boot.autoconfigure.condition.ConditionalOnProperty(name = "nanna.organisations.uri")
     WebClient authorizedOrgRegisterClient(WebClient.Builder webClientBuilder,
                                 OAuth2ClientProperties properties,
                                 @Value("${sobek.oauth2.client.audience}") String audience

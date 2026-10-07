@@ -355,7 +355,7 @@ type Query {
     vehicleTypes(filter: VehicleTypeFilter, page: Int = 0, size: Int = 20): VehicleTypePage!
     deckPlans(filter: DeckPlanFilter, page: Int = 0, size: Int = 20): DeckPlanPage!
     organisations(filter: OrganisationsFilter, page: Int = 0, size: Int = 20): OrganisationPage!
-    codeValues(filter: CodeValuesFilter, page: Int = 0, size: Int = 20): CodeValuePage!
+    codeValues(filter: CodeValuesFilter!, page: Int = 0, size: Int = 20): CodeValuePage!
 }
 
 type Mutation {

@@ -19,6 +19,7 @@ package org.rutebanken.sobek.auth.check;
 import org.rutebanken.helper.organisation.OrganisationChecker;
 import org.rutebanken.helper.organisation.RoleAssignment;
 import org.rutebanken.sobek.model.authorization.OwnedEntity;
+import org.rutebanken.sobek.model.identification.IdentifiedEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -34,25 +35,15 @@ public class SobekOriganisationChecker implements OrganisationChecker {
     public boolean entityMatchesOrganisationRef(RoleAssignment roleAssignment, Object entity) {
 
         if (entity instanceof OwnedEntity ownedEntity) {
-            if (ownedEntity.getDataOwnerRef() != null) {
-                String orgRef = ownedEntity.getDataOwnerRef().replace(":", "/");
+            if (ownedEntity.getDataOwnerRef() != null && !ownedEntity.getDataOwnerRef().isBlank()) {
+                String orgRef = ownedEntity.getDataOwnerRef();
                 logger.debug("Found org ref {} for entity. Returning true if the role assignment contains reference to the organisation", orgRef);
-                var entityClassifications = roleAssignment.getEntityClassifications();
-                if (entityClassifications == null) {
-                    logger.warn("Role assignment has no entity classifications. Denying organisation match for org ref {}", orgRef);
-                    return false;
-                }
-                var dataOwnerClassifications = entityClassifications.get(CLASSIFICATION_DATA_OWNER);
-                if (dataOwnerClassifications == null) {
-                    logger.warn("Role assignment is missing {} classification. Denying organisation match for org ref {}", CLASSIFICATION_DATA_OWNER, orgRef);
-                    return false;
-                }
-                return dataOwnerClassifications.stream().anyMatch(c -> c.equals(orgRef));
+                return orgRef.equals(roleAssignment.getOrganisation());
             }
-            logger.debug("Org ref is null for entity: {}", entity);
+            logger.debug("Org ref is null or blank for entity: {}", entity);
             return false;
         } else {
-            logger.warn("Cannot check for organisation for entity {}", entity);
+            logger.debug("Entity {} is not OwnedEntity", entity);
             return true;
         }
     }

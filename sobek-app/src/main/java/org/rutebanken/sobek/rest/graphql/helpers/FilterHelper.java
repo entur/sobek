@@ -61,17 +61,6 @@ public class FilterHelper {
         return (String) filter.get(FILTER_DATA_OWNER_REF);
     }
 
-    public static OrganisationTypeEnumeration getOrganisationTypeFromFilter(Map<String, Object> filter) {
-        if(filter == null) { return null; }
-        Object orgArg = filter.get(FILTER_ORGANISATION_TYPE);
-        if (orgArg instanceof org.rutebanken.netex.model.OrganisationTypeEnumeration t) {
-            return t;
-        } else if (orgArg instanceof String s) {
-            return OrganisationTypeEnumeration.valueOf(s.toUpperCase());
-        }
-        return null;
-    }
-
     public static List<String> getAuthorizedNetexIdsFilter(Map<String, Object> filter, AuthorizationService authorizationService) {
         if(filter == null) { return null; }
         Boolean onlyAuthorized = (Boolean)filter.get(FILTER_ONLY_USER_AUTHORIZED);

@@ -49,9 +49,8 @@ public class OrganisationFetcher implements DataFetcher<Map<String, Object>> {
         Map<String, Object> filter = env.getArgument(FILTER);
         List<String> netexIds = FilterHelper.getNetexIdsFromFilter(filter);
         String name = FilterHelper.getNameFromFilter(filter);
-        OrganisationTypeEnumeration type = FilterHelper.getOrganisationTypeFromFilter(filter);
         List<String> authorizedNetexIds = FilterHelper.getAuthorizedNetexIdsFilter(filter, authorizationService);
-        var result = organisationRepository.findCurrentFiltered(netexIds, type, name, authorizedNetexIds, PageRequest.of(page, size));
+        var result = organisationRepository.findCurrentFiltered(netexIds, name, authorizedNetexIds, PageRequest.of(page, size));
         return PageResult.from(result, page, size);
     }
 }

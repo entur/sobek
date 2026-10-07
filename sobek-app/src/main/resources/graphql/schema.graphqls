@@ -124,7 +124,6 @@ input VehicleFilter {
 
 input OrganisationsFilter {
     netexIds: [String!]
-    organisationType: OrganisationType
     name: String
     onlyUserAuthorized: Boolean
 }

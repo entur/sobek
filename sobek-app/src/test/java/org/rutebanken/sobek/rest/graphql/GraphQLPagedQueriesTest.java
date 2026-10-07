@@ -216,7 +216,7 @@ class GraphQLPagedQueriesTest {
             .contentType(ContentType.JSON)
             .body(
                 gql(
-                    "{ { codeValues(page: 0, size: 100, filter: { valueType: \"EMISSION_STANDARD\" } ) { content { label, value } totalElements page size } }"
+                    "{ codeValues(page: 0, size: 100, filter: { valueType: \"EMISSION_STANDARD\" } ) { content { label, value } totalElements page size } }"
                 )
             )
             .when()

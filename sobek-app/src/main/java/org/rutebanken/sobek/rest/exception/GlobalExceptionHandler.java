@@ -57,7 +57,8 @@ public class GlobalExceptionHandler {
         Throwable rootCause = getRootCause(ex);
         HttpStatus status = toStatus(rootCause);
         
-        ErrorResponseEntity error = new ErrorResponseEntity(rootCause.getMessage());
+        String errorMessage = extractErrorMessage(ex);
+        ErrorResponseEntity error = new ErrorResponseEntity(errorMessage);
         
         // Determine content type based on what the client expects
         MediaType contentType = determineContentType(request);
@@ -103,7 +104,44 @@ public class GlobalExceptionHandler {
             if (nestedRuntimeException.getRootCause() != null) {
                 rootCause = nestedRuntimeException.getRootCause();
             }
+        } else {
+            // Follow the standard cause chain
+            Throwable cause = e.getCause();
+            while (cause != null && cause != rootCause) {
+                rootCause = cause;
+                cause = rootCause.getCause();
+            }
         }
+        
         return rootCause;
+    }
+    
+    private String extractErrorMessage(Throwable e) {
+        Throwable current = e;
+        
+        // Try to find the first exception with a meaningful message
+        while (current != null) {
+            String message = current.getMessage();
+            
+            // If we found a non-empty message, use it
+            if (message != null && !message.trim().isEmpty()) {
+                return message;
+            }
+            
+            // For NestedRuntimeException, check root cause
+            if (current instanceof NestedRuntimeException nestedRuntimeException) {
+                Throwable rootCause = nestedRuntimeException.getRootCause();
+                if (rootCause != null) {
+                    current = rootCause;
+                    continue;
+                }
+            }
+            
+            // Follow the standard cause chain
+            current = current.getCause();
+        }
+        
+        // If no message found anywhere, return exception class name
+        return e.getClass().getSimpleName();
     }
 }

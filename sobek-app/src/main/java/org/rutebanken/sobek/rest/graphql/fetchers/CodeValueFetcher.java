@@ -43,7 +43,8 @@ public class CodeValueFetcher implements DataFetcher<Map<String, Object>> {
 
         Map<String, Object> filter = env.getArgument(FILTER);
         String valueType = FilterHelper.getValueTypeFromFilter(filter);
-        var result = codeValueRepository.findAllByValueType(valueType, PageRequest.of(page, size));
+        var result = codeValueRepository.findAllByValueType(valueType,
+                PageRequest.of(page, size, org.springframework.data.domain.Sort.by("id")));
         return PageResult.from(result, page, size);
     }
 }

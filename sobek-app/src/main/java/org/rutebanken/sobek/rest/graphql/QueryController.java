@@ -21,20 +21,22 @@ public class QueryController {
     private final VehicleTypeFetcher vehicleTypeFetcher;
     private final DeckPlanFetcher deckPlanFetcher;
     private final OrganisationFetcher organisationFetcher;
+    private final CodeValueFetcher codeValueFetcher;
     private final VehicleTypeDeckPlanFetcher vehicleTypeDeckPlanFetcher;
     private final AuthorizationService authorizationService;
 
     public QueryController(
-            VehicleFetcher vehicleFetcher,
-            VehicleTypeFetcher vehicleTypeFetcher,
-            DeckPlanFetcher deckPlanFetcher,
-            OrganisationFetcher organisationFetcher,
-            VehicleTypeDeckPlanFetcher vehicleTypeDeckPlanFetcher,
-            AuthorizationService authorizationService) {
+        VehicleFetcher vehicleFetcher,
+        VehicleTypeFetcher vehicleTypeFetcher,
+        DeckPlanFetcher deckPlanFetcher,
+        OrganisationFetcher organisationFetcher, CodeValueFetcher codeValueFetcher,
+        VehicleTypeDeckPlanFetcher vehicleTypeDeckPlanFetcher,
+        AuthorizationService authorizationService) {
         this.vehicleFetcher = vehicleFetcher;
         this.vehicleTypeFetcher = vehicleTypeFetcher;
         this.deckPlanFetcher = deckPlanFetcher;
         this.organisationFetcher = organisationFetcher;
+        this.codeValueFetcher = codeValueFetcher;
         this.vehicleTypeDeckPlanFetcher = vehicleTypeDeckPlanFetcher;
         this.authorizationService = authorizationService;
     }
@@ -66,6 +68,13 @@ public class QueryController {
     public Object organisations(@Argument Map<String, Object> filter, @Argument Integer page, @Argument Integer size)  {
         graphql.schema.DataFetchingEnvironment env = createEnvironment(filter, page, size);
         return organisationFetcher.get(env);
+    }
+
+    @QueryMapping
+    @Transactional(readOnly = true)  // Single transaction for entire query
+    public Object codeValues(@Argument Map<String, Object> filter, @Argument Integer page, @Argument Integer size)  {
+        graphql.schema.DataFetchingEnvironment env = createEnvironment(filter, page, size);
+        return codeValueFetcher.get(env);
     }
 
     @SchemaMapping(typeName = "VehicleType", field = "deckPlan")

@@ -1,6 +1,5 @@
 package org.rutebanken.sobek.repository;
 
-import org.rutebanken.netex.model.OrganisationTypeEnumeration;
 import org.rutebanken.sobek.organisation.Organisation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

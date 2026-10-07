@@ -229,7 +229,7 @@ type OrganisationPage {
     size: Int!
 }
 
-# Organisation type
+# Code value
 type CodeValue {
     valueType: String!
     label: String!

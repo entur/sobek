@@ -18,23 +18,23 @@ CREATE SEQUENCE public.code_value_seq
 ALTER SEQUENCE public.code_value_seq OWNER TO sobek;
 
 insert into code_value (id, value_type, label, value)
-values (nextval('code_value_seq'), 'EMISSION_STANDARD', 'EURO1', 'Euro 1');
+values (nextval('code_value_seq'), 'EMISSION_STANDARD', 'Euro 1', 'Euro1');
 
 insert into code_value (id, value_type, label, value)
-values (nextval('code_value_seq'), 'EMISSION_STANDARD', 'EURO2', 'Euro 2');
+values (nextval('code_value_seq'), 'EMISSION_STANDARD', 'Euro 2', 'Euro2');
 
 insert into code_value (id, value_type, label, value)
-values (nextval('code_value_seq'), 'EMISSION_STANDARD', 'EURO3', 'Euro 3');
+values (nextval('code_value_seq'), 'EMISSION_STANDARD', 'Euro 3', 'Euro3');
 
 insert into code_value (id, value_type, label, value)
-values (nextval('code_value_seq'), 'EMISSION_STANDARD', 'EURO4', 'Euro 4');
+values (nextval('code_value_seq'), 'EMISSION_STANDARD', 'Euro 4', 'Euro4');
 
 insert into code_value (id, value_type, label, value)
-values (nextval('code_value_seq'), 'EMISSION_STANDARD', 'EURO5', 'Euro 5');
+values (nextval('code_value_seq'), 'EMISSION_STANDARD', 'Euro 5', 'Euro5');
 
 insert into code_value (id, value_type, label, value)
-values (nextval('code_value_seq'), 'EMISSION_STANDARD', 'EURO6', 'Euro 6');
+values (nextval('code_value_seq'), 'EMISSION_STANDARD', 'Euro 6', 'Euro6');
 
 insert into code_value (id, value_type, label, value)
-values (nextval('code_value_seq'), 'EMISSION_STANDARD', 'EURO7', 'Euro 7');
+values (nextval('code_value_seq'), 'EMISSION_STANDARD', 'Euro 7', 'Euro7');
 

@@ -45,7 +45,7 @@
 
     <properties>
         <java.version>21</java.version>
-        <spring-cloud-gcp.version>8.2.1</spring-cloud-gcp.version>
+        <spring-cloud-gcp.version>8.2.2</spring-cloud-gcp.version>
         <geotools.version>35.1</geotools.version>
         <graphql-java.version>25.0</graphql-java.version>
         <graphql-java-extended-scalars.version>24.0</graphql-java-extended-scalars.version>

@@ -62,7 +62,7 @@
         <prettier-java.version>2.1.0</prettier-java.version>
         <prettier-maven-plugin.version>0.22</prettier-maven-plugin.version>
         <plugin.prettier.goal>write</plugin.prettier.goal>
-        <flyway.version>11.14.1</flyway.version>
+        <flyway.version>13.9.0</flyway.version>
     </properties>
 
     <repositories>

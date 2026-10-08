@@ -38,9 +38,9 @@ public class GraphQLNames {
     // Filter fields
     public static final String FILTER = "filter";
     public static final String FILTER_TRANSPORT_MODES = "transportModes";
-    public static final String FILTER_ORGANISATION_TYPE = "organisationType";
     public static final String FILTER_IDS = "netexIds";
     public static final String FILTER_NAME = "name";
+    public static final String FILTER_VALUE_TYPE = "valueType";
     public static final String FILTER_DATA_OWNER_REF = "dataOwnerRef";
     public static final String FILTER_ONLY_USER_AUTHORIZED = "onlyUserAuthorized";
 }

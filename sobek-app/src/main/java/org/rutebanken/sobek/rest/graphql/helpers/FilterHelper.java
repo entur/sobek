@@ -1,6 +1,5 @@
 package org.rutebanken.sobek.rest.graphql.helpers;
 
-import org.rutebanken.netex.model.OrganisationTypeEnumeration;
 import org.rutebanken.sobek.auth.AuthorizationService;
 import org.rutebanken.sobek.model.vehicle.AllPublicTransportModesEnumeration;
 
@@ -52,6 +51,11 @@ public class FilterHelper {
     public static String getNameFromFilter(Map<String, Object> filter) {
         if(filter == null) { return null; }
         return (String)filter.get(FILTER_NAME);
+    }
+
+    public static String getValueTypeFromFilter(Map<String, Object> filter) {
+        if(filter == null) { return null; }
+        return (String)filter.get(FILTER_VALUE_TYPE);
     }
 
     public static String getDataOwnerRefFromFilter(Map<String, Object> filter) {

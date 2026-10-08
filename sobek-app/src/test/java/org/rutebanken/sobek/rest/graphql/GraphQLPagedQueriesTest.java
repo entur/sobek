@@ -32,13 +32,19 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = SobekTestApplication.class)
+@SpringBootTest(
+    webEnvironment = WebEnvironment.RANDOM_PORT,
+    classes = SobekTestApplication.class
+)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class GraphQLPagedQueriesTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(GraphQLPagedQueriesTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(
+        GraphQLPagedQueriesTest.class
+    );
 
-    @LocalServerPort int port;
+    @LocalServerPort
+    int port;
 
     @BeforeAll
     void setUp() throws Exception {
@@ -61,7 +67,11 @@ class GraphQLPagedQueriesTest {
     }
 
     private String gql(String query) {
-        return "{\"query\": \"" + query.replace("\"", "\\\"").replace("\n", " ") + "\"}";
+        return (
+            "{\"query\": \"" +
+            query.replace("\"", "\\\"").replace("\n", " ") +
+            "\"}"
+        );
     }
 
     // --- vehicleTypes paged query ---
@@ -70,10 +80,14 @@ class GraphQLPagedQueriesTest {
     void vehicleTypes_returnsPageStructure() {
         given()
             .contentType(ContentType.JSON)
-            .body(gql("{ vehicleTypes(page: 0, size: 10, filter: { dataOwnerRef: \"NOG:Authority:cP4aPiJ7c39\" } ) { content { netexId } totalElements page size } }"))
-        .when()
+            .body(
+                gql(
+                    "{ vehicleTypes(page: 0, size: 10, filter: { dataOwnerRef: \"NOG:Authority:cP4aPiJ7c39\" } ) { content { netexId } totalElements page size } }"
+                )
+            )
+            .when()
             .post("/services/vehicles/graphql")
-        .then()
+            .then()
             .statusCode(200)
             .body("data.vehicleTypes.content", is(not(empty())))
             .body("data.vehicleTypes.totalElements", greaterThanOrEqualTo(1))
@@ -84,56 +98,75 @@ class GraphQLPagedQueriesTest {
     @Test
     void organisations_returnsPageStructure() {
         given()
-                .contentType(ContentType.JSON)
-                .body(gql("{ organisations(page: 0, size: 10) { content { netexId } totalElements page size } }"))
-                .when()
-                .post("/services/vehicles/graphql")
-                .then()
-                .statusCode(200)
-                .body("data.organisations.content", is(not(empty())))
-                .body("data.organisations.totalElements", greaterThanOrEqualTo(339))
-                .body("data.organisations.page", equalTo(0))
-                .body("data.organisations.size", equalTo(10));
+            .contentType(ContentType.JSON)
+            .body(
+                gql(
+                    "{ organisations(page: 0, size: 10) { content { netexId } totalElements page size } }"
+                )
+            )
+            .when()
+            .post("/services/vehicles/graphql")
+            .then()
+            .statusCode(200)
+            .body("data.organisations.content", is(not(empty())))
+            .body("data.organisations.totalElements", greaterThanOrEqualTo(339))
+            .body("data.organisations.page", equalTo(0))
+            .body("data.organisations.size", equalTo(10));
     }
 
     @Test
     void organisations_filterByName() {
         given()
-                .contentType(ContentType.JSON)
-                .body(gql("{ organisations(page: 0, size: 1000, filter: { name: \"oscarsborg\" }  ) { content { netexId } totalElements page size } }"))
-                .when()
-                .post("/services/vehicles/graphql")
-                .then()
-                .statusCode(200)
-                .body("data.organisations.content", is(not(empty())))
-                .body("data.organisations.totalElements", greaterThanOrEqualTo(1))
-                .body("data.organisations.page", equalTo(0));
+            .contentType(ContentType.JSON)
+            .body(
+                gql(
+                    "{ organisations(page: 0, size: 1000, filter: { name: \"oscarsborg\" }  ) { content { netexId } totalElements page size } }"
+                )
+            )
+            .when()
+            .post("/services/vehicles/graphql")
+            .then()
+            .statusCode(200)
+            .body("data.organisations.content", is(not(empty())))
+            .body("data.organisations.totalElements", greaterThanOrEqualTo(1))
+            .body("data.organisations.page", equalTo(0));
     }
 
     @Test
     void organisations_filterByUserAuthorizedOrganisations() {
         given()
-                .contentType(ContentType.JSON)
-                .body(gql("{ organisations(page: 0, size: 1000, filter: { onlyUserAuthorized: true }  ) { content { netexId } totalElements page size } }"))
-                .when()
-                .post("/services/vehicles/graphql")
-                .then()
-                .statusCode(200)
-                .body("data.organisations.content", is(not(empty())))
-                .body("data.organisations.totalElements", greaterThanOrEqualTo(1))
-                .body("data.organisations.page", equalTo(0));
+            .contentType(ContentType.JSON)
+            .body(
+                gql(
+                    "{ organisations(page: 0, size: 1000, filter: { onlyUserAuthorized: true }  ) { content { netexId } totalElements page size } }"
+                )
+            )
+            .when()
+            .post("/services/vehicles/graphql")
+            .then()
+            .statusCode(200)
+            .body("data.organisations.content", is(not(empty())))
+            .body("data.organisations.totalElements", greaterThanOrEqualTo(1))
+            .body("data.organisations.page", equalTo(0));
     }
 
     @Test
     void vehicleTypes_exposesNewFields() {
         given()
             .contentType(ContentType.JSON)
-            .body(gql("{ vehicleTypes(page: 0, size: 100, filter: { transportModes: [ BUS ] netexIds: [\"AKT:VehicleType:123\"] dataOwnerRef: \"NOG:Authority:cP4aPiJ7c39\" } ) { content { netexId, description { value }, name { value }, version, euroClass, passengerCapacity { totalCapacity, standingCapacity, seatingCapacity },  transportMode, created, fuelTypes, propulsionTypes, privateCode { type, value}, formDragCoefficient, maximumRange, length, height, width, weight, vehicles { chassisNumber, netexId, registrationNumber }  } totalElements page size } }"))
-                .when()
+            .body(
+                gql(
+                    "{ vehicleTypes(page: 0, size: 100, filter: { transportModes: [ BUS ] netexIds: [\"AKT:VehicleType:123\"] dataOwnerRef: \"NOG:Authority:cP4aPiJ7c39\" } ) { content { netexId, description { value }, name { value }, version, euroClass, passengerCapacity { totalCapacity, standingCapacity, seatingCapacity },  transportMode, created, fuelTypes, propulsionTypes, privateCode { type, value}, formDragCoefficient, maximumRange, length, height, width, weight, vehicles { chassisNumber, netexId, registrationNumber }  } totalElements page size } }"
+                )
+            )
+            .when()
             .post("/services/vehicles/graphql")
-        .then()
+            .then()
             .statusCode(200)
-            .body("data.vehicleTypes.content[0].name.value", equalTo("Exqui City 24"))
+            .body(
+                "data.vehicleTypes.content[0].name.value",
+                equalTo("Exqui City 24")
+            )
             .body("data.vehicleTypes.content[0].transportMode", equalTo("BUS"))
             .body("data.vehicleTypes.content[0].version", notNullValue())
             // created may be null for NeTEx-imported entities (set by versioning, not import)
@@ -144,36 +177,68 @@ class GraphQLPagedQueriesTest {
     void vehicleTypes_filterByTransportMode() {
         given()
             .contentType(ContentType.JSON)
-            .body(gql("{ vehicleTypes(filter: { transportModes: [ BUS ] dataOwnerRef: \"NOG:Authority:cP4aPiJ7c39\" }, page: 0, size: 10) { content { netexId transportMode } totalElements } }"))
-        .when()
+            .body(
+                gql(
+                    "{ vehicleTypes(filter: { transportModes: [ BUS ] dataOwnerRef: \"NOG:Authority:cP4aPiJ7c39\" }, page: 0, size: 10) { content { netexId transportMode } totalElements } }"
+                )
+            )
+            .when()
             .post("/services/vehicles/graphql")
-        .then()
+            .then()
             .statusCode(200)
             .body("data.vehicleTypes.content", is(not(empty())))
-            .body("data.vehicleTypes.content.transportMode", everyItem(equalTo("BUS")));
+            .body(
+                "data.vehicleTypes.content.transportMode",
+                everyItem(equalTo("BUS"))
+            );
     }
 
     @Test
     void vehicleTypes_filterByName() {
         given()
-                .contentType(ContentType.JSON)
-                .body(gql("{ vehicleTypes(filter: { name: \"exqui\" dataOwnerRef: \"NOG:Authority:cP4aPiJ7c39\"  }, page: 0, size: 10) { content { netexId transportMode } totalElements } }"))
-                .when()
-                .post("/services/vehicles/graphql")
-                .then()
-                .statusCode(200)
-                .body("data.vehicleTypes.content", is(not(empty())))
-                .body("data.vehicleTypes.totalElements", equalTo(1));
+            .contentType(ContentType.JSON)
+            .body(
+                gql(
+                    "{ vehicleTypes(filter: { name: \"exqui\" dataOwnerRef: \"NOG:Authority:cP4aPiJ7c39\"  }, page: 0, size: 10) { content { netexId transportMode } totalElements } }"
+                )
+            )
+            .when()
+            .post("/services/vehicles/graphql")
+            .then()
+            .statusCode(200)
+            .body("data.vehicleTypes.content", is(not(empty())))
+            .body("data.vehicleTypes.totalElements", equalTo(1));
+    }
+
+    @Test
+    void codeValues_test() {
+        given()
+            .contentType(ContentType.JSON)
+            .body(
+                gql(
+                    "{ codeValues(page: 0, size: 100, filter: { valueType: \"EMISSION_STANDARD\" } ) { content { label, value } totalElements page size } }"
+                )
+            )
+            .when()
+            .post("/services/vehicles/graphql")
+            .then()
+            .statusCode(200)
+            .body("data.codeValues.content", is(not(empty())))
+            .body("data.codeValues.totalElements", greaterThan(2));
     }
 
     @Test
     void vehicleTypes_filterByTransportMode_noMatch() {
         given()
             .contentType(ContentType.JSON)
-            .body(gql("{ vehicleTypes(filter: { transportModes: [ TROLLEY_BUS ]  dataOwnerRef: \"NOG:Authority:cP4aPiJ7c39\" }, page: 0, size: 10) { content { netexId } totalElements } }"))
-        .when()
+            .body(
+                gql(
+                    "{ vehicleTypes(filter: { transportModes: [ TROLLEY_BUS ]  dataOwnerRef: \"NOG:Authority:cP4aPiJ7c39\" }, page: 0, size: 10) { content { netexId } totalElements } }"
+                )
+            )
+            .when()
             .post("/services/vehicles/graphql")
-        .then()
+            .then()
             .statusCode(200)
             .body("data.vehicleTypes.content", is(empty()))
             .body("data.vehicleTypes.totalElements", equalTo(0));
@@ -184,21 +249,32 @@ class GraphQLPagedQueriesTest {
         // First, get the actual NeTEx ID of the imported vehicle type
         String id = given()
             .contentType(ContentType.JSON)
-            .body(gql("{ vehicleTypes(page: 0, size: 1, filter: {  dataOwnerRef: \"NOG:Authority:cP4aPiJ7c39\" } ) { content { netexId } } }"))
-        .when()
+            .body(
+                gql(
+                    "{ vehicleTypes(page: 0, size: 1, filter: {  dataOwnerRef: \"NOG:Authority:cP4aPiJ7c39\" } ) { content { netexId } } }"
+                )
+            )
+            .when()
             .post("/services/vehicles/graphql")
-        .then()
+            .then()
             .statusCode(200)
             .body("data.vehicleTypes.content", hasSize(1))
-            .extract().path("data.vehicleTypes.content[0].netexId");
+            .extract()
+            .path("data.vehicleTypes.content[0].netexId");
 
         // Filter by that ID — should return exactly one result
         given()
             .contentType(ContentType.JSON)
-            .body(gql("{ vehicleTypes(filter: { netexIds: [\"" + id + "\"],  dataOwnerRef: \"NOG:Authority:cP4aPiJ7c39\"  }, page: 0, size: 10) { content { netexId } totalElements } }"))
-        .when()
+            .body(
+                gql(
+                    "{ vehicleTypes(filter: { netexIds: [\"" +
+                    id +
+                    "\"],  dataOwnerRef: \"NOG:Authority:cP4aPiJ7c39\"  }, page: 0, size: 10) { content { netexId } totalElements } }"
+                )
+            )
+            .when()
             .post("/services/vehicles/graphql")
-        .then()
+            .then()
             .statusCode(200)
             .body("data.vehicleTypes.content", hasSize(1))
             .body("data.vehicleTypes.content[0].netexId", equalTo(id))
@@ -209,10 +285,14 @@ class GraphQLPagedQueriesTest {
     void vehicleTypes_filterByIds_noMatch() {
         given()
             .contentType(ContentType.JSON)
-            .body(gql("{ vehicleTypes(filter: { netexIds: [\"FAKE:VehicleType:999\"]  dataOwnerRef: \"NOG:Authority:cP4aPiJ7c39\" }, page: 0, size: 10) { content { netexId } totalElements } }"))
-        .when()
+            .body(
+                gql(
+                    "{ vehicleTypes(filter: { netexIds: [\"FAKE:VehicleType:999\"]  dataOwnerRef: \"NOG:Authority:cP4aPiJ7c39\" }, page: 0, size: 10) { content { netexId } totalElements } }"
+                )
+            )
+            .when()
             .post("/services/vehicles/graphql")
-        .then()
+            .then()
             .statusCode(200)
             .body("data.vehicleTypes.content", is(empty()))
             .body("data.vehicleTypes.totalElements", equalTo(0));
@@ -222,10 +302,14 @@ class GraphQLPagedQueriesTest {
     void vehicleTypes_paginationBeyondResults() {
         given()
             .contentType(ContentType.JSON)
-            .body(gql("{ vehicleTypes(page: 999, size: 10, filter: { dataOwnerRef: \"NOG:Authority:cP4aPiJ7c39\" }) { content { netexId } totalElements page } }"))
-        .when()
+            .body(
+                gql(
+                    "{ vehicleTypes(page: 999, size: 10, filter: { dataOwnerRef: \"NOG:Authority:cP4aPiJ7c39\" }) { content { netexId } totalElements page } }"
+                )
+            )
+            .when()
             .post("/services/vehicles/graphql")
-        .then()
+            .then()
             .statusCode(200)
             .body("data.vehicleTypes.content", is(empty()))
             .body("data.vehicleTypes.totalElements", greaterThanOrEqualTo(0))
@@ -238,10 +322,14 @@ class GraphQLPagedQueriesTest {
     void deckPlans_returnsPageStructure() {
         given()
             .contentType(ContentType.JSON)
-            .body(gql("{ deckPlans(page: 0, size: 10, filter: { dataOwnerRef: \"NOG:Authority:cP4aPiJ7c39\" }) { content { netexId } totalElements page size } }"))
-        .when()
+            .body(
+                gql(
+                    "{ deckPlans(page: 0, size: 10, filter: { dataOwnerRef: \"NOG:Authority:cP4aPiJ7c39\" }) { content { netexId } totalElements page size } }"
+                )
+            )
+            .when()
             .post("/services/vehicles/graphql")
-        .then()
+            .then()
             .statusCode(200)
             .body("data.deckPlans.totalElements", greaterThanOrEqualTo(0))
             .body("data.deckPlans.page", equalTo(0))
@@ -251,67 +339,89 @@ class GraphQLPagedQueriesTest {
     @Test
     void deckPlans_getOne() {
         given()
-                .contentType(ContentType.JSON)
-                .body(gql("{ deckPlans(page: 0, size: 10, filter: { netexIds: [ \"NMR:DeckPlan:1\" ]  dataOwnerRef: \"NOG:Authority:cP4aPiJ7c39\" } ) { content { netexId } totalElements page size } }"))
-                .when()
-                .post("/services/vehicles/graphql")
-                .then()
-                .statusCode(200)
-                .body("data.deckPlans.totalElements", equalTo(1))
-                .body("data.deckPlans.content", hasSize(1))
-                .body("data.deckPlans.content[0].netexId", equalTo("NMR:DeckPlan:1"))
-                .body("data.deckPlans.page", equalTo(0))
-                .body("data.deckPlans.size", equalTo(10));
+            .contentType(ContentType.JSON)
+            .body(
+                gql(
+                    "{ deckPlans(page: 0, size: 10, filter: { netexIds: [ \"NMR:DeckPlan:1\" ]  dataOwnerRef: \"NOG:Authority:cP4aPiJ7c39\" } ) { content { netexId } totalElements page size } }"
+                )
+            )
+            .when()
+            .post("/services/vehicles/graphql")
+            .then()
+            .statusCode(200)
+            .body("data.deckPlans.totalElements", equalTo(1))
+            .body("data.deckPlans.content", hasSize(1))
+            .body(
+                "data.deckPlans.content[0].netexId",
+                equalTo("NMR:DeckPlan:1")
+            )
+            .body("data.deckPlans.page", equalTo(0))
+            .body("data.deckPlans.size", equalTo(10));
     }
 
     @Test
     void deckPlan_filterByTransportModes() {
         given()
-                .contentType(ContentType.JSON)
-                .body(gql("{ deckPlans (filter: { transportModes: [ BUS ]  dataOwnerRef: \"NOG:Authority:cP4aPiJ7c39\" }, page: 0, size: 10) { content { netexId  } totalElements } }"))
-                .when()
-                .post("/services/vehicles/graphql")
-                .then()
-                .statusCode(200)
-                .body("data.deckPlans.content", is(not(empty())))
-                .body("data.deckPlans.totalElements", equalTo(1));
+            .contentType(ContentType.JSON)
+            .body(
+                gql(
+                    "{ deckPlans (filter: { transportModes: [ BUS ]  dataOwnerRef: \"NOG:Authority:cP4aPiJ7c39\" }, page: 0, size: 10) { content { netexId  } totalElements } }"
+                )
+            )
+            .when()
+            .post("/services/vehicles/graphql")
+            .then()
+            .statusCode(200)
+            .body("data.deckPlans.content", is(not(empty())))
+            .body("data.deckPlans.totalElements", equalTo(1));
     }
 
     @Test
     void deckPlan_filterByName_VehicleType() {
         given()
-                .contentType(ContentType.JSON)
-                .body(gql("{ deckPlans (filter: { name: \"exqui\" dataOwnerRef: \"NOG:Authority:cP4aPiJ7c39\" }, page: 0, size: 10) { content { netexId  } totalElements } }"))
-                .when()
-                .post("/services/vehicles/graphql")
-                .then()
-                .statusCode(200)
-                .body("data.deckPlans.content", is(not(empty())))
-                .body("data.deckPlans.totalElements", equalTo(1));
+            .contentType(ContentType.JSON)
+            .body(
+                gql(
+                    "{ deckPlans (filter: { name: \"exqui\" dataOwnerRef: \"NOG:Authority:cP4aPiJ7c39\" }, page: 0, size: 10) { content { netexId  } totalElements } }"
+                )
+            )
+            .when()
+            .post("/services/vehicles/graphql")
+            .then()
+            .statusCode(200)
+            .body("data.deckPlans.content", is(not(empty())))
+            .body("data.deckPlans.totalElements", equalTo(1));
     }
 
     @Test
     void deckPlan_filterByName_DeckPlan() {
         given()
-                .contentType(ContentType.JSON)
-                .body(gql("{ deckPlans (filter: { name: \"enetasjes leddet\"  dataOwnerRef: \"NOG:Authority:cP4aPiJ7c39\" }, page: 0, size: 10) { content { netexId  } totalElements } }"))
-                .when()
-                .post("/services/vehicles/graphql")
-                .then()
-                .statusCode(200)
-                .body("data.deckPlans.content", is(not(empty())))
-                .body("data.deckPlans.totalElements", equalTo(1));
+            .contentType(ContentType.JSON)
+            .body(
+                gql(
+                    "{ deckPlans (filter: { name: \"enetasjes leddet\"  dataOwnerRef: \"NOG:Authority:cP4aPiJ7c39\" }, page: 0, size: 10) { content { netexId  } totalElements } }"
+                )
+            )
+            .when()
+            .post("/services/vehicles/graphql")
+            .then()
+            .statusCode(200)
+            .body("data.deckPlans.content", is(not(empty())))
+            .body("data.deckPlans.totalElements", equalTo(1));
     }
-
 
     @Test
     void deckPlans_defaultPagination() {
         given()
             .contentType(ContentType.JSON)
-            .body(gql("{ deckPlans(filter: { dataOwnerRef: \"NOG:Authority:cP4aPiJ7c39\" } ) { content { netexId } totalElements page size } }"))
-        .when()
+            .body(
+                gql(
+                    "{ deckPlans(filter: { dataOwnerRef: \"NOG:Authority:cP4aPiJ7c39\" } ) { content { netexId } totalElements page size } }"
+                )
+            )
+            .when()
             .post("/services/vehicles/graphql")
-        .then()
+            .then()
             .statusCode(200)
             .body("data.deckPlans.page", equalTo(0))
             .body("data.deckPlans.size", equalTo(20));
@@ -320,40 +430,54 @@ class GraphQLPagedQueriesTest {
     @Test
     void vehicles_filterByTransportMode() {
         given()
-                .contentType(ContentType.JSON)
-                .body(gql("{ vehicles(page: 0, size: 100, filter: { transportModes: [ BUS ]   dataOwnerRef: \"NOG:Authority:cP4aPiJ7c39\" } ) { content { netexId, registrationNumber, operationalNumber, transportType { netexId, length, height, width, transportMode } } totalElements page size } }"))
-                .when()
-                .post("/services/vehicles/graphql")
-                .then()
-                .statusCode(200)
-                .body("data.vehicles.content", is(not(empty())))
-                .body("data.vehicles.content.transportType.transportMode", everyItem(equalTo("BUS")));
+            .contentType(ContentType.JSON)
+            .body(
+                gql(
+                    "{ vehicles(page: 0, size: 100, filter: { transportModes: [ BUS ]   dataOwnerRef: \"NOG:Authority:cP4aPiJ7c39\" } ) { content { netexId, registrationNumber, operationalNumber, transportType { netexId, length, height, width, transportMode } } totalElements page size } }"
+                )
+            )
+            .when()
+            .post("/services/vehicles/graphql")
+            .then()
+            .statusCode(200)
+            .body("data.vehicles.content", is(not(empty())))
+            .body(
+                "data.vehicles.content.transportType.transportMode",
+                everyItem(equalTo("BUS"))
+            );
     }
 
     @Test
     void vehicle_filterByName_VehicleType() {
         given()
-                .contentType(ContentType.JSON)
-                .body(gql("{ vehicles(filter: { name: \"exqui\"  dataOwnerRef: \"NOG:Authority:cP4aPiJ7c39\" }, page: 0, size: 10) { content { netexId registrationNumber transportType { netexId } } totalElements } }"))
-                .when()
-                .post("/services/vehicles/graphql")
-                .then()
-                .statusCode(200)
-                .body("data.vehicles.content", is(not(empty())))
-                .body("data.vehicles.totalElements", equalTo(1));
+            .contentType(ContentType.JSON)
+            .body(
+                gql(
+                    "{ vehicles(filter: { name: \"exqui\"  dataOwnerRef: \"NOG:Authority:cP4aPiJ7c39\" }, page: 0, size: 10) { content { netexId registrationNumber transportType { netexId } } totalElements } }"
+                )
+            )
+            .when()
+            .post("/services/vehicles/graphql")
+            .then()
+            .statusCode(200)
+            .body("data.vehicles.content", is(not(empty())))
+            .body("data.vehicles.totalElements", equalTo(1));
     }
 
     @Test
     void vehicle_filterByName_Vehicle() {
         given()
-                .contentType(ContentType.JSON)
-                .body(gql("{ vehicles(filter: { name: \"bus vehicle\"  dataOwnerRef: \"NOG:Authority:cP4aPiJ7c39\" }, page: 0, size: 10) { content { netexId registrationNumber } totalElements } }"))
-                .when()
-                .post("/services/vehicles/graphql")
-                .then()
-                .statusCode(200)
-                .body("data.vehicles.content", is(not(empty())))
-                .body("data.vehicles.totalElements", equalTo(1));
+            .contentType(ContentType.JSON)
+            .body(
+                gql(
+                    "{ vehicles(filter: { name: \"bus vehicle\"  dataOwnerRef: \"NOG:Authority:cP4aPiJ7c39\" }, page: 0, size: 10) { content { netexId registrationNumber } totalElements } }"
+                )
+            )
+            .when()
+            .post("/services/vehicles/graphql")
+            .then()
+            .statusCode(200)
+            .body("data.vehicles.content", is(not(empty())))
+            .body("data.vehicles.totalElements", equalTo(1));
     }
-
 }

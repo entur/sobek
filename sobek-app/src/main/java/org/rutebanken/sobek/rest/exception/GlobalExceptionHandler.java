@@ -25,6 +25,7 @@ import org.rutebanken.sobek.netex.mapping.NetexMappingException;
 import org.springframework.core.NestedRuntimeException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.InvalidMediaTypeException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -32,6 +33,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -54,9 +56,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseEntity> handleException(Exception ex, HttpServletRequest request) {
+        // Find the exception that determines the status
+        Throwable exceptionForStatus = findExceptionForStatus(ex);
         HttpStatus status = toStatus(ex);
         
-        String errorMessage = extractErrorMessage(ex);
+        // Extract message from the same exception that determined the status
+        String errorMessage = extractErrorMessage(exceptionForStatus != null ? exceptionForStatus : ex);
         ErrorResponseEntity error = new ErrorResponseEntity(errorMessage);
         
         // Determine content type based on what the client expects
@@ -70,31 +75,35 @@ public class GlobalExceptionHandler {
 
     private MediaType determineContentType(HttpServletRequest request) {
         String acceptHeader = request.getHeader("Accept");
-        String contentTypeHeader = request.getContentType();
         
-        // Check Accept header first
-        if (acceptHeader != null && acceptHeader.contains("application/xml")) {
-            return MediaType.APPLICATION_XML;
+        if (acceptHeader != null && !acceptHeader.isEmpty()) {
+            try {
+                List<MediaType> acceptedTypes = MediaType.parseMediaTypes(acceptHeader);
+                return acceptedTypes.stream()
+                    .filter(mt -> mt.isCompatibleWith(MediaType.APPLICATION_XML) 
+                               || mt.isCompatibleWith(MediaType.APPLICATION_JSON))
+                    .findFirst()
+                    .orElse(MediaType.APPLICATION_JSON);
+            } catch (InvalidMediaTypeException e) {
+                return MediaType.APPLICATION_JSON;
+            }
         }
         
-        // Fall back to request Content-Type (if client sent XML, respond with XML)
-        if (contentTypeHeader != null && contentTypeHeader.contains("application/xml")) {
-            return MediaType.APPLICATION_XML;
-        }
-        
-        // Default to JSON for GraphQL and other cases
         return MediaType.APPLICATION_JSON;
     }
 
     protected HttpStatus toStatus(Throwable e) {
-        // Preserve the first exception in the chain that matches a configured
-        // classification, checking the outer exception before descending into
-        // its causes, and only fall back to INTERNAL_SERVER_ERROR when none match.
+        Throwable matchedException = findExceptionForStatus(e);
+        return matchedException != null ? matchStatus(matchedException) : HttpStatus.INTERNAL_SERVER_ERROR;
+    }
+    
+    private Throwable findExceptionForStatus(Throwable e) {
+        // Find the first exception in the chain that matches a configured classification
         Throwable current = e;
         while (current != null) {
             HttpStatus status = matchStatus(current);
             if (status != null) {
-                return status;
+                return current;
             }
 
             Throwable cause = current.getCause();
@@ -104,7 +113,7 @@ public class GlobalExceptionHandler {
             current = cause;
         }
 
-        return HttpStatus.INTERNAL_SERVER_ERROR;
+        return null;
     }
 
     private HttpStatus matchStatus(Throwable e) {
@@ -118,31 +127,27 @@ public class GlobalExceptionHandler {
     }
 
     private String extractErrorMessage(Throwable e) {
-        Throwable current = e;
-        
-        // Try to find the first exception with a meaningful message
-        while (current != null) {
-            String message = current.getMessage();
-            
-            // If we found a non-empty message, use it
-            if (message != null && !message.trim().isEmpty()) {
-                return message;
-            }
-            
-            // For NestedRuntimeException, check root cause
-            if (current instanceof NestedRuntimeException nestedRuntimeException) {
-                Throwable rootCause = nestedRuntimeException.getRootCause();
-                if (rootCause != null) {
-                    current = rootCause;
-                    continue;
-                }
-            }
-            
-            // Follow the standard cause chain
-            current = current.getCause();
+        // First try to get message from the exception itself
+        String message = e.getMessage();
+        if (message != null && !message.trim().isEmpty()) {
+            return message;
         }
         
-        // If no message found anywhere, return exception class name
+        // For NestedRuntimeException, check root cause
+        if (e instanceof NestedRuntimeException nestedRuntimeException) {
+            Throwable rootCause = nestedRuntimeException.getRootCause();
+            if (rootCause != null && rootCause.getMessage() != null && !rootCause.getMessage().trim().isEmpty()) {
+                return rootCause.getMessage();
+            }
+        }
+        
+        // Check the immediate cause
+        Throwable cause = e.getCause();
+        if (cause != null && cause.getMessage() != null && !cause.getMessage().trim().isEmpty()) {
+            return cause.getMessage();
+        }
+        
+        // If no message found, return exception class name
         return e.getClass().getSimpleName();
     }
 }

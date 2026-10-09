@@ -11,7 +11,6 @@ import org.rutebanken.sobek.model.vehicle.VehicleModel;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
 import org.rutebanken.sobek.netex.id.NetexIdHelper;
 import org.rutebanken.sobek.netex.id.ValidPrefixList;
-import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.rutebanken.sobek.repository.reference.ReferenceResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

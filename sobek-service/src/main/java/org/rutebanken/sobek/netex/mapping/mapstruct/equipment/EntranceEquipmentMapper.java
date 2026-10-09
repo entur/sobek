@@ -1,7 +1,6 @@
 
 package org.rutebanken.sobek.netex.mapping.mapstruct.equipment;
 
-import org.mapstruct.AfterMapping;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;

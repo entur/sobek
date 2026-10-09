@@ -54,8 +54,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseEntity> handleException(Exception ex, HttpServletRequest request) {
-        Throwable rootCause = getRootCause(ex);
-        HttpStatus status = toStatus(rootCause);
+        HttpStatus status = toStatus(ex);
         
         String errorMessage = extractErrorMessage(ex);
         ErrorResponseEntity error = new ErrorResponseEntity(errorMessage);
@@ -88,34 +87,36 @@ public class GlobalExceptionHandler {
     }
 
     protected HttpStatus toStatus(Throwable e) {
+        // Preserve the first exception in the chain that matches a configured
+        // classification, checking the outer exception before descending into
+        // its causes, and only fall back to INTERNAL_SERVER_ERROR when none match.
+        Throwable current = e;
+        while (current != null) {
+            HttpStatus status = matchStatus(current);
+            if (status != null) {
+                return status;
+            }
+
+            Throwable cause = current.getCause();
+            if (cause == current) {
+                break;
+            }
+            current = cause;
+        }
+
+        return HttpStatus.INTERNAL_SERVER_ERROR;
+    }
+
+    private HttpStatus matchStatus(Throwable e) {
         for (Map.Entry<HttpStatus, Set<Class<?>>> entry : mapping.entrySet()) {
             if (entry.getValue().stream().anyMatch(c -> c.isAssignableFrom(e.getClass()))) {
                 return entry.getKey();
             }
         }
 
-        return HttpStatus.INTERNAL_SERVER_ERROR;
+        return null;
     }
 
-    private Throwable getRootCause(Throwable e) {
-        Throwable rootCause = e;
-
-        if (e instanceof NestedRuntimeException nestedRuntimeException) {
-            if (nestedRuntimeException.getRootCause() != null) {
-                rootCause = nestedRuntimeException.getRootCause();
-            }
-        } else {
-            // Follow the standard cause chain
-            Throwable cause = e.getCause();
-            while (cause != null && cause != rootCause) {
-                rootCause = cause;
-                cause = rootCause.getCause();
-            }
-        }
-        
-        return rootCause;
-    }
-    
     private String extractErrorMessage(Throwable e) {
         Throwable current = e;
         

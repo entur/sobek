@@ -60,7 +60,6 @@ public interface DeckMapper {
                                  @MappingTarget org.rutebanken.sobek.model.vehicle.Deck target,
                                  @Context MappingContext context) {
         if(target != null) {
-            context.getZoneMapper().afterMapToSobek(source, target, context);
             context.setCurrentSobekDeck(target);
             target.setDeckSpaces(context.getDeckSpaceMapper().mapNetexRelStructureToSobekList(source.getDeckSpaces(), context));
             target.setDeckLevel(mapNetexRef2Sobek(source.getDeckLevelRef(), context.getCurrentSobekDeckPlan().getDeckLevels()));

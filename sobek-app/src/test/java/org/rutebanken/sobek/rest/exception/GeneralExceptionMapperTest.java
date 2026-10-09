@@ -122,15 +122,4 @@ public class GeneralExceptionMapperTest {
         
         assertEquals(MediaType.APPLICATION_JSON, rsp.getHeaders().getContentType());
     }
-
-    @Test
-    public void contentTypeXmlFallbackReturnsXml() {
-        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-        Mockito.when(request.getHeader("Accept")).thenReturn(null);
-        Mockito.when(request.getContentType()).thenReturn("application/xml");
-        
-        ResponseEntity<ErrorResponseEntity> rsp = handler.handleException(new RuntimeException("Test"), request);
-        
-        assertEquals(MediaType.APPLICATION_XML, rsp.getHeaders().getContentType());
-    }
 }

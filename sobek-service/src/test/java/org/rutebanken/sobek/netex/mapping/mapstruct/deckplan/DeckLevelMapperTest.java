@@ -1,13 +1,9 @@
-package org.rutebanken.sobek.netex.mapping.mapstruct;
+package org.rutebanken.sobek.netex.mapping.mapstruct.deckplan;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.rutebanken.netex.model.DeckLevel;
 import org.rutebanken.netex.model.MultilingualString;
-import org.rutebanken.sobek.netex.id.NetexIdHelper;
-import org.rutebanken.sobek.netex.id.ValidPrefixList;
-import org.rutebanken.sobek.netex.mapping.context.MappingContext;
-import org.rutebanken.sobek.netex.mapping.mapstruct.deckplan.DeckLevelMapper;
+import org.rutebanken.sobek.netex.mapping.mapstruct.DataManagedObjectStructureMapperTestBase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -15,27 +11,24 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
-public class DeckLevelMapperTest {
+public class DeckLevelMapperTest extends DataManagedObjectStructureMapperTestBase<
+    DeckLevel,
+    org.rutebanken.sobek.model.vehicle.DeckLevel> {
     @Autowired
     DeckLevelMapper mapper;
 
-    @Autowired
-    private NetexIdHelper netexIdHelper;
-    @Autowired
-    private ValidPrefixList validPrefixList;
-    @Autowired
-    DataManagedObjectStructureMapper dataManagedObjectStructureMapper;
+    protected DeckLevelMapperTest() {
+        super(org.rutebanken.netex.model.DeckLevel.class, org.rutebanken.sobek.model.vehicle.DeckLevel.class);
+    }
 
+    @Override
+    protected org.rutebanken.sobek.model.vehicle.DeckLevel mapToSobek(org.rutebanken.netex.model.DeckLevel source) {
+        return mapper.mapToSobek(source, context);
+    }
 
-    private MappingContext context;
-
-
-    @BeforeEach
-    void setUp() {
-        context = new MappingContext();
-        context.setNetexIdHelper(netexIdHelper);
-        context.setValidPrefixList(validPrefixList);
-        context.setDataManagedObjectStructureMapper(dataManagedObjectStructureMapper);
+    @Override
+    protected org.rutebanken.netex.model.DeckLevel mapToNetex(org.rutebanken.sobek.model.vehicle.DeckLevel source) {
+        return mapper.mapToNetex(source, context);
     }
 
     @Test

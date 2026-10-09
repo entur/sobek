@@ -48,24 +48,6 @@ public interface DeckLevelMapper {
             @Context MappingContext context
     );
 
-    @AfterMapping
-    default void afterMapToSobek(DeckLevel source,
-                                 @MappingTarget org.rutebanken.sobek.model.vehicle.DeckLevel target,
-                                 @Context MappingContext context) {
-        if(target != null) {
-            context.getDataManagedObjectStructureMapper().afterMappingToSobek(source, target, context);
-        }
-    }
-
-    @AfterMapping
-    default void afterMapToNetex(org.rutebanken.sobek.model.vehicle.DeckLevel source,
-                                 @MappingTarget DeckLevel target,
-                                 @Context MappingContext context) {
-        if(target != null) {
-            context.getDataManagedObjectStructureMapper().afterMappingToNetex(source, target, context);
-        }
-    }
-
     /**
      * Maps a list of Decks from Sobek to NeTEx RelStructure.
      */

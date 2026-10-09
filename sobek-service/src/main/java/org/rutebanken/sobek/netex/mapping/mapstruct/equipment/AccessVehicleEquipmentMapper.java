@@ -1,7 +1,6 @@
 
 package org.rutebanken.sobek.netex.mapping.mapstruct.equipment;
 
-import org.mapstruct.AfterMapping;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
@@ -51,25 +50,4 @@ public interface AccessVehicleEquipmentMapper {
             @MappingTarget org.rutebanken.sobek.model.vehicle.AccessVehicleEquipment target,
             @Context MappingContext context
     );
-
-    @AfterMapping
-    default void afterMapToSobek(
-            AccessVehicleEquipment source,
-            @MappingTarget org.rutebanken.sobek.model.vehicle.AccessVehicleEquipment target,
-            @Context MappingContext context
-    ) {
-        if (target != null) {
-            context.getDataManagedObjectStructureMapper().afterMappingToSobek(source, target, context);
-        }
-    }
-    @AfterMapping
-    default void afterMapToNetex(
-            org.rutebanken.sobek.model.vehicle.AccessVehicleEquipment source,
-            @MappingTarget AccessVehicleEquipment target,
-            @Context MappingContext context
-    ) {
-        if (target != null) {
-            context.getDataManagedObjectStructureMapper().afterMappingToNetex(source, target, context);
-        }
-    }
 }

@@ -52,24 +52,4 @@ public interface BedEquipmentMapper {
             @Context MappingContext context
     );
 
-    @AfterMapping
-    default void afterMapToSobek(
-            BedEquipment source,
-            @MappingTarget org.rutebanken.sobek.model.vehicle.BedEquipment target,
-            @Context MappingContext context
-    ) {
-        if (target != null) {
-            context.getDataManagedObjectStructureMapper().afterMappingToSobek(source, target, context);
-        }
-    }
-    @AfterMapping
-    default void afterMapToNetex(
-            org.rutebanken.sobek.model.vehicle.BedEquipment source,
-            @MappingTarget BedEquipment target,
-            @Context MappingContext context
-    ) {
-        if (target != null) {
-            context.getDataManagedObjectStructureMapper().afterMappingToNetex(source, target, context);
-        }
-    }
 }

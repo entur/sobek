@@ -59,27 +59,6 @@ public interface PassengerEntranceMapper {
             @Context MappingContext context
     );
 
-    @AfterMapping
-    default void afterMapToSobek(
-            PassengerEntrance source,
-            @MappingTarget org.rutebanken.sobek.model.vehicle.PassengerEntrance target,
-            @Context MappingContext context
-    ) {
-        if (target != null) {
-            context.getZoneMapper().afterMapToSobek(source, target, context);
-        }
-    }
-    @AfterMapping
-    default void afterMapToNetex(
-            org.rutebanken.sobek.model.vehicle.PassengerEntrance source,
-            @MappingTarget PassengerEntrance target,
-            @Context MappingContext context
-    ) {
-        if (target != null) {
-            context.getZoneMapper().afterMapToNetex(source, target, context);
-        }
-    }
-
     /**
      * Maps a list of PassengerEntrances from Sobek to NeTEx RelStructure.
      */

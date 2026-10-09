@@ -1,6 +1,5 @@
 package org.rutebanken.sobek.netex.mapping.mapstruct.deckplan;
 
-import jakarta.xml.bind.JAXBElement;
 import org.mapstruct.*;
 import org.rutebanken.netex.model.*;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
@@ -73,7 +72,6 @@ public interface DeckMapper {
                                  @MappingTarget Deck target,
                                  @Context MappingContext context) {
         if(target != null) {
-            context.getZoneMapper().afterMapToNetex(source, target, context);
             target.setDeckSpaces(context.getDeckSpaceMapper().mapSobekListToNetexRelStructure(source.getDeckSpaces(), context));
             target.setDeckLevelRef(mapToNetexRef(source.getDeckLevel()));
         }

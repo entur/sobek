@@ -56,27 +56,6 @@ public interface LuggageSpotMapper {
             @Context MappingContext context
     );
 
-    @AfterMapping
-    default void afterMapToSobek(
-            LuggageSpot source,
-            @MappingTarget org.rutebanken.sobek.model.vehicle.LuggageSpot target,
-            @Context MappingContext context
-    ) {
-        if (target != null) {
-            context.getZoneMapper().afterMapToSobek(source, target, context);
-        }
-    }
-    @AfterMapping
-    default void afterMapToNetex(
-            org.rutebanken.sobek.model.vehicle.LuggageSpot source,
-            @MappingTarget LuggageSpot target,
-            @Context MappingContext context
-    ) {
-        if (target != null) {
-            context.getZoneMapper().afterMapToNetex(source, target, context);
-        }
-    }
-
     /**
      * Maps a list of LuggageSpots from Sobek to NeTEx RelStructure.
      */

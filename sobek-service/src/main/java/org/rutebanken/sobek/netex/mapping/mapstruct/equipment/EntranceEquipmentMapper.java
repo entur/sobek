@@ -51,25 +51,4 @@ public interface EntranceEquipmentMapper {
             @MappingTarget org.rutebanken.sobek.model.vehicle.EntranceEquipment target,
             @Context MappingContext context
     );
-
-    @AfterMapping
-    default void afterMapToSobek(
-            EntranceEquipment source,
-            @MappingTarget org.rutebanken.sobek.model.vehicle.EntranceEquipment target,
-            @Context MappingContext context
-    ) {
-        if (target != null) {
-            context.getDataManagedObjectStructureMapper().afterMappingToSobek(source, target, context);
-        }
-    }
-    @AfterMapping
-    default void afterMapToNetex(
-            org.rutebanken.sobek.model.vehicle.EntranceEquipment source,
-            @MappingTarget EntranceEquipment target,
-            @Context MappingContext context
-    ) {
-        if (target != null) {
-            context.getDataManagedObjectStructureMapper().afterMappingToNetex(source, target, context);
-        }
-    }
 }

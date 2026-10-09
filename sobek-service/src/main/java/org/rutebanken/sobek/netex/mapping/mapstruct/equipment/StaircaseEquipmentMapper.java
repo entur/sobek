@@ -51,25 +51,4 @@ public interface StaircaseEquipmentMapper {
             @MappingTarget org.rutebanken.sobek.model.vehicle.StaircaseEquipment target,
             @Context MappingContext context
     );
-
-    @AfterMapping
-    default void afterMapToSobek(
-            StaircaseEquipment source,
-            @MappingTarget org.rutebanken.sobek.model.vehicle.StaircaseEquipment target,
-            @Context MappingContext context
-    ) {
-        if (target != null) {
-            context.getDataManagedObjectStructureMapper().afterMappingToSobek(source, target, context);
-        }
-    }
-    @AfterMapping
-    default void afterMapToNetex(
-            org.rutebanken.sobek.model.vehicle.StaircaseEquipment source,
-            @MappingTarget StaircaseEquipment target,
-            @Context MappingContext context
-    ) {
-        if (target != null) {
-            context.getDataManagedObjectStructureMapper().afterMappingToNetex(source, target, context);
-        }
-    }
 }

@@ -25,8 +25,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
-class VehicleMapperTest {
-    private MappingContext mappingContext;
+class VehicleMapperTest extends DataManagedObjectStructureMapperTestBase<
+    org.rutebanken.netex.model.Vehicle,
+    org.rutebanken.sobek.model.vehicle.Vehicle> {
 
     @Autowired
     private VehicleMapper mapper;
@@ -44,6 +45,20 @@ class VehicleMapperTest {
     private DataManagedObjectStructureMapper dataManagedObjectStructureMapper;
     @Autowired
     private OwnedEntityMapper ownedEntityMapper;
+
+    protected VehicleMapperTest() {
+        super(org.rutebanken.netex.model.Vehicle.class, org.rutebanken.sobek.model.vehicle.Vehicle.class);
+    }
+
+    @Override
+    protected org.rutebanken.sobek.model.vehicle.Vehicle mapToSobek(org.rutebanken.netex.model.Vehicle source) {
+        return mapper.mapToSobek(source, context);
+    }
+
+    @Override
+    protected org.rutebanken.netex.model.Vehicle mapToNetex(org.rutebanken.sobek.model.vehicle.Vehicle source) {
+        return mapper.mapToNetex(source, context);
+    }
 
     @Test
     void testMapperIsInjected() {
@@ -63,14 +78,13 @@ class VehicleMapperTest {
         ReferenceResolver referenceResolver = mock(ReferenceResolver.class);
         when(referenceResolver.resolve(any(),any(),eq(VehicleType.class))).thenReturn(mockVehicleType);
         when(referenceResolver.resolve(any(),any(),eq(VehicleModel.class))).thenReturn(mockVehicleModel);
-        mappingContext = new MappingContext();
-        mappingContext.setReferenceResolver(referenceResolver);
-        mappingContext.setKeyListStructureMapper(keyListStructureMapper);
-        mappingContext.setNetexIdHelper(netexIdHelper);
-        mappingContext.setValidPrefixList(validPrefixList);
-        mappingContext.setDataManagedObjectStructureMapper(dataManagedObjectStructureMapper);
-        mappingContext.setOwnedEntityMapper(ownedEntityMapper);
-        mappingContext.setDataOwnerRef("NOG:Authority:1");
+        context.setReferenceResolver(referenceResolver);
+        context.setKeyListStructureMapper(keyListStructureMapper);
+        context.setNetexIdHelper(netexIdHelper);
+        context.setValidPrefixList(validPrefixList);
+        context.setDataManagedObjectStructureMapper(dataManagedObjectStructureMapper);
+        context.setOwnedEntityMapper(ownedEntityMapper);
+        context.setDataOwnerRef("NOG:Authority:1");
     }
 
     @Test
@@ -98,7 +112,7 @@ class VehicleMapperTest {
 
         // When
         org.rutebanken.sobek.model.vehicle.Vehicle sobekVehicle =
-                mapper.mapToSobek(netexVehicle, mappingContext);
+                mapper.mapToSobek(netexVehicle, context);
 
         // Then
         assertNotNull(sobekVehicle);
@@ -138,7 +152,7 @@ class VehicleMapperTest {
 
         // When
         org.rutebanken.sobek.model.vehicle.Vehicle sobekVehicle =
-                mapper.mapToSobek(netexVehicle, mappingContext);
+                mapper.mapToSobek(netexVehicle, context);
 
         // Then
         assertNotNull(sobekVehicle.getVehicleModel());
@@ -169,7 +183,7 @@ class VehicleMapperTest {
         sobekVehicle.setVehicleModel(vehicleModel);
 
         // When
-        Vehicle netexVehicle = mapper.mapToNetex(sobekVehicle, mappingContext);
+        Vehicle netexVehicle = mapper.mapToNetex(sobekVehicle, context);
 
         // Then
         assertNotNull(netexVehicle);
@@ -205,7 +219,7 @@ class VehicleMapperTest {
         sobekVehicle.setVehicleModel(vehicleModel);
 
         // When
-        Vehicle netexVehicle = mapper.mapToNetex(sobekVehicle, mappingContext);
+        Vehicle netexVehicle = mapper.mapToNetex(sobekVehicle, context);
 
         // Then
         assertNotNull(netexVehicle.getTransportTypeRef());
@@ -233,9 +247,9 @@ class VehicleMapperTest {
         originalSobek.setVehicleModel(vehicleModel);
 
         // When - Round trip mapping
-        Vehicle netex = mapper.mapToNetex(originalSobek, mappingContext);
+        Vehicle netex = mapper.mapToNetex(originalSobek, context);
         org.rutebanken.sobek.model.vehicle.Vehicle backToSobek =
-                mapper.mapToSobek(netex, mappingContext);
+                mapper.mapToSobek(netex, context);
 
         // Then
         assertEquals(originalSobek.getVersion(), backToSobek.getVersion());

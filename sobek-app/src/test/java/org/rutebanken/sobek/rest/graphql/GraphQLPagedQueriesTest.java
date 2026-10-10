@@ -25,7 +25,6 @@ import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.rutebanken.sobek.SobekTestApplication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -33,8 +32,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
 @SpringBootTest(
-    webEnvironment = WebEnvironment.RANDOM_PORT,
-    classes = SobekTestApplication.class
+    webEnvironment = WebEnvironment.RANDOM_PORT
 )
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class GraphQLPagedQueriesTest {

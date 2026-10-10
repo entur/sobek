@@ -19,12 +19,11 @@ import org.rutebanken.netex.model.CompositeFrame;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
 import org.rutebanken.netex.model.ResourceFrame;
 import org.rutebanken.netex.model.Vehicle;
-import org.rutebanken.sobek.SobekTestApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, classes = SobekTestApplication.class)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class VehicleExportIT {
 
     @LocalServerPort int port;

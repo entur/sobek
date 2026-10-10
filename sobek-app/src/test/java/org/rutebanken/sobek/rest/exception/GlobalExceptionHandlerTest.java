@@ -16,7 +16,6 @@ import org.rutebanken.helper.organisation.NotAuthenticatedException;
 import org.springframework.core.NestedRuntimeException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 
@@ -150,88 +149,6 @@ class GlobalExceptionHandlerTest {
 
             assertNotNull(response.getBody());
             assertEquals("RuntimeException", response.getBody().errors.get(0).message);
-        }
-    }
-
-    @Nested
-    @DisplayName("Content Type Negotiation Tests")
-    class ContentTypeTests {
-
-        @Test
-        @DisplayName("Should return XML when Accept header contains application/xml")
-        void shouldReturnXmlForAcceptHeader() {
-            when(request.getHeader("Accept")).thenReturn("application/xml");
-
-            ResponseEntity<ErrorResponseEntity> response = handler.handleException(
-                new RuntimeException("Error"), request
-            );
-
-            assertEquals(MediaType.APPLICATION_XML, response.getHeaders().getContentType());
-        }
-
-        @Test
-        @DisplayName("Should prioritize Accept header over Content-Type")
-        void shouldPrioritizeAcceptHeader() {
-            when(request.getHeader("Accept")).thenReturn("application/json");
-            when(request.getContentType()).thenReturn("application/xml");
-
-            ResponseEntity<ErrorResponseEntity> response = handler.handleException(
-                new RuntimeException("Error"), request
-            );
-
-            assertEquals(MediaType.APPLICATION_JSON, response.getHeaders().getContentType());
-        }
-
-        @Test
-        @DisplayName("Should default to JSON when no headers specified")
-        void shouldDefaultToJson() {
-            ResponseEntity<ErrorResponseEntity> response = handler.handleException(
-                new RuntimeException("Error"), request
-            );
-
-            assertEquals(MediaType.APPLICATION_JSON, response.getHeaders().getContentType());
-        }
-
-        @Test
-        @DisplayName("Should handle null Accept header")
-        void shouldHandleNullAcceptHeader() {
-            when(request.getHeader("Accept")).thenReturn(null);
-            when(request.getContentType()).thenReturn(null);
-
-            ResponseEntity<ErrorResponseEntity> response = handler.handleException(
-                new RuntimeException("Error"), request
-            );
-
-            assertEquals(MediaType.APPLICATION_JSON, response.getHeaders().getContentType());
-        }
-    }
-
-    @Nested
-    @DisplayName("Integration Tests")
-    class IntegrationTests {
-
-        @Test
-        @DisplayName("Should create complete response with all components")
-        void shouldCreateCompleteResponse() {
-            when(request.getHeader("Accept")).thenReturn("application/json");
-            Exception exception = new ValidationException("Validation failed");
-
-            ResponseEntity<ErrorResponseEntity> response = handler.handleException(exception, request);
-
-            assertAll(
-                () -> assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode()),
-                () -> assertEquals(MediaType.APPLICATION_JSON, response.getHeaders().getContentType()),
-                () -> assertNotNull(response.getBody()),
-                () -> assertEquals("Validation failed", response.getBody().errors.get(0).message),
-                () -> assertEquals(1, response.getBody().errors.size())
-            );
-        }
-    }
-
-    // Helper class for testing NestedRuntimeException
-    private static class TestNestedRuntimeException extends NestedRuntimeException {
-        public TestNestedRuntimeException(String msg, Throwable cause) {
-            super(msg, cause);
         }
     }
 }

@@ -15,6 +15,7 @@
 
 package org.rutebanken.sobek.rest.exception;
 
+import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 import java.util.ArrayList;
@@ -30,8 +31,8 @@ public class ErrorResponseEntity {
         errors.add(new Error(message));
     }
 
+    @XmlElement(name = "errors")
     public List<Error> errors = new ArrayList<>();
-
 
     public static class Error {
         public String message;

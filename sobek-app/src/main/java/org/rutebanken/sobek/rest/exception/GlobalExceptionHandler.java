@@ -25,15 +25,12 @@ import org.rutebanken.sobek.netex.mapping.NetexMappingException;
 import org.springframework.core.NestedRuntimeException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.InvalidMediaTypeException;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -64,32 +61,9 @@ public class GlobalExceptionHandler {
         String errorMessage = extractErrorMessage(exceptionForStatus != null ? exceptionForStatus : ex);
         ErrorResponseEntity error = new ErrorResponseEntity(errorMessage);
         
-        // Determine content type based on what the client expects
-        MediaType contentType = determineContentType(request);
-        
         return ResponseEntity
                 .status(status)
-                .contentType(contentType)
                 .body(error);
-    }
-
-    private MediaType determineContentType(HttpServletRequest request) {
-        String acceptHeader = request.getHeader("Accept");
-        
-        if (acceptHeader != null && !acceptHeader.isEmpty()) {
-            try {
-                List<MediaType> acceptedTypes = MediaType.parseMediaTypes(acceptHeader);
-                return acceptedTypes.stream()
-                    .filter(mt -> mt.isCompatibleWith(MediaType.APPLICATION_XML) 
-                               || mt.isCompatibleWith(MediaType.APPLICATION_JSON))
-                    .findFirst()
-                    .orElse(MediaType.APPLICATION_JSON);
-            } catch (InvalidMediaTypeException e) {
-                return MediaType.APPLICATION_JSON;
-            }
-        }
-        
-        return MediaType.APPLICATION_JSON;
     }
 
     protected HttpStatus toStatus(Throwable e) {

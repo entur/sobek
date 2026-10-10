@@ -1,6 +1,5 @@
 package org.rutebanken.sobek.netex.mapping.mapstruct.deckplan;
 
-import jakarta.xml.bind.JAXBElement;
 import org.mapstruct.*;
 import org.rutebanken.netex.model.*;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
@@ -61,7 +60,6 @@ public interface DeckMapper {
                                  @MappingTarget org.rutebanken.sobek.model.vehicle.Deck target,
                                  @Context MappingContext context) {
         if(target != null) {
-            context.getZoneMapper().afterMapToSobek(source, target, context);
             context.setCurrentSobekDeck(target);
             target.setDeckSpaces(context.getDeckSpaceMapper().mapNetexRelStructureToSobekList(source.getDeckSpaces(), context));
             target.setDeckLevel(mapNetexRef2Sobek(source.getDeckLevelRef(), context.getCurrentSobekDeckPlan().getDeckLevels()));
@@ -73,7 +71,6 @@ public interface DeckMapper {
                                  @MappingTarget Deck target,
                                  @Context MappingContext context) {
         if(target != null) {
-            context.getZoneMapper().afterMapToNetex(source, target, context);
             target.setDeckSpaces(context.getDeckSpaceMapper().mapSobekListToNetexRelStructure(source.getDeckSpaces(), context));
             target.setDeckLevelRef(mapToNetexRef(source.getDeckLevel()));
         }

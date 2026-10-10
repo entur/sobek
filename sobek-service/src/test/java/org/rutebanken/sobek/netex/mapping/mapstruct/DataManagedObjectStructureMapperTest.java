@@ -267,6 +267,43 @@ public class DataManagedObjectStructureMapperTest {
     }
 
     @Test
+    void testMapToNetex_WithMultipleKeyValues() {
+        // Given
+        org.rutebanken.sobek.model.vehicle.VehicleType sobekEntity = new org.rutebanken.sobek.model.vehicle.VehicleType();
+        sobekEntity.setNetexId("NMR:VehicleType:999");
+        sobekEntity.setVersion(1L);
+        sobekEntity.setChangedBy("user1@example.com");
+        sobekEntity.setVersionComment("Test comment");
+        sobekEntity.addKeyValue("customKey", "customValue");
+        sobekEntity.addKeyValue("customKey2", "customValue");
+
+        // When
+        org.rutebanken.netex.model.VehicleType netexEntity = new org.rutebanken.netex.model.VehicleType();
+        mapper.mapToNetex(sobekEntity, netexEntity, context);
+
+        // Then
+        assertThat(netexEntity).isNotNull();
+        assertThat(netexEntity.getId()).isEqualTo("NMR:VehicleType:999");
+        assertThat(netexEntity.getVersion()).isEqualTo("1");
+        assertThat(netexEntity.getKeyList()).isNotNull();
+        assertThat(netexEntity.getKeyList().getKeyValue())
+            .hasSize(3) // VERSION_COMMENT and customKey (CHANGED_BY is not exported)
+            .anyMatch(kv ->
+                DataManagedObjectStructureMapper.VERSION_COMMENT.equals(kv.getKey())
+                    && "Test comment".equals(kv.getValue())
+            )
+            .anyMatch(kv ->
+                "customKey".equals(kv.getKey())
+                    && "customValue".equals(kv.getValue())
+            )
+            .anyMatch(kv ->
+                "customKey2".equals(kv.getKey())
+                    && "customValue".equals(kv.getValue())
+            )
+            .noneMatch(kv -> DataManagedObjectStructureMapper.CHANGED_BY.equals(kv.getKey()));
+    }
+
+    @Test
     void testMapToSobek_NullKeyList() {
         // Given
         org.rutebanken.netex.model.VehicleType netexEntity = new org.rutebanken.netex.model.VehicleType();

@@ -17,7 +17,6 @@ package org.rutebanken.sobek.rest.netex.publicationdelivery;
 
 import org.junit.jupiter.api.Test;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
-import org.rutebanken.sobek.SobekTestApplication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
@@ -28,7 +27,7 @@ import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@SpringBootTest(classes = SobekTestApplication.class)
+@SpringBootTest
 public class PublicationDeliveryStreamingOutputTest {
 
     @Autowired

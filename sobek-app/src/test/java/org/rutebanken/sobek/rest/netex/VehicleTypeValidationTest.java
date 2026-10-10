@@ -1,14 +1,13 @@
 package org.rutebanken.sobek.rest.netex;
 
 import org.junit.jupiter.api.Test;
-import org.rutebanken.sobek.SobekTestApplication;
 import org.rutebanken.sobek.netex.marshal.PublicationDeliveryUnmarshaller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.InputStream;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = SobekTestApplication.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class VehicleTypeValidationTest {
     @Autowired
     private PublicationDeliveryUnmarshaller unmarshaller;

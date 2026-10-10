@@ -103,7 +103,6 @@ public interface PassengerSpotMapper {
             @Context MappingContext context
     ) {
         if (target != null) {
-            context.getZoneMapper().afterMapToSobek(source, target, context);
             Deck currentSobekDeck = context.getCurrentSobekDeck();
             if(source.getSpotColumnRef() != null &&
                     source.getSpotColumnRef().getRef() != null) {
@@ -136,8 +135,6 @@ public interface PassengerSpotMapper {
             @Context MappingContext context
     ) {
         if (target != null) {
-            context.getZoneMapper().afterMapToNetex(source, target, context);
-
             if(source.getSpotColumn() != null) {
                 target.setSpotColumnRef(new SpotColumnRefStructure().withRef(source.getSpotColumn().getNetexId()) );
             }

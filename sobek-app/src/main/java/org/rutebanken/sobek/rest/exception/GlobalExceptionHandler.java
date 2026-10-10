@@ -25,7 +25,6 @@ import org.rutebanken.sobek.netex.mapping.NetexMappingException;
 import org.springframework.core.NestedRuntimeException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -54,56 +53,75 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseEntity> handleException(Exception ex, HttpServletRequest request) {
-        Throwable rootCause = getRootCause(ex);
-        HttpStatus status = toStatus(rootCause);
+        // Find the exception that determines the status
+        Throwable exceptionForStatus = findExceptionForStatus(ex);
+        HttpStatus status = toStatus(ex);
         
-        ErrorResponseEntity error = new ErrorResponseEntity(rootCause.getMessage());
-        
-        // Determine content type based on what the client expects
-        MediaType contentType = determineContentType(request);
+        // Extract message from the same exception that determined the status
+        String errorMessage = extractErrorMessage(exceptionForStatus != null ? exceptionForStatus : ex);
+        ErrorResponseEntity error = new ErrorResponseEntity(errorMessage);
         
         return ResponseEntity
                 .status(status)
-                .contentType(contentType)
                 .body(error);
     }
 
-    private MediaType determineContentType(HttpServletRequest request) {
-        String acceptHeader = request.getHeader("Accept");
-        String contentTypeHeader = request.getContentType();
-        
-        // Check Accept header first
-        if (acceptHeader != null && acceptHeader.contains("application/xml")) {
-            return MediaType.APPLICATION_XML;
+    protected HttpStatus toStatus(Throwable e) {
+        Throwable matchedException = findExceptionForStatus(e);
+        return matchedException != null ? matchStatus(matchedException) : HttpStatus.INTERNAL_SERVER_ERROR;
+    }
+    
+    private Throwable findExceptionForStatus(Throwable e) {
+        // Find the first exception in the chain that matches a configured classification
+        Throwable current = e;
+        while (current != null) {
+            HttpStatus status = matchStatus(current);
+            if (status != null) {
+                return current;
+            }
+
+            Throwable cause = current.getCause();
+            if (cause == current) {
+                break;
+            }
+            current = cause;
         }
-        
-        // Fall back to request Content-Type (if client sent XML, respond with XML)
-        if (contentTypeHeader != null && contentTypeHeader.contains("application/xml")) {
-            return MediaType.APPLICATION_XML;
-        }
-        
-        // Default to JSON for GraphQL and other cases
-        return MediaType.APPLICATION_JSON;
+
+        return null;
     }
 
-    protected HttpStatus toStatus(Throwable e) {
+    private HttpStatus matchStatus(Throwable e) {
         for (Map.Entry<HttpStatus, Set<Class<?>>> entry : mapping.entrySet()) {
             if (entry.getValue().stream().anyMatch(c -> c.isAssignableFrom(e.getClass()))) {
                 return entry.getKey();
             }
         }
 
-        return HttpStatus.INTERNAL_SERVER_ERROR;
+        return null;
     }
 
-    private Throwable getRootCause(Throwable e) {
-        Throwable rootCause = e;
-
+    private String extractErrorMessage(Throwable e) {
+        // First try to get message from the exception itself
+        String message = e.getMessage();
+        if (message != null && !message.trim().isEmpty()) {
+            return message;
+        }
+        
+        // For NestedRuntimeException, check root cause
         if (e instanceof NestedRuntimeException nestedRuntimeException) {
-            if (nestedRuntimeException.getRootCause() != null) {
-                rootCause = nestedRuntimeException.getRootCause();
+            Throwable rootCause = nestedRuntimeException.getRootCause();
+            if (rootCause != null && rootCause.getMessage() != null && !rootCause.getMessage().trim().isEmpty()) {
+                return rootCause.getMessage();
             }
         }
-        return rootCause;
+        
+        // Check the immediate cause
+        Throwable cause = e.getCause();
+        if (cause != null && cause.getMessage() != null && !cause.getMessage().trim().isEmpty()) {
+            return cause.getMessage();
+        }
+        
+        // If no message found, return exception class name
+        return e.getClass().getSimpleName();
     }
 }

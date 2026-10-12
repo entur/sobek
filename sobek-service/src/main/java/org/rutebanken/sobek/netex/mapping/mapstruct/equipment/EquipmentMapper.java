@@ -75,25 +75,4 @@ public interface EquipmentMapper {
             default -> null;
         };
     }
-
-    @AfterMapping
-    default void afterMapToSobek(
-            Equipment_VersionStructure source,
-            @MappingTarget org.rutebanken.sobek.model.vehicle.Equipment target,
-            @Context MappingContext context
-    ) {
-        if (target != null) {
-            context.getDataManagedObjectStructureMapper().afterMappingToSobek(source, target, context);
-        }
-    }
-    @AfterMapping
-    default void afterMapToNetex(
-            org.rutebanken.sobek.model.vehicle.Equipment source,
-            @MappingTarget Equipment_VersionStructure target,
-            @Context MappingContext context
-    ) {
-        if (target != null) {
-            context.getDataManagedObjectStructureMapper().afterMappingToNetex(source, target, context);
-        }
-    }
 }

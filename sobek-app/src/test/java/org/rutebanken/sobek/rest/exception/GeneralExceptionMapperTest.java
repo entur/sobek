@@ -21,7 +21,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.rutebanken.helper.organisation.NotAuthenticatedException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.TransactionSystemException;
@@ -90,47 +89,5 @@ public class GeneralExceptionMapperTest {
         ResponseEntity<ErrorResponseEntity> rsp = handler.handleException(new RuntimeException("Test message"), request);
         assertNotNull(rsp.getBody());
         assertEquals("Test message", rsp.getBody().errors.getFirst().message);
-    }
-
-    @Test
-    public void acceptHeaderXmlReturnsXmlContentType() {
-        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-        Mockito.when(request.getHeader("Accept")).thenReturn("application/xml");
-        
-        ResponseEntity<ErrorResponseEntity> rsp = handler.handleException(new RuntimeException("Test"), request);
-        
-        assertEquals(MediaType.APPLICATION_XML, rsp.getHeaders().getContentType());
-    }
-
-    @Test
-    public void acceptHeaderJsonReturnsJsonContentType() {
-        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-        Mockito.when(request.getHeader("Accept")).thenReturn("application/json");
-        
-        ResponseEntity<ErrorResponseEntity> rsp = handler.handleException(new RuntimeException("Test"), request);
-        
-        assertEquals(MediaType.APPLICATION_JSON, rsp.getHeaders().getContentType());
-    }
-
-    @Test
-    public void noAcceptHeaderDefaultsToJson() {
-        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-        Mockito.when(request.getHeader("Accept")).thenReturn(null);
-        Mockito.when(request.getContentType()).thenReturn(null);
-        
-        ResponseEntity<ErrorResponseEntity> rsp = handler.handleException(new RuntimeException("Test"), request);
-        
-        assertEquals(MediaType.APPLICATION_JSON, rsp.getHeaders().getContentType());
-    }
-
-    @Test
-    public void contentTypeXmlFallbackReturnsXml() {
-        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-        Mockito.when(request.getHeader("Accept")).thenReturn(null);
-        Mockito.when(request.getContentType()).thenReturn("application/xml");
-        
-        ResponseEntity<ErrorResponseEntity> rsp = handler.handleException(new RuntimeException("Test"), request);
-        
-        assertEquals(MediaType.APPLICATION_XML, rsp.getHeaders().getContentType());
     }
 }

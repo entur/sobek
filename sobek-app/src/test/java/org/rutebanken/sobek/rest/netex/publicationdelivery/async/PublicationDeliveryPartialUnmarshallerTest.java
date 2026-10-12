@@ -18,12 +18,9 @@ package org.rutebanken.sobek.rest.netex.publicationdelivery.async;
 import org.junit.jupiter.api.Test;
 import org.rutebanken.netex.model.Vehicle;
 import org.rutebanken.netex.model.VehicleType;
-import org.rutebanken.sobek.SobekTestApplication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.xml.sax.SAXException;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -31,7 +28,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.rutebanken.sobek.rest.netex.publicationdelivery.async.RunnableUnmarshaller.*;
 
-@SpringBootTest(classes = SobekTestApplication.class)
+@SpringBootTest
 public class PublicationDeliveryPartialUnmarshallerTest {
 
     @Autowired

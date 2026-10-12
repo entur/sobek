@@ -1,9 +1,7 @@
 package org.rutebanken.sobek.netex.mapping.mapstruct;
 
-import org.mapstruct.AfterMapping;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.rutebanken.netex.model.SchematicMap;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
@@ -19,7 +17,9 @@ import java.util.List;
         config = SobekMapperConfig.class,
         uses = {
                 SchematicMapMemberMapper.class,
-                VersionOfObjectRefStructureToStringMapper.class
+                VersionOfObjectRefStructureToStringMapper.class,
+                DataManagedObjectStructureMapper.class,
+                EntityInVersionMapper.class
         }
 )
 public interface SchematicMapMapper {
@@ -27,7 +27,7 @@ public interface SchematicMapMapper {
     /**
      * Maps from NeTEx SchematicMap to Sobek entity.
      */
-    @EntityStructureMapper.EntityStructureToSobekMappings
+    @DataManagedObjectStructureMapper.ToSobekMappings
     org.rutebanken.sobek.model.vehicle.SchematicMap mapToSobek(
             SchematicMap source,
             @Context MappingContext context
@@ -36,7 +36,7 @@ public interface SchematicMapMapper {
     /**
      * Maps from Sobek entity back to NeTEx SchematicMap.
      */
-    @EntityStructureMapper.EntityStructureToNetexMappings
+    @DataManagedObjectStructureMapper.ToNetexMappings
     SchematicMap mapToNetex(
             org.rutebanken.sobek.model.vehicle.SchematicMap source,
             @Context MappingContext context
@@ -45,7 +45,7 @@ public interface SchematicMapMapper {
     /**
      * Updates an existing Sobek entity from NeTEx structure.
      */
-    @EntityStructureMapper.EntityStructureToSobekMappings
+    @DataManagedObjectStructureMapper.ToSobekMappings
     void updateSobekFromNetex(
             SchematicMap source,
             @MappingTarget org.rutebanken.sobek.model.vehicle.SchematicMap target,

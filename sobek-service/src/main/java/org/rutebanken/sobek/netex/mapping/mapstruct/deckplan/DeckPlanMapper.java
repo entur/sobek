@@ -64,25 +64,10 @@ public interface DeckPlanMapper {
             @Context MappingContext context
     ) {
         if(target != null) {
-            context.getDataManagedObjectStructureMapper().afterMappingToSobek(source, target, context);
             context.setCurrentSobekDeckPlan(target);
             target.setDecks(context.getDeckMapper().mapNetexRelStructureToSobekList(source.getDecks(), context));
         }
         context.getOwnedEntityMapper().updateSobekFromNetex(target, context);
-    }
-
-    /**
-     * After mapping from Sobek to NeTEx: handle any custom mappings.
-     */
-    @AfterMapping
-    default void afterMapToNetex(
-            org.rutebanken.sobek.model.vehicle.DeckPlan source,
-            @MappingTarget DeckPlan target,
-            @Context MappingContext context
-    ) {
-        if(target != null) {
-            context.getDataManagedObjectStructureMapper().afterMappingToNetex(source, target, context);
-        }
     }
 
     List<org.rutebanken.sobek.model.vehicle.DeckPlan> mapAsList(List<DeckPlan> sourceList, @Context MappingContext context);

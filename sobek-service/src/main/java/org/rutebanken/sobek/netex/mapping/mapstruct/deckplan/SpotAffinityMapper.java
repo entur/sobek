@@ -49,9 +49,6 @@ public interface SpotAffinityMapper {
             @MappingTarget org.rutebanken.sobek.model.vehicle.SpotAffinity target,
             @Context MappingContext context
     ) {
-        if(target != null) {
-            context.getDataManagedObjectStructureMapper().afterMappingToSobek(source, target, context);
-        }
         if(source.getMembers() != null &&
                 source.getMembers().getLocatableSpotRef() != null &&
                 !source.getMembers().getLocatableSpotRef().isEmpty()) {
@@ -74,9 +71,6 @@ public interface SpotAffinityMapper {
             @MappingTarget SpotAffinity target,
             @Context MappingContext context
     ) {
-        if(target != null) {
-            context.getDataManagedObjectStructureMapper().afterMappingToNetex(source, target, context);
-        }
         var sobekMembers = source.getMembers();
         if(sobekMembers != null && !sobekMembers.isEmpty()) {
             LocatableSpotRefs_RelStructure members = new LocatableSpotRefs_RelStructure();

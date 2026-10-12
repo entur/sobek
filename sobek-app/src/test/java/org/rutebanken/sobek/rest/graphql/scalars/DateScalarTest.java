@@ -17,7 +17,6 @@ package org.rutebanken.sobek.rest.graphql.scalars;
 
 import graphql.GraphQLContext;
 import org.junit.jupiter.api.Test;
-import org.rutebanken.sobek.SobekTestApplication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -28,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.rutebanken.sobek.rest.graphql.scalars.DateScalar.EXAMPLE_DATE;
 import static org.rutebanken.sobek.rest.graphql.scalars.DateTimeScalar.EXAMPLE_DATE_TIME;
 
-@SpringBootTest(classes = SobekTestApplication.class)
+@SpringBootTest
 public class DateScalarTest {
 
     @Autowired

@@ -3,7 +3,6 @@ package org.rutebanken.sobek.netex.mapping.mapstruct;
 import org.junit.jupiter.api.Test;
 import org.rutebanken.netex.model.*;
 import org.rutebanken.sobek.model.vehicle.HybridCategoryEnumeration;
-import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -14,13 +13,27 @@ import java.util.Arrays;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-class VehicleTypeMapperTest {
+public class VehicleTypeMapperTest extends DataManagedObjectStructureMapperTestBase<
+    VehicleType,
+    org.rutebanken.sobek.model.vehicle.VehicleType>{
 
     @Autowired
     private VehicleTypeMapper mapper;
 
-    @Autowired
-    MappingContext context;
+    protected VehicleTypeMapperTest() {
+        super(VehicleType.class, org.rutebanken.sobek.model.vehicle.VehicleType.class);
+    }
+
+    @Override
+    protected org.rutebanken.sobek.model.vehicle.VehicleType mapToSobek(VehicleType source) {
+        return mapper.mapToSobek(source, context);
+    }
+
+    @Override
+    protected VehicleType mapToNetex(org.rutebanken.sobek.model.vehicle.VehicleType source) {
+        return mapper.mapToNetex(source, context);
+    }
+
 
     @Test
     void testMapperIsInjected() {

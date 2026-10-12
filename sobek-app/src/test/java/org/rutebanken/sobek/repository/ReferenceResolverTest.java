@@ -14,7 +14,6 @@ package org.rutebanken.sobek.repository;/*
  */
 
 import org.junit.jupiter.api.Test;
-import org.rutebanken.sobek.SobekTestApplication;
 import org.rutebanken.sobek.model.VersionOfObjectRefStructure;
 import org.rutebanken.sobek.model.vehicle.Vehicle;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
@@ -30,7 +29,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-@SpringBootTest(classes = SobekTestApplication.class)
+@SpringBootTest
 public class ReferenceResolverTest  {
 
     @Autowired

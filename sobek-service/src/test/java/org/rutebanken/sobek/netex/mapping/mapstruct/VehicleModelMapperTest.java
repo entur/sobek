@@ -3,7 +3,6 @@ package org.rutebanken.sobek.netex.mapping.mapstruct;
 import jakarta.xml.bind.JAXBElement;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.rutebanken.netex.model.ObjectFactory;
 import org.rutebanken.netex.model.TransportTypeRefStructure;
 import org.rutebanken.netex.model.VehicleModel;
@@ -11,7 +10,6 @@ import org.rutebanken.sobek.model.EmbeddableMultilingualString;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
 import org.rutebanken.sobek.netex.id.NetexIdHelper;
 import org.rutebanken.sobek.netex.id.ValidPrefixList;
-import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.rutebanken.sobek.repository.reference.ReferenceResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,12 +23,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
-class VehicleModelMapperTest {
+class VehicleModelMapperTest extends DataManagedObjectStructureMapperTestBase<
+    org.rutebanken.netex.model.VehicleModel,
+    org.rutebanken.sobek.model.vehicle.VehicleModel> {
 
     @Autowired
     private VehicleModelMapper mapper;
-    @Autowired
-    private KeyListStructureMapper keyListStructureMapper;
     @Autowired
     private NetexIdHelper netexIdHelper;
     @Autowired
@@ -38,12 +36,21 @@ class VehicleModelMapperTest {
     @Autowired
     private DataManagedObjectStructureMapper dataManagedObjectStructureMapper;
 
-    @Mock
-    ReferenceResolver referenceResolver;
-
     private final ObjectFactory objectFactory = new ObjectFactory();
 
-    private MappingContext context;
+    protected VehicleModelMapperTest() {
+        super(org.rutebanken.netex.model.VehicleModel.class, org.rutebanken.sobek.model.vehicle.VehicleModel.class);
+    }
+
+    @Override
+    protected org.rutebanken.sobek.model.vehicle.VehicleModel mapToSobek(org.rutebanken.netex.model.VehicleModel source) {
+        return mapper.mapToSobek(source, context);
+    }
+
+    @Override
+    protected org.rutebanken.netex.model.VehicleModel mapToNetex(org.rutebanken.sobek.model.vehicle.VehicleModel source) {
+        return mapper.mapToNetex(source, context);
+    }
 
     @BeforeEach
     void setUp() {
@@ -54,12 +61,10 @@ class VehicleModelMapperTest {
         VehicleType mockVehicleType = new VehicleType();
         mockVehicleType.setNetexId("NMR:VehicleType:1");
 
-        context = new MappingContext();
         ReferenceResolver referenceResolver = mock(ReferenceResolver.class);
         when(referenceResolver.resolve(any(),any(),eq(VehicleType.class))).thenReturn(mockVehicleType);
         when(referenceResolver.resolve(any(),any(),eq(org.rutebanken.sobek.model.vehicle.VehicleModel.class))).thenReturn(mockVehicleModel);
         context.setReferenceResolver(referenceResolver);
-        context.setKeyListStructureMapper(keyListStructureMapper);
         context.setNetexIdHelper(netexIdHelper);
         context.setValidPrefixList(validPrefixList);
         context.setDataManagedObjectStructureMapper(dataManagedObjectStructureMapper);

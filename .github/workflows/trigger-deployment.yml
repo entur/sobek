@@ -1,0 +1,27 @@
+name: Trigger Sobek Deployment
+
+on:
+    workflow_call:
+        inputs:
+            image_tag:
+                required: true
+                type: string
+                description: 'Docker image tag to deploy'
+        secrets:
+            deployment_token:
+                required: true
+                description: 'GitHub token for triggering deployment'
+
+jobs:
+    trigger-deployment:
+        runs-on: ubuntu-latest
+        if: github.repository_owner == 'entur'
+        steps:
+            - name: Trigger deployment via repository dispatch
+              env:
+                  GH_TOKEN: ${{ secrets.deployment_token }}
+                  IMAGE_TAG: ${{ inputs.image_tag }}
+              run: |
+                  gh api repos/entur/sobek-deployment-config/dispatches \
+                    -f event_type=deploy \
+                    -f "client_payload[label]=$IMAGE_TAG"

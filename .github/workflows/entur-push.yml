@@ -47,3 +47,12 @@ jobs:
     uses: entur/gha-security/.github/workflows/docker-scan.yml@v2
     with:
       image_artifact: ${{ needs.docker-build.outputs.image_artifact }}
+
+  trigger-deploy:
+    if: github.event_name == 'push'
+    needs: [docker-push]
+    uses: ./.github/workflows/trigger-deployment.yml
+    with:
+        image_tag: ${{ needs.docker-push.outputs.image_tag }}
+    secrets:
+        deployment_token: ${{ secrets.SOBEK_DEPLOYMENT_CONFIG_TOKEN }}

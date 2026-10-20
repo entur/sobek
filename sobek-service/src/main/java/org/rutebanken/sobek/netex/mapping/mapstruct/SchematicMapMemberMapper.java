@@ -1,8 +1,8 @@
 package org.rutebanken.sobek.netex.mapping.mapstruct;
 
 import org.mapstruct.*;
-import org.rutebanken.netex.model.SchematicMapMember_VersionedChildStructure;
-import org.rutebanken.netex.model.SchematicMapMembers_RelStructure;
+import org.entur.netex2.model.SchematicMapMember_VersionedChildStructure;
+import org.entur.netex2.model.SchematicMapMembers_RelStructure;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 

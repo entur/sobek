@@ -1,9 +1,9 @@
 package org.rutebanken.sobek.netex.mapping.mapstruct;
 
 import org.mapstruct.*;
-import org.rutebanken.netex.model.DeckPlanRefStructure;
-import org.rutebanken.netex.model.ObjectFactory;
-import org.rutebanken.netex.model.VehicleType;
+import org.entur.netex2.model.DeckPlanRefStructure;
+import org.entur.netex2.model.ObjectFactory;
+import org.entur.netex2.model.VehicleType;
 import org.rutebanken.sobek.model.vehicle.DeckPlan;
 import org.rutebanken.sobek.model.vehicle.HybridCategoryEnumeration;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;

@@ -5,7 +5,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
-import org.rutebanken.netex.model.*;
+import org.entur.netex2.model.*;
 import org.rutebanken.sobek.netex.mapping.NetexMappingException;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
 

@@ -74,7 +74,7 @@
         <!-- NeTEx Java Model -->
         <dependency>
             <groupId>org.entur</groupId>
-            <artifactId>netex-java-model</artifactId>
+            <artifactId>netex2-java-model</artifactId>
         </dependency>
 
         <!-- Spring Boot Starter Test -->

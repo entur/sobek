@@ -1,8 +1,8 @@
 package org.rutebanken.sobek.netex.mapping.mapstruct.deckplan;
 
 import org.mapstruct.*;
-import org.rutebanken.netex.model.*;
-import org.rutebanken.netex.model.ObjectFactory;
+import org.entur.netex2.model.*;
+import org.entur.netex2.model.ObjectFactory;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.rutebanken.sobek.netex.mapping.mapstruct.*;
@@ -110,7 +110,7 @@ public interface DeckSpaceMapper {
             return new DeckSpaces_RelStructure();
         }
 
-        return new DeckSpaces_RelStructure().withDeckSpaceRefOrDeckSpace_Dummy(source.stream()
+        return new DeckSpaces_RelStructure().withDeckSpaceRefOrDeckSpace(source.stream()
                 .map(sobekDeckSpace -> OBJECT_FACTORY.createPassengerSpace(mapToNetex(sobekDeckSpace, context)))
                 .collect(java.util.stream.Collectors.toList()));
     }
@@ -122,11 +122,11 @@ public interface DeckSpaceMapper {
             DeckSpaces_RelStructure source,
             @Context MappingContext context
     ) {
-        if (source == null || source.getDeckSpaceRefOrDeckSpace_Dummy() == null) {
+        if (source == null || source.getDeckSpaceRefOrDeckSpace() == null) {
             return null;
         }
 
-        var rawNetexList = source.getDeckSpaceRefOrDeckSpace_Dummy()
+        var rawNetexList = source.getDeckSpaceRefOrDeckSpace()
                 .stream()
                 .map(ds -> (PassengerSpace) ds.getValue())
                 .toList();

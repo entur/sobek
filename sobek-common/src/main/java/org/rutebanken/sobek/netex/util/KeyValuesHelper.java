@@ -1,8 +1,8 @@
 package org.rutebanken.sobek.netex.util;
 
-import org.rutebanken.netex.model.DataManagedObjectStructure;
-import org.rutebanken.netex.model.KeyListStructure;
-import org.rutebanken.netex.model.KeyValueStructure;
+import org.entur.netex2.model.DataManagedObjectStructure;
+import org.entur.netex2.model.KeyListStructure;
+import org.entur.netex2.model.KeyValueStructure;
 
 import java.util.Optional;
 import java.util.function.Consumer;

@@ -15,8 +15,8 @@
 
 package org.rutebanken.sobek.importer;
 
-import org.rutebanken.netex.model.PublicationDeliveryStructure;
-import org.rutebanken.netex.model.ResourceFrame;
+import org.entur.netex2.model.PublicationDeliveryStructure;
+import org.entur.netex2.model.ResourceFrame;
 import org.rutebanken.sobek.exporter.PublicationDeliveryCreator;
 import org.rutebanken.sobek.importer.handler.*;
 import org.rutebanken.sobek.importer.log.ImportLogger;

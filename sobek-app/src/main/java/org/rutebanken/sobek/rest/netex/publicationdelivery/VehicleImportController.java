@@ -18,7 +18,7 @@ package org.rutebanken.sobek.rest.netex.publicationdelivery;
 import jakarta.inject.Inject;
 import jakarta.xml.bind.JAXBException;
 import org.rutebanken.helper.organisation.NotAuthenticatedException;
-import org.rutebanken.netex.model.PublicationDeliveryStructure;
+import org.entur.netex2.model.PublicationDeliveryStructure;
 import org.rutebanken.sobek.importer.ImportType;
 import org.rutebanken.sobek.importer.PublicationDeliveryImporter;
 import org.rutebanken.sobek.netex.marshal.PublicationDeliveryUnmarshaller;

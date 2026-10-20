@@ -1,8 +1,7 @@
 package org.rutebanken.sobek.netex.mapping.mapstruct;
 
 import org.mapstruct.*;
-import org.rutebanken.netex.model.ValidBetween;
-import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
+import org.entur.netex2.model.ValidBetween;
 
 /**
  * MapStruct mapper for ValidBetween.

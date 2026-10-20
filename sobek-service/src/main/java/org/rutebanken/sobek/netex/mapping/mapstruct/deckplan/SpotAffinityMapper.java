@@ -2,8 +2,8 @@ package org.rutebanken.sobek.netex.mapping.mapstruct.deckplan;
 
 import jakarta.xml.bind.JAXBElement;
 import org.mapstruct.*;
-import org.rutebanken.netex.model.*;
-import org.rutebanken.netex.model.ObjectFactory;
+import org.entur.netex2.model.*;
+import org.entur.netex2.model.ObjectFactory;
 import org.rutebanken.sobek.model.vehicle.LocatableSpot;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
@@ -108,9 +108,9 @@ public interface SpotAffinityMapper {
         }
 
         var locatableSpots = switch (locatableSpotRefStructure) {
-            case org.rutebanken.netex.model.PassengerSpotRefStructure passengerSpotRefStructure ->
+            case org.entur.netex2.model.PassengerSpotRefStructure passengerSpotRefStructure ->
                     passengerSpots;
-            case org.rutebanken.netex.model.LuggageSpotRefStructure luggageSpotRefStructure ->
+            case org.entur.netex2.model.LuggageSpotRefStructure luggageSpotRefStructure ->
                     luggageSpots;
             default -> null;
         };

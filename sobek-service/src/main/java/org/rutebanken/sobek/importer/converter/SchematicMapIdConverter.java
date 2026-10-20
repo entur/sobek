@@ -27,7 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Transactional
 @Component
-public class SchematicMapIdConverter extends GenericIdConverter<org.rutebanken.netex.model.SchematicMap> {
+public class SchematicMapIdConverter extends GenericIdConverter<org.entur.netex2.model.SchematicMap> {
 
     public SchematicMapIdConverter(ValidPrefixList validPrefixList, NetexIdHelper netexIdHelper, GenericEntityInVersionRepository genericEntityInVersionRepository) {
         super(validPrefixList, netexIdHelper, genericEntityInVersionRepository, SchematicMap.class);

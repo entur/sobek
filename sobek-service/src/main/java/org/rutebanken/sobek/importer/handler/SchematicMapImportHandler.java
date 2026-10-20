@@ -30,9 +30,9 @@
 
 package org.rutebanken.sobek.importer.handler;
 
-import org.rutebanken.netex.model.SchematicMap;
-import org.rutebanken.netex.model.ResourceFrame;
-import org.rutebanken.netex.model.SchematicMapsInFrame_RelStructure;
+import org.entur.netex2.model.SchematicMap;
+import org.entur.netex2.model.ResourceFrame;
+import org.entur.netex2.model.SchematicMapsInFrame_RelStructure;
 import org.rutebanken.sobek.importer.SchematicMapImporter;
 import org.rutebanken.sobek.importer.ImportParams;
 import org.rutebanken.sobek.importer.converter.SchematicMapIdConverter;

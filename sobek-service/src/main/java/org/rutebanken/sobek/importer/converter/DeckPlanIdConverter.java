@@ -16,7 +16,6 @@
 package org.rutebanken.sobek.importer.converter;
 
 import org.rutebanken.sobek.model.vehicle.DeckPlan;
-import org.rutebanken.sobek.model.vehicle.VehicleType;
 import org.rutebanken.sobek.netex.id.NetexIdHelper;
 import org.rutebanken.sobek.netex.id.ValidPrefixList;
 import org.rutebanken.sobek.repository.generic.GenericEntityInVersionRepository;
@@ -28,7 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Transactional
 @Component
-public class DeckPlanIdConverter extends GenericIdConverter<org.rutebanken.netex.model.DeckPlan> {
+public class DeckPlanIdConverter extends GenericIdConverter<org.entur.netex2.model.DeckPlan> {
 
     public DeckPlanIdConverter(ValidPrefixList validPrefixList, NetexIdHelper netexIdHelper, GenericEntityInVersionRepository genericEntityInVersionRepository) {
         super(validPrefixList, netexIdHelper, genericEntityInVersionRepository, DeckPlan.class);

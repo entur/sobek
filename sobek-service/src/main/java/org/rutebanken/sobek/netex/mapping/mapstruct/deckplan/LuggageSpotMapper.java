@@ -2,8 +2,8 @@
 package org.rutebanken.sobek.netex.mapping.mapstruct.deckplan;
 
 import org.mapstruct.*;
-import org.rutebanken.netex.model.LuggageSpot;
-import org.rutebanken.netex.model.LuggageSpots_RelStructure;
+import org.entur.netex2.model.LuggageSpot;
+import org.entur.netex2.model.LuggageSpots_RelStructure;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.rutebanken.sobek.netex.mapping.mapstruct.*;

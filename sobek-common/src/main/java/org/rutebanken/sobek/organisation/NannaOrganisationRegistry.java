@@ -16,7 +16,7 @@
 
 package org.rutebanken.sobek.organisation;
 
-import org.rutebanken.netex.model.OrganisationTypeEnumeration;
+import org.entur.netex2.model.OrganisationTypeEnumeration;
 import org.rutebanken.sobek.model.EmbeddableMultilingualString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +54,7 @@ public class NannaOrganisationRegistry extends AbstractCachedOrganisationRegistr
     }
 
     @Override
-    protected List<Organisation> loadOrganisationsFromSource() throws Exception {
+    protected List<Organisation> loadOrganisationsFromSource() {
         List<Organisation> loadedOrganisations = new ArrayList<>();
 
         logger.info("Loading organisations from Nanna JSON endpoint: {}", nannaHttpUri);

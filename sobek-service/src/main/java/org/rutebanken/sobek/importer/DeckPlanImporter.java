@@ -49,7 +49,7 @@ public class DeckPlanImporter {
         this.deckPlanVersionedSaverService = deckPlanVersionedSaverService;
     }
 
-    public List<org.rutebanken.netex.model.DeckPlan> importDeckPlans(List<DeckPlan> deckPlans, AtomicInteger deckPlansCounter) {
+    public List<org.entur.netex2.model.DeckPlan> importDeckPlans(List<DeckPlan> deckPlans, AtomicInteger deckPlansCounter) {
         logger.info("Importing {} incoming deck plans", deckPlans.size());
 
         List<DeckPlan> result = new ArrayList<>();

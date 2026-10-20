@@ -31,7 +31,7 @@
 package org.rutebanken.sobek.importer.handler;
 
 import jakarta.xml.bind.JAXBElement;
-import org.rutebanken.netex.model.*;
+import org.entur.netex2.model.*;
 import org.rutebanken.sobek.importer.EquipmentImporter;
 import org.rutebanken.sobek.importer.ImportParams;
 import org.rutebanken.sobek.importer.converter.EquipmentIdConverter;

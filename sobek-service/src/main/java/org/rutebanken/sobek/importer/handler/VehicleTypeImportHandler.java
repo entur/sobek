@@ -31,7 +31,7 @@
 package org.rutebanken.sobek.importer.handler;
 
 import jakarta.xml.bind.JAXBElement;
-import org.rutebanken.netex.model.*;
+import org.entur.netex2.model.*;
 import org.rutebanken.sobek.importer.ImportParams;
 import org.rutebanken.sobek.importer.VehicleTypeImporter;
 import org.rutebanken.sobek.importer.converter.VehicleTypeIdConverter;
@@ -74,7 +74,7 @@ public class VehicleTypeImportHandler {
     public void handleVehicleTypes(ResourceFrame netexResourceFrame, ImportParams importParams, AtomicInteger vehicleTypesCounter, ResourceFrame responseResourceframe) {
 
         if (publicationDeliveryHelper.hasVehicleTypes(netexResourceFrame)) {
-            var originalVehicleTypes = netexResourceFrame.getVehicleTypes().getTransportType_Dummy();
+            var originalVehicleTypes = netexResourceFrame.getVehicleTypes().getTransportType();
             logger.info("Publication delivery contains {} vehicle types for import.", originalVehicleTypes.size());
 
             logger.info("About to check if incoming vehicle types have previously been imported with the same id");
@@ -97,7 +97,7 @@ public class VehicleTypeImportHandler {
 
             responseResourceframe.withVehicleTypes(
                     new VehicleTypesInFrame_RelStructure()
-                            .withTransportType_Dummy(vehicleTypeElements));
+                            .withTransportType(vehicleTypeElements));
 
             logger.info("Finished importing vehicle types");
         }

@@ -3,7 +3,7 @@ package org.rutebanken.sobek.netex.mapping.mapstruct.equipment;
 import jakarta.xml.bind.JAXBElement;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
-import org.rutebanken.netex.model.*;
+import org.entur.netex2.model.*;
 import org.rutebanken.sobek.model.vehicle.Equipment;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
@@ -42,19 +42,19 @@ public interface ActualVehicleEquipmentMapper {
         Object refValue = actualVehicleEquipmentVersionStructure.getEquipmentRef().getValue();
 
         return switch (refValue) {
-            case org.rutebanken.netex.model.AccessVehicleEquipmentRefStructure ref ->
+            case org.entur.netex2.model.AccessVehicleEquipmentRefStructure ref ->
                     ReferenceMapper.resolveReference(ref, org.rutebanken.sobek.model.vehicle.AccessVehicleEquipment.class, context);
-            case org.rutebanken.netex.model.BedEquipmentRefStructure ref ->
+            case org.entur.netex2.model.BedEquipmentRefStructure ref ->
                     ReferenceMapper.resolveReference(ref, org.rutebanken.sobek.model.vehicle.BedEquipment.class, context);
-            case org.rutebanken.netex.model.EntranceEquipmentRefStructure ref ->
+            case org.entur.netex2.model.EntranceEquipmentRefStructure ref ->
                     ReferenceMapper.resolveReference(ref, org.rutebanken.sobek.model.vehicle.EntranceEquipment.class, context);
-            case org.rutebanken.netex.model.LuggageSpotEquipmentRefStructure ref ->
+            case org.entur.netex2.model.LuggageSpotEquipmentRefStructure ref ->
                     ReferenceMapper.resolveReference(ref, org.rutebanken.sobek.model.vehicle.LuggageSpotEquipment.class, context);
-            case org.rutebanken.netex.model.SeatEquipmentRefStructure ref ->
+            case org.entur.netex2.model.SeatEquipmentRefStructure ref ->
                     ReferenceMapper.resolveReference(ref, org.rutebanken.sobek.model.vehicle.SeatEquipment.class, context);
-            case org.rutebanken.netex.model.SpotEquipmentRefStructure ref ->
+            case org.entur.netex2.model.SpotEquipmentRefStructure ref ->
                     ReferenceMapper.resolveReference(ref, org.rutebanken.sobek.model.vehicle.SpotEquipment.class, context);
-            case org.rutebanken.netex.model.StaircaseEquipmentRefStructure ref ->
+            case org.entur.netex2.model.StaircaseEquipmentRefStructure ref ->
                     ReferenceMapper.resolveReference(ref, org.rutebanken.sobek.model.vehicle.StaircaseEquipment.class, context);
             default -> null;
         };

@@ -17,7 +17,7 @@
 
 package org.rutebanken.sobek.organisation;
 
-import org.rutebanken.netex.model.*;
+import org.entur.netex2.model.*;
 import org.rutebanken.sobek.netex.mapping.mapstruct.MultilingualStringMapper;
 import org.rutebanken.sobek.netex.marshal.NetexUnmarshaller;
 import org.rutebanken.sobek.netex.marshal.NetexUnmarshallerUnmarshalFromSourceException;
@@ -75,7 +75,7 @@ public abstract class NetexPublicationDeliveryOrganisationRegistry
                     if (frameValue instanceof ResourceFrame resourceFrame) {
                         resourceFrame
                             .getOrganisations()
-                            .getOrganisation_Dummy()
+                            .getOrganisation()
                             .forEach(org -> {
                                 if (Organisation_VersionStructure.class.isAssignableFrom(org.getDeclaredType())) {
                                     netexOrganisations.add((Organisation_VersionStructure) org.getValue());

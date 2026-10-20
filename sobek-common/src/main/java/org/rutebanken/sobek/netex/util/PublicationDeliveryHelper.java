@@ -16,7 +16,7 @@
 package org.rutebanken.sobek.netex.util;
 
 import jakarta.xml.bind.JAXBElement;
-import org.rutebanken.netex.model.*;
+import org.entur.netex2.model.*;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -78,8 +78,8 @@ public class PublicationDeliveryHelper {
 
     public boolean hasVehicleTypes(ResourceFrame netexResourceFrame) {
         return netexResourceFrame.getVehicleTypes() != null
-                && netexResourceFrame.getVehicleTypes().getTransportType_Dummy() != null
-                && !netexResourceFrame.getVehicleTypes().getTransportType_Dummy().isEmpty();
+                && netexResourceFrame.getVehicleTypes().getTransportType() != null
+                && !netexResourceFrame.getVehicleTypes().getTransportType().isEmpty();
     }
 
     public boolean hasVehicleModels(ResourceFrame netexResourceFrame) {

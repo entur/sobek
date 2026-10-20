@@ -1,6 +1,6 @@
 package org.rutebanken.sobek.netex.mapping.mapstruct.deckplan;
 
-import org.rutebanken.netex.model.PassengerEntrance;
+import org.entur.netex2.model.PassengerEntrance;
 import org.rutebanken.sobek.netex.mapping.mapstruct.DataManagedObjectStructureMapperTestBase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,16 +14,16 @@ public class PassengerEntranceMapperTest extends DataManagedObjectStructureMappe
     private PassengerEntranceMapper mapper;
 
     protected PassengerEntranceMapperTest() {
-        super(org.rutebanken.netex.model.PassengerEntrance.class, org.rutebanken.sobek.model.vehicle.PassengerEntrance.class);
+        super(org.entur.netex2.model.PassengerEntrance.class, org.rutebanken.sobek.model.vehicle.PassengerEntrance.class);
     }
 
     @Override
-    protected org.rutebanken.sobek.model.vehicle.PassengerEntrance mapToSobek(org.rutebanken.netex.model.PassengerEntrance source) {
+    protected org.rutebanken.sobek.model.vehicle.PassengerEntrance mapToSobek(org.entur.netex2.model.PassengerEntrance source) {
         return mapper.mapToSobek(source, context);
     }
 
     @Override
-    protected org.rutebanken.netex.model.PassengerEntrance mapToNetex(org.rutebanken.sobek.model.vehicle.PassengerEntrance source) {
+    protected org.entur.netex2.model.PassengerEntrance mapToNetex(org.rutebanken.sobek.model.vehicle.PassengerEntrance source) {
         return mapper.mapToNetex(source, context);
     }
 }

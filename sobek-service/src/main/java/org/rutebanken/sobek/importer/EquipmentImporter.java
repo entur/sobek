@@ -49,7 +49,7 @@ public class EquipmentImporter {
         this.mappingContext = mappingContext;
     }
 
-    public List<org.rutebanken.netex.model.Equipment_VersionStructure> importEquipments(List<Equipment> equipments, AtomicInteger equipmentsCounter) {
+    public List<org.entur.netex2.model.Equipment_VersionStructure> importEquipments(List<Equipment> equipments, AtomicInteger equipmentsCounter) {
 
         logger.info("Importing {} incoming equipment", equipments.size());
 

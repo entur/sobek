@@ -1,8 +1,8 @@
 package org.rutebanken.sobek.exporter;
 
-import org.rutebanken.netex.model.ObjectFactory;
-import org.rutebanken.netex.model.PublicationDeliveryStructure;
-import org.rutebanken.netex.model.ResourceFrame;
+import org.entur.netex2.model.ObjectFactory;
+import org.entur.netex2.model.PublicationDeliveryStructure;
+import org.entur.netex2.model.ResourceFrame;
 import org.rutebanken.sobek.netex.id.ValidPrefixList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +32,7 @@ public class PublicationDeliveryCreator {
                 .withParticipantRef(validPrefixList.getValidNetexPrefix());
     }
 
-    public PublicationDeliveryStructure createPublicationDelivery(org.rutebanken.netex.model.CompositeFrame compositeFrame) {
+    public PublicationDeliveryStructure createPublicationDelivery(org.entur.netex2.model.CompositeFrame compositeFrame) {
         PublicationDeliveryStructure publicationDeliveryStructure = createPublicationDelivery();
         publicationDeliveryStructure.withDataObjects(
                 new PublicationDeliveryStructure.DataObjects()
@@ -57,7 +57,7 @@ public class PublicationDeliveryCreator {
         return publicationDeliveryStructure;
     }
 
-    public PublicationDeliveryStructure createPublicationDelivery(org.rutebanken.netex.model.ServiceFrame serviceFrame,
+    public PublicationDeliveryStructure createPublicationDelivery(org.entur.netex2.model.ServiceFrame serviceFrame,
                                                                   ResourceFrame netexResourceFrame
     ) {
         PublicationDeliveryStructure publicationDeliveryStructure = createPublicationDelivery();
@@ -73,8 +73,8 @@ public class PublicationDeliveryCreator {
         return publicationDeliveryStructure;
     }
 
-    public PublicationDeliveryStructure createPublicationDelivery(org.rutebanken.netex.model.SiteFrame siteFrame,
-                                                                  org.rutebanken.netex.model.ServiceFrame serviceFrame,
+    public PublicationDeliveryStructure createPublicationDelivery(org.entur.netex2.model.SiteFrame siteFrame,
+                                                                  org.entur.netex2.model.ServiceFrame serviceFrame,
                                                                   ResourceFrame netexResourceFrame
     ) {
         PublicationDeliveryStructure publicationDeliveryStructure = createPublicationDelivery();

@@ -30,7 +30,7 @@
 
 package org.rutebanken.sobek.importer.handler;
 
-import org.rutebanken.netex.model.*;
+import org.entur.netex2.model.*;
 import org.rutebanken.sobek.importer.ImportParams;
 import org.rutebanken.sobek.importer.VehicleModelImporter;
 import org.rutebanken.sobek.importer.converter.VehicleModelIdConverter;

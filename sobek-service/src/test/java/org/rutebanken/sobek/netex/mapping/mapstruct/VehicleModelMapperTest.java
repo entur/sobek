@@ -3,9 +3,9 @@ package org.rutebanken.sobek.netex.mapping.mapstruct;
 import jakarta.xml.bind.JAXBElement;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.rutebanken.netex.model.ObjectFactory;
-import org.rutebanken.netex.model.TransportTypeRefStructure;
-import org.rutebanken.netex.model.VehicleModel;
+import org.entur.netex2.model.ObjectFactory;
+import org.entur.netex2.model.TransportTypeRefStructure;
+import org.entur.netex2.model.VehicleModel;
 import org.rutebanken.sobek.model.EmbeddableMultilingualString;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
 import org.rutebanken.sobek.netex.id.NetexIdHelper;
@@ -24,7 +24,7 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest
 class VehicleModelMapperTest extends DataManagedObjectStructureMapperTestBase<
-    org.rutebanken.netex.model.VehicleModel,
+    org.entur.netex2.model.VehicleModel,
     org.rutebanken.sobek.model.vehicle.VehicleModel> {
 
     @Autowired
@@ -39,16 +39,16 @@ class VehicleModelMapperTest extends DataManagedObjectStructureMapperTestBase<
     private final ObjectFactory objectFactory = new ObjectFactory();
 
     protected VehicleModelMapperTest() {
-        super(org.rutebanken.netex.model.VehicleModel.class, org.rutebanken.sobek.model.vehicle.VehicleModel.class);
+        super(org.entur.netex2.model.VehicleModel.class, org.rutebanken.sobek.model.vehicle.VehicleModel.class);
     }
 
     @Override
-    protected org.rutebanken.sobek.model.vehicle.VehicleModel mapToSobek(org.rutebanken.netex.model.VehicleModel source) {
+    protected org.rutebanken.sobek.model.vehicle.VehicleModel mapToSobek(org.entur.netex2.model.VehicleModel source) {
         return mapper.mapToSobek(source, context);
     }
 
     @Override
-    protected org.rutebanken.netex.model.VehicleModel mapToNetex(org.rutebanken.sobek.model.vehicle.VehicleModel source) {
+    protected org.entur.netex2.model.VehicleModel mapToNetex(org.rutebanken.sobek.model.vehicle.VehicleModel source) {
         return mapper.mapToNetex(source, context);
     }
 

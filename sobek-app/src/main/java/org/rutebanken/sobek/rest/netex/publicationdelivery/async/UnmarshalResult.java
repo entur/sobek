@@ -16,7 +16,7 @@
 package org.rutebanken.sobek.rest.netex.publicationdelivery.async;
 
 import com.google.common.base.MoreObjects;
-import org.rutebanken.netex.model.*;
+import org.entur.netex2.model.*;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;

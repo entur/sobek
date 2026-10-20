@@ -28,7 +28,7 @@ import java.util.Set;
 /**
  * Matches stops from nsr ID or imported/original ID
  */
-public class GenericIdConverter<X extends org.rutebanken.netex.model.DataManagedObjectStructure> {
+public class GenericIdConverter<X extends org.entur.netex2.model.DataManagedObjectStructure> {
 
     private static final Logger logger = LoggerFactory.getLogger(GenericIdConverter.class);
 

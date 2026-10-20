@@ -16,8 +16,8 @@
 package org.rutebanken.sobek.rest.netex.publicationdelivery.async;
 
 import org.junit.jupiter.api.Test;
-import org.rutebanken.netex.model.Vehicle;
-import org.rutebanken.netex.model.VehicleType;
+import org.entur.netex2.model.Vehicle;
+import org.entur.netex2.model.VehicleType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 

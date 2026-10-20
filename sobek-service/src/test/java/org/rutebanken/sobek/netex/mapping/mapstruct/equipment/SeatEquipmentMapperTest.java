@@ -2,7 +2,7 @@
 package org.rutebanken.sobek.netex.mapping.mapstruct.equipment;
 
 import org.junit.jupiter.api.Test;
-import org.rutebanken.netex.model.*;
+import org.entur.netex2.model.*;
 import org.rutebanken.sobek.netex.mapping.mapstruct.DataManagedObjectStructureMapperTestBase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,16 +25,16 @@ class SeatEquipmentMapperTest extends DataManagedObjectStructureMapperTestBase<
     private EquipmentMapper equipmentMapper;
 
     protected SeatEquipmentMapperTest() {
-        super(org.rutebanken.netex.model.SeatEquipment.class, org.rutebanken.sobek.model.vehicle.SeatEquipment.class);
+        super(org.entur.netex2.model.SeatEquipment.class, org.rutebanken.sobek.model.vehicle.SeatEquipment.class);
     }
 
     @Override
-    protected org.rutebanken.sobek.model.vehicle.SeatEquipment mapToSobek(org.rutebanken.netex.model.SeatEquipment source) {
+    protected org.rutebanken.sobek.model.vehicle.SeatEquipment mapToSobek(org.entur.netex2.model.SeatEquipment source) {
         return mapper.mapToSobek(source, context);
     }
 
     @Override
-    protected org.rutebanken.netex.model.SeatEquipment mapToNetex(org.rutebanken.sobek.model.vehicle.SeatEquipment source) {
+    protected org.entur.netex2.model.SeatEquipment mapToNetex(org.rutebanken.sobek.model.vehicle.SeatEquipment source) {
         return mapper.mapToNetex(source, context);
     }
 

@@ -5,23 +5,23 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 public class SchematicMapMapperTest extends DataManagedObjectStructureMapperTestBase<
-    org.rutebanken.netex.model.SchematicMap,
+    org.entur.netex2.model.SchematicMap,
     org.rutebanken.sobek.model.vehicle.SchematicMap> {
 
     @Autowired
     private SchematicMapMapper mapper;
 
     protected SchematicMapMapperTest() {
-        super(org.rutebanken.netex.model.SchematicMap.class, org.rutebanken.sobek.model.vehicle.SchematicMap.class);
+        super(org.entur.netex2.model.SchematicMap.class, org.rutebanken.sobek.model.vehicle.SchematicMap.class);
     }
 
     @Override
-    protected org.rutebanken.sobek.model.vehicle.SchematicMap mapToSobek(org.rutebanken.netex.model.SchematicMap source) {
+    protected org.rutebanken.sobek.model.vehicle.SchematicMap mapToSobek(org.entur.netex2.model.SchematicMap source) {
         return mapper.mapToSobek(source, context);
     }
 
     @Override
-    protected org.rutebanken.netex.model.SchematicMap mapToNetex(org.rutebanken.sobek.model.vehicle.SchematicMap source) {
+    protected org.entur.netex2.model.SchematicMap mapToNetex(org.rutebanken.sobek.model.vehicle.SchematicMap source) {
         return mapper.mapToNetex(source, context);
     }
 

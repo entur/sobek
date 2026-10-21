@@ -27,7 +27,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
-import javax.xml.stream.XMLStreamException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -108,10 +107,10 @@ public class ExportJobWorker implements Runnable {
         }
     }
 
-    private void exportToLocalXmlFile(File localExportXmlFile) throws InterruptedException, IOException, XMLStreamException, SAXException, JAXBException {
+    private void exportToLocalXmlFile(File localExportXmlFile) throws IOException, SAXException, JAXBException {
         logger.info("Start streaming publication delivery to local file {}", localExportXmlFile);
         FileOutputStream fileOutputStream = new FileOutputStream(localExportXmlFile);
-        streamingPublicationDelivery.streamVehicles(exportJob.getExportParams(), fileOutputStream);
+        streamingPublicationDelivery.streamVehicles(fileOutputStream);
     }
 
     private void uploadToGcp(File localExportFile) throws FileNotFoundException {
@@ -120,7 +119,7 @@ public class ExportJobWorker implements Runnable {
         blobStoreService.upload(exportJob.getSubFolder() + "/" + exportJob.getFileName(), fileInputStream);
     }
 
-    private void exportToLocalZipFile(File localZipFile, File localExportZipFile) throws IOException, InterruptedException, JAXBException, XMLStreamException, SAXException {
+    private void exportToLocalZipFile(File localZipFile, File localExportZipFile) throws IOException {
         logger.info("Adding {} to zip file: {}", localExportZipFile, localZipFile);
 
         final FileOutputStream fileOutputStream = new FileOutputStream(localZipFile);

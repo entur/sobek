@@ -22,12 +22,8 @@ import org.rutebanken.sobek.netex.mapping.mapstruct.deckplan.DeckPlanMapper;
 import org.rutebanken.sobek.netex.mapping.mapstruct.equipment.EquipmentMapper;
 import org.rutebanken.sobek.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.xml.sax.SAXException;
-
-import java.io.IOException;
 
 @Configuration
 public class StreamingPublicationDeliveryConfig {
@@ -45,16 +41,10 @@ public class StreamingPublicationDeliveryConfig {
     private DeckPlanRepository deckPlanRepository;
 
     @Autowired
-    private VehicleEquipmentProfileRepository vehicleEquipmentProfileRepository;
-
-    @Autowired
     private EquipmentRepository equipmentRepository;
 
     @Autowired
     private PublicationDeliveryCreator publicationDeliveryCreator;
-
-    @Autowired
-    private SobekServiceFrameExporter sobekServiceFrameExporter;
 
     @Autowired
     private SobekResourceFrameExporter sobekResourceFrameExporter;
@@ -77,12 +67,6 @@ public class StreamingPublicationDeliveryConfig {
     @Autowired
     private EquipmentMapper equipmentMapper;
 
-    @Value("${asyncNetexExport.validateAgainstSchema:false}")
-    private boolean validateAsyncExport;
-
-    @Value("${syncNetexExport.validateAgainstSchema:true}")
-    private boolean validateSyncExport;
-
     @Autowired
     private MappingContext mappingContext;
 
@@ -92,13 +76,12 @@ public class StreamingPublicationDeliveryConfig {
 //    }
 
     @Bean("syncStreamingPublicationDelivery")
-    public StreamingPublicationDelivery syncStreamingPublicationDelivery() throws IOException, SAXException {
-        return createStreamingPublicationDelivery(validateSyncExport);
+    public StreamingPublicationDelivery syncStreamingPublicationDelivery() {
+        return createStreamingPublicationDelivery();
     }
 
-    private StreamingPublicationDelivery createStreamingPublicationDelivery(boolean validate) throws IOException, SAXException {
-        return new StreamingPublicationDelivery(vehicleRepository, vehicleTypeRepository, vehicleModelRepository, deckPlanRepository, vehicleEquipmentProfileRepository, equipmentRepository, publicationDeliveryCreator,
-                sobekServiceFrameExporter, vehicleTypeMapper, equipmentMapper, vehicleMapper, deckPlanMapper, vehicleModelMapper, mappingContext, sobekResourceFrameExporter, sobekComositeFrameExporter
-                 /* TODO validate,*/ );
+    private StreamingPublicationDelivery createStreamingPublicationDelivery() {
+        return new StreamingPublicationDelivery(vehicleRepository, vehicleTypeRepository, vehicleModelRepository, deckPlanRepository, equipmentRepository, publicationDeliveryCreator,
+                vehicleTypeMapper, equipmentMapper, vehicleMapper, deckPlanMapper, vehicleModelMapper, mappingContext, sobekResourceFrameExporter, sobekComositeFrameExporter );
     }
 }

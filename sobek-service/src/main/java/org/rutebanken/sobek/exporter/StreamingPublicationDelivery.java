@@ -15,18 +15,13 @@
 
 package org.rutebanken.sobek.exporter;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
-import org.hibernate.internal.SessionImpl;
 import org.entur.netex2.model.*;
 import org.entur.netex2.model.Frames_RelStructure;
 import org.entur.netex2.validation.NeTExValidator;
-import org.rutebanken.sobek.exporter.eviction.EntitiesEvictor;
-import org.rutebanken.sobek.exporter.eviction.SessionEntitiesEvictor;
 import org.rutebanken.sobek.model.job.ExportParams;
 import org.rutebanken.sobek.model.vehicle.*;
 import org.rutebanken.sobek.model.vehicle.DeckPlan;
@@ -52,7 +47,6 @@ import java.io.OutputStream;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -87,12 +81,8 @@ public class StreamingPublicationDelivery {
 
     private final SobekResourceFrameExporter sobekResourceFrameExporter;
     private final SobekComositeFrameExporter sobekComositeFrameExporter;
-    private NeTExValidator neTExValidator;
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
-    @Value("${asyncNetexExport.validateAgainstSchema:true}")
+    @Value("${publicationDeliveryStreamingOutput.validateAgainstSchema:true}")
     private boolean validateAgainstSchema;
 
     @Autowired
@@ -100,10 +90,8 @@ public class StreamingPublicationDelivery {
                                         VehicleTypeRepository vehicleTypeRepository,
                                         VehicleModelRepository vehicleModelRepository,
                                         DeckPlanRepository deckPlanRepository,
-                                        VehicleEquipmentProfileRepository vehicleEquipmentProfileRepository,
                                         EquipmentRepository equipmentRepository,
                                         PublicationDeliveryCreator publicationDeliveryCreator,
-                                        SobekServiceFrameExporter sobekServiceFrameExporter,
                                         VehicleTypeMapper vehicleTypeMapper,
                                         EquipmentMapper equipmentMapper,
                                         VehicleMapper vehicleMapper,
@@ -141,35 +129,26 @@ public class StreamingPublicationDelivery {
         }
     }
 
-    public void streamVehicles(ExportParams exportParams, OutputStream outputStream) throws JAXBException, IOException, SAXException {
+    public void streamVehicles(OutputStream outputStream) throws JAXBException, IOException, SAXException {
 
         AtomicInteger mappedVehicleCount = new AtomicInteger();
         AtomicInteger mappedVehicleTypeCount = new AtomicInteger();
         AtomicInteger mappedVehicleModelCount = new AtomicInteger();
         AtomicInteger mappedTrainCount = new AtomicInteger();
 
-        EntitiesEvictor entitiesEvictor = instantiateEvictor();
-
-        logger.info("Streaming export initiated. Export params: {}", exportParams);
-
-        // We need to know these IDs before marshalling begins.
-        // To avoid marshalling empty parking element and to be able to gather relevant topographic places
-        // The primary ID represents a stop place with a certain version
-
-
-        org.entur.netex2.model.CompositeFrame netexCompositeFrame = sobekComositeFrameExporter.createCompositeFrame("Composite frame " + exportParams);
+        org.entur.netex2.model.CompositeFrame netexCompositeFrame = sobekComositeFrameExporter.createCompositeFrame("Composite frame");
 
         logger.info("Mapping resource frame to netex model");
-        final org.entur.netex2.model.ResourceFrame netexResourceFrame = sobekResourceFrameExporter.createResourceFrame("Resource frame"+ exportParams);
+        final org.entur.netex2.model.ResourceFrame netexResourceFrame = sobekResourceFrameExporter.createResourceFrame("Resource frame");
 
         Frames_RelStructure framesRelStructure = new Frames_RelStructure();
         framesRelStructure.withCommonFrame(new ObjectFactory().createResourceFrame(netexResourceFrame));
         netexCompositeFrame.withFrames(framesRelStructure);
 
         logger.info("Preparing scrollable iterators");
-        prepareVehicleTypes(exportParams, Collections.emptySet(), mappedVehicleTypeCount, netexResourceFrame, entitiesEvictor);
-        prepareVehicleModels(exportParams, Collections.emptySet(), mappedVehicleModelCount, netexResourceFrame, entitiesEvictor);
-        prepareVehicles(exportParams, Collections.emptySet(), mappedVehicleCount, netexResourceFrame, entitiesEvictor);
+        prepareVehicleTypes(mappedVehicleTypeCount, netexResourceFrame);
+        prepareVehicleModels(mappedVehicleModelCount, netexResourceFrame);
+        prepareVehicles(mappedVehicleCount, netexResourceFrame);
         prepareDeckPlans(netexResourceFrame, null);
         prepareEquipments(netexResourceFrame);
 
@@ -256,10 +235,7 @@ public class StreamingPublicationDelivery {
 
 
 
-    private void prepareVehicles(ExportParams exportParams, Set<Long> vehicleIds, AtomicInteger mappedVehicleCount, org.entur.netex2.model.ResourceFrame resourceFrame, EntitiesEvictor evicter) {
-        // Override lists with custom iterator to be able to scroll database results on the fly.
-//        if (!vehicleIds.isEmpty()) {
-
+    private void prepareVehicles(AtomicInteger mappedVehicleCount, org.entur.netex2.model.ResourceFrame resourceFrame) {
         List<Vehicle> vehiclesInDb = vehicleRepository.findAll();
 
         if (!vehiclesInDb.isEmpty()) {
@@ -271,15 +247,13 @@ public class StreamingPublicationDelivery {
 
             vehiclesInFrame_relStructure.withVehicle(vehicles);
             resourceFrame.setVehicles(vehiclesInFrame_relStructure);
+            mappedVehicleCount.set(vehicles.size());
         } else {
             logger.info("No vehicles to export");
         }
     }
 
-    private void prepareVehicleTypes(ExportParams exportParams, Set<Long> vehicleIds, AtomicInteger mappedVehicleTypeCount, org.entur.netex2.model.ResourceFrame resourceFrame, EntitiesEvictor evicter) {
-        // Override lists with custom iterator to be able to scroll database results on the fly.
-//        if (!vehicleIds.isEmpty()) {
-
+    private void prepareVehicleTypes(AtomicInteger mappedVehicleTypeCount, org.entur.netex2.model.ResourceFrame resourceFrame) {
         List<VehicleType> vehicleTypesInDb = vehicleTypeRepository.findAll();
 
         if (!vehicleTypesInDb.isEmpty()) {
@@ -291,15 +265,13 @@ public class StreamingPublicationDelivery {
             Collection<JAXBElement<? extends DataManagedObjectStructure>> jaxbVehicleTypes = vehicleTypes.stream().map(vt -> new ObjectFactory().createVehicleType(vt)).collect(Collectors.toSet());
             vehicleTypesInFrameRelStructure.withTransportType(jaxbVehicleTypes);
             resourceFrame.setVehicleTypes(vehicleTypesInFrameRelStructure);
+            mappedVehicleTypeCount.set(vehicleTypes.size());
         } else {
             logger.info("No vehicle types to export");
         }
     }
 
-    private void prepareVehicleModels(ExportParams exportParams, Set<Long> vehicleIds, AtomicInteger mappedVehicleModelCount, org.entur.netex2.model.ResourceFrame resourceFrame, EntitiesEvictor evicter) {
-        // Override lists with custom iterator to be able to scroll database results on the fly.
-//        if (!vehicleIds.isEmpty()) {
-
+    private void prepareVehicleModels(AtomicInteger mappedVehicleModelCount, org.entur.netex2.model.ResourceFrame resourceFrame) {
         List<VehicleModel> vehicleModelsInDb = vehicleModelRepository.findAll();
 
         if (!vehicleModelsInDb.isEmpty()) {
@@ -310,15 +282,13 @@ public class StreamingPublicationDelivery {
 
             vehicleModelsInFrameRelStructure.withVehicleModel(vehicleModels);
             resourceFrame.setVehicleModels(vehicleModelsInFrameRelStructure);
+            mappedVehicleModelCount.set(vehicleModels.size());
         } else {
             logger.info("No vehicle models to export");
         }
     }
 
     private void prepareDeckPlans(org.entur.netex2.model.ResourceFrame resourceFrame, String deckPlanId) {
-        // Override lists with custom iterator to be able to scroll database results on the fly.
-//        if (!vehicleIds.isEmpty()) {
-
         List<DeckPlan> deckPlansInDb;
         if (deckPlanId != null) {
             DeckPlan deckPlan = deckPlanRepository.findFirstByNetexIdOrderByVersionDesc(deckPlanId);
@@ -368,8 +338,6 @@ public class StreamingPublicationDelivery {
         final ResourceFrame netexResourceFrame = sobekResourceFrameExporter.createResourceFrame("Resource frame"+ exportParams);
 
 
-        EntitiesEvictor entitiesEvictor = instantiateEvictor();
-
         logger.info("Streaming export initiated. Export params: {}", exportParams);
 
         // We need to know these IDs before marshalling begins.
@@ -387,27 +355,13 @@ public class StreamingPublicationDelivery {
 
     }
 
-    private EntitiesEvictor instantiateEvictor() {
-        if (entityManager != null) {
-            SessionImpl currentSession = entityManager.unwrap(SessionImpl.class);
-            return new SessionEntitiesEvictor(currentSession);
-        } else {
-            return new EntitiesEvictor() {
-                @Override
-                public void evictKnownEntitiesFromSession(Object entity) {
-                    // Intentionally left blank
-                }
-            };
-        }
-    }
-
     private Marshaller createMarshaller() throws JAXBException, IOException, SAXException {
         Marshaller marshaller = publicationDeliveryContext.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
         marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, "");
 
         if (validateAgainstSchema) {
-            neTExValidator = NeTExValidator.getNeTExValidator();
+            NeTExValidator neTExValidator = NeTExValidator.getNeTExValidator();
             marshaller.setSchema(neTExValidator.getSchema());
         }
 

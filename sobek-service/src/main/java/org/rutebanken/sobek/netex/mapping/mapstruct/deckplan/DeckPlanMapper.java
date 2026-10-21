@@ -2,7 +2,7 @@
 package org.rutebanken.sobek.netex.mapping.mapstruct.deckplan;
 
 import org.mapstruct.*;
-import org.rutebanken.netex.model.DeckPlan;
+import org.entur.netex2.model.DeckPlan;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.rutebanken.sobek.netex.mapping.mapstruct.DataManagedObjectStructureMapper;

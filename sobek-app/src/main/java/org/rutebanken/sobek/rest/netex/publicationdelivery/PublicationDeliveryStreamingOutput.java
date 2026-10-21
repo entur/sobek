@@ -19,9 +19,9 @@ import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
-import org.rutebanken.netex.model.ObjectFactory;
-import org.rutebanken.netex.model.PublicationDeliveryStructure;
-import org.rutebanken.netex.validation.NeTExValidator;
+import org.entur.netex2.model.ObjectFactory;
+import org.entur.netex2.model.PublicationDeliveryStructure;
+import org.entur.netex2.validation.NeTExValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -57,7 +57,7 @@ public class PublicationDeliveryStreamingOutput {
     @Value("${publicationDeliveryStreamingOutput.validateAgainstSchema:true}")
     private boolean validateAgainstSchema;
 
-    public PublicationDeliveryStreamingOutput() throws IOException, SAXException {
+    public PublicationDeliveryStreamingOutput() {
     }
 
     public StreamingResponseBody stream(PublicationDeliveryStructure publicationDelivery) throws JAXBException, IOException, SAXException {

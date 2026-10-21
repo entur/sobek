@@ -15,7 +15,7 @@
 
 package org.rutebanken.sobek.rest.netex.publicationdelivery.async;
 
-import org.rutebanken.netex.model.EntityInVersionStructure;
+import org.entur.netex2.model.EntityInVersionStructure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,7 +64,6 @@ public class EntityQueueProcessor<T extends EntityInVersionStructure> implements
             logger.warn("Interrupted. Stopping all jobs for {}", type);
             stopExecution.set(true);
             Thread.currentThread().interrupt();
-            return;
         } catch (Exception e) {
             logger.warn("Caught exception while importing {}", type, e);
             stopExecution.set(true);

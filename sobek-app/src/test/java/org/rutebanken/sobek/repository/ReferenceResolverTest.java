@@ -54,7 +54,7 @@ public class ReferenceResolverTest  {
     @Test
     public void testResolveVehicle() {
 
-        org.rutebanken.netex.model.Vehicle input = new org.rutebanken.netex.model.Vehicle().withId("TST:Vehicle:1");
+        org.entur.netex2.model.Vehicle input = new org.entur.netex2.model.Vehicle().withId("TST:Vehicle:1");
         var mappedV = vehicleMapper.mapToSobek(input, context);
         mappedV.setDataOwnerRef("NOG:Operator:earJinAJlwf");
 
@@ -69,7 +69,7 @@ public class ReferenceResolverTest  {
     @Test
     public void testResolveVehicleType() {
 
-        org.rutebanken.netex.model.VehicleType input = new org.rutebanken.netex.model.VehicleType().withId("TST:VehicleType:1");
+        org.entur.netex2.model.VehicleType input = new org.entur.netex2.model.VehicleType().withId("TST:VehicleType:1");
         var mappedVt = vehicleTypeMapper.mapToSobek(input, context);
         mappedVt.setDataOwnerRef("NOG:Operator:earJinAJlwf");
 

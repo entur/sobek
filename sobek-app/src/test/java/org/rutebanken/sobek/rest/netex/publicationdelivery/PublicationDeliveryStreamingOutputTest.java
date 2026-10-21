@@ -16,7 +16,7 @@
 package org.rutebanken.sobek.rest.netex.publicationdelivery;
 
 import org.junit.jupiter.api.Test;
-import org.rutebanken.netex.model.PublicationDeliveryStructure;
+import org.entur.netex2.model.PublicationDeliveryStructure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;

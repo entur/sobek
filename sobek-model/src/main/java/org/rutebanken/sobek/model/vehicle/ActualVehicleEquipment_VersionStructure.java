@@ -11,7 +11,7 @@ import java.math.BigInteger;
 @MappedSuperclass
 public class ActualVehicleEquipment_VersionStructure extends PassengerEquipment_VersionStructure {
     private BigInteger units;
-//    private JAXBElement<? extends org.rutebanken.netex.model.VehicleTypeRefStructure> vehicleTypeRef;
+//    private JAXBElement<? extends org.entur.netex2.model.VehicleTypeRefStructure> vehicleTypeRef;
 //    private JAXBElement<? extends EquipmentRefStructure> equipmentRef;
 //    private AccessibilityAssessment accessibilityAssessment;
 }

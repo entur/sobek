@@ -49,7 +49,7 @@
         <geotools.version>35.2</geotools.version>
         <graphql-java.version>25.0</graphql-java.version>
         <graphql-java-extended-scalars.version>24.0</graphql-java-extended-scalars.version>
-        <netex-java-model.version>3.0.0-SNAPSHOT</netex-java-model.version>
+        <netex-java-model.version>3.0.0</netex-java-model.version>
         <entur.helpers.version>7.4.0</entur.helpers.version>
         <jts-core.version>1.20.0</jts-core.version>
         <groovy-all.version>4.0.28</groovy-all.version>
@@ -75,16 +75,6 @@
             <id>osgeo</id>
             <name>Open Source Geospatial Foundation Repository</name>
             <url>https://repo.osgeo.org/repository/release/</url>
-        </repository>
-        <repository>
-            <id>maven-snapshots</id>
-            <url>https://central.sonatype.com/repository/maven-snapshots</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
         </repository>
     </repositories>
 
@@ -122,7 +112,7 @@
             <!-- NeTEx Java Model -->
             <dependency>
                 <groupId>org.entur</groupId>
-                <artifactId>netex-java-model</artifactId>
+                <artifactId>netex2-java-model</artifactId>
                 <version>${netex-java-model.version}</version>
             </dependency>
             <dependency>

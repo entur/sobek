@@ -1,9 +1,9 @@
 package org.rutebanken.sobek.netex.mapping.mapstruct;
 
 import org.junit.jupiter.api.Test;
-import org.rutebanken.netex.model.KeyListStructure;
-import org.rutebanken.netex.model.KeyValueStructure;
-import org.rutebanken.netex.model.Vehicle;
+import org.entur.netex2.model.KeyListStructure;
+import org.entur.netex2.model.KeyValueStructure;
+import org.entur.netex2.model.Vehicle;
 import org.rutebanken.sobek.model.ResourceFrame;
 import org.rutebanken.sobek.model.vehicle.DeckPlan;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +40,7 @@ public class NeTExIdMappingTest {
 
     @Test
     public void testIdNetexToSobek() {
-        org.rutebanken.netex.model.Vehicle netexVehicle = new Vehicle();
+        org.entur.netex2.model.Vehicle netexVehicle = new Vehicle();
         netexVehicle.setId("AKT:Vehicle:1");
         var vehicle = new org.rutebanken.sobek.model.vehicle.Vehicle();
         mapper.mapNetexToSobek(netexVehicle, vehicle);
@@ -52,11 +52,11 @@ public class NeTExIdMappingTest {
     }
 
     @Test
-    public void mapResourceFrameIdToNetex() throws Exception {
+    public void mapResourceFrameIdToNetex() {
         ResourceFrame resourceFrame = new ResourceFrame();
         resourceFrame.setNetexId("NSR:ResourceFrame:123123");
 
-        org.rutebanken.netex.model.ResourceFrame netexResourceFrame = new org.rutebanken.netex.model.ResourceFrame();
+        org.entur.netex2.model.ResourceFrame netexResourceFrame = new org.entur.netex2.model.ResourceFrame();
         mapper.mapSobekToNetex(resourceFrame, netexResourceFrame);
 
         assertThat(netexResourceFrame.getId()).isNotEmpty();
@@ -64,11 +64,11 @@ public class NeTExIdMappingTest {
     }
 
     @Test
-    public void accessibilityAssesmentIdToNetex() throws Exception {
+    public void accessibilityAssesmentIdToNetex() {
         DeckPlan sobek = new DeckPlan();
         sobek.setNetexId("NMR:DeckPlan:123124");
 
-        org.rutebanken.netex.model.DeckPlan netex = new org.rutebanken.netex.model.DeckPlan();
+        org.entur.netex2.model.DeckPlan netex = new org.entur.netex2.model.DeckPlan();
         mapper.mapSobekToNetex(sobek, netex);
 
         assertThat(netex.getId()).isNotEmpty();
@@ -81,7 +81,7 @@ public class NeTExIdMappingTest {
 //
 //        String originalId = "RUT:Vehicle:1,,RUT:Vehicle:2";
 //
-//        org.rutebanken.netex.model.DataManagedObjectStructure netexEntity = new org.rutebanken.netex.model.Vehicle()
+//        org.entur.netex2.model.DataManagedObjectStructure netexEntity = new org.entur.netex2.model.Vehicle()
 //                .withKeyList(new KeyListStructure()
 //                        .withKeyValue(new KeyValueStructure()
 //                                .withKey(ORIGINAL_ID_KEY)
@@ -95,11 +95,11 @@ public class NeTExIdMappingTest {
 //    }
 
     @Test
-    public void copyKeyValuesForVehicleTypeEmptyPostfixRemove() throws Exception {
+    public void copyKeyValuesForVehicleTypeEmptyPostfixRemove() {
 
         String originalId = "RUT:VehicleType:";
 
-        org.rutebanken.netex.model.DataManagedObjectStructure netexEntity = new org.rutebanken.netex.model.VehicleType()
+        org.entur.netex2.model.DataManagedObjectStructure netexEntity = new org.entur.netex2.model.VehicleType()
                 .withKeyList(new KeyListStructure()
                         .withKeyValue(new KeyValueStructure()
                                 .withKey(ORIGINAL_ID_KEY)

@@ -1,6 +1,6 @@
 package org.rutebanken.sobek.netex.mapping.mapstruct.equipment;
 
-import org.rutebanken.netex.model.EntranceEquipment;
+import org.entur.netex2.model.EntranceEquipment;
 import org.rutebanken.sobek.netex.mapping.mapstruct.DataManagedObjectStructureMapperTestBase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

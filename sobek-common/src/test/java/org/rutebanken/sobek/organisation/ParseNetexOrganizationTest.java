@@ -2,7 +2,7 @@ package org.rutebanken.sobek.organisation;
 
 import jakarta.xml.bind.JAXBException;
 import org.junit.jupiter.api.Test;
-import org.rutebanken.netex.model.*;
+import org.entur.netex2.model.*;
 import org.rutebanken.sobek.netex.marshal.PublicationDeliveryUnmarshaller;
 import org.rutebanken.sobek.netex.util.PublicationDeliveryHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +11,6 @@ import org.xml.sax.SAXException;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -45,7 +44,7 @@ public class ParseNetexOrganizationTest {
 
         OrganisationsInFrame_RelStructure organisations = resourceFrame.getOrganisations();
 
-        assertThat(organisations.getOrganisation_Dummy()).isNotNull()
+        assertThat(organisations.getOrganisation()).isNotNull()
                 .isNotEmpty();
     }
 

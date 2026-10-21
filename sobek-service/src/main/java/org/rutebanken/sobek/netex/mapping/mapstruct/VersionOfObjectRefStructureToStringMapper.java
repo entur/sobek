@@ -2,8 +2,7 @@ package org.rutebanken.sobek.netex.mapping.mapstruct;
 
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
-import org.rutebanken.netex.model.VersionOfObjectRefStructure;
-import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
+import org.entur.netex2.model.VersionOfObjectRefStructure;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 
 @Mapper

@@ -1,7 +1,7 @@
 package org.rutebanken.sobek.netex.mapping.mapstruct;
 
 import org.junit.jupiter.api.Test;
-import org.rutebanken.netex.model.ValidBetween;
+import org.entur.netex2.model.ValidBetween;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 

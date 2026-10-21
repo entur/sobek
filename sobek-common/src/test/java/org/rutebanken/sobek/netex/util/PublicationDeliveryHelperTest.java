@@ -16,7 +16,7 @@
 package org.rutebanken.sobek.netex.util;
 
 import org.junit.jupiter.api.Test;
-import org.rutebanken.netex.model.*;
+import org.entur.netex2.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 

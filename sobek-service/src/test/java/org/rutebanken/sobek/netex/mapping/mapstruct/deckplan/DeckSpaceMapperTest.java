@@ -1,6 +1,6 @@
 package org.rutebanken.sobek.netex.mapping.mapstruct.deckplan;
 
-import org.rutebanken.netex.model.PassengerSpace;
+import org.entur.netex2.model.PassengerSpace;
 import org.rutebanken.sobek.netex.mapping.mapstruct.DataManagedObjectStructureMapperTestBase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,16 +14,16 @@ public class DeckSpaceMapperTest extends DataManagedObjectStructureMapperTestBas
     private DeckSpaceMapper mapper;
 
     protected DeckSpaceMapperTest() {
-        super(org.rutebanken.netex.model.PassengerSpace.class, org.rutebanken.sobek.model.vehicle.PassengerSpace.class);
+        super(org.entur.netex2.model.PassengerSpace.class, org.rutebanken.sobek.model.vehicle.PassengerSpace.class);
     }
 
     @Override
-    protected org.rutebanken.sobek.model.vehicle.PassengerSpace mapToSobek(org.rutebanken.netex.model.PassengerSpace source) {
+    protected org.rutebanken.sobek.model.vehicle.PassengerSpace mapToSobek(org.entur.netex2.model.PassengerSpace source) {
         return mapper.mapToSobek(source, context);
     }
 
     @Override
-    protected org.rutebanken.netex.model.PassengerSpace mapToNetex(org.rutebanken.sobek.model.vehicle.PassengerSpace source) {
+    protected org.entur.netex2.model.PassengerSpace mapToNetex(org.rutebanken.sobek.model.vehicle.PassengerSpace source) {
         return mapper.mapToNetex(source, context);
     }
 }

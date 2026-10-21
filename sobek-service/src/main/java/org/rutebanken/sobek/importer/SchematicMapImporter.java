@@ -50,7 +50,7 @@ public class SchematicMapImporter {
         this.context = context;
     }
 
-    public List<org.rutebanken.netex.model.SchematicMap> importSchematicMaps(List<SchematicMap> schematicMaps, AtomicInteger schematicMapsCounter) {
+    public List<org.entur.netex2.model.SchematicMap> importSchematicMaps(List<SchematicMap> schematicMaps, AtomicInteger schematicMapsCounter) {
 
         logger.info("Importing {} incoming schematic maps", schematicMaps.size());
 

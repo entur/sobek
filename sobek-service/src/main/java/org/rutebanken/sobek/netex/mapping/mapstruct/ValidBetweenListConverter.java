@@ -14,7 +14,7 @@ public abstract class ValidBetweenListConverter {
      * Converts a list of ValidBetween to a single ValidBetween.
      * Takes the first element or returns null if list is empty.
      */
-    public ValidBetween mapToSobek(List<org.rutebanken.netex.model.ValidBetween> validBetweenList) {
+    public ValidBetween mapToSobek(List<org.entur.netex2.model.ValidBetween> validBetweenList) {
         if (validBetweenList == null || validBetweenList.isEmpty()) {
             return null;
         }
@@ -24,7 +24,7 @@ public abstract class ValidBetweenListConverter {
     /**
      * Converts a single ValidBetween to a list.
      */
-    public List<org.rutebanken.netex.model.ValidBetween> mapToNetex(ValidBetween validBetween) {
+    public List<org.entur.netex2.model.ValidBetween> mapToNetex(ValidBetween validBetween) {
         if (validBetween == null) {
             return null;
         }

@@ -1,9 +1,9 @@
 package org.rutebanken.sobek.netex.mapping.mapstruct.deckplan;
 
 import org.mapstruct.*;
-import org.rutebanken.netex.model.SpotRow;
-import org.rutebanken.netex.model.SpotRow_VersionStructure;
-import org.rutebanken.netex.model.SpotRows_RelStructure;
+import org.entur.netex2.model.SpotRow;
+import org.entur.netex2.model.SpotRow_VersionStructure;
+import org.entur.netex2.model.SpotRows_RelStructure;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.rutebanken.sobek.netex.mapping.mapstruct.EntityInVersionMapper;

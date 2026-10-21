@@ -13,9 +13,9 @@ import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.rutebanken.netex.model.PublicationDeliveryStructure;
-import org.rutebanken.netex.model.ResourceFrame;
-import org.rutebanken.netex.model.VehicleType;
+import org.entur.netex2.model.PublicationDeliveryStructure;
+import org.entur.netex2.model.ResourceFrame;
+import org.entur.netex2.model.VehicleType;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -54,18 +54,18 @@ class VehicleTypeImportIT {
 
     ResourceFrame responseFrame =
         response.getDataObjects().getCompositeFrameOrCommonFrame().stream()
-            .map(jaxb -> jaxb.getValue())
+            .map(JAXBElement::getValue)
             .filter(ResourceFrame.class::isInstance)
             .map(ResourceFrame.class::cast)
             .findFirst()
             .orElseThrow(() -> new AssertionError("No ResourceFrame in response"));
 
     assertThat(responseFrame.getVehicleTypes()).isNotNull();
-    assertThat(responseFrame.getVehicleTypes().getTransportType_Dummy()).hasSize(1);
+    assertThat(responseFrame.getVehicleTypes().getTransportType()).hasSize(1);
 
     VehicleType imported =
         (VehicleType)
-            responseFrame.getVehicleTypes().getTransportType_Dummy().getFirst().getValue();
+            responseFrame.getVehicleTypes().getTransportType().getFirst().getValue();
 
     assertThat(imported.getId()).startsWith("NMR:VehicleType:");
     assertThat(imported.getVersion()).isEqualTo("1");
@@ -105,18 +105,18 @@ class VehicleTypeImportIT {
 
         ResourceFrame responseFrame =
                 response.getDataObjects().getCompositeFrameOrCommonFrame().stream()
-                        .map(jaxb -> jaxb.getValue())
+                        .map(JAXBElement::getValue)
                         .filter(ResourceFrame.class::isInstance)
                         .map(ResourceFrame.class::cast)
                         .findFirst()
                         .orElseThrow(() -> new AssertionError("No ResourceFrame in response"));
 
         assertThat(responseFrame.getVehicleTypes()).isNotNull();
-        assertThat(responseFrame.getVehicleTypes().getTransportType_Dummy()).hasSize(2);
+        assertThat(responseFrame.getVehicleTypes().getTransportType()).hasSize(2);
 
         VehicleType imported =
                 (VehicleType)
-                        responseFrame.getVehicleTypes().getTransportType_Dummy().getFirst().getValue();
+                        responseFrame.getVehicleTypes().getTransportType().getFirst().getValue();
 
         assertThat(imported.getId()).startsWith("AKT:VehicleType:");
         assertThat(imported.getName().getContent()).hasSize(1);

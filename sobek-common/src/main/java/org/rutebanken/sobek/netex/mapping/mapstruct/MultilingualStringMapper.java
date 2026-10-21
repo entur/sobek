@@ -3,9 +3,9 @@ package org.rutebanken.sobek.netex.mapping.mapstruct;
 
 import jakarta.xml.bind.JAXBElement;
 import org.mapstruct.Mapper;
-import org.rutebanken.netex.model.MultilingualString;
-import org.rutebanken.netex.model.ObjectFactory;
-import org.rutebanken.netex.model.TextType;
+import org.entur.netex2.model.MultilingualString;
+import org.entur.netex2.model.ObjectFactory;
+import org.entur.netex2.model.TextType;
 import org.rutebanken.sobek.model.EmbeddableMultilingualString;
 
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * MapStruct mapper for MultilingualString conversions.
  * Handles mapping between:
- * - NeTEx: org.rutebanken.netex.model.MultilingualString (with List of values per language)
+ * - NeTEx: org.entur.netex2.model.MultilingualString (with List of values per language)
  * - Sobek: org.rutebanken.sobek.model.EmbeddableMultilingualString (single value and language)
  *
  * Note: NeTEx MultilingualString can contain multiple language variants, but Sobek's

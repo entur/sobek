@@ -3,7 +3,7 @@ package org.rutebanken.sobek.netex.mapping.mapstruct;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
-import org.rutebanken.netex.model.SchematicMap;
+import org.entur.netex2.model.SchematicMap;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 

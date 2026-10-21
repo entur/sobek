@@ -50,7 +50,7 @@ public class VehicleModelImporter {
         this.mappingContext = mappingContext;
     }
 
-    public List<org.rutebanken.netex.model.VehicleModel> importVehicleModels(List<VehicleModel> vehicleModels, AtomicInteger vehicleModelsCounter) {
+    public List<org.entur.netex2.model.VehicleModel> importVehicleModels(List<VehicleModel> vehicleModels, AtomicInteger vehicleModelsCounter) {
 
         logger.info("Importing {} incoming vehicle types", vehicleModels.size());
 

@@ -2,9 +2,9 @@ package org.rutebanken.sobek.netex.mapping.mapstruct;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.rutebanken.netex.model.KeyListStructure;
-import org.rutebanken.netex.model.KeyValueStructure;
-import org.rutebanken.netex.model.VehicleType;
+import org.entur.netex2.model.KeyListStructure;
+import org.entur.netex2.model.KeyValueStructure;
+import org.entur.netex2.model.VehicleType;
 import org.rutebanken.sobek.netex.id.NetexIdHelper;
 import org.rutebanken.sobek.netex.id.ValidPrefixList;
 import org.rutebanken.sobek.netex.util.PublicationDeliveryHelper;
@@ -51,7 +51,7 @@ public class DataManagedObjectStructureMapperTest {
     @Test
     void testMapToSobek_BasicProperties() {
         // Given
-        org.rutebanken.netex.model.VehicleType netexEntity = new org.rutebanken.netex.model.VehicleType();
+        org.entur.netex2.model.VehicleType netexEntity = new org.entur.netex2.model.VehicleType();
         netexEntity.setId("NMR:VehicleType:123");
         netexEntity.setVersion("1");
 
@@ -68,7 +68,7 @@ public class DataManagedObjectStructureMapperTest {
     @Test
     void testMapToSobek_WithVersionAny() {
         // Given
-        org.rutebanken.netex.model.VehicleType netexEntity = new org.rutebanken.netex.model.VehicleType();
+        org.entur.netex2.model.VehicleType netexEntity = new org.entur.netex2.model.VehicleType();
         netexEntity.setId("NMR:VehicleType:123");
         netexEntity.setVersion("any");
 
@@ -84,7 +84,7 @@ public class DataManagedObjectStructureMapperTest {
     @Test
     void testMapToSobek_WithChangedBy() {
         // Given
-        org.rutebanken.netex.model.VehicleType netexEntity = new org.rutebanken.netex.model.VehicleType();
+        org.entur.netex2.model.VehicleType netexEntity = new org.entur.netex2.model.VehicleType();
         netexEntity.setId("NMR:VehicleType:123");
         netexEntity.setVersion("1");
 
@@ -108,7 +108,7 @@ public class DataManagedObjectStructureMapperTest {
     @Test
     void testMapToSobek_WithVersionComment() {
         // Given
-        org.rutebanken.netex.model.VehicleType netexEntity = new org.rutebanken.netex.model.VehicleType();
+        org.entur.netex2.model.VehicleType netexEntity = new org.entur.netex2.model.VehicleType();
         netexEntity.setId("NMR:VehicleType:123");
         netexEntity.setVersion("1");
 
@@ -137,7 +137,7 @@ public class DataManagedObjectStructureMapperTest {
         sobekEntity.setVersion(2L);
 
         // When
-        org.rutebanken.netex.model.VehicleType netexEntity = new org.rutebanken.netex.model.VehicleType();
+        org.entur.netex2.model.VehicleType netexEntity = new org.entur.netex2.model.VehicleType();
         mapper.mapToNetex(sobekEntity, netexEntity, context);
 
         // Then
@@ -155,7 +155,7 @@ public class DataManagedObjectStructureMapperTest {
         sobekEntity.setVersionComment("Updated version");
 
         // When
-        org.rutebanken.netex.model.VehicleType netexEntity = new org.rutebanken.netex.model.VehicleType();
+        org.entur.netex2.model.VehicleType netexEntity = new org.entur.netex2.model.VehicleType();
         mapper.mapToNetex(sobekEntity, netexEntity, context);
 
         // Then
@@ -178,7 +178,7 @@ public class DataManagedObjectStructureMapperTest {
         sobekEntity.setVersionComment(null);
 
         // When
-        org.rutebanken.netex.model.VehicleType netexEntity = new org.rutebanken.netex.model.VehicleType();
+        org.entur.netex2.model.VehicleType netexEntity = new org.entur.netex2.model.VehicleType();
         mapper.mapToNetex(sobekEntity, netexEntity, context);
 
         // Then
@@ -196,7 +196,7 @@ public class DataManagedObjectStructureMapperTest {
         sobekEntity.setChangedBy("testuser@example.com");
 
         // When
-        org.rutebanken.netex.model.VehicleType netexEntity = new org.rutebanken.netex.model.VehicleType();
+        org.entur.netex2.model.VehicleType netexEntity = new org.entur.netex2.model.VehicleType();
         mapper.mapToNetex(sobekEntity, netexEntity, context);
 
         // Then
@@ -211,7 +211,7 @@ public class DataManagedObjectStructureMapperTest {
     @Test
     void testUpdateSobekFromNetex() {
         // Given
-        org.rutebanken.netex.model.VehicleType netexEntity = new org.rutebanken.netex.model.VehicleType();
+        org.entur.netex2.model.VehicleType netexEntity = new org.entur.netex2.model.VehicleType();
         netexEntity.setId("NMR:VehicleType:789");
         netexEntity.setVersion("3");
 
@@ -240,7 +240,7 @@ public class DataManagedObjectStructureMapperTest {
     @Test
     void testMapToSobek_WithMultipleKeyValues() {
         // Given
-        org.rutebanken.netex.model.VehicleType netexEntity = new org.rutebanken.netex.model.VehicleType();
+        org.entur.netex2.model.VehicleType netexEntity = new org.entur.netex2.model.VehicleType();
         netexEntity.setId("NMR:VehicleType:999");
         netexEntity.setVersion("1");
 
@@ -278,7 +278,7 @@ public class DataManagedObjectStructureMapperTest {
         sobekEntity.addKeyValue("customKey2", "customValue");
 
         // When
-        org.rutebanken.netex.model.VehicleType netexEntity = new org.rutebanken.netex.model.VehicleType();
+        org.entur.netex2.model.VehicleType netexEntity = new org.entur.netex2.model.VehicleType();
         mapper.mapToNetex(sobekEntity, netexEntity, context);
 
         // Then
@@ -306,7 +306,7 @@ public class DataManagedObjectStructureMapperTest {
     @Test
     void testMapToSobek_NullKeyList() {
         // Given
-        org.rutebanken.netex.model.VehicleType netexEntity = new org.rutebanken.netex.model.VehicleType();
+        org.entur.netex2.model.VehicleType netexEntity = new org.entur.netex2.model.VehicleType();
         netexEntity.setId("NMR:VehicleType:111");
         netexEntity.setVersion("1");
         netexEntity.setKeyList(null);
@@ -323,7 +323,7 @@ public class DataManagedObjectStructureMapperTest {
     @Test
     void testMapToSobek_NullKeyList_InvalidPrefix() {
         // Given
-        org.rutebanken.netex.model.VehicleType netexEntity = new org.rutebanken.netex.model.VehicleType();
+        org.entur.netex2.model.VehicleType netexEntity = new org.entur.netex2.model.VehicleType();
         netexEntity.setId("BS:VehicleType:111");
         netexEntity.setVersion("1");
         netexEntity.setKeyList(null);
@@ -348,7 +348,7 @@ public class DataManagedObjectStructureMapperTest {
         sobekEntity.setChangedBy("admin@example.com");
 
         // When
-        org.rutebanken.netex.model.VehicleType netexEntity = new org.rutebanken.netex.model.VehicleType();
+        org.entur.netex2.model.VehicleType netexEntity = new org.entur.netex2.model.VehicleType();
         mapper.mapToNetex(sobekEntity, netexEntity, context);
 
         // Then
@@ -388,7 +388,7 @@ public class DataManagedObjectStructureMapperTest {
         org.rutebanken.sobek.model.vehicle.Vehicle sobekVehicle = new org.rutebanken.sobek.model.vehicle.Vehicle();
         sobekVehicle.setChangedBy("me");
 
-        org.rutebanken.netex.model.Vehicle netexVehicle = new org.rutebanken.netex.model.Vehicle();
+        org.entur.netex2.model.Vehicle netexVehicle = new org.entur.netex2.model.Vehicle();
         mapper.mapToNetex(sobekVehicle, netexVehicle, context);
         assertThat(publicationDeliveryHelper.getValueByKey(netexVehicle, CHANGED_BY)).isNull();
     }
@@ -398,7 +398,7 @@ public class DataManagedObjectStructureMapperTest {
 
         String changedBy = "someone";
 
-        org.rutebanken.netex.model.Vehicle netexVehicle = new org.rutebanken.netex.model.Vehicle();
+        org.entur.netex2.model.Vehicle netexVehicle = new org.entur.netex2.model.Vehicle();
         netexVehicle.withKeyList(new KeyListStructure()
                 .withKeyValue(new KeyValueStructure()
                         .withKey(CHANGED_BY)
@@ -417,7 +417,7 @@ public class DataManagedObjectStructureMapperTest {
         org.rutebanken.sobek.model.vehicle.Vehicle sobekVehicle = new org.rutebanken.sobek.model.vehicle.Vehicle();
         sobekVehicle.setVersionComment("good changes");
 
-        org.rutebanken.netex.model.Vehicle netexVehicle = new org.rutebanken.netex.model.Vehicle();
+        org.entur.netex2.model.Vehicle netexVehicle = new org.entur.netex2.model.Vehicle();
         mapper.mapToNetex(sobekVehicle, netexVehicle, context);
 
         assertThat(publicationDeliveryHelper.getValueByKey(netexVehicle, VERSION_COMMENT)).isEqualTo(sobekVehicle.getVersionComment());
@@ -428,7 +428,7 @@ public class DataManagedObjectStructureMapperTest {
 
         String comment = "some change";
 
-        org.rutebanken.netex.model.Vehicle netexVehicle = new org.rutebanken.netex.model.Vehicle();
+        org.entur.netex2.model.Vehicle netexVehicle = new org.entur.netex2.model.Vehicle();
         netexVehicle.withKeyList(new KeyListStructure()
                 .withKeyValue(new KeyValueStructure()
                         .withKey(VERSION_COMMENT)
@@ -448,7 +448,7 @@ public class DataManagedObjectStructureMapperTest {
         org.rutebanken.sobek.model.vehicle.Vehicle sobekVehicle = new org.rutebanken.sobek.model.vehicle.Vehicle();
         sobekVehicle.setChangedBy("me");
 
-        org.rutebanken.netex.model.Vehicle netexVehicle = new org.rutebanken.netex.model.Vehicle();
+        org.entur.netex2.model.Vehicle netexVehicle = new org.entur.netex2.model.Vehicle();
         mapper.mapToNetex(sobekVehicle, netexVehicle, context);
         assertNull(publicationDeliveryHelper.getValueByKey(netexVehicle, CHANGED_BY));
     }

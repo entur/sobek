@@ -4,7 +4,7 @@ package org.rutebanken.sobek.netex.mapping.context;
 import jakarta.xml.bind.JAXBElement;
 import lombok.Getter;
 import lombok.Setter;
-import org.rutebanken.netex.model.*;
+import org.entur.netex2.model.*;
 import org.rutebanken.sobek.model.vehicle.Deck;
 import org.rutebanken.sobek.model.vehicle.DeckPlan;
 import org.rutebanken.sobek.model.vehicle.DeckSpace;

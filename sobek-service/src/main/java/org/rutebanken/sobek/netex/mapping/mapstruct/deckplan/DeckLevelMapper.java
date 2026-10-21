@@ -1,8 +1,8 @@
 package org.rutebanken.sobek.netex.mapping.mapstruct.deckplan;
 
 import org.mapstruct.*;
-import org.rutebanken.netex.model.DeckLevel;
-import org.rutebanken.netex.model.DeckLevels_RelStructure;
+import org.entur.netex2.model.DeckLevel;
+import org.entur.netex2.model.DeckLevels_RelStructure;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.rutebanken.sobek.netex.mapping.mapstruct.*;

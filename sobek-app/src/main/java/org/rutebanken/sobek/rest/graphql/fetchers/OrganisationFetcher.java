@@ -17,7 +17,6 @@ package org.rutebanken.sobek.rest.graphql.fetchers;
 
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
-import org.rutebanken.netex.model.OrganisationTypeEnumeration;
 import org.rutebanken.sobek.auth.AuthorizationService;
 import org.rutebanken.sobek.repository.OrganisationRepository;
 import org.rutebanken.sobek.rest.graphql.helpers.FilterHelper;

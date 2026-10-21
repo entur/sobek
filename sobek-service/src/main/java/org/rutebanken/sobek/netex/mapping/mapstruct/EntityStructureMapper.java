@@ -4,7 +4,7 @@ package org.rutebanken.sobek.netex.mapping.mapstruct;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import org.rutebanken.netex.model.*;
+import org.entur.netex2.model.*;
 
 /**
  * Base mapper for handling ID mappings between NeTEx and Sobek entities.

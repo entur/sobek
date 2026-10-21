@@ -18,7 +18,7 @@ public interface PassengerCapacityMapper {
      */
     @DataManagedObjectStructureMapper.ToSobekMappings
     org.rutebanken.sobek.model.vehicle.PassengerCapacity mapPassengerCapacityToSobek(
-            org.rutebanken.netex.model.PassengerCapacityStructure source,
+            org.entur.netex2.model.PassengerCapacityStructure source,
             @Context MappingContext context
     );
 
@@ -26,7 +26,7 @@ public interface PassengerCapacityMapper {
      * Maps from Sobek entity back to NeTEx SchematicMap.
      */
     @DataManagedObjectStructureMapper.ToNetexMappings
-    org.rutebanken.netex.model.PassengerCapacityStructure mapPassengerCapacityToNetex(
+    org.entur.netex2.model.PassengerCapacityStructure mapPassengerCapacityToNetex(
             org.rutebanken.sobek.model.vehicle.PassengerCapacity source,
             @Context MappingContext context
     );
@@ -36,7 +36,7 @@ public interface PassengerCapacityMapper {
      */
     @DataManagedObjectStructureMapper.ToSobekMappings
     void updateSobekFromNetex(
-            org.rutebanken.netex.model.PassengerCapacityStructure source,
+            org.entur.netex2.model.PassengerCapacityStructure source,
             @MappingTarget org.rutebanken.sobek.model.vehicle.PassengerCapacity target,
             @Context MappingContext context
     );

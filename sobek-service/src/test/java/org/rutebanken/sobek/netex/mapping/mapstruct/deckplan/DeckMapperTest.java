@@ -2,8 +2,8 @@ package org.rutebanken.sobek.netex.mapping.mapstruct.deckplan;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.rutebanken.netex.model.Deck;
-import org.rutebanken.netex.model.MultilingualString;
+import org.entur.netex2.model.Deck;
+import org.entur.netex2.model.MultilingualString;
 import org.rutebanken.sobek.model.vehicle.DeckPlan;
 import org.rutebanken.sobek.netex.id.NetexIdHelper;
 import org.rutebanken.sobek.netex.id.ValidPrefixList;
@@ -37,16 +37,16 @@ org.rutebanken.sobek.model.vehicle.Deck> {
     SimplePointMapper simplePointMapper;
 
     protected DeckMapperTest() {
-        super(org.rutebanken.netex.model.Deck.class, org.rutebanken.sobek.model.vehicle.Deck.class);
+        super(org.entur.netex2.model.Deck.class, org.rutebanken.sobek.model.vehicle.Deck.class);
     }
 
     @Override
-    protected org.rutebanken.sobek.model.vehicle.Deck mapToSobek(org.rutebanken.netex.model.Deck source) {
+    protected org.rutebanken.sobek.model.vehicle.Deck mapToSobek(org.entur.netex2.model.Deck source) {
         return mapper.mapToSobek(source, context);
     }
 
     @Override
-    protected org.rutebanken.netex.model.Deck mapToNetex(org.rutebanken.sobek.model.vehicle.Deck source) {
+    protected org.entur.netex2.model.Deck mapToNetex(org.rutebanken.sobek.model.vehicle.Deck source) {
         return mapper.mapToNetex(source, context);
     }
 

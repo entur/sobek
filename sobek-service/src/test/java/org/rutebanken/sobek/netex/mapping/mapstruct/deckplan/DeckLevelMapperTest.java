@@ -1,8 +1,8 @@
 package org.rutebanken.sobek.netex.mapping.mapstruct.deckplan;
 
 import org.junit.jupiter.api.Test;
-import org.rutebanken.netex.model.DeckLevel;
-import org.rutebanken.netex.model.MultilingualString;
+import org.entur.netex2.model.DeckLevel;
+import org.entur.netex2.model.MultilingualString;
 import org.rutebanken.sobek.netex.mapping.mapstruct.DataManagedObjectStructureMapperTestBase;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,16 +18,16 @@ public class DeckLevelMapperTest extends DataManagedObjectStructureMapperTestBas
     DeckLevelMapper mapper;
 
     protected DeckLevelMapperTest() {
-        super(org.rutebanken.netex.model.DeckLevel.class, org.rutebanken.sobek.model.vehicle.DeckLevel.class);
+        super(org.entur.netex2.model.DeckLevel.class, org.rutebanken.sobek.model.vehicle.DeckLevel.class);
     }
 
     @Override
-    protected org.rutebanken.sobek.model.vehicle.DeckLevel mapToSobek(org.rutebanken.netex.model.DeckLevel source) {
+    protected org.rutebanken.sobek.model.vehicle.DeckLevel mapToSobek(org.entur.netex2.model.DeckLevel source) {
         return mapper.mapToSobek(source, context);
     }
 
     @Override
-    protected org.rutebanken.netex.model.DeckLevel mapToNetex(org.rutebanken.sobek.model.vehicle.DeckLevel source) {
+    protected org.entur.netex2.model.DeckLevel mapToNetex(org.rutebanken.sobek.model.vehicle.DeckLevel source) {
         return mapper.mapToNetex(source, context);
     }
 

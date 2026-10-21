@@ -1,9 +1,9 @@
 package org.rutebanken.sobek.netex.mapping.mapstruct.deckplan;
 
 import org.mapstruct.*;
-import org.rutebanken.netex.model.DeckSpaceCapacities_RelStructure;
-import org.rutebanken.netex.model.DeckSpaceCapacity;
-import org.rutebanken.netex.model.DeckSpaceCapacity_VersionedChildStructure;
+import org.entur.netex2.model.DeckSpaceCapacities_RelStructure;
+import org.entur.netex2.model.DeckSpaceCapacity;
+import org.entur.netex2.model.DeckSpaceCapacity_VersionedChildStructure;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.rutebanken.sobek.netex.mapping.mapstruct.EntityInVersionMapper;

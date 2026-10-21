@@ -17,7 +17,7 @@
 
 package org.rutebanken.sobek.organisation;
 
-import org.rutebanken.netex.model.OrganisationTypeEnumeration;
+import org.entur.netex2.model.OrganisationTypeEnumeration;
 import org.rutebanken.sobek.model.EmbeddableMultilingualString;
 
 public record Organisation(

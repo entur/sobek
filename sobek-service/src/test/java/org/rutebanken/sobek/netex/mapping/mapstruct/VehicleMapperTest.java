@@ -3,10 +3,10 @@ package org.rutebanken.sobek.netex.mapping.mapstruct;
 import jakarta.xml.bind.JAXBElement;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.rutebanken.netex.model.ObjectFactory;
-import org.rutebanken.netex.model.TransportTypeRefStructure;
-import org.rutebanken.netex.model.Vehicle;
-import org.rutebanken.netex.model.VehicleModelRefStructure;
+import org.entur.netex2.model.ObjectFactory;
+import org.entur.netex2.model.TransportTypeRefStructure;
+import org.entur.netex2.model.Vehicle;
+import org.entur.netex2.model.VehicleModelRefStructure;
 import org.rutebanken.sobek.model.vehicle.VehicleModel;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
 import org.rutebanken.sobek.netex.id.NetexIdHelper;
@@ -15,6 +15,7 @@ import org.rutebanken.sobek.repository.reference.ReferenceResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,7 +26,7 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest
 class VehicleMapperTest extends DataManagedObjectStructureMapperTestBase<
-    org.rutebanken.netex.model.Vehicle,
+    org.entur.netex2.model.Vehicle,
     org.rutebanken.sobek.model.vehicle.Vehicle> {
 
     @Autowired
@@ -46,16 +47,16 @@ class VehicleMapperTest extends DataManagedObjectStructureMapperTestBase<
     private OwnedEntityMapper ownedEntityMapper;
 
     protected VehicleMapperTest() {
-        super(org.rutebanken.netex.model.Vehicle.class, org.rutebanken.sobek.model.vehicle.Vehicle.class);
+        super(org.entur.netex2.model.Vehicle.class, org.rutebanken.sobek.model.vehicle.Vehicle.class);
     }
 
     @Override
-    protected org.rutebanken.sobek.model.vehicle.Vehicle mapToSobek(org.rutebanken.netex.model.Vehicle source) {
+    protected org.rutebanken.sobek.model.vehicle.Vehicle mapToSobek(org.entur.netex2.model.Vehicle source) {
         return mapper.mapToSobek(source, context);
     }
 
     @Override
-    protected org.rutebanken.netex.model.Vehicle mapToNetex(org.rutebanken.sobek.model.vehicle.Vehicle source) {
+    protected org.entur.netex2.model.Vehicle mapToNetex(org.rutebanken.sobek.model.vehicle.Vehicle source) {
         return mapper.mapToNetex(source, context);
     }
 
@@ -95,7 +96,7 @@ class VehicleMapperTest extends DataManagedObjectStructureMapperTestBase<
         netexVehicle.setRegistrationNumber("ABC123");
         netexVehicle.setChassisNumber("CHASSIS123");
         netexVehicle.setOperationalNumber("OP456");
-        netexVehicle.setRegistrationDate(LocalDateTime.of(2023, 1, 15, 0, 0));
+        netexVehicle.setRegistrationDate(LocalDate.of(2023, 1, 15));
 
         // Vehicle Model Reference
         VehicleModelRefStructure vehicleModelRef = new VehicleModelRefStructure();

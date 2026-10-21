@@ -4,7 +4,7 @@ package org.rutebanken.sobek.netex.mapping.mapstruct.equipment;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
-import org.rutebanken.netex.model.SeatEquipment;
+import org.entur.netex2.model.SeatEquipment;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.rutebanken.sobek.netex.mapping.mapstruct.DataManagedObjectStructureMapper;

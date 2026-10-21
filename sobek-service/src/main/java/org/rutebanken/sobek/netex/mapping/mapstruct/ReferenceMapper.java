@@ -1,6 +1,6 @@
 package org.rutebanken.sobek.netex.mapping.mapstruct;
 
-import org.rutebanken.netex.model.VersionOfObjectRefStructure;
+import org.entur.netex2.model.VersionOfObjectRefStructure;
 import org.rutebanken.sobek.model.DataManagedObjectStructure;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.rutebanken.sobek.repository.reference.ReferenceResolver;

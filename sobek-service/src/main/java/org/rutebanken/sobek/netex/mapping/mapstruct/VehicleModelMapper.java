@@ -5,9 +5,9 @@ import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import org.rutebanken.netex.model.ObjectFactory;
-import org.rutebanken.netex.model.TransportTypeRefStructure;
-import org.rutebanken.netex.model.VehicleModel;
+import org.entur.netex2.model.ObjectFactory;
+import org.entur.netex2.model.TransportTypeRefStructure;
+import org.entur.netex2.model.VehicleModel;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 

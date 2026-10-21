@@ -15,7 +15,6 @@
 
 package org.rutebanken.sobek.importer.converter;
 
-import org.rutebanken.sobek.model.DataManagedObjectStructure;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
 import org.rutebanken.sobek.netex.id.NetexIdHelper;
 import org.rutebanken.sobek.netex.id.ValidPrefixList;
@@ -28,7 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Transactional
 @Component
-public class VehicleTypeIdConverter extends GenericIdConverter<org.rutebanken.netex.model.VehicleType> {
+public class VehicleTypeIdConverter extends GenericIdConverter<org.entur.netex2.model.VehicleType> {
 
     public VehicleTypeIdConverter(ValidPrefixList validPrefixList, NetexIdHelper netexIdHelper, GenericEntityInVersionRepository genericEntityInVersionRepository) {
         super(validPrefixList, netexIdHelper, genericEntityInVersionRepository, VehicleType.class);

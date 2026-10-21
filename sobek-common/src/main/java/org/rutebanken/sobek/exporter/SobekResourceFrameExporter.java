@@ -15,10 +15,10 @@
 
 package org.rutebanken.sobek.exporter;
 
-import org.rutebanken.netex.model.LocaleStructure;
-import org.rutebanken.netex.model.MultilingualString;
-import org.rutebanken.netex.model.ResourceFrame;
-import org.rutebanken.netex.model.VersionFrameDefaultsStructure;
+import org.entur.netex2.model.LocaleStructure;
+import org.entur.netex2.model.MultilingualString;
+import org.entur.netex2.model.ResourceFrame;
+import org.entur.netex2.model.VersionFrameDefaultsStructure;
 import org.rutebanken.sobek.netex.id.NetexIdHelper;
 import org.rutebanken.sobek.time.ExportTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -3,7 +3,7 @@ package org.rutebanken.sobek.netex.mapping.mapstruct;
 import jakarta.xml.bind.JAXBElement;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
-import org.rutebanken.netex.model.ObjectFactory;
+import org.entur.netex2.model.ObjectFactory;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 
@@ -26,14 +26,14 @@ public interface PointRefStructureMapper {
      * Maps from NeTEx PointRefStructure to Sobek entity.
      */
     org.rutebanken.sobek.model.PointRefStructure mapToSobek(
-            org.rutebanken.netex.model.PointRefStructure source,
+            org.entur.netex2.model.PointRefStructure source,
             @Context MappingContext context
     );
 
     /**
      * Maps from Sobek entity back to NeTEx PointRefStructure.
      */
-    org.rutebanken.netex.model.PointRefStructure mapToNetex(
+    org.entur.netex2.model.PointRefStructure mapToNetex(
             org.rutebanken.sobek.model.PointRefStructure source,
             @Context MappingContext context
     );
@@ -42,7 +42,7 @@ public interface PointRefStructureMapper {
      * Maps a JAXBElement containing PointRefStructure from NeTEx to Sobek.
      */
     default JAXBElement<? extends org.rutebanken.sobek.model.PointRefStructure> mapJAXBElementToSobek(
-            JAXBElement<? extends org.rutebanken.netex.model.PointRefStructure> source,
+            JAXBElement<? extends org.entur.netex2.model.PointRefStructure> source,
             @Context MappingContext context
     ) {
         if (source == null || source.getValue() == null) {
@@ -57,14 +57,14 @@ public interface PointRefStructureMapper {
     /**
      * Maps a JAXBElement containing PointRefStructure from Sobek to NeTEx.
      */
-    default JAXBElement<? extends org.rutebanken.netex.model.PointRefStructure> mapJAXBElementToNetex(
+    default JAXBElement<? extends org.entur.netex2.model.PointRefStructure> mapJAXBElementToNetex(
             JAXBElement<? extends org.rutebanken.sobek.model.PointRefStructure> source,
             @Context MappingContext context
     ) {
         if (source == null || source.getValue() == null) {
             return null;
         }
-        org.rutebanken.netex.model.PointRefStructure mapped = mapToNetex(source.getValue(), context);
+        org.entur.netex2.model.PointRefStructure mapped = mapToNetex(source.getValue(), context);
         return OBJECT_FACTORY.createPointRef(mapped);
     }
 
@@ -72,7 +72,7 @@ public interface PointRefStructureMapper {
      * Maps a list of JAXBElement<PointRefStructure> from NeTEx to Sobek.
      */
     default List<JAXBElement<? extends org.rutebanken.sobek.model.PointRefStructure>> mapPointRefListToSobek(
-            List<JAXBElement<? extends org.rutebanken.netex.model.PointRefStructure>> source,
+            List<JAXBElement<? extends org.entur.netex2.model.PointRefStructure>> source,
             @Context MappingContext context
     ) {
         if (source == null) {
@@ -86,7 +86,7 @@ public interface PointRefStructureMapper {
     /**
      * Maps a list of JAXBElement<PointRefStructure> from Sobek to NeTEx.
      */
-    default List<JAXBElement<? extends org.rutebanken.netex.model.PointRefStructure>> mapPointRefListToNetex(
+    default List<JAXBElement<? extends org.entur.netex2.model.PointRefStructure>> mapPointRefListToNetex(
             List<JAXBElement<? extends org.rutebanken.sobek.model.PointRefStructure>> source,
             @Context MappingContext context
     ) {

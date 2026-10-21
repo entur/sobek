@@ -1,9 +1,9 @@
 package org.rutebanken.sobek.netex.mapping.mapstruct.deckplan;
 
 import org.mapstruct.*;
-import org.rutebanken.netex.model.PassengerEntrance;
-import org.rutebanken.netex.model.ObjectFactory;
-import org.rutebanken.netex.model.DeckEntrances_RelStructure;
+import org.entur.netex2.model.PassengerEntrance;
+import org.entur.netex2.model.ObjectFactory;
+import org.entur.netex2.model.DeckEntrances_RelStructure;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.rutebanken.sobek.netex.mapping.mapstruct.*;
@@ -75,7 +75,7 @@ public interface PassengerEntranceMapper {
             return new DeckEntrances_RelStructure();
         }
 
-        return new DeckEntrances_RelStructure().withDeckEntranceRefOrDeckEntrance_Dummy(source.stream()
+        return new DeckEntrances_RelStructure().withDeckEntranceRefOrDeckEntrance(source.stream()
                 .map(sobekEntrance -> OBJECT_FACTORY.createPassengerEntrance(mapToNetex(sobekEntrance, context)))
                 .collect(java.util.stream.Collectors.toList()));
     }
@@ -87,11 +87,11 @@ public interface PassengerEntranceMapper {
             DeckEntrances_RelStructure source,
             @Context MappingContext context
     ) {
-        if (source == null || source.getDeckEntranceRefOrDeckEntrance_Dummy() == null) {
+        if (source == null || source.getDeckEntranceRefOrDeckEntrance() == null) {
             return null;
         }
 
-        return source.getDeckEntranceRefOrDeckEntrance_Dummy().stream()
+        return source.getDeckEntranceRefOrDeckEntrance().stream()
                 .map(netexEntrance -> mapToSobek((PassengerEntrance) netexEntrance.getValue(), context))// TODO: Each item could be either PassengerEntrance or PassengerEntranceRef
                 .collect(java.util.stream.Collectors.toList());
     }

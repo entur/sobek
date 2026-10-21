@@ -108,9 +108,9 @@ public interface SpotAffinityMapper {
         }
 
         var locatableSpots = switch (locatableSpotRefStructure) {
-            case org.entur.netex2.model.PassengerSpotRefStructure passengerSpotRefStructure ->
+            case org.entur.netex2.model.PassengerSpotRefStructure ignored ->
                     passengerSpots;
-            case org.entur.netex2.model.LuggageSpotRefStructure luggageSpotRefStructure ->
+            case org.entur.netex2.model.LuggageSpotRefStructure ignored ->
                     luggageSpots;
             default -> null;
         };

@@ -3,6 +3,7 @@ package org.rutebanken.sobek.repository;
 import jakarta.persistence.*;
 import org.rutebanken.sobek.model.vehicle.AllPublicTransportModesEnumeration;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
+import org.rutebanken.sobek.model.vehicle.Vehicle;
 import org.rutebanken.sobek.repository.utils.QueryHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +14,9 @@ import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Repository
 public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
@@ -46,11 +49,6 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
             "WHERE vt.validBetween.fromDate <= :now " +
             "AND (vt.validBetween.toDate IS NULL OR vt.validBetween.toDate >= :now)";
 
-    /** Extra condition for filtering out expired vehicles (requires alias v). */
-    private static final String VEHICLE_CURRENT_COND =
-            " AND (v IS NULL OR (v.validBetween.fromDate <= :now " +
-            "AND (v.validBetween.toDate IS NULL OR v.validBetween.toDate >= :now)))";
-
     @Override
     public Page<VehicleType> findCurrentFiltered(String dataOwnerRef, List<String> netexIds, List<AllPublicTransportModesEnumeration> transportModes, String name, Pageable pageable) {
         Instant now = Instant.now();
@@ -65,20 +63,13 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
         }
         if(name != null && !name.isEmpty()) {
             name = "%" + QueryHelper.escapeForLike(name.toLowerCase()) + "%";
-            filterSuffix.append(" AND vt.name is not null and lower(vt.name.value) LIKE :name");
+            filterSuffix.append(" AND vt.name is not null and lower(vt.name.value) LIKE :name ESCAPE '\\'");
         }
         filterSuffix.append(" AND vt.dataOwnerRef = :dataOwnerRef");
 
-        String fetchJpql = "SELECT DISTINCT vt FROM VehicleType vt " +
-                "LEFT JOIN FETCH vt.vehicles v " +
-                "LEFT JOIN FETCH vt.passengerCapacity " +
-                VT_CURRENT_WHERE + VEHICLE_CURRENT_COND + filterSuffix +
-                " ORDER BY vt.id";
-
         if (pageable.isUnpaged()) {
-            TypedQuery<VehicleType> fetchQuery = entityManager.createQuery(fetchJpql, VehicleType.class);
-            setFilterParams(fetchQuery, dataOwnerRef, netexIds, transportModes, name, now);
-            return new PageImpl<>(fetchQuery.getResultList());
+            List<VehicleType> vehicleTypes = fetchVehicleTypesWithValidVehicles(dataOwnerRef, netexIds, transportModes, name, now, filterSuffix.toString(), null);
+            return new PageImpl<>(vehicleTypes);
         }
 
         // Count — no Vehicle JOIN, no DISTINCT needed
@@ -88,13 +79,10 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
         setFilterParams(countQuery, dataOwnerRef, netexIds, transportModes, name, now);
         long total = countQuery.getSingleResult();
 
-        // Fetch — in-memory pagination (HHH90003004) is acceptable for this small dataset
-        TypedQuery<VehicleType> fetchQuery = entityManager.createQuery(fetchJpql, VehicleType.class);
-        setFilterParams(fetchQuery, dataOwnerRef, netexIds, transportModes, name, now);
-        fetchQuery.setFirstResult((int) pageable.getOffset());
-        fetchQuery.setMaxResults(pageable.getPageSize());
+        // Fetch with pagination
+        List<VehicleType> vehicleTypes = fetchVehicleTypesWithValidVehicles(dataOwnerRef, netexIds, transportModes, name, now, filterSuffix.toString(), pageable);
 
-        return new PageImpl<>(fetchQuery.getResultList(), pageable, total);
+        return new PageImpl<>(vehicleTypes, pageable, total);
     }
 
     private void setFilterParams(Query query, String dataOwnerRef, List<String> netexIds, List<AllPublicTransportModesEnumeration> transportModes, String name, Instant now) {
@@ -116,10 +104,10 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
         Query query = entityManager.createNativeQuery("SELECT EXISTS (SELECT 1 FROM vehicle_type vt join deck_plan dp on vt.deck_plan_id=dp.id WHERE dp.netex_id = :deckPlanNetexId AND dp.version = :deckPlanVersion AND vt.from_date <= now() AND (vt.to_date IS NULL OR vt.to_date >= now()))");
         query.setParameter("deckPlanNetexId", deckPlanNetexId);
         query.setParameter("deckPlanVersion", deckPlanVersion);
-Object result = query.getSingleResult();
-boolean exists = (result instanceof Boolean b) ? b : ((Number) result).intValue() == 1;
-logger.debug("Valid VehicleType with deck plan {} exists: {}", deckPlanNetexId, exists);
-return exists;
+        Object result = query.getSingleResult();
+        boolean exists = (result instanceof Boolean b) ? b : ((Number) result).intValue() == 1;
+        logger.debug("Valid VehicleType with deck plan {} exists: {}", deckPlanNetexId, exists);
+        return exists;
     }
 
 
@@ -143,4 +131,69 @@ return exists;
         return fetchQuery.getResultList();
     }
 
+    /**
+     * Fetches VehicleTypes with their currently valid Vehicles using a two-step approach:
+     * 1. First query fetches the VehicleType IDs that meet the criteria
+     * 2. Second query fetches the VehicleTypes with their valid Vehicles in separate batches
+     */
+    private List<VehicleType> fetchVehicleTypesWithValidVehicles(
+        String dataOwnerRef,
+        List<String> netexIds,
+        List<AllPublicTransportModesEnumeration> transportModes,
+        String name,
+        Instant now,
+        String filterSuffix,
+        Pageable pageable) {
+
+        // Step 1: Get IDs of VehicleTypes that meet criteria
+        String idsJpql = "SELECT vt.id FROM VehicleType vt " +
+            VT_CURRENT_WHERE + filterSuffix +
+            " ORDER BY vt.id";
+
+        TypedQuery<Long> idsQuery = entityManager.createQuery(idsJpql, Long.class);
+        setFilterParams(idsQuery, dataOwnerRef, netexIds, transportModes, name, now);
+
+        if (pageable != null) {
+            idsQuery.setFirstResult((int) pageable.getOffset());
+            idsQuery.setMaxResults(pageable.getPageSize());
+        }
+
+        List<Long> vehicleTypeIds = idsQuery.getResultList();
+
+        if (vehicleTypeIds.isEmpty()) {
+            return List.of();
+        }
+
+        // Step 2: Fetch VehicleTypes with PassengerCapacity (no vehicles yet)
+        String fetchVtJpql = "SELECT DISTINCT vt FROM VehicleType vt " +
+            "LEFT JOIN FETCH vt.passengerCapacity " +
+            "WHERE vt.id IN :ids " +
+            "ORDER BY vt.id";
+
+        TypedQuery<VehicleType> fetchVtQuery = entityManager.createQuery(fetchVtJpql, VehicleType.class);
+        fetchVtQuery.setParameter("ids", vehicleTypeIds);
+        List<VehicleType> vehicleTypes = fetchVtQuery.getResultList();
+
+        // Step 3: Fetch only the currently valid Vehicles for these VehicleTypes
+        String fetchVehiclesJpql = "SELECT v FROM Vehicle v " +
+            "WHERE v.transportType.id IN :ids " +
+            "AND v.validBetween.fromDate <= :now " +
+            "AND (v.validBetween.toDate IS NULL OR v.validBetween.toDate >= :now)";
+
+        TypedQuery<Vehicle> fetchVehiclesQuery = entityManager.createQuery(fetchVehiclesJpql, Vehicle.class);
+        fetchVehiclesQuery.setParameter("ids", vehicleTypeIds);
+        fetchVehiclesQuery.setParameter("now", now);
+        List<Vehicle> vehicles = fetchVehiclesQuery.getResultList();
+
+        // Group vehicles by VehicleType ID
+        Map<Long, List<Vehicle>> vehiclesByTypeId = vehicles.stream()
+            .collect(Collectors.groupingBy(v -> v.getTransportType().getId()));
+
+        // Set the valid vehicles collection for each VehicleType
+        vehicleTypes.forEach(vt ->
+            vt.setVehicles(vehiclesByTypeId.getOrDefault(vt.getId(), new java.util.ArrayList<>()))
+        );
+
+        return vehicleTypes;
+    }
 }

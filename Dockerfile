@@ -1,14 +1,12 @@
-FROM eclipse-temurin:25-jre-alpine
-
+FROM eclipse-temurin:25-jre-alpine AS builder
 WORKDIR /deployments
 COPY target/sobek.jar sobek.jar
+RUN mkdir -p /deployments/data \
+    && chown -R 2000:2000 /deployments/data
 
-# Create group and user (Alpine syntax)
-RUN addgroup -g 2000 appuser \
-    && adduser -D -u 2000 -G appuser appuser \
-    && mkdir -p /deployments/data \
-    && chown -R appuser:appuser /deployments/data
-
-USER appuser
+FROM gcr.io/distroless/java25-debian13:nonroot
+WORKDIR /deployments
+COPY --from=builder --chown=nonroot:nonroot /deployments/sobek.jar sobek.jar
+COPY --from=builder --chown=nonroot:nonroot /deployments/data /deployments/data
 EXPOSE 8780
-CMD ["java", "-jar", "sobek.jar"]
+CMD ["sobek.jar"]

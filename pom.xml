@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.entur.ror</groupId>
         <artifactId>superpom</artifactId>
-        <version>6.5.0</version>
+        <version>7.1.0</version>
     </parent>
     <groupId>org.rutebanken.sobek</groupId>
     <artifactId>sobek-parent</artifactId>
@@ -62,7 +62,7 @@
         <prettier-java.version>2.1.0</prettier-java.version>
         <prettier-maven-plugin.version>0.22</prettier-maven-plugin.version>
         <plugin.prettier.goal>write</plugin.prettier.goal>
-        <flyway.version>11.14.1</flyway.version>
+        <flyway.version>13.10.3</flyway.version>
     </properties>
 
     <repositories>

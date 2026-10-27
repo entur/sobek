@@ -44,7 +44,7 @@
     </scm>
 
     <properties>
-        <java.version>21</java.version>
+        <java.version>25</java.version>
         <spring-cloud-gcp.version>8.2.4</spring-cloud-gcp.version>
         <geotools.version>35.2</geotools.version>
         <graphql-java.version>25.0</graphql-java.version>

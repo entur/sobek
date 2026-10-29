@@ -15,14 +15,14 @@ public class DefaultAuthorizationServiceTest {
     @Test
     void canEditAllEntities() {
         List<RoleAssignment> roleAssignments = RoleAssignmentListBuilder.builder().withAccessAllAreas().build();
-        DefaultAuthorizationService defaultAuthorizationService = new DefaultAuthorizationService(null,false, null);
+        DefaultAuthorizationService defaultAuthorizationService = new DefaultAuthorizationService(null,true, null);
         assertTrue(defaultAuthorizationService.verifyCanEditAllEntities(roleAssignments));
     }
 
     @Test
     void canEditAllEntitiesMissingRoleAssignment() {
         List<RoleAssignment> roleAssignments = RoleAssignmentListBuilder.builder().build();
-        DefaultAuthorizationService defaultAuthorizationService = new DefaultAuthorizationService(null,false, null);
+        DefaultAuthorizationService defaultAuthorizationService = new DefaultAuthorizationService(null,true, null);
         assertFalse(defaultAuthorizationService.verifyCanEditAllEntities(roleAssignments));
 
     }

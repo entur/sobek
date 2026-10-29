@@ -14,28 +14,8 @@ public class DummyAuthorizationService implements AuthorizationService {
     }
 
     @Override
-    public boolean canEditEntities(Collection<? extends EntityStructure> entities) {
-        return true;
-    }
-
-    @Override
     public void verifyCanEditEntities(Collection<? extends EntityStructure> entities) {
 
-    }
-
-    @Override
-    public void verifyCanDeleteEntities(Collection<? extends EntityStructure> entities) {
-
-    }
-
-    @Override
-    public boolean canDeleteEntity(EntityStructure entity) {
-        return true;
-    }
-
-    @Override
-    public boolean canEditEntity(EntityStructure entity) {
-        return true;
     }
 
     @Override
@@ -44,6 +24,16 @@ public class DummyAuthorizationService implements AuthorizationService {
     }
 
     @Override
+    public boolean isAdmin() {
+        return false;
+    }
+
+    @Override
     public List<String> getOrganisationRefsUserIsAuthorizedFor() { return null; }
+
+    @Override
+    public void verifyCanViewDataOwner(String dataOwnerRef) {
+
+    }
 
 }

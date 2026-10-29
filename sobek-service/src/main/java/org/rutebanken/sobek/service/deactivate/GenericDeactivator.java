@@ -23,10 +23,10 @@ import org.rutebanken.sobek.model.ValidBetween;
 import org.rutebanken.sobek.versioning.VersionCreator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.access.AccessDeniedException;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.function.Function;
 
 public class GenericDeactivator<T extends EntityInVersionStructure> {
@@ -70,9 +70,7 @@ public class GenericDeactivator<T extends EntityInVersionStructure> {
 
         if (previousVersion != null) {
             // Object Saver service should always check that the user is authorized
-            if(!authorizationService.canDeleteEntity(previousVersion)) {
-                throw new AccessDeniedException("User is not authorized to deactivate " + typeName + " " + netexId);
-            }
+            authorizationService.verifyCanEditEntities(List.of(previousVersion));
 
             if (previousVersion.getVersion() != expectedVersion) {
                 throw new ValidationException("The " + typeName + " " + netexId + " has a different version than expected. Expected version: " + expectedVersion + ", actual version: " + previousVersion.getVersion());

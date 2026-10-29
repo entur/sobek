@@ -74,7 +74,6 @@ class VehicleTypeDeactivatorTest {
         // Given
         when(vehicleTypeRepository.findFirstByNetexIdOrderByVersionDesc(NETEX_ID)).thenReturn(previousVersion);
         when(vehicleRepository.existsValidWithVehicleType(NETEX_ID, VERSION)).thenReturn(false);
-        when(authorizationService.canDeleteEntity(previousVersion)).thenReturn(true);
         when(versionCreator.createCopy(previousVersion, VehicleType.class)).thenReturn(nextVersion);
         when(vehicleTypeVersionedSaverService.saveNewVersion(eq(previousVersion), eq(nextVersion), any()))
                 .thenReturn(nextVersion);
@@ -91,7 +90,7 @@ class VehicleTypeDeactivatorTest {
 
         verify(usernameFetcher).getUserNameForAuthenticatedUser();
         verify(vehicleTypeRepository).findFirstByNetexIdOrderByVersionDesc(NETEX_ID);
-        verify(authorizationService).canDeleteEntity(previousVersion);
+        verify(authorizationService).verifyCanEditEntities(argThat(entities -> entities.contains(previousVersion)));
         verify(versionCreator).createCopy(previousVersion, VehicleType.class);
         verify(vehicleTypeVersionedSaverService).saveNewVersion(eq(previousVersion), eq(nextVersion), any(Instant.class));
     }
@@ -126,7 +125,7 @@ class VehicleTypeDeactivatorTest {
 
         assertEquals("Cannot find vehicle type to deactivate: " + NETEX_ID + ". No changes executed.", exception.getMessage());
         verify(vehicleTypeRepository).findFirstByNetexIdOrderByVersionDesc(NETEX_ID);
-        verify(authorizationService, never()).canDeleteEntity(any());
+        verify(authorizationService, never()).verifyCanEditEntities(anyCollection());
         verify(versionCreator, never()).createCopy(any(), any());
         verify(vehicleTypeVersionedSaverService, never()).saveNewVersion(any(), any(), any());
     }
@@ -135,15 +134,16 @@ class VehicleTypeDeactivatorTest {
     void deactivateVehicleType_UnauthorizedUser_ThrowsException() {
         // Given
         when(vehicleTypeRepository.findFirstByNetexIdOrderByVersionDesc(NETEX_ID)).thenReturn(previousVersion);
-        when(authorizationService.canDeleteEntity(previousVersion)).thenReturn(false);
+        doThrow(new AccessDeniedException("Insufficient privileges for operation"))
+            .when(authorizationService).verifyCanEditEntities(anyCollection());
 
         // When & Then
         AccessDeniedException exception = assertThrows(AccessDeniedException.class, () ->
                 vehicleTypeDeactivator.deactivateVehicleType(NETEX_ID, VERSION, futureDate)
         );
 
-        assertEquals("User is not authorized to deactivate vehicle type " + NETEX_ID, exception.getMessage());
-        verify(authorizationService).canDeleteEntity(previousVersion);
+        assertEquals("Insufficient privileges for operation", exception.getMessage());
+        verify(authorizationService).verifyCanEditEntities(argThat(entities -> entities.contains(previousVersion)));
         verify(versionCreator, never()).createCopy(any(), any());
         verify(vehicleTypeVersionedSaverService, never()).saveNewVersion(any(), any(), any());
     }
@@ -153,7 +153,6 @@ class VehicleTypeDeactivatorTest {
         // Given
         previousVersion.setVersion(5L);
         when(vehicleTypeRepository.findFirstByNetexIdOrderByVersionDesc(NETEX_ID)).thenReturn(previousVersion);
-        when(authorizationService.canDeleteEntity(previousVersion)).thenReturn(true);
 
         // When & Then
         ValidationException exception = assertThrows(ValidationException.class, () ->
@@ -163,7 +162,7 @@ class VehicleTypeDeactivatorTest {
         assertEquals("The vehicle type " + NETEX_ID + " has a different version than expected. Expected version: " + VERSION + ", actual version: " + previousVersion.getVersion(),
                 exception.getMessage());
         verify(vehicleTypeRepository).findFirstByNetexIdOrderByVersionDesc(NETEX_ID);
-        verify(authorizationService).canDeleteEntity(previousVersion);
+        verify(authorizationService).verifyCanEditEntities(argThat(entities -> entities.contains(previousVersion)));
         verify(versionCreator, never()).createCopy(any(), any());
         verify(vehicleTypeVersionedSaverService, never()).saveNewVersion(any(), any(), any());
     }
@@ -175,7 +174,6 @@ class VehicleTypeDeactivatorTest {
         previousVersion.setValidBetween(new ValidBetween(now.minus(365, ChronoUnit.DAYS), existingDeactivationDate));
 
         when(vehicleTypeRepository.findFirstByNetexIdOrderByVersionDesc(NETEX_ID)).thenReturn(previousVersion);
-        when(authorizationService.canDeleteEntity(previousVersion)).thenReturn(true);
 
         // When & Then
         ValidationException exception = assertThrows(ValidationException.class, () ->
@@ -184,7 +182,7 @@ class VehicleTypeDeactivatorTest {
 
         assertTrue(exception.getMessage().contains("already deactivated") ||
                 exception.getMessage().contains(NETEX_ID));
-        verify(authorizationService).canDeleteEntity(previousVersion);
+        verify(authorizationService).verifyCanEditEntities(argThat(entities -> entities.contains(previousVersion)));
         verify(versionCreator, never()).createCopy(any(), any());
         verify(vehicleTypeVersionedSaverService, never()).saveNewVersion(any(), any(), any());
     }
@@ -193,7 +191,6 @@ class VehicleTypeDeactivatorTest {
     void deactivateVehicleType_StillInUse_ThrowsException() {
         // Given
         when(vehicleTypeRepository.findFirstByNetexIdOrderByVersionDesc(NETEX_ID)).thenReturn(previousVersion);
-        when(authorizationService.canDeleteEntity(previousVersion)).thenReturn(true);
         when(vehicleRepository.existsValidWithVehicleType(NETEX_ID, VERSION)).thenReturn(true);
 
 
@@ -203,7 +200,7 @@ class VehicleTypeDeactivatorTest {
         );
 
         assertTrue(exception.getMessage().contains("still in use"));
-        verify(authorizationService).canDeleteEntity(previousVersion);
+        verify(authorizationService).verifyCanEditEntities(argThat(entities -> entities.contains(previousVersion)));
         verify(versionCreator, never()).createCopy(any(), any());
         verify(vehicleTypeVersionedSaverService, never()).saveNewVersion(any(), any(), any());
     }
@@ -217,7 +214,6 @@ class VehicleTypeDeactivatorTest {
 
         when(vehicleTypeRepository.findFirstByNetexIdOrderByVersionDesc(NETEX_ID)).thenReturn(previousVersion);
         when(vehicleRepository.existsValidWithVehicleType(NETEX_ID, VERSION)).thenReturn(false);
-        when(authorizationService.canDeleteEntity(previousVersion)).thenReturn(true);
         when(versionCreator.createCopy(previousVersion, VehicleType.class)).thenReturn(nextVersion);
         when(vehicleTypeVersionedSaverService.saveNewVersion(eq(previousVersion), eq(nextVersion), any(Instant.class)))
                 .thenReturn(nextVersion);
@@ -243,7 +239,6 @@ class VehicleTypeDeactivatorTest {
 
         when(vehicleTypeRepository.findFirstByNetexIdOrderByVersionDesc(NETEX_ID)).thenReturn(previousVersion);
         when(vehicleRepository.existsValidWithVehicleType(NETEX_ID, VERSION)).thenReturn(false);
-        when(authorizationService.canDeleteEntity(previousVersion)).thenReturn(true);
         when(versionCreator.createCopy(previousVersion, VehicleType.class)).thenReturn(nextVer);
         when(vehicleTypeVersionedSaverService.saveNewVersion(any(), any(), any()))
                 .thenReturn(nextVer);
@@ -267,7 +262,6 @@ class VehicleTypeDeactivatorTest {
         VehicleType nextVer = createVehicleType(netexId, 11L, now, futureDate);
 
         when(vehicleTypeRepository.findFirstByNetexIdOrderByVersionDesc(netexId)).thenReturn(prevVersion);
-        when(authorizationService.canDeleteEntity(prevVersion)).thenReturn(true);
         when(versionCreator.createCopy(prevVersion, VehicleType.class)).thenReturn(nextVer);
         lenient().when(vehicleTypeVersionedSaverService.saveNewVersion(eq(prevVersion), eq(nextVer), any()))
                 .thenReturn(nextVer);

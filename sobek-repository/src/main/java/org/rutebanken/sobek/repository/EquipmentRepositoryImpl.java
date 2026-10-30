@@ -53,7 +53,7 @@ public class EquipmentRepositoryImpl implements EquipmentRepositoryCustom {
         }
         if(name != null && !name.isEmpty()) {
             name = "%" + QueryHelper.escapeForLike(name.toLowerCase()) + "%";
-            filterSuffix.append(" AND (eq.name is not null and lower(eq.name.value) LIKE :name ESCAPE '\\'");
+            filterSuffix.append(" AND (eq.name is not null and lower(eq.name.value) LIKE :name ESCAPE '\\')");
         }
         // TODO: Add data owner ref filter - see https://github.com/entur/sobek/issues/226
 //        if(dataOwnerRef != null) {

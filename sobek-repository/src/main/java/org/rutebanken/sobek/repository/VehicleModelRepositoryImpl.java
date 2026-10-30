@@ -56,7 +56,7 @@ public class VehicleModelRepositoryImpl implements VehicleModelRepositoryCustom 
         }
         if(name != null && !name.isEmpty()) {
             name = "%" + QueryHelper.escapeForLike(name.toLowerCase()) + "%";
-            filterSuffix.append(" AND (vm.name is not null and lower(vm.name.value) LIKE :name ESCAPE '\\' or vm.transportType.name is not null and lower(vm.transportType.value) LIKE :name ESCAPE '\\'))");
+            filterSuffix.append(" AND (vm.name is not null and lower(vm.name.value) LIKE :name ESCAPE '\\' or vm.transportType.name is not null and lower(vm.transportType.name.value) LIKE :name ESCAPE '\\')");
         }
         if(dataOwnerRef != null) {
             filterSuffix.append(" AND vm.transportType.dataOwnerRef = :dataOwnerRef");

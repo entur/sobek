@@ -48,7 +48,6 @@ class VehicleExportIT {
         String importResponseXml =
                 given()
                         .contentType(ContentType.XML)
-                        .queryParam("dataOwner", DATA_OWNER)
                         .body(seedXml)
                         .when()
                         .post("/services/vehicles/netex")
@@ -95,6 +94,16 @@ class VehicleExportIT {
 
         ResourceFrame frame = extractResourceFrame(unmarshal(exportXml));
         assertThat(frame.getVehicles()).isNull();
+    }
+
+    @Test
+    void exportVehicle_withoutDataOwner_returnsBadRequest() {
+        given()
+                .accept(ContentType.XML)
+                .when()
+                .get("/services/vehicles/netex/vehicles/NMR:Vehicle:does-not-exist")
+                .then()
+                .statusCode(400);
     }
 
     private static Vehicle extractSingleVehicle(PublicationDeliveryStructure pd) {

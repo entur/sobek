@@ -27,8 +27,6 @@ class VehicleTypeImportIT {
 
   @LocalServerPort int port;
 
-  private static final String DATA_OWNER = SingleOrganisationAuthorizationConfiguration.DATA_OWNER;
-
   @BeforeEach
   void setUp() {
     RestAssured.port = port;
@@ -44,7 +42,6 @@ class VehicleTypeImportIT {
     String responseXml =
         given()
             .contentType("application/xml")
-            .queryParam("dataOwner", DATA_OWNER)
             .body(xml)
             .when()
             .post("/services/vehicles/netex")
@@ -95,7 +92,6 @@ class VehicleTypeImportIT {
         String responseXml =
                 given()
                         .contentType("application/xml")
-                        .queryParam("dataOwner", DATA_OWNER)
                         .body(xml)
                         .when()
                         .post("/services/vehicles/netex")

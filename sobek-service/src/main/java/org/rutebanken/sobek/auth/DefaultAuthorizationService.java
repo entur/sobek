@@ -92,6 +92,12 @@ public class DefaultAuthorizationService implements AuthorizationService {
 
     @Override
     public void verifyCanViewDataOwner(String dataOwnerRef) {
+
+        // If authorization disabled, allow all
+        if(!authorizationEnabled) {
+            return;
+        }
+
         // Admins can access all data
         if(isAdmin()) {
             return;

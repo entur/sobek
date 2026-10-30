@@ -97,6 +97,10 @@ public class DefaultAuthorizationService implements AuthorizationService {
             return;
         }
 
+        if(dataOwnerRef == null) {
+            throw new AccessDeniedException("Not authorized to access data across multiple organisations");
+        }
+
         List<String> authorizedRefs = getOrganisationRefsUserIsAuthorizedFor();
         // null means authorization is disabled -> all organisations allowed
         if (authorizedRefs != null && !authorizedRefs.contains(dataOwnerRef)) {

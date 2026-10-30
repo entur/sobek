@@ -19,13 +19,11 @@ import jakarta.inject.Inject;
 import jakarta.xml.bind.JAXBException;
 import org.rutebanken.helper.organisation.NotAuthenticatedException;
 import org.entur.netex2.model.PublicationDeliveryStructure;
-import org.rutebanken.sobek.importer.ImportType;
 import org.rutebanken.sobek.importer.PublicationDeliveryImporter;
 import org.rutebanken.sobek.netex.marshal.PublicationDeliveryUnmarshaller;
 import org.rutebanken.sobek.rest.ParameterDto.ImportParametersDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,7 +33,6 @@ import org.xml.sax.SAXException;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Set;
 
 /**
  * Import publication deliveries
@@ -52,18 +49,14 @@ public class VehicleImportController {
 
     private final PublicationDeliveryImporter publicationDeliveryImporter;
 
-    private final Set<ImportType> enabledImportTypes;
-
     @Inject
     public VehicleImportController(PublicationDeliveryUnmarshaller publicationDeliveryUnmarshaller,
                                  PublicationDeliveryStreamingOutput publicationDeliveryStreamingOutput,
-                                 PublicationDeliveryImporter publicationDeliveryImporter,
-                                 @Value("#{'${netex.import.enabled.types:ID_MATCH}'.split(',')}") Set<ImportType> enabledImportTypes) {
+                                 PublicationDeliveryImporter publicationDeliveryImporter) {
 
         this.publicationDeliveryUnmarshaller = publicationDeliveryUnmarshaller;
         this.publicationDeliveryStreamingOutput = publicationDeliveryStreamingOutput;
         this.publicationDeliveryImporter = publicationDeliveryImporter;
-        this.enabledImportTypes = enabledImportTypes;
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_XML_VALUE,
@@ -80,16 +73,6 @@ public class VehicleImportController {
         importParams.importType = importType;
         importParams.skipOutput = skipOutput;
         
-        ImportType effectiveImportType = safeGetImportType(importParams);
-        if (!enabledImportTypes.contains(effectiveImportType)) {
-            String error = "ImportType: " + effectiveImportType + " not enabled!";
-            logger.warn(error);
-            StreamingResponseBody errorBody = outputStream -> {
-                outputStream.write(error.getBytes(java.nio.charset.StandardCharsets.UTF_8));
-            };
-            return ResponseEntity.badRequest().body(errorBody);
-        }
-
         // Get InputStream directly from HttpServletRequest
         try (InputStream inputStream = request.getInputStream()) {
             PublicationDeliveryStructure incomingPublicationDelivery = publicationDeliveryUnmarshaller.unmarshal(inputStream);
@@ -112,15 +95,4 @@ public class VehicleImportController {
             }
         }
     }
-
-    /**
-     * Return specified ImportType or default value if not set.
-     */
-    private ImportType safeGetImportType(ImportParametersDto importParams) {
-        if (importParams == null || importParams.importType == null) {
-            return ImportType.valueOf(new ImportParametersDto().importType);
-        }
-        return ImportType.valueOf(importParams.importType);
-    }
-
 }

@@ -19,14 +19,19 @@ import org.entur.netex2.model.CompositeFrame;
 import org.entur.netex2.model.PublicationDeliveryStructure;
 import org.entur.netex2.model.ResourceFrame;
 import org.entur.netex2.model.Vehicle;
+import org.rutebanken.sobek.rest.netex.SingleOrganisationAuthorizationConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.annotation.Import;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@Import(SingleOrganisationAuthorizationConfiguration.class)
 class VehicleExportIT {
 
     @LocalServerPort int port;
+
+    private static final String DATA_OWNER = SingleOrganisationAuthorizationConfiguration.DATA_OWNER;
 
     @BeforeEach
     void setUp() {
@@ -43,7 +48,7 @@ class VehicleExportIT {
         String importResponseXml =
                 given()
                         .contentType(ContentType.XML)
-                        .queryParam("importType", "ID_MATCH")
+                        .queryParam("dataOwner", DATA_OWNER)
                         .body(seedXml)
                         .when()
                         .post("/services/vehicles/netex")
@@ -59,6 +64,7 @@ class VehicleExportIT {
         String exportXml =
                 given()
                         .accept(ContentType.XML)
+                        .queryParam("dataOwner", DATA_OWNER)
                         .when()
                         .get("/services/vehicles/netex/vehicles/" + importedVehicle.getId())
                         .then()
@@ -77,6 +83,7 @@ class VehicleExportIT {
         String exportXml =
                 given()
                         .accept(ContentType.XML)
+                        .queryParam("dataOwner", DATA_OWNER)
                         .when()
                         .get("/services/vehicles/netex/vehicles/NMR:Vehicle:does-not-exist")
                         .then()
@@ -94,7 +101,7 @@ class VehicleExportIT {
         ResourceFrame frame = extractResourceFrame(pd);
         assertThat(frame.getVehicles()).isNotNull();
         assertThat(frame.getVehicles().getVehicle()).hasSize(1);
-        return frame.getVehicles().getVehicle().get(0);
+        return frame.getVehicles().getVehicle().getFirst();
     }
 
     private static ResourceFrame extractResourceFrame(PublicationDeliveryStructure pd) {

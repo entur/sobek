@@ -22,12 +22,12 @@ public class VehicleExportController {
     private StreamingPublicationDelivery streamingPublicationDelivery;
 
     @GetMapping(produces = MediaType.APPLICATION_XML_VALUE + "; charset=UTF-8")
-    public ResponseEntity<StreamingResponseBody> getVehicleNetex() {
+    public ResponseEntity<StreamingResponseBody> getVehicleNetex(@ModelAttribute ExportParametersDto exportParams) {
         log.info("Exporting publication delivery.");
 
         StreamingResponseBody streamingResponseBody = outputStream -> {
             try {
-                streamingPublicationDelivery.streamVehicles(outputStream);
+                streamingPublicationDelivery.streamVehicles(exportParams.toExportParams(), outputStream);
             } catch (Exception e) {
                 log.warn("Could not stream composite frame. {}", e.getMessage(), e);
                 throw new RuntimeException(e);

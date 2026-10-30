@@ -63,14 +63,12 @@ public class VehicleImportController {
             produces = MediaType.APPLICATION_XML_VALUE)
     public ResponseEntity<StreamingResponseBody> importPublicationDelivery(
             HttpServletRequest request,
-            @RequestParam(required = false, defaultValue = "MERGE") String importType,
             @RequestParam(required = false, defaultValue = "false") boolean skipOutput) throws IOException, JAXBException, SAXException {
         
         logger.info("Received Netex publication delivery, starting to parse...");
         
         // Create ImportParametersDto from request parameters
         ImportParametersDto importParams = new ImportParametersDto();
-        importParams.importType = importType;
         importParams.skipOutput = skipOutput;
         
         // Get InputStream directly from HttpServletRequest

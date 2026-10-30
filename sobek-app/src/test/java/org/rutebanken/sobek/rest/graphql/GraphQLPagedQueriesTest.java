@@ -55,7 +55,6 @@ class GraphQLPagedQueriesTest {
             String xml = new String(in.readAllBytes(), StandardCharsets.UTF_8);
             given()
                 .contentType("application/xml")
-                .queryParam("importType", "ID_MATCH")
                 .body(xml)
                 .when()
                 .post("/services/vehicles/netex")

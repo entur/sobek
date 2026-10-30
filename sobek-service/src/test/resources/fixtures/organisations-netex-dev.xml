@@ -686,7 +686,7 @@
                     </ValidityPeriod>
                     <CountryRef ref="no">NO</CountryRef>
                 </Operator>
-                <Authority created="2023-06-20T00:00:00" version="24" id="NOG:Authority:cP4aPiJ7c39">
+                <Authority created="2023-06-20T00:00:00" version="24" id="AKT">
                     <PrivateCode type="organisationId">3</PrivateCode>
                     <CompanyNumber>994686011</CompanyNumber>
                     <Name>AtB</Name>

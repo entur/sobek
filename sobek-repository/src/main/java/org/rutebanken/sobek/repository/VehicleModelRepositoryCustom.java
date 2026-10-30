@@ -15,8 +15,15 @@
 
 package org.rutebanken.sobek.repository;
 
+import org.rutebanken.sobek.model.vehicle.AllPublicTransportModesEnumeration;
 import org.rutebanken.sobek.model.vehicle.VehicleModel;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 public interface VehicleModelRepositoryCustom extends DataManagedObjectStructureRepository<VehicleModel> {
+    Page<VehicleModel> findCurrentFiltered(String dataOwnerRef, List<String> netexIds, List<AllPublicTransportModesEnumeration> transportModes, String name, Pageable pageable);
+
 }
 

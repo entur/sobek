@@ -65,7 +65,9 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
             name = "%" + QueryHelper.escapeForLike(name.toLowerCase()) + "%";
             filterSuffix.append(" AND vt.name is not null and lower(vt.name.value) LIKE :name ESCAPE '\\'");
         }
-        filterSuffix.append(" AND vt.dataOwnerRef = :dataOwnerRef");
+        if(dataOwnerRef != null) {
+            filterSuffix.append(" AND vt.dataOwnerRef = :dataOwnerRef");
+        }
 
         if (pageable.isUnpaged()) {
             List<VehicleType> vehicleTypes = fetchVehicleTypesWithValidVehicles(dataOwnerRef, netexIds, transportModes, name, now, filterSuffix.toString(), null);
@@ -96,7 +98,9 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
         if(name != null && !name.isEmpty()) {
             query.setParameter("name", name);
         }
-        query.setParameter("dataOwnerRef", dataOwnerRef);
+        if(dataOwnerRef != null) {
+            query.setParameter("dataOwnerRef", dataOwnerRef);
+        }
     }
 
     @Override

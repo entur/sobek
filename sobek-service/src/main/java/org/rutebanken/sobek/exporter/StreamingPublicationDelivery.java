@@ -23,6 +23,7 @@ import org.entur.netex2.model.*;
 import org.entur.netex2.model.Frames_RelStructure;
 import org.entur.netex2.validation.NeTExValidator;
 import org.rutebanken.sobek.auth.AuthorizationService;
+import org.rutebanken.sobek.model.authorization.OwnedEntity;
 import org.rutebanken.sobek.model.job.ExportParams;
 import org.rutebanken.sobek.model.vehicle.*;
 import org.rutebanken.sobek.model.vehicle.DeckPlan;
@@ -178,8 +179,6 @@ public class StreamingPublicationDelivery {
 
         logger.info("Streaming export of deckplan initiated. Export params: {}, deckPlan ID: {}", exportParams, deckPlanId);
 
-        authorizationService.verifyCanViewDataOwner(exportParams.getDataOwner());
-
         org.entur.netex2.model.CompositeFrame netexCompositeFrame = sobekComositeFrameExporter.createCompositeFrame("Composite frame " + exportParams);
 
         logger.info("Mapping resource frame to netex model");
@@ -209,8 +208,6 @@ public class StreamingPublicationDelivery {
 
         logger.info("Streaming export of vehicle initiated. Export params: {}, Vehicle NeTEx id: {}", exportParams, vehicleNetexId);
 
-        authorizationService.verifyCanViewDataOwner(exportParams.getDataOwner());
-
         org.entur.netex2.model.CompositeFrame netexCompositeFrame = sobekComositeFrameExporter.createCompositeFrame("Composite frame " + exportParams);
 
         logger.info("Mapping resource frame to netex model");
@@ -230,19 +227,20 @@ public class StreamingPublicationDelivery {
         marshaller.marshal(netexObjectFactory.createPublicationDelivery(publicationDeliveryStructure), outputStream);
     }
 
+    /**
+     * An object owned by another data owner than the requested one is treated as not found.
+     */
+    private static boolean isOwnedBy(String dataOwnerRef, OwnedEntity entity) {
+        return entity != null && dataOwnerRef.equals(entity.getDataOwnerRef());
+    }
+
     private void prepareOneVehicle(String dataOwnerRef, org.entur.netex2.model.ResourceFrame resourceFrame, String vehicleNetexId) {
 
-        // Check if the user has access to the dataOwner requested
-        authorizationService.verifyCanViewDataOwner(dataOwnerRef);
-
         Vehicle vehicle = vehicleRepository.findFirstByNetexIdOrderByVersionDesc(vehicleNetexId);
-        if (vehicle == null) {
-            logger.info("No vehicle found for id {}", vehicleNetexId);
+        if (!isOwnedBy(dataOwnerRef, vehicle)) {
+            logger.info("No vehicle found for id {} and data owner {}", vehicleNetexId, dataOwnerRef);
             return;
         }
-
-        // Check if the user has access to the vehicle (the vehicle may be in a different data owner)
-        authorizationService.verifyCanViewDataOwner(vehicle.getDataOwnerRef());
 
         VehiclesInFrame_RelStructure vehiclesInFrame_relStructure = new VehiclesInFrame_RelStructure();
         List<org.entur.netex2.model.Vehicle> vehicles =
@@ -317,11 +315,7 @@ public class StreamingPublicationDelivery {
         List<DeckPlan> deckPlansInDb;
         if (deckPlanId != null) {
             DeckPlan deckPlan = deckPlanRepository.findFirstByNetexIdOrderByVersionDesc(deckPlanId);
-            deckPlansInDb = deckPlan != null ? Collections.singletonList(deckPlan) : Collections.emptyList();
-            // Check if the user has access to the deck plan (the deck plan may be in a different data owner)
-            if(deckPlan != null) {
-                authorizationService.verifyCanViewDataOwner(deckPlan.getDataOwnerRef());
-            }
+            deckPlansInDb = isOwnedBy(dataOwnerRef, deckPlan) ? Collections.singletonList(deckPlan) : Collections.emptyList();
         } else {
             deckPlansInDb = deckPlanRepository
                 .findCurrentFiltered(dataOwnerRef, null, null, null, Pageable.unpaged())

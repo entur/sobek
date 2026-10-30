@@ -11,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.rutebanken.sobek.auth.AuthorizationService;
 import org.rutebanken.sobek.model.job.ExportParams;
 import org.rutebanken.sobek.model.vehicle.DeckPlan;
+import org.rutebanken.sobek.model.vehicle.Vehicle;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.rutebanken.sobek.netex.mapping.mapstruct.VehicleMapper;
 import org.rutebanken.sobek.netex.mapping.mapstruct.VehicleModelMapper;
@@ -24,13 +25,11 @@ import org.rutebanken.sobek.repository.VehicleRepository;
 import org.rutebanken.sobek.repository.VehicleTypeRepository;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.AccessDeniedException;
 
 import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -152,29 +151,24 @@ class StreamingPublicationDeliveryTest {
         assertThat(out.toString()).contains("PublicationDelivery");
     }
 
-    // --- 3. access check on single-object export ---
+    // --- 3. single-object export: an object owned by another data owner is treated as not found ---
+    // The dataOwner requirement and access check are done by VehicleExportController, see VehicleExportIT
 
     @Test
-    void streamOneDeckPlan_userNotAuthorizedForDataOwner_isDenied() {
+    void streamOneDeckPlan_deckPlanOwnedByOtherDataOwner_isTreatedAsNotFound() throws Exception {
         DeckPlan deckPlan = new DeckPlan();
         deckPlan.setDataOwnerRef("OTHER:Authority:1");
         when(deckPlanRepository.findFirstByNetexIdOrderByVersionDesc("NMR:DeckPlan:1")).thenReturn(deckPlan);
-        doNothing().when(authorizationService).verifyCanViewDataOwner(eq(DATA_OWNER));
-        doThrow(new AccessDeniedException("Not authorized"))
-            .when(authorizationService).verifyCanViewDataOwner("OTHER:Authority:1");
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ExportParams exportParams = exportParamsFor(DATA_OWNER);
-
-        assertThatThrownBy(() -> streamingPublicationDelivery.streamOneDeckPlan(exportParams, "NMR:DeckPlan:1", out))
-            .isInstanceOf(AccessDeniedException.class);
+        streamingPublicationDelivery.streamOneDeckPlan(exportParamsFor(DATA_OWNER), "NMR:DeckPlan:1", out);
 
         verify(deckPlanMapper, never()).mapToNetex(any(), any());
-        assertThat(out.size()).isZero();
+        assertThat(out.toString()).contains("PublicationDelivery");
     }
 
     @Test
-    void streamOneDeckPlan_userAuthorizedForDataOwner_verifiesAccessAndExports() throws Exception {
+    void streamOneDeckPlan_deckPlanOwnedByRequestedDataOwner_exports() throws Exception {
         DeckPlan deckPlan = new DeckPlan();
         deckPlan.setDataOwnerRef(DATA_OWNER);
         when(deckPlanRepository.findFirstByNetexIdOrderByVersionDesc("NMR:DeckPlan:1")).thenReturn(deckPlan);
@@ -182,7 +176,31 @@ class StreamingPublicationDeliveryTest {
 
         streamingPublicationDelivery.streamOneDeckPlan(exportParamsFor(DATA_OWNER), "NMR:DeckPlan:1", new ByteArrayOutputStream());
 
-        verify(authorizationService, times(2)).verifyCanViewDataOwner(DATA_OWNER);
         verify(deckPlanMapper).mapToNetex(eq(deckPlan), any());
+    }
+
+    @Test
+    void streamOneVehicle_vehicleOwnedByOtherDataOwner_isTreatedAsNotFound() throws Exception {
+        Vehicle vehicle = new Vehicle();
+        vehicle.setDataOwnerRef("OTHER:Authority:1");
+        when(vehicleRepository.findFirstByNetexIdOrderByVersionDesc("NMR:Vehicle:1")).thenReturn(vehicle);
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        streamingPublicationDelivery.streamOneVehicle(exportParamsFor(DATA_OWNER), "NMR:Vehicle:1", out);
+
+        verify(vehicleMapper, never()).mapToNetex(any(), any());
+        assertThat(out.toString()).contains("PublicationDelivery");
+    }
+
+    @Test
+    void streamOneVehicle_vehicleOwnedByRequestedDataOwner_exports() throws Exception {
+        Vehicle vehicle = new Vehicle();
+        vehicle.setDataOwnerRef(DATA_OWNER);
+        when(vehicleRepository.findFirstByNetexIdOrderByVersionDesc("NMR:Vehicle:1")).thenReturn(vehicle);
+        when(vehicleMapper.mapToNetex(eq(vehicle), any())).thenReturn(new org.entur.netex2.model.Vehicle());
+
+        streamingPublicationDelivery.streamOneVehicle(exportParamsFor(DATA_OWNER), "NMR:Vehicle:1", new ByteArrayOutputStream());
+
+        verify(vehicleMapper).mapToNetex(eq(vehicle), any());
     }
 }

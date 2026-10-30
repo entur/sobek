@@ -19,7 +19,10 @@ import org.entur.netex2.model.CompositeFrame;
 import org.entur.netex2.model.PublicationDeliveryStructure;
 import org.entur.netex2.model.ResourceFrame;
 import org.entur.netex2.model.Vehicle;
+import org.rutebanken.sobek.repository.DeckPlanRepository;
+import org.rutebanken.sobek.repository.VehicleRepository;
 import org.rutebanken.sobek.rest.netex.SingleOrganisationAuthorizationConfiguration;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -32,6 +35,13 @@ class VehicleExportIT {
     @LocalServerPort int port;
 
     private static final String DATA_OWNER = SingleOrganisationAuthorizationConfiguration.DATA_OWNER;
+
+    /** A valid organisation the test user is not authorized for. */
+    private static final String OTHER_DATA_OWNER = "ATB";
+
+    @Autowired private VehicleRepository vehicleRepository;
+
+    @Autowired private DeckPlanRepository deckPlanRepository;
 
     @BeforeEach
     void setUp() {
@@ -104,6 +114,100 @@ class VehicleExportIT {
                 .get("/services/vehicles/netex/vehicles/NMR:Vehicle:does-not-exist")
                 .then()
                 .statusCode(400);
+    }
+
+    @Test
+    void exportDeckPlan_withoutDataOwner_returnsBadRequest() {
+        given()
+                .accept(ContentType.XML)
+                .when()
+                .get("/services/vehicles/netex/deckplans/NMR:DeckPlan:does-not-exist")
+                .then()
+                .statusCode(400);
+    }
+
+    @Test
+    void exportVehicle_dataOwnerUserIsNotAuthorizedFor_returnsSameForbiddenWhetherOrNotTheVehicleExists() {
+        saveVehicleOwnedBy(OTHER_DATA_OWNER, "ATB:Vehicle:forbidden-existing");
+
+        String existing = exportExpectingForbidden("/services/vehicles/netex/vehicles/ATB:Vehicle:forbidden-existing");
+        String missing = exportExpectingForbidden("/services/vehicles/netex/vehicles/ATB:Vehicle:does-not-exist");
+
+        assertThat(existing).isEqualTo(missing);
+    }
+
+    @Test
+    void exportDeckPlan_dataOwnerUserIsNotAuthorizedFor_returnsSameForbiddenWhetherOrNotTheDeckPlanExists() {
+        saveDeckPlanOwnedBy(OTHER_DATA_OWNER, "ATB:DeckPlan:forbidden-existing");
+
+        String existing = exportExpectingForbidden("/services/vehicles/netex/deckplans/ATB:DeckPlan:forbidden-existing");
+        String missing = exportExpectingForbidden("/services/vehicles/netex/deckplans/ATB:DeckPlan:does-not-exist");
+
+        assertThat(existing).isEqualTo(missing);
+    }
+
+    @Test
+    void exportVehicle_ownedByOtherDataOwner_isTreatedAsNotFound() throws Exception {
+        saveVehicleOwnedBy(OTHER_DATA_OWNER, "ATB:Vehicle:other-owner");
+
+        ResourceFrame frame = extractResourceFrame(unmarshal(
+                exportExpectingOk("/services/vehicles/netex/vehicles/ATB:Vehicle:other-owner")));
+
+        assertThat(frame.getVehicles()).isNull();
+    }
+
+    @Test
+    void exportDeckPlan_ownedByOtherDataOwner_isTreatedAsNotFound() throws Exception {
+        saveDeckPlanOwnedBy(OTHER_DATA_OWNER, "ATB:DeckPlan:other-owner");
+
+        ResourceFrame frame = extractResourceFrame(unmarshal(
+                exportExpectingOk("/services/vehicles/netex/deckplans/ATB:DeckPlan:other-owner")));
+
+        assertThat(frame.getDeckPlans()).isNull();
+    }
+
+    /** Saved directly, as the test user is not allowed to import data for other data owners. */
+    private void saveVehicleOwnedBy(String dataOwnerRef, String netexId) {
+        org.rutebanken.sobek.model.vehicle.Vehicle vehicle = new org.rutebanken.sobek.model.vehicle.Vehicle();
+        vehicle.setNetexId(netexId);
+        vehicle.setDataOwnerRef(dataOwnerRef);
+        vehicleRepository.save(vehicle);
+    }
+
+    /** Saved directly, as the test user is not allowed to import data for other data owners. */
+    private void saveDeckPlanOwnedBy(String dataOwnerRef, String netexId) {
+        org.rutebanken.sobek.model.vehicle.DeckPlan deckPlan = new org.rutebanken.sobek.model.vehicle.DeckPlan();
+        deckPlan.setNetexId(netexId);
+        deckPlan.setDataOwnerRef(dataOwnerRef);
+        deckPlanRepository.save(deckPlan);
+    }
+
+    /** Requests the export as the test user's own data owner. */
+    private static String exportExpectingOk(String path) {
+        return given()
+                .accept(ContentType.XML)
+                .queryParam("dataOwner", DATA_OWNER)
+                .when()
+                .get(path)
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .asString();
+    }
+
+    /** Requests the export as a data owner the test user is not authorized for. */
+    private static String exportExpectingForbidden(String path) {
+        return given()
+                .accept(ContentType.XML)
+                .queryParam("dataOwner", OTHER_DATA_OWNER)
+                .when()
+                .get(path)
+                .then()
+                .statusCode(403)
+                .extract()
+                .body()
+                .asString();
     }
 
     private static Vehicle extractSingleVehicle(PublicationDeliveryStructure pd) {

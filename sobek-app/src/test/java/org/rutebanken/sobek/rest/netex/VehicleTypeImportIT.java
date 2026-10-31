@@ -19,8 +19,10 @@ import org.entur.netex2.model.VehicleType;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.annotation.Import;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@Import(SingleOrganisationAuthorizationConfiguration.class)
 class VehicleTypeImportIT {
 
   @LocalServerPort int port;
@@ -40,7 +42,6 @@ class VehicleTypeImportIT {
     String responseXml =
         given()
             .contentType("application/xml")
-            .queryParam("importType", "ID_MATCH")
             .body(xml)
             .when()
             .post("/services/vehicles/netex")
@@ -91,7 +92,6 @@ class VehicleTypeImportIT {
         String responseXml =
                 given()
                         .contentType("application/xml")
-                        .queryParam("importType", "ID_MATCH")
                         .body(xml)
                         .when()
                         .post("/services/vehicles/netex")

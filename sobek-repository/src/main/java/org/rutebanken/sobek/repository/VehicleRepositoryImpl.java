@@ -76,7 +76,9 @@ public class VehicleRepositoryImpl implements VehicleRepositoryCustom {
             name = "%" + QueryHelper.escapeForLike(name.toLowerCase()) + "%";
             filterSuffix.append(" AND ((v.name is not null and lower(v.name.value) LIKE :name ESCAPE '\\') or (v.transportType is not null and v.transportType.name is not null and lower(v.transportType.name.value) LIKE :name ESCAPE '\\'))");
         }
-        filterSuffix.append(" AND v.dataOwnerRef = :dataOwnerRef and (v.transportType is null or v.transportType.dataOwnerRef = :dataOwnerRef)");
+        if(dataOwnerRef != null) {
+            filterSuffix.append(" AND v.dataOwnerRef = :dataOwnerRef and (v.transportType is null or v.transportType.dataOwnerRef = :dataOwnerRef)");
+        }
 
         String fetchJpql = "SELECT DISTINCT v FROM Vehicle v " +
                 "LEFT JOIN FETCH v.transportType vt WHERE " +
@@ -135,7 +137,9 @@ public class VehicleRepositoryImpl implements VehicleRepositoryCustom {
         if(name != null && !name.isEmpty()) {
             query.setParameter("name", name);
         }
-        query.setParameter("dataOwnerRef", dataOwnerRef);
+        if(dataOwnerRef != null) {
+            query.setParameter("dataOwnerRef", dataOwnerRef);
+        }
     }
 
     @Override

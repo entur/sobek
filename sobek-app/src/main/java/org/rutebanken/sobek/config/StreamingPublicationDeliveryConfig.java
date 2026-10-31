@@ -15,6 +15,7 @@
 
 package org.rutebanken.sobek.config;
 
+import org.rutebanken.sobek.auth.AuthorizationService;
 import org.rutebanken.sobek.exporter.*;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.rutebanken.sobek.netex.mapping.mapstruct.*;
@@ -70,6 +71,9 @@ public class StreamingPublicationDeliveryConfig {
     @Autowired
     private MappingContext mappingContext;
 
+    @Autowired
+    private AuthorizationService authorizationService;
+
 //    @Bean("asyncStreamingPublicationDelivery") TODO
 //    public StreamingPublicationDelivery asyncStreamingPublicationDelivery() throws IOException, SAXException {
 //        return createStreamingPublicationDelivery(validateAsyncExport);
@@ -82,6 +86,6 @@ public class StreamingPublicationDeliveryConfig {
 
     private StreamingPublicationDelivery createStreamingPublicationDelivery() {
         return new StreamingPublicationDelivery(vehicleRepository, vehicleTypeRepository, vehicleModelRepository, deckPlanRepository, equipmentRepository, publicationDeliveryCreator,
-                vehicleTypeMapper, equipmentMapper, vehicleMapper, deckPlanMapper, vehicleModelMapper, mappingContext, sobekResourceFrameExporter, sobekComositeFrameExporter );
+                vehicleTypeMapper, equipmentMapper, vehicleMapper, deckPlanMapper, vehicleModelMapper, authorizationService, mappingContext, sobekResourceFrameExporter, sobekComositeFrameExporter );
     }
 }

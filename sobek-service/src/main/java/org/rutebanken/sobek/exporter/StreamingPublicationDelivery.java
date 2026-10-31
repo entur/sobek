@@ -22,6 +22,8 @@ import jakarta.xml.bind.Marshaller;
 import org.entur.netex2.model.*;
 import org.entur.netex2.model.Frames_RelStructure;
 import org.entur.netex2.validation.NeTExValidator;
+import org.rutebanken.sobek.auth.AuthorizationService;
+import org.rutebanken.sobek.model.authorization.OwnedEntity;
 import org.rutebanken.sobek.model.job.ExportParams;
 import org.rutebanken.sobek.model.vehicle.*;
 import org.rutebanken.sobek.model.vehicle.DeckPlan;
@@ -37,6 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.xml.sax.SAXException;
@@ -76,6 +79,7 @@ public class StreamingPublicationDelivery {
     private final VehicleMapper vehicleMapper;
     private final DeckPlanMapper deckPlanMapper;
     private final VehicleModelMapper vehicleModelMapper;
+    private final AuthorizationService authorizationService;
 
     private final MappingContext mappingContext;
 
@@ -96,7 +100,7 @@ public class StreamingPublicationDelivery {
                                         EquipmentMapper equipmentMapper,
                                         VehicleMapper vehicleMapper,
                                         DeckPlanMapper deckPlanMapper,
-                                        VehicleModelMapper vehicleModelMapper,
+                                        VehicleModelMapper vehicleModelMapper, AuthorizationService authorizationService,
                                         MappingContext mappingContext,
                                         SobekResourceFrameExporter sobekResourceFrameExporter,
                                         SobekComositeFrameExporter sobekComositeFrameExporter
@@ -112,6 +116,7 @@ public class StreamingPublicationDelivery {
         this.vehicleMapper = vehicleMapper;
         this.deckPlanMapper = deckPlanMapper;
         this.vehicleModelMapper = vehicleModelMapper;
+        this.authorizationService = authorizationService;
         this.mappingContext = mappingContext;
         this.sobekResourceFrameExporter = sobekResourceFrameExporter;
         this.sobekComositeFrameExporter = sobekComositeFrameExporter;
@@ -129,7 +134,11 @@ public class StreamingPublicationDelivery {
         }
     }
 
-    public void streamVehicles(OutputStream outputStream) throws JAXBException, IOException, SAXException {
+    public void streamVehicles(ExportParams exportParams, OutputStream outputStream) throws JAXBException, IOException, SAXException {
+
+        logger.info("Streaming export of vehicles initiated. Export params: {}", exportParams);
+
+        authorizationService.verifyCanViewDataOwner(exportParams.getDataOwner());
 
         AtomicInteger mappedVehicleCount = new AtomicInteger();
         AtomicInteger mappedVehicleTypeCount = new AtomicInteger();
@@ -146,11 +155,11 @@ public class StreamingPublicationDelivery {
         netexCompositeFrame.withFrames(framesRelStructure);
 
         logger.info("Preparing scrollable iterators");
-        prepareVehicleTypes(mappedVehicleTypeCount, netexResourceFrame);
-        prepareVehicleModels(mappedVehicleModelCount, netexResourceFrame);
-        prepareVehicles(mappedVehicleCount, netexResourceFrame);
-        prepareDeckPlans(netexResourceFrame, null);
-        prepareEquipments(netexResourceFrame);
+        prepareVehicleTypes(exportParams.getDataOwner(), mappedVehicleTypeCount, netexResourceFrame);
+        prepareVehicleModels(exportParams.getDataOwner(), mappedVehicleModelCount, netexResourceFrame);
+        prepareVehicles(exportParams.getDataOwner(), mappedVehicleCount, netexResourceFrame);
+        prepareDeckPlans(exportParams.getDataOwner(), netexResourceFrame, null);
+        prepareEquipments(exportParams.getDataOwner(), netexResourceFrame);
 
         PublicationDeliveryStructure publicationDeliveryStructure = publicationDeliveryCreator.createPublicationDelivery(netexCompositeFrame);
 
@@ -180,7 +189,7 @@ public class StreamingPublicationDelivery {
         netexCompositeFrame.withFrames(framesRelStructure);
 
         logger.info("Preparing scrollable iterators");
-        prepareDeckPlans(netexResourceFrame, deckPlanId);
+        prepareDeckPlans(exportParams.getDataOwner(), netexResourceFrame, deckPlanId);
         //prepareEquipments(netexResourceFrame);
 
         PublicationDeliveryStructure publicationDeliveryStructure = publicationDeliveryCreator.createPublicationDelivery(netexCompositeFrame);
@@ -208,7 +217,7 @@ public class StreamingPublicationDelivery {
         framesRelStructure.withCommonFrame(new ObjectFactory().createResourceFrame(netexResourceFrame));
         netexCompositeFrame.withFrames(framesRelStructure);
 
-        prepareOneVehicle(netexResourceFrame, vehicleNetexId);
+        prepareOneVehicle(exportParams.getDataOwner(), netexResourceFrame, vehicleNetexId);
 
         PublicationDeliveryStructure publicationDeliveryStructure = publicationDeliveryCreator.createPublicationDelivery(netexCompositeFrame);
 
@@ -218,10 +227,18 @@ public class StreamingPublicationDelivery {
         marshaller.marshal(netexObjectFactory.createPublicationDelivery(publicationDeliveryStructure), outputStream);
     }
 
-    private void prepareOneVehicle(org.entur.netex2.model.ResourceFrame resourceFrame, String vehicleNetexId) {
+    /**
+     * An object owned by another data owner than the requested one is treated as not found.
+     */
+    private static boolean isOwnedBy(String dataOwnerRef, OwnedEntity entity) {
+        return entity != null && dataOwnerRef.equals(entity.getDataOwnerRef());
+    }
+
+    private void prepareOneVehicle(String dataOwnerRef, org.entur.netex2.model.ResourceFrame resourceFrame, String vehicleNetexId) {
+
         Vehicle vehicle = vehicleRepository.findFirstByNetexIdOrderByVersionDesc(vehicleNetexId);
-        if (vehicle == null) {
-            logger.info("No vehicle found for id {}", vehicleNetexId);
+        if (!isOwnedBy(dataOwnerRef, vehicle)) {
+            logger.info("No vehicle found for id {} and data owner {}", vehicleNetexId, dataOwnerRef);
             return;
         }
 
@@ -235,8 +252,10 @@ public class StreamingPublicationDelivery {
 
 
 
-    private void prepareVehicles(AtomicInteger mappedVehicleCount, org.entur.netex2.model.ResourceFrame resourceFrame) {
-        List<Vehicle> vehiclesInDb = vehicleRepository.findAll();
+    private void prepareVehicles(String dataOwnerRef, AtomicInteger mappedVehicleCount, org.entur.netex2.model.ResourceFrame resourceFrame) {
+        List<Vehicle> vehiclesInDb = vehicleRepository
+            .findCurrentFiltered(dataOwnerRef, null, null, null, Pageable.unpaged())
+            .getContent();
 
         if (!vehiclesInDb.isEmpty()) {
             logger.info("There are vehicles to export");
@@ -253,8 +272,10 @@ public class StreamingPublicationDelivery {
         }
     }
 
-    private void prepareVehicleTypes(AtomicInteger mappedVehicleTypeCount, org.entur.netex2.model.ResourceFrame resourceFrame) {
-        List<VehicleType> vehicleTypesInDb = vehicleTypeRepository.findAll();
+    private void prepareVehicleTypes(String dataOwnerRef, AtomicInteger mappedVehicleTypeCount, org.entur.netex2.model.ResourceFrame resourceFrame) {
+        List<VehicleType> vehicleTypesInDb = vehicleTypeRepository
+            .findCurrentFiltered(dataOwnerRef, null, null, null, Pageable.unpaged())
+            .getContent();
 
         if (!vehicleTypesInDb.isEmpty()) {
             logger.info("There are vehicle types to export");
@@ -271,8 +292,10 @@ public class StreamingPublicationDelivery {
         }
     }
 
-    private void prepareVehicleModels(AtomicInteger mappedVehicleModelCount, org.entur.netex2.model.ResourceFrame resourceFrame) {
-        List<VehicleModel> vehicleModelsInDb = vehicleModelRepository.findAll();
+    private void prepareVehicleModels(String dataOwnerRef, AtomicInteger mappedVehicleModelCount, org.entur.netex2.model.ResourceFrame resourceFrame) {
+        List<VehicleModel> vehicleModelsInDb = vehicleModelRepository
+            .findCurrentFiltered(dataOwnerRef, null, null, null, Pageable.unpaged())
+            .getContent();
 
         if (!vehicleModelsInDb.isEmpty()) {
             logger.info("There are vehicle models to export");
@@ -288,13 +311,15 @@ public class StreamingPublicationDelivery {
         }
     }
 
-    private void prepareDeckPlans(org.entur.netex2.model.ResourceFrame resourceFrame, String deckPlanId) {
+    private void prepareDeckPlans(String dataOwnerRef, org.entur.netex2.model.ResourceFrame resourceFrame, String deckPlanId) {
         List<DeckPlan> deckPlansInDb;
         if (deckPlanId != null) {
             DeckPlan deckPlan = deckPlanRepository.findFirstByNetexIdOrderByVersionDesc(deckPlanId);
-            deckPlansInDb = deckPlan != null ? Collections.singletonList(deckPlan) : Collections.emptyList();
+            deckPlansInDb = isOwnedBy(dataOwnerRef, deckPlan) ? Collections.singletonList(deckPlan) : Collections.emptyList();
         } else {
-            deckPlansInDb = deckPlanRepository.findAll();
+            deckPlansInDb = deckPlanRepository
+                .findCurrentFiltered(dataOwnerRef, null, null, null, Pageable.unpaged())
+                .getContent();
         }
 
         if (!deckPlansInDb.isEmpty()) {
@@ -311,9 +336,12 @@ public class StreamingPublicationDelivery {
         }
     }
 
-    private void prepareEquipments(org.entur.netex2.model.ResourceFrame resourceFrame) {
+    private void prepareEquipments(String dataOwnerRef, org.entur.netex2.model.ResourceFrame resourceFrame) {
 
-        List<Equipment> equipmentsInDb = equipmentRepository.findAll();
+        /* TODO: The equipment repository doesn't filter by dataOwner yet. */
+        List<Equipment> equipmentsInDb = equipmentRepository
+            .findCurrentFiltered(dataOwnerRef, null, null, Pageable.unpaged())
+            .getContent();
 
         if (!equipmentsInDb.isEmpty()) {
             logger.info("There are equipments to export");

@@ -17,6 +17,7 @@ package org.rutebanken.sobek.rest.graphql.fetchers;
 
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
+import org.rutebanken.sobek.auth.AuthorizationService;
 import org.rutebanken.sobek.model.vehicle.AllPublicTransportModesEnumeration;
 import org.rutebanken.sobek.repository.DeckPlanRepository;
 import org.rutebanken.sobek.rest.graphql.helpers.FilterHelper;
@@ -34,9 +35,11 @@ import static org.rutebanken.sobek.rest.graphql.GraphQLNames.DEFAULT_SIZE_VALUE;
 public class DeckPlanFetcher implements DataFetcher<Map<String, Object>> {
 
     private final DeckPlanRepository deckPlanRepository;
+    private final AuthorizationService authorizationService;
 
-    public DeckPlanFetcher(DeckPlanRepository deckPlanRepository) {
+    public DeckPlanFetcher(DeckPlanRepository deckPlanRepository, AuthorizationService authorizationService) {
         this.deckPlanRepository = deckPlanRepository;
+        this.authorizationService = authorizationService;
     }
 
     @Override
@@ -49,6 +52,7 @@ public class DeckPlanFetcher implements DataFetcher<Map<String, Object>> {
         String name = FilterHelper.getNameFromFilter(filter);
         List<AllPublicTransportModesEnumeration> modes = FilterHelper.getModesFromFilter(filter);
         String dataOwnerRef = FilterHelper.getDataOwnerRefFromFilter(filter);
+        authorizationService.verifyCanViewDataOwner(dataOwnerRef);
         var result = deckPlanRepository.findCurrentFiltered(dataOwnerRef, netexIds, modes, name, PageRequest.of(page, size));
         return PageResult.from(result, page, size);
     }

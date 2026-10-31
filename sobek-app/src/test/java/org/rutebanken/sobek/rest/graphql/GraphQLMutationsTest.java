@@ -49,7 +49,6 @@ class GraphQLMutationsTest {
             String xml = new String(in.readAllBytes(), StandardCharsets.UTF_8);
             given()
                     .contentType("application/xml")
-                    .queryParam("importType", "ID_MATCH")
                     .body(xml)
                     .when()
                     .post("/services/vehicles/netex")
@@ -105,7 +104,7 @@ class GraphQLMutationsTest {
         // Verify that the dummy vehicle was created and check some of it's data
         given()
                 .contentType(ContentType.JSON)
-                .body(gql("{ vehicles(page: 0, size: 10, filter: { netexIds: [ \"" + resultId + "\" ], dataOwnerRef: \"NOG:Authority:cP4aPiJ7c39\"  }) { content { netexId, registrationNumber, chassisNumber } totalElements page size } }"))
+                .body(gql("{ vehicles(page: 0, size: 10, filter: { netexIds: [ \"" + resultId + "\" ], dataOwnerRef: \"AKT\"  }) { content { netexId, registrationNumber, chassisNumber } totalElements page size } }"))
                 .when()
                 .post("/services/vehicles/graphql")
                 .then()
@@ -134,7 +133,7 @@ class GraphQLMutationsTest {
         // Create a dummy vehicle
         given()
                 .contentType(ContentType.JSON)
-                .body(gql(getFixtureContents("/fixtures/GraphQL_VehicleMutation1.QL").replace("NOG:Authority:cP4aPiJ7c39", "FAKE:Authority:cP4aPiJ7c39")))
+                .body(gql(getFixtureContents("/fixtures/GraphQL_VehicleMutation1.QL").replace("AKT", "FAKE:Authority:cP4aPiJ7c39")))
                 .when()
                 .post("/services/vehicles/graphql")
                 .then()

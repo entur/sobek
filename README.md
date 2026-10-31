@@ -236,8 +236,6 @@ server.compression.mime-types=application/json,application/xml,text/html,text/xm
 spring.jpa.hibernate.id.new_generator_mappings=true
 spring.jpa.hibernate.use-new-id-generator-mappings=true
 
-netex.import.enabled.types=MERGE,INITIAL,ID_MATCH,MATCH
-
 management.endpoints.web.exposure.include=info,env,metrics
 management.endpoints.prometheus.enabled=true
 management.metrics.endpoint.export.prometheus.enabled=true
@@ -393,17 +391,6 @@ Sobek will return the modified NeTEx structure with it's own NSR IDs. Original I
 ```shell
 curl -XPOST -H"Content-Type: application/xml" -d@my-nice-netex-file.xml http://localhost:1997/services/vehicles/netex
 ```
-
-### Importing with importType=INITIAL
-
-When importing with _importType=INITIAL_, a parallel stream will be created, spawning the original process. During import, user authorizations is checked, thus accessing SecurityContextHolder.
-By default, SecurityContextHolder use DEFAULT\_LOCAL\_STRATEGY. When using INITIAL importType, you should tell Spring to use MODE\_INHERITABLETHREADLOCAL for SecurityContextHolder, allowing Spring to duplicate Security Context in spawned threads.
-This can be done setting env variable :
-```shell
--Dspring.security.strategy=MODE_INHERITABLETHREADLOCAL
-```
-
-If not, the application may complain about user not being authenticated if Spring tries to check authorization in a spawned process
 
 ## GraphQL
 GraphQL endpoint is available on

@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.rutebanken.sobek.model.VersionOfObjectRefStructure;
 import org.rutebanken.sobek.model.vehicle.Vehicle;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
+import org.rutebanken.sobek.model.vehicle.VehicleTypeKindEnumeration;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.rutebanken.sobek.netex.mapping.mapstruct.VehicleMapper;
 import org.rutebanken.sobek.netex.mapping.mapstruct.VehicleTypeMapper;
@@ -72,6 +73,7 @@ public class ReferenceResolverTest  {
         org.entur.netex2.model.VehicleType input = new org.entur.netex2.model.VehicleType().withId("TST:VehicleType:1");
         var mappedVt = vehicleTypeMapper.mapToSobek(input, context);
         mappedVt.setDataOwnerRef("AKT");
+        mappedVt.setVehicleTypeKind(VehicleTypeKindEnumeration.PHYSICAL);
 
         VehicleType vehicleType = vehicleTypeVersionedSaverService.saveNewVersion(mappedVt);
 

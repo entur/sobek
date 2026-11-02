@@ -30,6 +30,11 @@ public class ExportParams {
 
     private String dataOwner;
 
+    /**
+     * Which kinds of vehicle types to export. Required by the full vehicle export.
+     */
+    private VehicleTypeKindSelection vehicleTypeKind;
+
     public ExportParams() {
     }
 

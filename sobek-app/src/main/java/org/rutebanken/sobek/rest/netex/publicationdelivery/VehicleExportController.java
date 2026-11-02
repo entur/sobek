@@ -30,6 +30,10 @@ public class VehicleExportController {
     public ResponseEntity<StreamingResponseBody> getVehicleNetex(@ModelAttribute ExportParametersDto exportParams) {
         log.info("Exporting publication delivery.");
 
+        // Verify before streaming starts, so bad input gives 400 instead of a failed 200
+        if (exportParams.getVehicleTypeKind() == null) {
+            throw new ValidationException("vehicleTypeKind is required: PHYSICAL, CONTRACTUAL or BOTH");
+        }
         authorizationService.verifyCanViewDataOwner(exportParams.getDataOwner());
 
         StreamingResponseBody streamingResponseBody = outputStream -> {

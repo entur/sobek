@@ -23,6 +23,17 @@ Sobek provides a rich GraphQL API for vehicles, vehicle types, deck plans and so
 It also supports mutations. So you can update or create entities.
 There are also graphql processes (named functions) which allows functionality like merging vehicle types and deck plans
 
+### Physical and contractual vehicle types
+A vehicle type is either `PHYSICAL` or `CONTRACTUAL` (the *kind* of the vehicle type):
+* `PHYSICAL`: a group of actual vehicles that exist in the real world. Vehicles refer to physical vehicle types only.
+* `CONTRACTUAL`: a theoretical description of the vehicle type that an operator and an authority have agreed on. No vehicle may refer to it.
+
+Rules:
+* The kind is required when creating a vehicle type, and cannot be changed afterwards. When updating, omit it or repeat the existing value.
+* A vehicle that refers to a contractual vehicle type is rejected.
+* Physical vehicle types get IDs in the configured codespace (e.g. `NMR:VehicleType:123`), contractual ones in the `CVT` codespace (e.g. `CVT:VehicleType:123`). They share the same number sequence.
+* NeTEx has no field for the kind, so it is expressed by the codespace of the ID: `CVT` means contractual, anything else means physical.
+
 ### A ReactJS Frontend
 A frontend for Sobek is available. It's name is Hathor.
 See https://github.com/entur/hathor
@@ -309,6 +320,11 @@ For objects with codespace other than NMR, Sobek expects that the ID is unique a
 For objects with codespace NMR, Sobek generates IDs itself.
 For objects without ID, Sobek generates IDs itself and puts them in the NMR codespace.
 
+Contractual vehicle types are the exception: Sobek generates their IDs in the `CVT` codespace instead
+(`CVT:VehicleType:<n>`), using the same number sequence as physical vehicle types.
+The `CVT` codespace is reserved for contractual vehicle types: a physical vehicle type cannot use it, and a contractual
+vehicle type cannot use any other codespace.
+
 ## Keycloak/Auth0
 Both Sobek and Hathor are set up to be used with Keycloak or Auth0.
 A detailed guide on how to setup Keycloak can be found [here](./Keycloak_Setup_Guide.md).
@@ -326,19 +342,18 @@ publicationDeliveryUnmarshaller.validateAgainstSchema=true
 It is possible to export vehicles and related data directly to NeTEx format. This is the endpoint:
 https://api.dev.entur.io/vehicles/v1/netex
 
-### Limit size of results
+### Required parameter: vehicleTypeKind
+`vehicleTypeKind` is required. Acceptable values are `PHYSICAL`, `CONTRACTUAL` and `BOTH`. A request without it is rejected with status 400.
 ```http request
-GET https://api.dev.entur.io/vehicles/v1/netex?size=1000
+GET https://api.dev.entur.io/vehicles/v1/netex?vehicleTypeKind=PHYSICAL
 ```
+* `PHYSICAL`: physical vehicle types, and the vehicles that refer to them.
+* `CONTRACTUAL`: contractual vehicle types only. Vehicles are not exported, as they only refer to physical vehicle types.
+* `BOTH`: both kinds of vehicle types, and vehicles.
 
-### Page
-```http request
-GET https://api.dev.entur.io/vehicles/v1/netex?page=1
-```
-
-### All Versions
-```allVersions```. Acceptable values are true or false. If set to true, all versions of matching vehicles will be returned.
-If set to false, the highest version by number will be returned for matching vehicles. This parameter is not enabled when using the version valitity parmaeter.
+### Data owner
+`dataOwner` restricts the export to objects owned by that organisation, e.g. `?dataOwner=ATU&vehicleTypeKind=BOTH`.
+Administrators may omit it, which means all data owners.
 
 ## Async NeTEx export from Sobek
 Asynchronous export uploads exported data to google cloud storage. When initiated, you will get a job ID back.
@@ -388,6 +403,9 @@ This NeTEx file should not contain NSR ID. (The NSR prefix is configurable in th
 
 Sobek will return the modified NeTEx structure with it's own NSR IDs. Original IDs will be present in key value list on each object.
 
+Vehicle types without a `CVT` ID are imported as `PHYSICAL`. To import a `CONTRACTUAL` vehicle type, give it an ID in the `CVT` codespace.
+An existing vehicle type keeps its kind: an update that implies another kind is rejected.
+
 ```shell
 curl -XPOST -H"Content-Type: application/xml" -d@my-nice-netex-file.xml http://localhost:1997/services/vehicles/netex
 ```
@@ -397,6 +415,11 @@ GraphQL endpoint is available on
 ```
 https://api.dev.entur.io/vehicles/v1/graphql
 ```
+
+Vehicle types and the `VehicleTypeKind` enum (`PHYSICAL`, `CONTRACTUAL`):
+* The `vehicleTypes` query requires `vehicleTypeKind` in its filter, e.g. `vehicleTypes(filter: { dataOwnerRef: "ATU", vehicleTypeKind: PHYSICAL })`.
+* `createOrUpdateVehicleType` requires `vehicleTypeKind` when creating. It cannot be changed afterwards; omit it on update.
+* `createOrUpdateVehicle` rejects a `transportType` that is a contractual vehicle type.
 
 Tip: GraphiQL UI available on https://api.dev.entur.io/graphql-explorer/vehicles using *GraphiQL*:
 https://github.com/graphql/graphiql

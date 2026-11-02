@@ -17,6 +17,8 @@ package org.rutebanken.sobek.versioning.save;
 
 
 import org.rutebanken.sobek.model.vehicle.Vehicle;
+import org.rutebanken.sobek.model.vehicle.VehicleType;
+import org.rutebanken.sobek.model.vehicle.VehicleTypeKindEnumeration;
 import org.rutebanken.sobek.repository.VehicleRepository;
 import org.springframework.stereotype.Component;
 
@@ -34,11 +36,24 @@ public class VehicleVersionedSaverService {
     }
 
     public Vehicle saveNewVersion(Vehicle newVersion) {
+        verifyTransportTypeIsPhysical(newVersion);
         return defaultVersionedSaverService.saveNewVersion(newVersion, vehicleRepository);
     }
 
     public Vehicle saveNewVersion(Vehicle existingVersion, Vehicle newVersion, Instant defaultValidFrom) {
+        verifyTransportTypeIsPhysical(newVersion);
         return defaultVersionedSaverService.saveNewVersion(existingVersion, newVersion, defaultValidFrom, vehicleRepository);
+    }
+
+    /**
+     * A Vehicle is a real-world object, so it can only refer to a physical vehicle type.
+     */
+    private void verifyTransportTypeIsPhysical(Vehicle vehicle) {
+        VehicleType transportType = vehicle.getTransportType();
+        if (transportType != null && transportType.getVehicleTypeKind() == VehicleTypeKindEnumeration.CONTRACTUAL) {
+            throw new IllegalArgumentException("Vehicle " + vehicle.getNetexId() + " refers to the contractual vehicle type "
+                    + transportType.getNetexId() + ". Vehicles can only refer to physical vehicle types.");
+        }
     }
 
 }

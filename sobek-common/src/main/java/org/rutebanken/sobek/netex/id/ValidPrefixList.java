@@ -30,6 +30,9 @@ public class ValidPrefixList {
 
     public static final String ANY_PREFIX = "*";
 
+    /** Codespace of contractual vehicle types. Physical vehicle types use the configured netex.validPrefix. */
+    public static final String CONTRACTUAL_VEHICLE_TYPE_PREFIX = "CVT";
+
     private final String validNetexPrefix;
 
     private final List<String> validCodeSpaces;
@@ -66,6 +69,9 @@ public class ValidPrefixList {
     public boolean isValidPrefixForType(String prefix, String type) {
 
         if (prefix.equals(validNetexPrefix)) {
+            return true;
+        }
+        if (prefix.equals(CONTRACTUAL_VEHICLE_TYPE_PREFIX) && "VehicleType".equals(type)) {
             return true;
         }
 

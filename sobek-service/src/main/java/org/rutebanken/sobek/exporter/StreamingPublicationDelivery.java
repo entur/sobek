@@ -25,6 +25,7 @@ import org.entur.netex2.validation.NeTExValidator;
 import org.rutebanken.sobek.auth.AuthorizationService;
 import org.rutebanken.sobek.model.authorization.OwnedEntity;
 import org.rutebanken.sobek.model.job.ExportParams;
+import org.rutebanken.sobek.model.job.VehicleTypeKindSelection;
 import org.rutebanken.sobek.model.vehicle.*;
 import org.rutebanken.sobek.model.vehicle.DeckPlan;
 import org.rutebanken.sobek.model.vehicle.Vehicle;
@@ -138,6 +139,9 @@ public class StreamingPublicationDelivery {
 
         logger.info("Streaming export of vehicles initiated. Export params: {}", exportParams);
 
+        if (exportParams.getVehicleTypeKind() == null) {
+            throw new IllegalArgumentException("vehicleTypeKind is required: PHYSICAL, CONTRACTUAL or BOTH");
+        }
         authorizationService.verifyCanViewDataOwner(exportParams.getDataOwner());
 
         AtomicInteger mappedVehicleCount = new AtomicInteger();
@@ -155,9 +159,13 @@ public class StreamingPublicationDelivery {
         netexCompositeFrame.withFrames(framesRelStructure);
 
         logger.info("Preparing scrollable iterators");
-        prepareVehicleTypes(exportParams.getDataOwner(), mappedVehicleTypeCount, netexResourceFrame);
+        prepareVehicleTypes(exportParams.getDataOwner(), exportParams.getVehicleTypeKind(), mappedVehicleTypeCount, netexResourceFrame);
         prepareVehicleModels(exportParams.getDataOwner(), mappedVehicleModelCount, netexResourceFrame);
-        prepareVehicles(exportParams.getDataOwner(), mappedVehicleCount, netexResourceFrame);
+        if (exportParams.getVehicleTypeKind().includesPhysical()) {
+            prepareVehicles(exportParams.getDataOwner(), mappedVehicleCount, netexResourceFrame);
+        } else {
+            logger.info("Contractual vehicle types requested only, skipping vehicles");
+        }
         prepareDeckPlans(exportParams.getDataOwner(), netexResourceFrame, null);
         prepareEquipments(exportParams.getDataOwner(), netexResourceFrame);
 
@@ -272,9 +280,9 @@ public class StreamingPublicationDelivery {
         }
     }
 
-    private void prepareVehicleTypes(String dataOwnerRef, AtomicInteger mappedVehicleTypeCount, org.entur.netex2.model.ResourceFrame resourceFrame) {
+    private void prepareVehicleTypes(String dataOwnerRef, VehicleTypeKindSelection kindSelection, AtomicInteger mappedVehicleTypeCount, org.entur.netex2.model.ResourceFrame resourceFrame) {
         List<VehicleType> vehicleTypesInDb = vehicleTypeRepository
-            .findCurrentFiltered(dataOwnerRef, null, null, null, Pageable.unpaged())
+            .findCurrentFiltered(dataOwnerRef, null, null, kindSelection.toKindOrNull(), null, Pageable.unpaged())
             .getContent();
 
         if (!vehicleTypesInDb.isEmpty()) {

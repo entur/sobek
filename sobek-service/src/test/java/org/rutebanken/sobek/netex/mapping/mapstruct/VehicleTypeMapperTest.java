@@ -41,6 +41,37 @@ public class VehicleTypeMapperTest extends DataManagedObjectStructureMapperTestB
     }
 
     @Test
+    void testKindIsContractualForContractualCodespaceId() {
+        VehicleType netex = new VehicleType().withId("CVT:VehicleType:1").withVersion("1");
+        assertEquals(org.rutebanken.sobek.model.vehicle.VehicleTypeKindEnumeration.CONTRACTUAL, mapToSobek(netex).getVehicleTypeKind());
+    }
+
+    @Test
+    void testKindIsPhysicalForAnyOtherId() {
+        VehicleType netex = new VehicleType().withId("VT:Bus:1").withVersion("1");
+        assertEquals(org.rutebanken.sobek.model.vehicle.VehicleTypeKindEnumeration.PHYSICAL, mapToSobek(netex).getVehicleTypeKind());
+    }
+
+    @Test
+    void testKindIsPhysicalWithoutId() {
+        assertEquals(org.rutebanken.sobek.model.vehicle.VehicleTypeKindEnumeration.PHYSICAL, mapToSobek(new VehicleType()).getVehicleTypeKind());
+    }
+
+    @Test
+    void testExportDoesNotWriteKindAsKeyValue() {
+        var sobek = new org.rutebanken.sobek.model.vehicle.VehicleType();
+        sobek.setNetexId("CVT:VehicleType:1");
+        sobek.setVehicleTypeKind(org.rutebanken.sobek.model.vehicle.VehicleTypeKindEnumeration.CONTRACTUAL);
+
+        VehicleType netex = mapToNetex(sobek);
+
+        assertEquals("CVT:VehicleType:1", netex.getId());
+        boolean hasKindKey = netex.getKeyList() != null && netex.getKeyList().getKeyValue().stream()
+                .anyMatch(kv -> "VehicleTypeKind".equals(kv.getKey()));
+        assertFalse(hasKindKey);
+    }
+
+    @Test
     void testMapToSobek() {
         // Given
         VehicleType netexVehicleType = new VehicleType();

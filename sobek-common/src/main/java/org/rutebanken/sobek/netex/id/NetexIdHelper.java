@@ -16,6 +16,8 @@
 package org.rutebanken.sobek.netex.id;
 
 import org.rutebanken.sobek.model.identification.IdentifiedEntity;
+import org.rutebanken.sobek.model.vehicle.VehicleType;
+import org.rutebanken.sobek.model.vehicle.VehicleTypeKindEnumeration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +45,11 @@ public class NetexIdHelper {
 
     public String getNetexId(IdentifiedEntity identifiedEntity, long id) {
         String type = determineIdType(identifiedEntity);
+        if (identifiedEntity instanceof VehicleType vehicleType
+                && vehicleType.getVehicleTypeKind() == VehicleTypeKindEnumeration.CONTRACTUAL) {
+            // Same sequence as physical vehicle types, but in a separate codespace
+            return ValidPrefixList.CONTRACTUAL_VEHICLE_TYPE_PREFIX + ":" + type + ":" + id;
+        }
         return getNetexId(type, id);
     }
 

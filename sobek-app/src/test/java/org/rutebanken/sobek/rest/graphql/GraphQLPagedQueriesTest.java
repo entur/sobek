@@ -79,7 +79,7 @@ class GraphQLPagedQueriesTest {
             .contentType(ContentType.JSON)
             .body(
                 gql(
-                    "{ vehicleTypes(page: 0, size: 10, filter: { dataOwnerRef: \"AKT\" } ) { content { netexId } totalElements page size } }"
+                    "{ vehicleTypes(page: 0, size: 10, filter: { vehicleTypeKind: PHYSICAL dataOwnerRef: \"AKT\" } ) { content { netexId } totalElements page size } }"
                 )
             )
             .when()
@@ -153,7 +153,7 @@ class GraphQLPagedQueriesTest {
             .contentType(ContentType.JSON)
             .body(
                 gql(
-                    "{ vehicleTypes(page: 0, size: 100, filter: { transportModes: [ BUS ] netexIds: [\"AKT:VehicleType:123\"] dataOwnerRef: \"AKT\" } ) { content { netexId, description { value }, name { value }, version, euroClass, passengerCapacity { totalCapacity, standingCapacity, seatingCapacity },  transportMode, created, fuelTypes, propulsionTypes, privateCode { type, value}, formDragCoefficient, maximumRange, length, height, width, weight, vehicles { chassisNumber, netexId, registrationNumber }  } totalElements page size } }"
+                    "{ vehicleTypes(page: 0, size: 100, filter: { transportModes: [ BUS ] netexIds: [\"AKT:VehicleType:123\"] vehicleTypeKind: PHYSICAL dataOwnerRef: \"AKT\" } ) { content { netexId, description { value }, name { value }, version, euroClass, passengerCapacity { totalCapacity, standingCapacity, seatingCapacity },  transportMode, created, fuelTypes, propulsionTypes, privateCode { type, value}, formDragCoefficient, maximumRange, length, height, width, weight, vehicles { chassisNumber, netexId, registrationNumber }  } totalElements page size } }"
                 )
             )
             .when()
@@ -176,7 +176,7 @@ class GraphQLPagedQueriesTest {
             .contentType(ContentType.JSON)
             .body(
                 gql(
-                    "{ vehicleTypes(filter: { transportModes: [ BUS ] dataOwnerRef: \"AKT\" }, page: 0, size: 10) { content { netexId transportMode } totalElements } }"
+                    "{ vehicleTypes(filter: { transportModes: [ BUS ] vehicleTypeKind: PHYSICAL dataOwnerRef: \"AKT\" }, page: 0, size: 10) { content { netexId transportMode } totalElements } }"
                 )
             )
             .when()
@@ -196,7 +196,7 @@ class GraphQLPagedQueriesTest {
             .contentType(ContentType.JSON)
             .body(
                 gql(
-                    "{ vehicleTypes(filter: { name: \"exqui\" dataOwnerRef: \"AKT\"  }, page: 0, size: 10) { content { netexId transportMode } totalElements } }"
+                    "{ vehicleTypes(filter: { name: \"exqui\" vehicleTypeKind: PHYSICAL dataOwnerRef: \"AKT\"  }, page: 0, size: 10) { content { netexId transportMode } totalElements } }"
                 )
             )
             .when()
@@ -230,7 +230,7 @@ class GraphQLPagedQueriesTest {
             .contentType(ContentType.JSON)
             .body(
                 gql(
-                    "{ vehicleTypes(filter: { transportModes: [ TROLLEY_BUS ]  dataOwnerRef: \"AKT\" }, page: 0, size: 10) { content { netexId } totalElements } }"
+                    "{ vehicleTypes(filter: { transportModes: [ TROLLEY_BUS ]  vehicleTypeKind: PHYSICAL dataOwnerRef: \"AKT\" }, page: 0, size: 10) { content { netexId } totalElements } }"
                 )
             )
             .when()
@@ -248,7 +248,7 @@ class GraphQLPagedQueriesTest {
             .contentType(ContentType.JSON)
             .body(
                 gql(
-                    "{ vehicleTypes(page: 0, size: 1, filter: {  dataOwnerRef: \"AKT\" } ) { content { netexId } } }"
+                    "{ vehicleTypes(page: 0, size: 1, filter: {  vehicleTypeKind: PHYSICAL dataOwnerRef: \"AKT\" } ) { content { netexId } } }"
                 )
             )
             .when()
@@ -266,7 +266,7 @@ class GraphQLPagedQueriesTest {
                 gql(
                     "{ vehicleTypes(filter: { netexIds: [\"" +
                     id +
-                    "\"],  dataOwnerRef: \"AKT\"  }, page: 0, size: 10) { content { netexId } totalElements } }"
+                    "\"],  vehicleTypeKind: PHYSICAL dataOwnerRef: \"AKT\"  }, page: 0, size: 10) { content { netexId } totalElements } }"
                 )
             )
             .when()
@@ -284,7 +284,7 @@ class GraphQLPagedQueriesTest {
             .contentType(ContentType.JSON)
             .body(
                 gql(
-                    "{ vehicleTypes(filter: { netexIds: [\"FAKE:VehicleType:999\"]  dataOwnerRef: \"AKT\" }, page: 0, size: 10) { content { netexId } totalElements } }"
+                    "{ vehicleTypes(filter: { netexIds: [\"FAKE:VehicleType:999\"]  vehicleTypeKind: PHYSICAL dataOwnerRef: \"AKT\" }, page: 0, size: 10) { content { netexId } totalElements } }"
                 )
             )
             .when()
@@ -301,7 +301,7 @@ class GraphQLPagedQueriesTest {
             .contentType(ContentType.JSON)
             .body(
                 gql(
-                    "{ vehicleTypes(page: 999, size: 10, filter: { dataOwnerRef: \"AKT\" }) { content { netexId } totalElements page } }"
+                    "{ vehicleTypes(page: 999, size: 10, filter: { vehicleTypeKind: PHYSICAL dataOwnerRef: \"AKT\" }) { content { netexId } totalElements page } }"
                 )
             )
             .when()

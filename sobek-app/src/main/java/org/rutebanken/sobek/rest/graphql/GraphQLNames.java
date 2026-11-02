@@ -38,6 +38,7 @@ public class GraphQLNames {
     // Filter fields
     public static final String FILTER = "filter";
     public static final String FILTER_TRANSPORT_MODES = "transportModes";
+    public static final String FILTER_VEHICLE_TYPE_KIND = "vehicleTypeKind";
     public static final String FILTER_IDS = "netexIds";
     public static final String FILTER_NAME = "name";
     public static final String FILTER_VALUE_TYPE = "valueType";

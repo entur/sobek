@@ -17,6 +17,7 @@ package org.rutebanken.sobek.repository;
 
 import org.rutebanken.sobek.model.vehicle.AllPublicTransportModesEnumeration;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
+import org.rutebanken.sobek.model.vehicle.VehicleTypeKindEnumeration;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -24,7 +25,13 @@ import java.util.List;
 
 public interface VehicleTypeRepositoryCustom extends DataManagedObjectStructureRepository<VehicleType> {
 
-    Page<VehicleType> findCurrentFiltered(String dataOwnerRef, List<String> netexIds, List<AllPublicTransportModesEnumeration> transportModes, String name, Pageable pageable);
+    /** Finds current vehicle types of all kinds (physical and contractual). */
+    default Page<VehicleType> findCurrentFiltered(String dataOwnerRef, List<String> netexIds, List<AllPublicTransportModesEnumeration> transportModes, String name, Pageable pageable) {
+        return findCurrentFiltered(dataOwnerRef, netexIds, transportModes, null, name, pageable);
+    }
+
+    /** @param vehicleTypeKind only return vehicle types of this kind; null returns all kinds */
+    Page<VehicleType> findCurrentFiltered(String dataOwnerRef, List<String> netexIds, List<AllPublicTransportModesEnumeration> transportModes, VehicleTypeKindEnumeration vehicleTypeKind, String name, Pageable pageable);
 
     void moveToDeckPlan(Long fromDeckPlanId, Long toDeckPlanId);
 

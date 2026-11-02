@@ -2,6 +2,7 @@ package org.rutebanken.sobek.rest.graphql.helpers;
 
 import org.rutebanken.sobek.auth.AuthorizationService;
 import org.rutebanken.sobek.model.vehicle.AllPublicTransportModesEnumeration;
+import org.rutebanken.sobek.model.vehicle.VehicleTypeKindEnumeration;
 
 import java.util.List;
 import java.util.Map;
@@ -46,6 +47,17 @@ public class FilterHelper {
                     .collect(Collectors.toList());
         }
         return null;
+    }
+
+    public static VehicleTypeKindEnumeration getVehicleTypeKindFromFilter(Map<String, Object> filter) {
+        Object kind = filter == null ? null : filter.get(FILTER_VEHICLE_TYPE_KIND);
+        if (kind instanceof VehicleTypeKindEnumeration k) {
+            return k;
+        }
+        if (kind instanceof String s) {
+            return VehicleTypeKindEnumeration.valueOf(s.toUpperCase());
+        }
+        throw new IllegalArgumentException("Missing required filter field '" + FILTER_VEHICLE_TYPE_KIND + "'");
     }
 
     public static String getNameFromFilter(Map<String, Object> filter) {

@@ -1,7 +1,5 @@
 package org.rutebanken.sobek.auth;
 
-import org.apache.commons.lang3.StringUtils;
-import org.rutebanken.helper.organisation.AuthorizationConstants;
 import org.rutebanken.helper.organisation.DataScopedAuthorizationService;
 import org.rutebanken.helper.organisation.RoleAssignment;
 import org.rutebanken.helper.organisation.RoleAssignmentExtractor;
@@ -9,13 +7,11 @@ import org.rutebanken.sobek.model.EntityStructure;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.security.access.AccessDeniedException;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-import static org.rutebanken.helper.organisation.AuthorizationConstants.ENTITY_CLASSIFIER_ALL_ATTRIBUTES;
 import static org.rutebanken.sobek.auth.AuthorizationConstants.*;
 
 public class DefaultAuthorizationService implements AuthorizationService {
@@ -42,38 +38,16 @@ public class DefaultAuthorizationService implements AuthorizationService {
     boolean verifyCanEditAllEntities(List<RoleAssignment> roleAssignments) {
         return roleAssignments
                 .stream()
-                .anyMatch(roleAssignment -> ROLE_EDIT_VEHICLE_DATA.equals(roleAssignment.getRole())
-                                             && roleAssignment.getEntityClassifications() != null
-                                             && roleAssignment.getEntityClassifications().get(AuthorizationConstants.ENTITY_TYPE) != null
-                                             && roleAssignment.getEntityClassifications().get(AuthorizationConstants.ENTITY_TYPE).contains(ENTITY_CLASSIFIER_ALL_ATTRIBUTES)
-                                             && StringUtils.isEmpty(roleAssignment.getAdministrativeZone())
+                .anyMatch(roleAssignment -> ROLE_ADMIN_ALL_VEHICLE_DATA.equals(roleAssignment.getRole())
                 );
     }
 
     @Override
-    public boolean canEditEntities(Collection<? extends EntityStructure> entities) {
-        return dataScopedAuthorizationService.isAuthorized(ROLE_EDIT_VEHICLE_DATA, entities);
-    }
-
-
-    @Override
     public void verifyCanEditEntities(Collection<? extends EntityStructure> entities) {
-        dataScopedAuthorizationService.assertAuthorized(ROLE_EDIT_VEHICLE_DATA, entities);
-    }
-
-    @Override
-    public void verifyCanDeleteEntities(Collection<? extends EntityStructure> entities) {
-        dataScopedAuthorizationService.assertAuthorized(ROLE_DELETE_VEHICLE_DATA, entities);
-    }
-
-    @Override
-    public boolean canDeleteEntity(EntityStructure entity) {
-        return canEditDeleteEntity(entity, ROLE_DELETE_VEHICLE_DATA);
-    }
-
-    @Override
-    public boolean canEditEntity(EntityStructure entity) {
-        return canEditDeleteEntity(entity, ROLE_EDIT_VEHICLE_DATA);
+        // If the user is authorized to edit all entities, no need to check further.
+        if( !canEditAllEntities()) {
+            dataScopedAuthorizationService.assertAuthorized(ROLE_EDIT_VEHICLE_DATA, entities);
+        }
     }
 
     @Override
@@ -84,20 +58,21 @@ public class DefaultAuthorizationService implements AuthorizationService {
         return roleAssignmentExtractor.getRoleAssignmentsForUser().isEmpty();
     }
 
+    @Override
+    public boolean isAdmin() {
+        if (hasNoAuthentications()) {
+            return false;
+        }
+        return roleAssignmentExtractor.getRoleAssignmentsForUser().stream()
+                .anyMatch(roleAssignment -> ROLE_ADMIN_ALL_VEHICLE_DATA.equals(roleAssignment.getRole()));
+    }
+
     private boolean hasNoAuthentications() {
         if(!authorizationEnabled) {
             return true;
         }
         final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return !(auth instanceof JwtAuthenticationToken);
-    }
-
-    private boolean canEditDeleteEntity(EntityStructure entity, String role) {
-        if (hasNoAuthentications()) {
-            return false;
-        }
-
-        return dataScopedAuthorizationService.isAuthorized(role, List.of(entity));
     }
 
     @Override
@@ -113,6 +88,30 @@ public class DefaultAuthorizationService implements AuthorizationService {
                 .map(RoleAssignment::getOrganisation)
                 .distinct()
                 .toList();
+    }
+
+    @Override
+    public void verifyCanViewDataOwner(String dataOwnerRef) {
+
+        // If authorization disabled, allow all
+        if(!authorizationEnabled) {
+            return;
+        }
+
+        // Admins can access all data
+        if(isAdmin()) {
+            return;
+        }
+
+        if(dataOwnerRef == null) {
+            throw new AccessDeniedException("Not authorized to access data across multiple organisations");
+        }
+
+        List<String> authorizedRefs = getOrganisationRefsUserIsAuthorizedFor();
+        // null means authorization is disabled -> all organisations allowed
+        if (authorizedRefs != null && !authorizedRefs.contains(dataOwnerRef)) {
+            throw new AccessDeniedException("Not authorized to access data owned by '" + dataOwnerRef + "'");
+        }
     }
 
 }

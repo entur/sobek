@@ -22,7 +22,5 @@ import lombok.Setter;
 @Setter
 public class ImportParams {
 
-    private ImportType importType = ImportType.MERGE;
-
     private boolean skipOutput = false;
 }

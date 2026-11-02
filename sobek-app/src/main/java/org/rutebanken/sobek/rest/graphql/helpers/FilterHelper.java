@@ -68,7 +68,8 @@ public class FilterHelper {
     public static List<String> getAuthorizedNetexIdsFilter(Map<String, Object> filter, AuthorizationService authorizationService) {
         if(filter == null) { return null; }
         Boolean onlyAuthorized = (Boolean)filter.get(FILTER_ONLY_USER_AUTHORIZED);
-        if(onlyAuthorized != null && onlyAuthorized) {
+        // If the user is an admin, no need to filter
+        if(onlyAuthorized != null && onlyAuthorized && !authorizationService.isAdmin()) {
             return authorizationService.getOrganisationRefsUserIsAuthorizedFor();
         }
         return null;

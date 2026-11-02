@@ -40,7 +40,6 @@ public class OrganisationFetcher implements DataFetcher<Map<String, Object>> {
     private AuthorizationService authorizationService;
 
     @Override
-    @SuppressWarnings("unchecked")
     public Map<String, Object> get(DataFetchingEnvironment env) {
         int page = env.getArgumentOrDefault(PAGE, DEFAULT_PAGE_VALUE);
         int size = env.getArgumentOrDefault(SIZE, DEFAULT_SIZE_VALUE);

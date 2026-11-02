@@ -43,7 +43,7 @@ Content-Type: application/xml
                     <roles>
                         <ResponsibilityRoleAssignment id="NMR:ResponsibilityRoleAssignment:1" version="1">
                             <DataRoleType>owns</DataRoleType>
-                            <ResponsibleOrganisationRef ref="NOG:Authority:cP4aPiJ7c39"/>
+                            <ResponsibleOrganisationRef ref="AKT"/>
                         </ResponsibilityRoleAssignment>
                     </roles>
                 </ResponsibilitySet>

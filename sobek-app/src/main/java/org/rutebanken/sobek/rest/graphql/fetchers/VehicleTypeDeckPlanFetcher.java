@@ -18,8 +18,6 @@ package org.rutebanken.sobek.rest.graphql.fetchers;
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
-import org.rutebanken.sobek.repository.reference.ReferenceResolver;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -28,9 +26,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class VehicleTypeDeckPlanFetcher implements DataFetcher {
-
-    @Autowired
-    private ReferenceResolver referenceResolver;
 
     @Override
     public Object get(DataFetchingEnvironment dataFetchingEnvironment) {

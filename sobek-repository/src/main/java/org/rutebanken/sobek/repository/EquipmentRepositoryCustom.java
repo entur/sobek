@@ -16,7 +16,13 @@
 package org.rutebanken.sobek.repository;
 
 import org.rutebanken.sobek.model.vehicle.Equipment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 public interface EquipmentRepositoryCustom extends DataManagedObjectStructureRepository<Equipment> {
+    Page<Equipment> findCurrentFiltered(String dataOwnerRef, List<String> netexIds, String name, Pageable pageable);
+
 }
 

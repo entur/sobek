@@ -19,14 +19,6 @@ public interface AuthorizationService {
      */
     boolean canEditAllEntities();
 
-    /**
-     * Checks if the current user has permission to edit all the given entities.
-     *
-     * @param entities The collection of entities to check.
-     * @return {@code true} if the user can edit all entities, otherwise {@code false}.
-     */
-    boolean canEditEntities(Collection<? extends EntityStructure> entities);
-
     /*
      * Verify that the current user has edit rights on all the given entities.
      *
@@ -34,30 +26,6 @@ public interface AuthorizationService {
      * @throws AccessDeniedException if the user lacks the necessary permissions.
      */
     void verifyCanEditEntities(Collection<? extends EntityStructure> entities);
-
-    /**
-     * Ensures that the current user has delete rights on all the given entities.
-     *
-     * @param entities The collection of entities to verify.
-     * @throws AccessDeniedException if the user lacks the necessary permissions.
-     */
-    void verifyCanDeleteEntities(Collection<? extends EntityStructure> entities);
-
-    /**
-     * Checks if the current user has the right to delete the given entity.
-     *
-     * @param entity The entity to check.
-     * @return {@code true} if the user can delete the entity, otherwise {@code false}.
-     */
-    boolean canDeleteEntity(EntityStructure entity);
-
-    /**
-     * Checks if the current user has the right to edit the given entity.
-     *
-     * @param entity The entity to check.
-     * @return {@code true} if the user can edit the entity, otherwise {@code false}.
-     */
-    boolean canEditEntity(EntityStructure entity);
 
      /**
       * Checks if the current user is accessing the system as a guest.
@@ -67,8 +35,22 @@ public interface AuthorizationService {
     boolean isGuest();
 
     /**
+     * Checks if the current user is accessing the system as administrator.
+     *
+     * @return {@code true} if the user is administrator, otherwise {@code false}.
+     */
+    boolean isAdmin();
+
+    /**
      * Get the organisation refs the user is authorized for. If authorization is disabled, return null, which means "all organisations".
-     * @return A list of organisation refs, e.g. "NOG:Authority:23A2N7V6Blr"
+     * @return A list of organisation refs, e.g. "AKT"
      */
     List<String> getOrganisationRefsUserIsAuthorizedFor();
-}
+
+    /**
+     * Verify that the current user may access data owned by the given organisation.
+     *
+     * @param dataOwnerRef organisation ref, e.g. "AKT"
+     * @throws AccessDeniedException if the user is not authorized for the organisation.
+     */
+    void verifyCanViewDataOwner(String dataOwnerRef);}

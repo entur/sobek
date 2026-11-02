@@ -15,6 +15,8 @@
 
 package org.rutebanken.sobek.model.job;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 /**
@@ -22,11 +24,11 @@ import lombok.ToString;
  * Parameters specific for search related to a certain type like StopPlace does not necessary belong here.
  */
 @ToString
+@Getter
+@Setter
 public class ExportParams {
 
-    public enum ExportMode {NONE, RELEVANT, ALL}
-
-    public enum VersionValidity {ALL, CURRENT, CURRENT_FUTURE, MAX_VERSION}
+    private String dataOwner;
 
     public ExportParams() {
     }

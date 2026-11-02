@@ -17,6 +17,7 @@ package org.rutebanken.sobek.rest.graphql.fetchers;
 
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
+import org.rutebanken.sobek.auth.AuthorizationService;
 import org.rutebanken.sobek.model.vehicle.AllPublicTransportModesEnumeration;
 import org.rutebanken.sobek.repository.VehicleRepository;
 import org.rutebanken.sobek.rest.graphql.helpers.FilterHelper;
@@ -34,11 +35,15 @@ import static org.rutebanken.sobek.rest.graphql.GraphQLNames.DEFAULT_SIZE_VALUE;
 @Service
 public class VehicleFetcher implements DataFetcher<Map<String, Object>> {
 
-    @Autowired
-    private VehicleRepository vehicleRepository;
+    private final VehicleRepository vehicleRepository;
+    private final AuthorizationService authorizationService;
+
+    public VehicleFetcher(VehicleRepository vehicleRepository, AuthorizationService authorizationService) {
+        this.vehicleRepository = vehicleRepository;
+        this.authorizationService = authorizationService;
+    }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Map<String, Object> get(DataFetchingEnvironment env) {
         int page = env.getArgumentOrDefault(PAGE, DEFAULT_PAGE_VALUE);
         int size = env.getArgumentOrDefault(SIZE, DEFAULT_SIZE_VALUE);
@@ -49,6 +54,8 @@ public class VehicleFetcher implements DataFetcher<Map<String, Object>> {
         String name = FilterHelper.getNameFromFilter(filter);
         List<AllPublicTransportModesEnumeration> modes = FilterHelper.getModesFromFilter(filter);
         String dataOwnerRef = FilterHelper.getDataOwnerRefFromFilter(filter);
+
+        authorizationService.verifyCanViewDataOwner(dataOwnerRef);
 
         var result = vehicleRepository.findCurrentFiltered(dataOwnerRef, netexIds, modes, name, PageRequest.of(page, size));
         return PageResult.from(result, page, size);

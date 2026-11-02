@@ -16,6 +16,6 @@ mutation {
     chassisNumber: "CHASSIS123456789"
     buildDate: "2024-01-15"
     registrationDate: "2024-02-01"
-    dataOwnerRef: "NOG:Authority:cP4aPiJ7c39"
+    dataOwnerRef: "AKT"
   })
 }

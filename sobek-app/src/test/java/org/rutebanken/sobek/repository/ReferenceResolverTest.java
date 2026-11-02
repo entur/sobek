@@ -56,7 +56,7 @@ public class ReferenceResolverTest  {
 
         org.entur.netex2.model.Vehicle input = new org.entur.netex2.model.Vehicle().withId("TST:Vehicle:1");
         var mappedV = vehicleMapper.mapToSobek(input, context);
-        mappedV.setDataOwnerRef("NOG:Operator:earJinAJlwf");
+        mappedV.setDataOwnerRef("AKT");
 
         Vehicle vehicle = vehicleVersionedSaverService.saveNewVersion(mappedV);
 
@@ -71,7 +71,7 @@ public class ReferenceResolverTest  {
 
         org.entur.netex2.model.VehicleType input = new org.entur.netex2.model.VehicleType().withId("TST:VehicleType:1");
         var mappedVt = vehicleTypeMapper.mapToSobek(input, context);
-        mappedVt.setDataOwnerRef("NOG:Operator:earJinAJlwf");
+        mappedVt.setDataOwnerRef("AKT");
 
         VehicleType vehicleType = vehicleTypeVersionedSaverService.saveNewVersion(mappedVt);
 

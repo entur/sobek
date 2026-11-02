@@ -92,7 +92,6 @@ org.rutebanken.sobek/
 ### Key Features
 
 #### 1. NeTEx Import/Export
-- **Import**: Supports multiple import types (MERGE, INITIAL, ID_MATCH, MATCH)
 - **Export**: Both synchronous and asynchronous exports to Google Cloud Storage
 - **Validation**: XML schema validation for incoming/outgoing data
 - **Format**: http://netex-cen.eu/ standard compliance
@@ -245,7 +244,7 @@ mvn jib:build
 
 **Synchronous Export**:
 ```bash
-GET /vehicles/v1/netex?size=1000&page=1&allVersions=true
+GET /vehicles/v1/netex
 ```
 
 **Asynchronous Export**:
@@ -287,9 +286,6 @@ spring.jpa.properties.hibernate.dialect=org.hibernate.spatial.dialect.postgis.Po
 spring.flyway.enabled=true
 spring.flyway.table=schema_version
 
-# Import Types
-netex.import.enabled.types=MERGE,INITIAL,ID_MATCH,MATCH
-
 # ID Generation
 netex.validPrefix=NSR
 netex.profile.version=2.0:NO-NeTEx:2.0
@@ -313,19 +309,6 @@ server.port=37999
 publicationDeliveryUnmarshaller.validateAgainstSchema=true
 publicationDeliveryStreamingOutput.validateAgainstSchema=true
 ```
-
-## Import Types
-
-1. **INITIAL** - First-time import with parallel processing
-   - Requires: `-Dspring.security.strategy=MODE_INHERITABLETHREADLOCAL`
-   - Creates new entities with generated IDs
-   
-2. **MERGE** - Merges with existing data
-   - Matches by original ID
-   - Updates existing or creates new
-   
-3. **ID_MATCH** - Matches purely on ID
-4. **MATCH** - Custom matching logic
 
 ## Frontend
 
@@ -422,9 +405,6 @@ Workflows located in `.github/workflows/`:
 
 3. **Out of memory on large imports**
    - Increase heap: `export MAVEN_OPTS='-Xmx2048m'`
-
-4. **Parallel import authentication errors**
-   - Set: `-Dspring.security.strategy=MODE_INHERITABLETHREADLOCAL`
 
 ## Development Tips
 

@@ -3,7 +3,7 @@ package org.rutebanken.sobek.rest.graphql;
 import graphql.GraphQLError;
 import graphql.GraphqlErrorBuilder;
 import graphql.schema.DataFetchingEnvironment;
-import jakarta.xml.bind.ValidationException;
+import jakarta.validation.ValidationException;
 import org.springframework.graphql.execution.DataFetcherExceptionResolverAdapter;
 import org.springframework.graphql.execution.ErrorType;
 import org.springframework.security.access.AccessDeniedException;

@@ -125,6 +125,56 @@ class VehicleTypeImportIT {
         assertThat(theName).isEqualTo("Exqui City 24");
     }
 
+    @Test
+    void importContractualVehicleType_keepsItsContractualCodespaceId() throws Exception {
+        String responseXml =
+                given()
+                        .contentType("application/xml")
+                        .body(fixture("/fixtures/vehicle-type-contractual-import.xml"))
+                        .when()
+                        .post("/services/vehicles/netex")
+                        .then()
+                        .statusCode(200)
+                        .extract()
+                        .body()
+                        .asString();
+
+        ResourceFrame responseFrame =
+                unmarshal(responseXml).getDataObjects().getCompositeFrameOrCommonFrame().stream()
+                        .map(JAXBElement::getValue)
+                        .filter(ResourceFrame.class::isInstance)
+                        .map(ResourceFrame.class::cast)
+                        .findFirst()
+                        .orElseThrow(() -> new AssertionError("No ResourceFrame in response"));
+
+        VehicleType imported =
+                (VehicleType) responseFrame.getVehicleTypes().getTransportType().getFirst().getValue();
+        assertThat(imported.getId()).isEqualTo("CVT:VehicleType:9001");
+    }
+
+    @Test
+    void importVehicleReferringToContractualVehicleType_isBadRequest() throws Exception {
+        String body =
+                given()
+                        .contentType("application/xml")
+                        .body(fixture("/fixtures/vehicle-refers-to-contractual-type.xml"))
+                        .when()
+                        .post("/services/vehicles/netex")
+                        .then()
+                        .statusCode(400)
+                        .extract()
+                        .body()
+                        .asString();
+
+        assertThat(body).contains("contractual");
+    }
+
+    private String fixture(String path) throws Exception {
+        try (InputStream in = getClass().getResourceAsStream(path)) {
+            return new String(in.readAllBytes(), StandardCharsets.UTF_8);
+        }
+    }
+
     private static final JAXBContext jaxbContext;
 
   static {

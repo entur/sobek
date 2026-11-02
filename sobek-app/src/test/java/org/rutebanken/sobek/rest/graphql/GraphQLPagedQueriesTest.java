@@ -477,4 +477,17 @@ class GraphQLPagedQueriesTest {
             .body("data.vehicles.content", is(not(empty())))
             .body("data.vehicles.totalElements", equalTo(1));
     }
+
+    @Test
+    void vehicleTypes_withoutFilter_isBadRequestWithMessage() {
+        given()
+                .contentType(ContentType.JSON)
+                .body(gql("{ vehicleTypes(page: 0, size: 10) { content { netexId } totalElements } }"))
+                .when()
+                .post("/services/vehicles/graphql")
+                .then()
+                .statusCode(200)
+                .body("errors[0].extensions.classification", equalTo("BAD_REQUEST"))
+                .body("errors[0].message", containsString("Missing required filter field"));
+    }
 }

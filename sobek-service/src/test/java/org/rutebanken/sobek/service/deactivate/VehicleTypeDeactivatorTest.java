@@ -1,6 +1,6 @@
 package org.rutebanken.sobek.service.deactivate;
 
-import jakarta.xml.bind.ValidationException;
+import jakarta.validation.ValidationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

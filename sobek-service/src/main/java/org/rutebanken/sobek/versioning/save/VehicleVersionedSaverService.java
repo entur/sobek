@@ -16,6 +16,7 @@
 package org.rutebanken.sobek.versioning.save;
 
 
+import org.rutebanken.sobek.error.VehicleTypeKindViolationException;
 import org.rutebanken.sobek.model.vehicle.Vehicle;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
 import org.rutebanken.sobek.model.vehicle.VehicleTypeKindEnumeration;
@@ -51,7 +52,7 @@ public class VehicleVersionedSaverService {
     private void verifyTransportTypeIsPhysical(Vehicle vehicle) {
         VehicleType transportType = vehicle.getTransportType();
         if (transportType != null && transportType.getVehicleTypeKind() == VehicleTypeKindEnumeration.CONTRACTUAL) {
-            throw new IllegalArgumentException("Vehicle " + vehicle.getNetexId() + " refers to the contractual vehicle type "
+            throw new VehicleTypeKindViolationException("Vehicle " + vehicle.getNetexId() + " refers to the contractual vehicle type "
                     + transportType.getNetexId() + ". Vehicles can only refer to physical vehicle types.");
         }
     }

@@ -15,6 +15,7 @@
 
 package org.rutebanken.sobek.versioning;
 
+import jakarta.validation.ValidationException;
 import org.junit.jupiter.api.Test;
 import org.rutebanken.sobek.model.ValidBetween;
 import org.rutebanken.sobek.model.vehicle.Vehicle;
@@ -89,7 +90,7 @@ public class ValidityUpdaterTest {
 
     @Test
     void doNotAcceptFromDateAfterToDate() {
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(ValidationException.class, () -> {
             Vehicle Vehicle = new Vehicle();
             Vehicle.setVersion(1L);
             Instant now = Instant.now();
@@ -101,7 +102,7 @@ public class ValidityUpdaterTest {
 
     @Test
     public void doNotAcceptFromDateBeforePreviousVersionEndDate() {
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(ValidationException.class, () -> {
             Vehicle previousVersion = new Vehicle();
             previousVersion.setVersion(1L);
             Instant now = Instant.now();
@@ -117,7 +118,7 @@ public class ValidityUpdaterTest {
 
     @Test
     public void doNotAcceptFromDateBeforePreviousVersionFromDate() {
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(ValidationException.class, () -> {
             Vehicle previousVersion = new Vehicle();
             previousVersion.setVersion(1L);
             Instant now = Instant.now();

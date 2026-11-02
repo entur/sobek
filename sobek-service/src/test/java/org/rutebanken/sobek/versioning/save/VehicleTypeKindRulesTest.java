@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.rutebanken.sobek.error.VehicleTypeKindViolationException;
 import org.rutebanken.sobek.model.vehicle.Vehicle;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
 import org.rutebanken.sobek.model.vehicle.VehicleTypeKindEnumeration;
@@ -69,7 +70,7 @@ class VehicleTypeKindRulesTest {
     void newVehicleTypeWithoutKindIsRejected() {
         VehicleType incoming = vehicleType(null);
         incoming.setNetexId(null);
-        assertThrows(IllegalArgumentException.class, () -> vehicleTypeSaver.saveNewVersion(null, incoming, Instant.now()));
+        assertThrows(VehicleTypeKindViolationException.class, () -> vehicleTypeSaver.saveNewVersion(null, incoming, Instant.now()));
         verify(defaultVersionedSaverService, never()).saveNewVersion(any(), any(), any(Instant.class), any());
     }
 
@@ -108,7 +109,7 @@ class VehicleTypeKindRulesTest {
     @Test
     void changingKindIsRejected() {
         VehicleType existing = existingVehicleType(VehicleTypeKindEnumeration.PHYSICAL);
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(VehicleTypeKindViolationException.class,
                 () -> vehicleTypeSaver.saveNewVersion(existing, vehicleType(VehicleTypeKindEnumeration.CONTRACTUAL), Instant.now()));
         verify(defaultVersionedSaverService, never()).saveNewVersion(any(), any(), any(Instant.class), any());
     }
@@ -117,7 +118,7 @@ class VehicleTypeKindRulesTest {
     void claimedContractualCodespaceIdOnPhysicalTypeIsRejected() {
         VehicleType incoming = vehicleType(VehicleTypeKindEnumeration.PHYSICAL);
         incoming.setNetexId("CVT:VehicleType:5");
-        assertThrows(IllegalArgumentException.class, () -> vehicleTypeSaver.saveNewVersion(null, incoming, Instant.now()));
+        assertThrows(VehicleTypeKindViolationException.class, () -> vehicleTypeSaver.saveNewVersion(null, incoming, Instant.now()));
         verify(defaultVersionedSaverService, never()).saveNewVersion(any(), any(), any(Instant.class), any());
     }
 
@@ -125,7 +126,7 @@ class VehicleTypeKindRulesTest {
     void claimedOtherCodespaceIdOnContractualTypeIsRejected() {
         VehicleType incoming = vehicleType(VehicleTypeKindEnumeration.CONTRACTUAL);
         incoming.setNetexId("NMR:VehicleType:5");
-        assertThrows(IllegalArgumentException.class, () -> vehicleTypeSaver.saveNewVersion(null, incoming, Instant.now()));
+        assertThrows(VehicleTypeKindViolationException.class, () -> vehicleTypeSaver.saveNewVersion(null, incoming, Instant.now()));
         verify(defaultVersionedSaverService, never()).saveNewVersion(any(), any(), any(Instant.class), any());
     }
 
@@ -135,8 +136,8 @@ class VehicleTypeKindRulesTest {
         vehicle.setNetexId("XXX:Vehicle:1");
         vehicle.setTransportType(vehicleType(VehicleTypeKindEnumeration.CONTRACTUAL));
 
-        assertThrows(IllegalArgumentException.class, () -> vehicleSaver.saveNewVersion(vehicle));
-        assertThrows(IllegalArgumentException.class, () -> vehicleSaver.saveNewVersion(null, vehicle, Instant.now()));
+        assertThrows(VehicleTypeKindViolationException.class, () -> vehicleSaver.saveNewVersion(vehicle));
+        assertThrows(VehicleTypeKindViolationException.class, () -> vehicleSaver.saveNewVersion(null, vehicle, Instant.now()));
         verify(defaultVersionedSaverService, never()).saveNewVersion(any(Vehicle.class), any());
     }
 

@@ -8,7 +8,7 @@ import org.rutebanken.sobek.service.deactivate.VehicleDeactivator;
 import org.rutebanken.sobek.service.deactivate.VehicleTypeDeactivator;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
-import jakarta.xml.bind.ValidationException;
+import jakarta.validation.ValidationException;
 import org.rutebanken.sobek.graphql.converter.DeckPlanNeTExIdConverter;
 import org.rutebanken.sobek.graphql.converter.VehicleNeTExIdConverter;
 import org.rutebanken.sobek.graphql.converter.VehicleTypeNeTExIdConverter;

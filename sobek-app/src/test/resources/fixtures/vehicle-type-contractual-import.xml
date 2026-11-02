@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PublicationDelivery xmlns="http://www.netex.org.uk/netex" version="1.0">
+    <PublicationTimestamp>2026-03-16T10:25:00.619Z</PublicationTimestamp>
+    <ParticipantRef>TST</ParticipantRef>
+    <dataObjects>
+        <ResourceFrame id="RF:1" version="1">
+            <FrameDefaults>
+                <DefaultResponsibilitySetRef ref="TST:ResponsibilitySet:1" />
+                <DefaultLocale>
+                    <TimeZone>Europe/Oslo</TimeZone>
+                </DefaultLocale>
+            </FrameDefaults>
+            <responsibilitySets>
+                <ResponsibilitySet id="TST:ResponsibilitySet:1" version="1">
+                    <roles>
+                        <ResponsibilityRoleAssignment id="TST:ResponsibilityRoleAssignment:1" version="1">
+                            <DataRoleType>owns</DataRoleType>
+                            <ResponsibleOrganisationRef ref="AKT"/>
+                        </ResponsibilityRoleAssignment>
+                    </roles>
+                </ResponsibilitySet>
+            </responsibilitySets>
+            <vehicleTypes>
+                <VehicleType id="CVT:VehicleType:9001" version="1">
+                    <Name lang="nb"><Text>Contractual bus</Text></Name>
+                    <TransportMode>bus</TransportMode>
+                </VehicleType>
+            </vehicleTypes>
+        </ResourceFrame>
+    </dataObjects>
+</PublicationDelivery>

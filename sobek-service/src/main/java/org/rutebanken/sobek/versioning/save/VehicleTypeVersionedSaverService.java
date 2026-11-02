@@ -17,6 +17,7 @@ package org.rutebanken.sobek.versioning.save;
 
 
 import lombok.extern.java.Log;
+import org.rutebanken.sobek.error.VehicleTypeKindViolationException;
 import org.rutebanken.sobek.model.vehicle.PassengerCapacity;
 import org.rutebanken.sobek.netex.id.ValidPrefixList;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
@@ -85,7 +86,7 @@ public class VehicleTypeVersionedSaverService {
         boolean inContractualCodespace = netexId.startsWith(ValidPrefixList.CONTRACTUAL_VEHICLE_TYPE_PREFIX + ":");
         boolean contractual = vehicleType.getVehicleTypeKind() == VehicleTypeKindEnumeration.CONTRACTUAL;
         if (inContractualCodespace != contractual) {
-            throw new IllegalArgumentException("Vehicle type id " + netexId + " does not match its kind " + vehicleType.getVehicleTypeKind()
+            throw new VehicleTypeKindViolationException("Vehicle type id " + netexId + " does not match its kind " + vehicleType.getVehicleTypeKind()
                     + ". Only contractual vehicle types use the " + ValidPrefixList.CONTRACTUAL_VEHICLE_TYPE_PREFIX + " codespace.");
         }
     }
@@ -99,7 +100,7 @@ public class VehicleTypeVersionedSaverService {
         VehicleTypeKindEnumeration requested = newVersion.getVehicleTypeKind();
         if (existingVersion == null) {
             if (requested == null) {
-                throw new IllegalArgumentException("vehicleTypeKind is required when creating a vehicle type: PHYSICAL or CONTRACTUAL");
+                throw new VehicleTypeKindViolationException("vehicleTypeKind is required when creating a vehicle type: PHYSICAL or CONTRACTUAL");
             }
             return;
         }
@@ -107,7 +108,7 @@ public class VehicleTypeVersionedSaverService {
         if (requested == null) {
             newVersion.setVehicleTypeKind(existing);
         } else if (existing != null && requested != existing) {
-            throw new IllegalArgumentException("Vehicle type " + existingVersion.getNetexId()
+            throw new VehicleTypeKindViolationException("Vehicle type " + existingVersion.getNetexId()
                     + " is " + existing + " and cannot be changed to " + requested);
         }
     }

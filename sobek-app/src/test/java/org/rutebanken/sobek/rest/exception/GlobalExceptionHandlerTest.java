@@ -52,6 +52,7 @@ class GlobalExceptionHandlerTest {
         static Stream<Arguments> exceptionToStatusProvider() {
             return Stream.of(
                 Arguments.of(new ValidationException("Validation failed"), HttpStatus.BAD_REQUEST),
+                Arguments.of(new IllegalArgumentException("Bad argument"), HttpStatus.INTERNAL_SERVER_ERROR),
                 Arguments.of(new OptimisticLockException("Lock failed"), HttpStatus.BAD_REQUEST),
                 Arguments.of(new EntityNotFoundException("Not found"), HttpStatus.BAD_REQUEST),
                 Arguments.of(new DataIntegrityViolationException("Integrity violation"), HttpStatus.BAD_REQUEST),
@@ -72,6 +73,23 @@ class GlobalExceptionHandlerTest {
             ResponseEntity<ErrorResponseEntity> response = handler.handleException(wrappedException, request);
 
             assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        }
+
+        @Test
+        @DisplayName("Should not treat IllegalArgumentException as a client error")
+        void shouldNotMapIllegalArgumentExceptionToBadRequest() {
+            ResponseEntity<ErrorResponseEntity> response =
+                    handler.handleException(new IllegalArgumentException("Internal contract violated"), request);
+
+            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        }
+
+        @Test
+        @DisplayName("Should keep IllegalArgumentException wrapped in another exception as a server error")
+        void shouldKeepWrappedIllegalArgumentExceptionAsServerError() {
+            Exception wrapped = new RuntimeException("Wrapper", new IllegalArgumentException("Bad argument"));
+
+            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, handler.handleException(wrapped, request).getStatusCode());
         }
 
         @Test

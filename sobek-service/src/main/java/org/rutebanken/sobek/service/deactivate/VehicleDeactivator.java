@@ -15,7 +15,7 @@
 
 package org.rutebanken.sobek.service.deactivate;
 
-import jakarta.xml.bind.ValidationException;
+import jakarta.validation.ValidationException;
 import org.rutebanken.sobek.auth.AuthorizationService;
 import org.rutebanken.sobek.auth.UsernameFetcher;
 import org.rutebanken.sobek.model.vehicle.Vehicle;

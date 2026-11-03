@@ -127,6 +127,59 @@ class VehicleExportIT {
     }
 
     @Test
+    void exportAll_withUnsupportedVehicleTypeKind_returnsBadRequestListingTheAllowedValues() {
+        String body =
+                given()
+                        .accept(ContentType.XML)
+                        .queryParam("dataOwner", DATA_OWNER)
+                        .queryParam("vehicleTypeKind", "INVALID")
+                        .when()
+                        .get("/services/vehicles/netex")
+                        .then()
+                        .statusCode(400)
+                        .extract()
+                        .body()
+                        .asString();
+
+        assertThat(body).contains("INVALID", "vehicleTypeKind", "PHYSICAL", "CONTRACTUAL", "BOTH");
+    }
+
+    @Test
+    void exportAll_withoutVehicleTypeKind_returnsBadRequest() {
+        given()
+                .accept(ContentType.XML)
+                .queryParam("dataOwner", DATA_OWNER)
+                .when()
+                .get("/services/vehicles/netex")
+                .then()
+                .statusCode(400);
+    }
+
+    @Test
+    void exportOneVehicle_withUnsupportedVehicleTypeKind_returnsBadRequest() {
+        given()
+                .accept(ContentType.XML)
+                .queryParam("dataOwner", DATA_OWNER)
+                .queryParam("vehicleTypeKind", "INVALID")
+                .when()
+                .get("/services/vehicles/netex/vehicles/NMR:Vehicle:does-not-exist")
+                .then()
+                .statusCode(400);
+    }
+
+    @Test
+    void exportOneDeckPlan_withUnsupportedVehicleTypeKind_returnsBadRequest() {
+        given()
+                .accept(ContentType.XML)
+                .queryParam("dataOwner", DATA_OWNER)
+                .queryParam("vehicleTypeKind", "INVALID")
+                .when()
+                .get("/services/vehicles/netex/deckplans/NMR:DeckPlan:does-not-exist")
+                .then()
+                .statusCode(400);
+    }
+
+    @Test
     void exportVehicle_dataOwnerUserIsNotAuthorizedFor_returnsSameForbiddenWhetherOrNotTheVehicleExists() {
         saveVehicleOwnedBy(OTHER_DATA_OWNER, "ATB:Vehicle:forbidden-existing");
 

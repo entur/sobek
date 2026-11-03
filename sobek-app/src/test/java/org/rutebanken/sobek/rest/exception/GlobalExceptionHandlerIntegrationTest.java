@@ -43,6 +43,12 @@ class GlobalExceptionHandlerIntegrationTest {
     }
 
     @Test
+    void illegalArgumentExceptionIsNotAClientErrorAndStaysInternalServerError() throws Exception {
+        mockMvc.perform(get("/test/illegal-argument-exception"))
+            .andExpect(status().isInternalServerError());
+    }
+
+    @Test
     void shouldReturnXmlContentTypeWhenAcceptHeaderIsXml() throws Exception {
         mockMvc.perform(get("/test/validation-exception")
                 .accept(MediaType.APPLICATION_XML))
@@ -143,6 +149,11 @@ class GlobalExceptionHandlerIntegrationTest {
         @GetMapping("/runtime-exception")
         public String throwRuntimeException() {
             throw new RuntimeException("Something went wrong");
+        }
+
+        @GetMapping("/illegal-argument-exception")
+        public String throwIllegalArgumentException() {
+            throw new IllegalArgumentException("Internal contract violated");
         }
 
         @GetMapping("/nested-exception")

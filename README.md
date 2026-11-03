@@ -398,7 +398,7 @@ export MAVEN_OPTS='-Xms256m -Xmx1712m -Xss256m -XX:NewSize=64m -XX:MaxNewSize=12
 ```
 
 ### Import NeTEx file without *NMR* IDs
-This NeTEx file should not contain NSR ID. (The NSR prefix is configurable in the class ValidPrefixList)
+This NeTEx file should not contain NMR ID. (The NMR prefix is configurable in the class ValidPrefixList)
 * Sobek will match existing vehicles, vehicle types, vehicle models and deck plans based on their original ID.
 
 Sobek will return the modified NeTEx structure with it's own NSR IDs. Original IDs will be present in key value list on each object.

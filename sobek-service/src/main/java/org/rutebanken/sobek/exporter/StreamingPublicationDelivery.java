@@ -160,7 +160,7 @@ public class StreamingPublicationDelivery {
 
         logger.info("Preparing scrollable iterators");
         prepareVehicleTypes(exportParams.getDataOwner(), exportParams.getVehicleTypeKind(), mappedVehicleTypeCount, netexResourceFrame);
-        prepareVehicleModels(exportParams.getDataOwner(), mappedVehicleModelCount, netexResourceFrame);
+        prepareVehicleModels(exportParams.getDataOwner(), exportParams.getVehicleTypeKind(), mappedVehicleModelCount, netexResourceFrame);
         if (exportParams.getVehicleTypeKind().includesPhysical()) {
             prepareVehicles(exportParams.getDataOwner(), mappedVehicleCount, netexResourceFrame);
         } else {
@@ -300,9 +300,9 @@ public class StreamingPublicationDelivery {
         }
     }
 
-    private void prepareVehicleModels(String dataOwnerRef, AtomicInteger mappedVehicleModelCount, org.entur.netex2.model.ResourceFrame resourceFrame) {
+    private void prepareVehicleModels(String dataOwnerRef, VehicleTypeKindSelection vehicleTypeKindSelection, AtomicInteger mappedVehicleModelCount, org.entur.netex2.model.ResourceFrame resourceFrame) {
         List<VehicleModel> vehicleModelsInDb = vehicleModelRepository
-            .findCurrentFiltered(dataOwnerRef, null, null, null, Pageable.unpaged())
+            .findCurrentFiltered(dataOwnerRef, null, null, vehicleTypeKindSelection.toKindOrNull(), null, Pageable.unpaged())
             .getContent();
 
         if (!vehicleModelsInDb.isEmpty()) {

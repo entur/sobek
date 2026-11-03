@@ -6,6 +6,7 @@ import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import org.rutebanken.sobek.model.vehicle.AllPublicTransportModesEnumeration;
 import org.rutebanken.sobek.model.vehicle.VehicleModel;
+import org.rutebanken.sobek.model.vehicle.VehicleTypeKindEnumeration;
 import org.rutebanken.sobek.repository.utils.QueryHelper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -44,7 +45,7 @@ public class VehicleModelRepositoryImpl implements VehicleModelRepositoryCustom 
             "AND (vm.validBetween.toDate IS NULL OR vm.validBetween.toDate >= :now)";
 
     @Override
-    public Page<VehicleModel> findCurrentFiltered(String dataOwnerRef, List<String> netexIds, List<AllPublicTransportModesEnumeration> transportModes, String name, Pageable pageable) {
+    public Page<VehicleModel> findCurrentFiltered(String dataOwnerRef, List<String> netexIds, List<AllPublicTransportModesEnumeration> transportModes, VehicleTypeKindEnumeration vehicleTypeKind, String name, Pageable pageable) {
         Instant now = Instant.now();
 
         StringBuilder filterSuffix = new StringBuilder();
@@ -61,38 +62,44 @@ public class VehicleModelRepositoryImpl implements VehicleModelRepositoryCustom 
         if(dataOwnerRef != null) {
             filterSuffix.append(" AND vm.transportType.dataOwnerRef = :dataOwnerRef");
         }
+        if (vehicleTypeKind != null) {
+            filterSuffix.append(" AND vm.transportType.vehicleTypeKind = :vehicleTypeKind");
+        }
 
 
         String baseJpql = "SELECT DISTINCT vm FROM VehicleModel vm " + CURRENT_BASE_WHERE + filterSuffix;
 
         if (pageable.isUnpaged()) {
             TypedQuery<VehicleModel> query = entityManager.createQuery(baseJpql, VehicleModel.class);
-            setFilterParams(query, dataOwnerRef, netexIds, transportModes, name, now);
+            setFilterParams(query, dataOwnerRef, netexIds, transportModes, vehicleTypeKind, name, now);
             List<VehicleModel> results = query.getResultList();
             return new PageImpl<>(results);
         }
 
         String countJpql = "SELECT COUNT(DISTINCT vm) FROM VehicleModel vm " + CURRENT_BASE_WHERE + filterSuffix;
         TypedQuery<Long> countQuery = entityManager.createQuery(countJpql, Long.class);
-        setFilterParams(countQuery, dataOwnerRef, netexIds, transportModes, name, now);
+        setFilterParams(countQuery, dataOwnerRef, netexIds, transportModes, vehicleTypeKind, name, now);
 
         long total = countQuery.getSingleResult();
 
         TypedQuery<VehicleModel> query = entityManager.createQuery(baseJpql + " ORDER BY vm.id", VehicleModel.class);
-        setFilterParams(query, dataOwnerRef, netexIds, transportModes, name, now);
+        setFilterParams(query, dataOwnerRef, netexIds, transportModes, vehicleTypeKind, name, now);
         query.setFirstResult((int) pageable.getOffset());
         query.setMaxResults(pageable.getPageSize());
 
         return new PageImpl<>(query.getResultList(), pageable, total);
     }
 
-    private void setFilterParams(Query query, String dataOwnerRef, List<String> netexIds, List<AllPublicTransportModesEnumeration> transportModes, String name, Instant now) {
+    private void setFilterParams(Query query, String dataOwnerRef, List<String> netexIds, List<AllPublicTransportModesEnumeration> transportModes, VehicleTypeKindEnumeration vehicleTypeKind, String name, Instant now) {
         query.setParameter("now", now);
         if (netexIds != null && !netexIds.isEmpty()) {
             query.setParameter("netexIds", netexIds);
         }
         if (transportModes != null && !transportModes.isEmpty()) {
             query.setParameter("transportModes", transportModes);
+        }
+        if (vehicleTypeKind != null) {
+            query.setParameter("vehicleTypeKind", vehicleTypeKind);
         }
         if(name != null && !name.isEmpty()) {
             query.setParameter("name", name);

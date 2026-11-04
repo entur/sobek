@@ -31,7 +31,7 @@ A vehicle type is either `PHYSICAL` or `CONTRACTUAL` (the *kind* of the vehicle 
 Rules:
 * The kind is required when creating a vehicle type, and cannot be changed afterwards. When updating, omit it or repeat the existing value.
 * A vehicle that refers to a contractual vehicle type is rejected.
-* Physical vehicle types get IDs in the configured codespace (e.g. `NMR:VehicleType:123`), contractual ones in the `CVT` codespace (e.g. `CVT:VehicleType:123`). They share the same number sequence.
+* Sobek assigns the IDs of new physical vehicle types in the configured codespace (e.g. `NMR:VehicleType:123`), and those of contractual ones in the `CVT` codespace (e.g. `CVT:VehicleType:123`). They share the same number sequence. See [ID Generation](#id-generation).
 * NeTEx has no field for the kind, so it is expressed by the codespace of the ID: `CVT` means contractual, anything else means physical.
 
 ### A ReactJS Frontend
@@ -316,14 +316,19 @@ See also http://stackoverflow.com/a/26514779
 
 ## ID Generation
 ### Background
-For objects with codespace other than NMR, Sobek expects that the ID is unique and respects IDs generated elsewhere.
-For objects with codespace NMR, Sobek generates IDs itself.
-For objects without ID, Sobek generates IDs itself and puts them in the NMR codespace.
+What Sobek does with an ID it receives (from Hathor, from an organisation's own system, in a NeTEx import) depends on
+the codespace of the ID, the first part of `<codespace>:<type>:<number>`:
 
-Contractual vehicle types are the exception: Sobek generates their IDs in the `CVT` codespace instead
-(`CVT:VehicleType:<n>`), using the same number sequence as physical vehicle types.
-The `CVT` codespace is reserved for contractual vehicle types: a physical vehicle type cannot use it, and a contractual
-vehicle type cannot use any other codespace.
+| Codespace | Who assigns IDs | What Sobek does with an incoming ID |
+|---|---|---|
+| **NMR** (the configured `netex.validPrefix`), and **CVT** for contractual vehicle types | Only Sobek | An ID of an object that exists is an **update** of that object. An ID that does not exist is **rejected** (HTTP 400 / `BAD_REQUEST`): clients cannot create new IDs here. |
+| A codespace in `netex.valid.codespaces.list`, e.g. `AKT` | The client | The ID is respected and used as the NeTEx ID. Sobek never assigns IDs here. The same ID again is an update. |
+| Any other codespace, typically another system such as Autosys | The other system | Sobek assigns a new ID in NMR (CVT for a contractual vehicle type) and keeps the external ID as the key value `imported-id`. The same external ID again is an update of the same object. |
+
+For objects without an ID, Sobek assigns an ID in NMR (CVT for a contractual vehicle type). Contractual and physical vehicle
+types share one number sequence.
+
+The `CVT` codespace is Sobek's for contractual vehicle types only: a physical vehicle type cannot have an ID in it, and a contractual vehicle type cannot have an ID in `NMR`.
 
 ## Keycloak/Auth0
 Both Sobek and Hathor are set up to be used with Keycloak or Auth0.
@@ -403,7 +408,9 @@ This NeTEx file should not contain NMR ID. (The NMR prefix is configurable in th
 
 Sobek will return the modified NeTEx structure with it's own NSR IDs. Original IDs will be present in key value list on each object.
 
-Vehicle types without a `CVT` ID are imported as `PHYSICAL`. To import a `CONTRACTUAL` vehicle type, give it an ID in the `CVT` codespace.
+See [ID Generation](#id-generation) for what happens to IDs in the import: IDs in NMR/CVT must exist (they are updates), IDs in registered codespaces are used as they are, and other IDs are kept as `imported-id`.
+
+A new vehicle type in an import is `PHYSICAL`. Contractual vehicle types cannot be created by an import, as that would need an ID in the `CVT` codespace, which only Sobek assigns. Create them in GraphQL; an import can update an existing one using its `CVT` ID.
 An existing vehicle type keeps its kind: an update that implies another kind is rejected.
 
 ```shell

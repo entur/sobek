@@ -66,25 +66,46 @@ public class ValidPrefixList {
         return isValidPrefixForType(prefix, clazz.getSimpleName());
     }
 
+    /**
+     * True if the codespace is one Sobek keeps the id of as it is: its own or a registered one.
+     */
     public boolean isValidPrefixForType(String prefix, String type) {
+        return getCodespaceOfPrefix(prefix, type) != NetexIdCodespace.EXTERNAL;
+    }
 
-        if (prefix.equals(validNetexPrefix)) {
-            return true;
+    /**
+     * Whose codespace the id is in, for an entity of the given type. An id that is not on the form
+     * {@code <codespace>:<type>:<number>} is treated as external, as it cannot be one Sobek or a registered
+     * codespace has assigned.
+     */
+    public NetexIdCodespace getCodespaceOf(String netexId, Class<?> entityType) {
+        return getCodespaceOf(netexId, entityType.getSimpleName());
+    }
+
+    public NetexIdCodespace getCodespaceOf(String netexId, String type) {
+        if (netexId == null) {
+            return NetexIdCodespace.EXTERNAL;
         }
-        if (prefix.equals(CONTRACTUAL_VEHICLE_TYPE_PREFIX) && "VehicleType".equals(type)) {
-            return true;
+        String[] parts = netexId.split(":", -1);
+        if (parts.length != 3) {
+            return NetexIdCodespace.EXTERNAL;
+        }
+        return getCodespaceOfPrefix(parts[0], type);
+    }
+
+    public NetexIdCodespace getCodespaceOfPrefix(String prefix, String type) {
+        if (prefix == null) {
+            return NetexIdCodespace.EXTERNAL;
+        }
+        if (prefix.equals(validNetexPrefix)
+                || (prefix.equals(CONTRACTUAL_VEHICLE_TYPE_PREFIX) && "VehicleType".equals(type))) {
+            return NetexIdCodespace.SOBEK;
         }
 
-        List<String> validPrefixes = this.get(type);
-        if (validPrefixes == null) {
-            return false;
+        List<String> registered = this.get(type);
+        if (registered != null && (registered.contains(prefix) || registered.contains(ANY_PREFIX))) {
+            return NetexIdCodespace.REGISTERED;
         }
-        if (validPrefixes.contains(prefix)) {
-            return true;
-        }
-        if (validPrefixes.contains(ANY_PREFIX)) {
-            return true;
-        }
-        return false;
+        return NetexIdCodespace.EXTERNAL;
     }
 }

@@ -19,6 +19,7 @@ package org.rutebanken.sobek.versioning.save;
 import lombok.extern.java.Log;
 import org.rutebanken.sobek.error.VehicleTypeKindViolationException;
 import org.rutebanken.sobek.model.vehicle.PassengerCapacity;
+import org.rutebanken.sobek.netex.id.NetexIdCodespace;
 import org.rutebanken.sobek.netex.id.ValidPrefixList;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
 import org.rutebanken.sobek.model.vehicle.VehicleTypeKindEnumeration;
@@ -38,9 +39,11 @@ public class VehicleTypeVersionedSaverService {
     private final VehicleRepository vehicleRepository;
     private final DefaultMergingVersionedSaverService defaultVersionedSaverService;
     private final NetexIdAssigner netexIdAssigner;
+    private final ValidPrefixList validPrefixList;
 
 
-    public VehicleTypeVersionedSaverService(VehicleTypeRepository vehicleTypeRepository, VehicleRepository vehicleRepository, DefaultMergingVersionedSaverService defaultVersionedSaverService, NetexIdAssigner netexIdAssigner) {
+    public VehicleTypeVersionedSaverService(VehicleTypeRepository vehicleTypeRepository, VehicleRepository vehicleRepository, DefaultMergingVersionedSaverService defaultVersionedSaverService, NetexIdAssigner netexIdAssigner, ValidPrefixList validPrefixList) {
+        this.validPrefixList = validPrefixList;
         this.vehicleTypeRepository = vehicleTypeRepository;
         this.vehicleRepository = vehicleRepository;
         this.defaultVersionedSaverService = defaultVersionedSaverService;
@@ -75,12 +78,13 @@ public class VehicleTypeVersionedSaverService {
     }
 
     /**
-     * Contractual vehicle types live in their own codespace (CVT), physical ones never do.
-     * Generated ids always get this right (see NetexIdHelper); this guards explicitly claimed ids.
+     * In Sobek's own codespaces, contractual vehicle types are in CVT and physical ones are not. Generated ids always
+     * get this right (see NetexIdHelper); this guards the ids of existing vehicle types. An id in any other codespace
+     * says nothing about the kind.
      */
     private void verifyNetexIdMatchesKind(VehicleType vehicleType) {
         String netexId = vehicleType.getNetexId();
-        if (netexId == null) {
+        if (netexId == null || validPrefixList.getCodespaceOf(netexId, VehicleType.class) != NetexIdCodespace.SOBEK) {
             return;
         }
         boolean inContractualCodespace = netexId.startsWith(ValidPrefixList.CONTRACTUAL_VEHICLE_TYPE_PREFIX + ":");

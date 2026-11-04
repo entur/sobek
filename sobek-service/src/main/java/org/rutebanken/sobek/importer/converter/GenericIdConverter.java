@@ -18,6 +18,7 @@ package org.rutebanken.sobek.importer.converter;
 import org.rutebanken.sobek.model.CustomKeyValueTypes;
 import org.rutebanken.sobek.model.DataManagedObjectStructure;
 import org.rutebanken.sobek.netex.id.NetexIdHelper;
+import org.rutebanken.sobek.netex.id.NetexIdCodespace;
 import org.rutebanken.sobek.netex.id.ValidPrefixList;
 import org.rutebanken.sobek.repository.generic.GenericEntityInVersionRepository;
 import org.slf4j.Logger;
@@ -52,7 +53,7 @@ public class GenericIdConverter<X extends org.entur.netex2.model.DataManagedObje
         }
 
         // If ID already valid - do nothing
-        if(validPrefixList.isValidPrefixForType(netexIdHelper.extractIdPrefix(object.getId()), sobekType)) {
+        if(validPrefixList.getCodespaceOf(object.getId(), sobekType) != NetexIdCodespace.EXTERNAL) {
             logger.debug("Detected ID with valid prefix: {}. ", object.getId());
             return object;
         }

@@ -15,12 +15,14 @@
 
 package org.rutebanken.sobek.versioning.save;
 
+import jakarta.validation.ValidationException;
 import org.rutebanken.sobek.auth.AuthorizationService;
 import org.rutebanken.sobek.auth.UsernameFetcher;
 import org.rutebanken.sobek.diff.SobekObjectDiffer;
 import org.rutebanken.sobek.model.DataManagedObjectStructure;
 import org.rutebanken.sobek.model.EntityInVersionStructure;
 import org.rutebanken.sobek.model.authorization.OwnedEntity;
+import org.rutebanken.sobek.netex.id.ValidPrefixList;
 import org.rutebanken.sobek.organisation.OrganisationRegistry;
 import org.rutebanken.sobek.repository.EntityInVersionRepository;
 import org.rutebanken.sobek.repository.listener.NetexIdAssigner;
@@ -33,6 +35,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.Arrays;
+
+import static org.rutebanken.sobek.model.CustomKeyValueTypes.ORIGINAL_ID_KEY;
 
 @Service
 public class DefaultMergingVersionedSaverService {
@@ -52,8 +56,10 @@ public class DefaultMergingVersionedSaverService {
     private final AuthorizationService authorizationService;
     private final VersionValidator versionValidator;
     private final OrganisationRegistry organisationRegistry;
+    private final ValidPrefixList validPrefixList;
 
-    public DefaultMergingVersionedSaverService(UsernameFetcher usernameFetcher, ValidityUpdater validityUpdater, SobekObjectDiffer sobekObjectDiffer, VersionIncrementor versionIncrementor, NetexIdAssigner netexIdAssigner, AuthorizationService authorizationService, VersionValidator versionValidator, OrganisationRegistry organisationRegistry) {
+    public DefaultMergingVersionedSaverService(UsernameFetcher usernameFetcher, ValidityUpdater validityUpdater, SobekObjectDiffer sobekObjectDiffer, VersionIncrementor versionIncrementor, NetexIdAssigner netexIdAssigner, AuthorizationService authorizationService, VersionValidator versionValidator, OrganisationRegistry organisationRegistry, ValidPrefixList validPrefixList) {
+        this.validPrefixList = validPrefixList;
         this.usernameFetcher = usernameFetcher;
         this.validityUpdater = validityUpdater;
         this.sobekObjectDiffer = sobekObjectDiffer;
@@ -89,6 +95,8 @@ public class DefaultMergingVersionedSaverService {
                 existingVersion = entityInVersionRepository.findFirstByNetexIdOrderByVersionDesc(newVersion.getNetexId());
                 if (existingVersion != null) {
                     logger.debug("Found existing entity from netexId {}", existingVersion.getNetexId());
+                } else {
+                    handleClientIdOfNewObject(newVersion);
                 }
             }
         }
@@ -126,6 +134,35 @@ public class DefaultMergingVersionedSaverService {
         }
         //prometheusMetricsService.registerEntitySaved(newVersion.getClass(),1L);
         return newVersion;
+    }
+
+    /**
+     * A new object arrives with an id that does not exist. What happens depends on whose codespace it is in:
+     * <ul>
+     *   <li>Sobek's own (NMR, CVT): rejected, as only Sobek assigns ids there. (An existing id is an update.)</li>
+     *   <li>A registered codespace: the client's id is respected and used as the NeTEx id.</li>
+     *   <li>Any other (e.g. Autosys): Sobek assigns an id of its own and keeps the external id as imported-id.</li>
+     * </ul>
+     */
+    private <T extends EntityInVersionStructure> void handleClientIdOfNewObject(T newVersion) {
+        String clientId = newVersion.getNetexId();
+        switch (validPrefixList.getCodespaceOf(clientId, newVersion.getClass())) {
+            case SOBEK -> throw new ValidationException("No " + newVersion.getClass().getSimpleName() + " with id " + clientId
+                    + " exists, and ids in this codespace are assigned by Sobek. To create a new object, leave out the id"
+                    + " or use an id in your own codespace.");
+            case REGISTERED -> logger.debug("Using the id {} that the client has assigned", clientId);
+            case EXTERNAL -> {
+                if (newVersion instanceof DataManagedObjectStructure dataManaged) {
+                    logger.debug("Id {} is from an external codespace. Assigning an id and keeping it as {}", clientId, ORIGINAL_ID_KEY);
+                    dataManaged.removeKeyValue(ORIGINAL_ID_KEY);
+                    dataManaged.addKeyValue(ORIGINAL_ID_KEY, clientId);
+                    newVersion.setNetexId(null);
+                    netexIdAssigner.assignNetexId(newVersion);
+                } else {
+                    logger.warn("Id {} is from an external codespace, but the object cannot hold key values. Keeping the id", clientId);
+                }
+            }
+        }
     }
 
     private <T extends EntityInVersionStructure> void authorizeNewVersion(T existingVersion, T newVersion) {

@@ -81,12 +81,15 @@ public class VehicleTypeImportHandler {
             logger.info("About to check if incoming vehicle types have previously been imported with the same id");
             var originalWithMappedIds = originalVehicleTypes.stream()
                     .filter(this::isVehicleType)
-                    .map(jaxbElement -> (VehicleType) jaxbElement.getValue())
-                    .map(vehicleTypeIdConverter::convertIncomingId);
+                    .map(jaxbElement -> (VehicleType) jaxbElement.getValue());
 
             logger.info("About to map {} vehicle types to internal model", originalVehicleTypes.size());
             List<org.rutebanken.sobek.model.vehicle.VehicleType> mappedVehicleTypes = originalWithMappedIds
-                    .map(vt -> mapWithKind(vt, importParams))
+                    .map(vt -> {
+                        // Read the id the client sent before the converter swaps it for an already imported (e.g. CVT) id
+                        String clientId = vt.getId();
+                        return mapWithKind(vehicleTypeIdConverter.convertIncomingId(vt), clientId, importParams);
+                    })
                     .collect(Collectors.toList());
             logger.info("Mapped {} vehicle types to internal model", mappedVehicleTypes.size());
 
@@ -105,13 +108,15 @@ public class VehicleTypeImportHandler {
     }
 
     /**
-     * The kind follows the id when the id is in the contractual codespace (CVT). Any other id says nothing about the
-     * kind, so the kind the client asked for in the import applies.
+     * The kind follows the id when the id the client sent is in the contractual codespace (CVT). Any other id says
+     * nothing about the kind, so the kind the client asked for in the import applies. This is decided on the client's
+     * original id: an external id that the converter resolved to an existing CVT id must still be checked against the
+     * requested kind, so that a conflicting kind is rejected by the saver.
      */
-    private org.rutebanken.sobek.model.vehicle.VehicleType mapWithKind(VehicleType netexVehicleType, ImportParams importParams) {
-        var mapped = vehicleTypeMapper.mapToSobek(netexVehicleType, context);
+    private org.rutebanken.sobek.model.vehicle.VehicleType mapWithKind(VehicleType convertedVehicleType, String clientId, ImportParams importParams) {
+        var mapped = vehicleTypeMapper.mapToSobek(convertedVehicleType, context);
         if (mapped != null && importParams.getVehicleTypeKind() != null
-                && VehicleTypeMapper.kindFromNetexId(netexVehicleType.getId()) == VehicleTypeKindEnumeration.PHYSICAL) {
+                && VehicleTypeMapper.kindFromNetexId(clientId) == VehicleTypeKindEnumeration.PHYSICAL) {
             mapped.setVehicleTypeKind(importParams.getVehicleTypeKind());
         }
         return mapped;

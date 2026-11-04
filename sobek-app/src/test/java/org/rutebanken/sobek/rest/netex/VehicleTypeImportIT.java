@@ -187,6 +187,52 @@ class VehicleTypeImportIT {
         assertThat(body).contains("contractual");
     }
 
+    @Test
+    void reimportOfContractualVehicleTypeByExternalId_asPhysical_isRejected() throws Exception {
+        // Unique per run, so the test does not depend on what other tests left in the database
+        String externalId = "EXT:VehicleType:" + System.nanoTime();
+        String body = fixture("/fixtures/vehicle-type-import-with-id.xml").replace("@ID@", externalId);
+
+        // First import creates the vehicle type as CONTRACTUAL; Sobek assigns its own id and keeps the external one
+        String firstResponse = postImport(body, "CONTRACTUAL").statusCode(200).extract().body().asString();
+        String assignedId = importedId(firstResponse);
+        assertThat(vehicleTypeRepository.findFirstByNetexIdOrderByVersionDesc(assignedId).getVehicleTypeKind())
+            .isEqualTo(VehicleTypeKindEnumeration.CONTRACTUAL);
+        Long versionAfterFirstImport =
+            vehicleTypeRepository.findFirstByNetexIdOrderByVersionDesc(assignedId).getVersion();
+
+        // Reimport with the same external id resolves to the existing type, but now claims PHYSICAL
+        String errorBody = postImport(body, "PHYSICAL").statusCode(400).extract().body().asString();
+
+        assertThat(errorBody).contains("CONTRACTUAL").contains("PHYSICAL");
+        var afterReject = vehicleTypeRepository.findFirstByNetexIdOrderByVersionDesc(assignedId);
+        assertThat(afterReject.getVehicleTypeKind()).isEqualTo(VehicleTypeKindEnumeration.CONTRACTUAL);
+        assertThat(afterReject.getVersion()).isEqualTo(versionAfterFirstImport);
+
+        // Reimporting with the matching kind is still fine
+        postImport(body, "CONTRACTUAL").statusCode(200);
+    }
+
+    private io.restassured.response.ValidatableResponse postImport(String body, String kind) {
+        return given()
+            .contentType("application/xml")
+            .body(body)
+            .when()
+            .post("/services/vehicles/netex?vehicleTypeKind=" + kind)
+            .then();
+    }
+
+    private String importedId(String responseXml) throws Exception {
+        ResourceFrame frame =
+            unmarshal(responseXml).getDataObjects().getCompositeFrameOrCommonFrame().stream()
+                .map(JAXBElement::getValue)
+                .filter(ResourceFrame.class::isInstance)
+                .map(ResourceFrame.class::cast)
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("No ResourceFrame in response"));
+        return ((VehicleType) frame.getVehicleTypes().getTransportType().getFirst().getValue()).getId();
+    }
+
     private static org.rutebanken.sobek.model.vehicle.VehicleType contractualVehicleType() {
         var type = new org.rutebanken.sobek.model.vehicle.VehicleType();
         type.setTransportMode(org.rutebanken.sobek.model.vehicle.AllPublicTransportModesEnumeration.BUS);

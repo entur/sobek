@@ -1,9 +1,9 @@
 package org.rutebanken.sobek.netex.id;
 
 /**
- * Who is allowed to assign the ids in a codespace, which decides what Sobek does with an id it receives.
+ * The type of a codespace (the first part of a NeTEx id, e.g. "AKT" in "AKT:Vehicle:1"): who is allowed to assign the ids in it, which decides what Sobek does with an id it receives.
  */
-public enum NetexIdCodespace {
+public enum CodespaceType {
 
     /**
      * The codespaces of Sobek itself: the configured netex.validPrefix (NMR) and, for vehicle types, CVT.

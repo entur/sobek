@@ -19,7 +19,7 @@ package org.rutebanken.sobek.versioning.save;
 import lombok.extern.java.Log;
 import org.rutebanken.sobek.error.VehicleTypeKindViolationException;
 import org.rutebanken.sobek.model.vehicle.PassengerCapacity;
-import org.rutebanken.sobek.netex.id.NetexIdCodespace;
+import org.rutebanken.sobek.netex.id.CodespaceType;
 import org.rutebanken.sobek.netex.id.ValidPrefixList;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
 import org.rutebanken.sobek.model.vehicle.VehicleTypeKindEnumeration;
@@ -84,7 +84,7 @@ public class VehicleTypeVersionedSaverService {
      */
     private void verifyNetexIdMatchesKind(VehicleType vehicleType) {
         String netexId = vehicleType.getNetexId();
-        if (netexId == null || validPrefixList.getCodespaceOf(netexId, VehicleType.class) != NetexIdCodespace.SOBEK) {
+        if (netexId == null || validPrefixList.getCodespaceTypeOf(netexId, VehicleType.class) != CodespaceType.SOBEK) {
             return;
         }
         boolean inContractualCodespace = netexId.startsWith(ValidPrefixList.CONTRACTUAL_VEHICLE_TYPE_PREFIX + ":");

@@ -146,7 +146,7 @@ public class DefaultMergingVersionedSaverService {
      */
     private <T extends EntityInVersionStructure> void handleClientIdOfNewObject(T newVersion) {
         String clientId = newVersion.getNetexId();
-        switch (validPrefixList.getCodespaceOf(clientId, newVersion.getClass())) {
+        switch (validPrefixList.getCodespaceTypeOf(clientId, newVersion.getClass())) {
             case SOBEK -> throw new ValidationException("No " + newVersion.getClass().getSimpleName() + " with id " + clientId
                     + " exists, and ids in this codespace are assigned by Sobek. To create a new object, leave out the id"
                     + " or use an id in your own codespace.");

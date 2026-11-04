@@ -70,42 +70,42 @@ public class ValidPrefixList {
      * True if the codespace is one Sobek keeps the id of as it is: its own or a registered one.
      */
     public boolean isValidPrefixForType(String prefix, String type) {
-        return getCodespaceOfPrefix(prefix, type) != NetexIdCodespace.EXTERNAL;
+        return getCodespaceTypeOfPrefix(prefix, type) != CodespaceType.EXTERNAL;
     }
 
     /**
-     * Whose codespace the id is in, for an entity of the given type. An id that is not on the form
+     * The type of the codespace the id is in, for an entity of the given type. An id that is not on the form
      * {@code <codespace>:<type>:<number>} is treated as external, as it cannot be one Sobek or a registered
      * codespace has assigned.
      */
-    public NetexIdCodespace getCodespaceOf(String netexId, Class<?> entityType) {
-        return getCodespaceOf(netexId, entityType.getSimpleName());
+    public CodespaceType getCodespaceTypeOf(String netexId, Class<?> entityType) {
+        return getCodespaceTypeOf(netexId, entityType.getSimpleName());
     }
 
-    public NetexIdCodespace getCodespaceOf(String netexId, String type) {
+    public CodespaceType getCodespaceTypeOf(String netexId, String type) {
         if (netexId == null) {
-            return NetexIdCodespace.EXTERNAL;
+            return CodespaceType.EXTERNAL;
         }
         String[] parts = netexId.split(":", -1);
         if (parts.length != 3) {
-            return NetexIdCodespace.EXTERNAL;
+            return CodespaceType.EXTERNAL;
         }
-        return getCodespaceOfPrefix(parts[0], type);
+        return getCodespaceTypeOfPrefix(parts[0], type);
     }
 
-    public NetexIdCodespace getCodespaceOfPrefix(String prefix, String type) {
+    public CodespaceType getCodespaceTypeOfPrefix(String prefix, String type) {
         if (prefix == null) {
-            return NetexIdCodespace.EXTERNAL;
+            return CodespaceType.EXTERNAL;
         }
         if (prefix.equals(validNetexPrefix)
                 || (prefix.equals(CONTRACTUAL_VEHICLE_TYPE_PREFIX) && "VehicleType".equals(type))) {
-            return NetexIdCodespace.SOBEK;
+            return CodespaceType.SOBEK;
         }
 
         List<String> registered = this.get(type);
         if (registered != null && (registered.contains(prefix) || registered.contains(ANY_PREFIX))) {
-            return NetexIdCodespace.REGISTERED;
+            return CodespaceType.REGISTERED;
         }
-        return NetexIdCodespace.EXTERNAL;
+        return CodespaceType.EXTERNAL;
     }
 }

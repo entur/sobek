@@ -410,11 +410,10 @@ Sobek will return the modified NeTEx structure with it's own NSR IDs. Original I
 
 See [ID Generation](#id-generation) for what happens to IDs in the import: IDs in NMR/CVT must exist (they are updates), IDs in registered codespaces are used as they are, and other IDs are kept as `imported-id`.
 
-A new vehicle type in an import is `PHYSICAL`. Contractual vehicle types cannot be created by an import, as that would need an ID in the `CVT` codespace, which only Sobek assigns. Create them in GraphQL; an import can update an existing one using its `CVT` ID.
-An existing vehicle type keeps its kind: an update that implies another kind is rejected.
+NeTEx has no field for the kind of a vehicle type, so the import takes a required parameter, `vehicleTypeKind=PHYSICAL|CONTRACTUAL` (400 if it is missing or invalid). It is the kind of every vehicle type in the file whose ID is not in the `CVT` codespace: those in registered codespaces (e.g. `AKT`) and those with another system's ID, which Sobek gives an ID of its own (`CVT` for contractual). A vehicle type with a `CVT` ID is contractual whatever the parameter says. A file therefore holds one kind (plus `CVT` IDs). A new contractual vehicle type cannot have a `CVT` ID in the file, as only Sobek assigns those. An existing vehicle type keeps its kind: an import that implies another kind is rejected.
 
 ```shell
-curl -XPOST -H"Content-Type: application/xml" -d@my-nice-netex-file.xml http://localhost:1997/services/vehicles/netex
+curl -XPOST -H"Content-Type: application/xml" -d@my-nice-netex-file.xml "http://localhost:1997/services/vehicles/netex?vehicleTypeKind=PHYSICAL"
 ```
 
 ## GraphQL

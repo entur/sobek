@@ -60,7 +60,7 @@ class VehicleExportIT {
                         .contentType(ContentType.XML)
                         .body(seedXml)
                         .when()
-                        .post("/services/vehicles/netex")
+                        .post("/services/vehicles/netex?vehicleTypeKind=PHYSICAL")
                         .then()
                         .statusCode(200)
                         .extract()

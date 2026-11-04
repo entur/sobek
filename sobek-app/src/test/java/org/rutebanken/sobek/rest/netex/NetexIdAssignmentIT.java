@@ -224,6 +224,65 @@ class NetexIdAssignmentIT {
         assertThat(currentVehicleType(id, "PHYSICAL").get("version")).isEqualTo("2");
     }
 
+    // --- the kind of imported vehicle types: NeTEx cannot say it, so the import asks for it ---
+
+    @Test
+    void import_withoutVehicleTypeKind_isRejected() throws Exception {
+        String body = importExpecting(400, "/fixtures/vehicle-type-import-with-id.xml", "AKT:VehicleType:" + unique(), null);
+
+        assertThat(body).contains("vehicleTypeKind is required");
+    }
+
+    @Test
+    void import_withAnInvalidVehicleTypeKind_isRejected() throws Exception {
+        String body = importExpecting(400, "/fixtures/vehicle-type-import-with-id.xml", "AKT:VehicleType:" + unique(), "BOTH");
+
+        assertThat(body).contains("Invalid value 'BOTH'").contains("PHYSICAL, CONTRACTUAL");
+    }
+
+    @Test
+    void import_contractualKind_createsAContractualTypeInARegisteredCodespace() throws Exception {
+        String id = "AKT:VehicleType:" + unique();
+
+        assertThat(importVehicleType(id, "CONTRACTUAL")).isEqualTo(id);
+
+        assertThat(currentVehicleType(id, "CONTRACTUAL").get("netexId")).isEqualTo(id);
+        assertThat(jdbcTemplate.queryForObject("SELECT vehicle_type_kind FROM vehicle_type WHERE netex_id = ?", String.class, id))
+                .isEqualTo("CONTRACTUAL");
+    }
+
+    @Test
+    void import_contractualKind_withAnExternalId_getsAContractualIdFromSobek() throws Exception {
+        // An external id says nothing about the kind, so the kind asked for applies and Sobek assigns an id in CVT
+        String externalId = "EXT:VehicleType:" + unique();
+
+        String id = importVehicleType(externalId, "CONTRACTUAL");
+
+        assertThat(id).startsWith("CVT:VehicleType:");
+        assertThat(keyValues(id)).containsEntry("imported-id", externalId);
+    }
+
+    @Test
+    void import_kindDifferentFromTheExistingType_isRejected() throws Exception {
+        String id = "AKT:VehicleType:" + unique();
+        importVehicleType(id, "PHYSICAL");
+
+        String body = importExpecting(400, "/fixtures/vehicle-type-import-with-id.xml", id, "CONTRACTUAL");
+
+        assertThat(body).contains("cannot be changed");
+        assertThat(currentVehicleType(id, "PHYSICAL").get("version")).isEqualTo("1");
+    }
+
+    @Test
+    void import_idInTheContractualCodespaceIsContractualWhateverKindIsAsked() throws Exception {
+        String id = graphQlCreateVehicleType(null, "CONTRACTUAL", "Original name");
+        assertThat(id).startsWith("CVT:VehicleType:");
+
+        assertThat(importVehicleType(id, "PHYSICAL")).isEqualTo(id);
+
+        assertThat(currentVehicleType(id, "CONTRACTUAL").get("version")).isEqualTo("2");
+    }
+
     // --- helpers ---
 
     private static long unique() {
@@ -236,13 +295,21 @@ class NetexIdAssignmentIT {
 
     /** The id the vehicle type has in the response of an import. */
     private String importVehicleType(String idInImport) throws Exception {
-        String body = importExpecting(200, "/fixtures/vehicle-type-import-with-id.xml", idInImport);
+        return importVehicleType(idInImport, "PHYSICAL");
+    }
+
+    private String importVehicleType(String idInImport, String kind) throws Exception {
+        String body = importExpecting(200, "/fixtures/vehicle-type-import-with-id.xml", idInImport, kind);
         Matcher matcher = IMPORTED_VEHICLE_TYPE_ID.matcher(body);
         assertThat(matcher.find()).as("a VehicleType in the response").isTrue();
         return matcher.group(1);
     }
 
     private String importExpecting(int status, String fixture, String id) throws Exception {
+        return importExpecting(status, fixture, id, "PHYSICAL");
+    }
+
+    private String importExpecting(int status, String fixture, String id, String kind) throws Exception {
         String xml;
         try (InputStream in = getClass().getResourceAsStream(fixture)) {
             xml = new String(in.readAllBytes(), StandardCharsets.UTF_8).replace("@ID@", id);
@@ -251,7 +318,7 @@ class NetexIdAssignmentIT {
                 .contentType("application/xml")
                 .body(xml)
                 .when()
-                .post("/services/vehicles/netex");
+                .post("/services/vehicles/netex" + (kind == null ? "" : "?vehicleTypeKind=" + kind));
         assertThat(response.statusCode()).as("status of importing id %s: %s", id, response.body().asString()).isEqualTo(status);
         return response.body().asString();
     }

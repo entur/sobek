@@ -16,10 +16,12 @@
 package org.rutebanken.sobek.rest.netex.publicationdelivery;
 
 import jakarta.inject.Inject;
+import jakarta.validation.ValidationException;
 import jakarta.xml.bind.JAXBException;
 import org.rutebanken.helper.organisation.NotAuthenticatedException;
 import org.entur.netex2.model.PublicationDeliveryStructure;
 import org.rutebanken.sobek.importer.PublicationDeliveryImporter;
+import org.rutebanken.sobek.model.vehicle.VehicleTypeKindEnumeration;
 import org.rutebanken.sobek.netex.marshal.PublicationDeliveryUnmarshaller;
 import org.rutebanken.sobek.rest.ParameterDto.ImportParametersDto;
 import org.slf4j.Logger;
@@ -63,13 +65,16 @@ public class VehicleImportController {
             produces = MediaType.APPLICATION_XML_VALUE)
     public ResponseEntity<StreamingResponseBody> importPublicationDelivery(
             HttpServletRequest request,
-            @RequestParam(required = false, defaultValue = "false") boolean skipOutput) throws IOException, JAXBException, SAXException {
+            @RequestParam(required = false, defaultValue = "false") boolean skipOutput,
+            @RequestParam(name = "vehicleTypeKind", required = false) String vehicleTypeKind) throws IOException, JAXBException, SAXException {
         
         logger.info("Received Netex publication delivery, starting to parse...");
         
         // Create ImportParametersDto from request parameters
         ImportParametersDto importParams = new ImportParametersDto();
         importParams.skipOutput = skipOutput;
+        // Checked before the body is read, so bad input gives 400 without parsing the file
+        importParams.vehicleTypeKind = parseVehicleTypeKind(vehicleTypeKind);
         
         // Get InputStream directly from HttpServletRequest
         try (InputStream inputStream = request.getInputStream()) {
@@ -91,6 +96,21 @@ public class VehicleImportController {
                 logger.warn("Caught exception while importing publication delivery: " + incomingPublicationDelivery, e);
                 throw e;
             }
+        }
+    }
+
+    /**
+     * NeTEx has no field for the kind of a vehicle type, so the importer needs to be told which kind the vehicle types
+     * in the file have (those with an id in the contractual codespace, CVT, are contractual whatever is said here).
+     */
+    private static VehicleTypeKindEnumeration parseVehicleTypeKind(String value) {
+        if (value == null || value.isBlank()) {
+            throw new ValidationException("vehicleTypeKind is required: PHYSICAL or CONTRACTUAL");
+        }
+        try {
+            return VehicleTypeKindEnumeration.valueOf(value.trim());
+        } catch (IllegalArgumentException e) {
+            throw new ValidationException("Invalid value '" + value + "' for parameter 'vehicleTypeKind'. Allowed values: PHYSICAL, CONTRACTUAL");
         }
     }
 }

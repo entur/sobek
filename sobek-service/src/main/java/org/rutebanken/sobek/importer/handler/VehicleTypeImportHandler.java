@@ -35,6 +35,7 @@ import org.entur.netex2.model.*;
 import org.rutebanken.sobek.importer.ImportParams;
 import org.rutebanken.sobek.importer.VehicleTypeImporter;
 import org.rutebanken.sobek.importer.converter.VehicleTypeIdConverter;
+import org.rutebanken.sobek.model.vehicle.VehicleTypeKindEnumeration;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.rutebanken.sobek.netex.mapping.mapstruct.VehicleTypeMapper;
 import org.rutebanken.sobek.netex.util.PublicationDeliveryHelper;
@@ -85,7 +86,7 @@ public class VehicleTypeImportHandler {
 
             logger.info("About to map {} vehicle types to internal model", originalVehicleTypes.size());
             List<org.rutebanken.sobek.model.vehicle.VehicleType> mappedVehicleTypes = originalWithMappedIds
-                    .map(vt -> vehicleTypeMapper.mapToSobek(vt, context))
+                    .map(vt -> mapWithKind(vt, importParams))
                     .collect(Collectors.toList());
             logger.info("Mapped {} vehicle types to internal model", mappedVehicleTypes.size());
 
@@ -101,6 +102,19 @@ public class VehicleTypeImportHandler {
 
             logger.info("Finished importing vehicle types");
         }
+    }
+
+    /**
+     * The kind follows the id when the id is in the contractual codespace (CVT). Any other id says nothing about the
+     * kind, so the kind the client asked for in the import applies.
+     */
+    private org.rutebanken.sobek.model.vehicle.VehicleType mapWithKind(VehicleType netexVehicleType, ImportParams importParams) {
+        var mapped = vehicleTypeMapper.mapToSobek(netexVehicleType, context);
+        if (mapped != null && importParams.getVehicleTypeKind() != null
+                && VehicleTypeMapper.kindFromNetexId(netexVehicleType.getId()) == VehicleTypeKindEnumeration.PHYSICAL) {
+            mapped.setVehicleTypeKind(importParams.getVehicleTypeKind());
+        }
+        return mapped;
     }
 
     private boolean isVehicleType(JAXBElement<? extends DataManagedObjectStructure> jaxbElement) {

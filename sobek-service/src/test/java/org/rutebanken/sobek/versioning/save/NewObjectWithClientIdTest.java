@@ -113,6 +113,31 @@ class NewObjectWithClientIdTest {
         verify(netexIdAssigner, never()).assignNetexId(any());
     }
 
+    @Test
+    void malformedIdInSobeksCodespaceIsRejectedNotTreatedAsExternal() {
+        when(vehicleRepository.findFirstByNetexIdOrderByVersionDesc("NMR:Vehicle")).thenReturn(null);
+
+        Vehicle vehicle = vehicle("NMR:Vehicle");
+        assertThatThrownBy(() -> save(vehicle))
+                .isInstanceOf(ValidationException.class)
+                .hasMessageContaining("assigned by Sobek");
+        assertThat(vehicle.getKeyValues()).isEmpty();
+        verify(netexIdAssigner, never()).assignNetexId(any());
+        verify(vehicleRepository, never()).save(any());
+    }
+
+    @Test
+    void malformedIdInTheContractualCodespaceIsRejectedNotTreatedAsExternal() {
+        VehicleType type = new VehicleType();
+        type.setNetexId("CVT:VehicleType:abc");
+        when(vehicleTypeRepository.findFirstByNetexIdOrderByVersionDesc("CVT:VehicleType:abc")).thenReturn(null);
+
+        assertThatThrownBy(() -> saver.saveNewVersion(null, type, Instant.now(), vehicleTypeRepository))
+                .isInstanceOf(ValidationException.class)
+                .hasMessageContaining("assigned by Sobek");
+        verify(netexIdAssigner, never()).assignNetexId(any());
+    }
+
     // --- registered codespaces ---
 
     @Test

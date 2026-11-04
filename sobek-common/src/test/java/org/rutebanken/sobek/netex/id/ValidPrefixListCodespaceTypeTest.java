@@ -56,12 +56,22 @@ class ValidPrefixListCodespaceTypeTest {
     }
 
     @Test
-    void anIdThatIsNotOnTheNetexFormIsExternal() {
+    void anIdWithNoCodespaceIsExternal() {
         assertThat(validPrefixList.getCodespaceTypeOf(null, "Vehicle")).isEqualTo(EXTERNAL);
         assertThat(validPrefixList.getCodespaceTypeOf("NMR", "Vehicle")).isEqualTo(EXTERNAL);
-        assertThat(validPrefixList.getCodespaceTypeOf("NMR:Vehicle", "Vehicle")).isEqualTo(EXTERNAL);
-        assertThat(validPrefixList.getCodespaceTypeOf("NMR:Vehicle:1:2", "Vehicle")).isEqualTo(EXTERNAL);
+        assertThat(validPrefixList.getCodespaceTypeOf("just-some-text", "Vehicle")).isEqualTo(EXTERNAL);
         assertThat(validPrefixList.getCodespaceTypeOf("", "Vehicle")).isEqualTo(EXTERNAL);
+    }
+
+    @Test
+    void aMalformedIdKeepsTheCodespaceItStartsWith() {
+        assertThat(validPrefixList.getCodespaceTypeOf("NMR:Vehicle", "Vehicle")).isEqualTo(SOBEK);
+        assertThat(validPrefixList.getCodespaceTypeOf("NMR:Vehicle:1:2", "Vehicle")).isEqualTo(SOBEK);
+        assertThat(validPrefixList.getCodespaceTypeOf("NMR:", "Vehicle")).isEqualTo(SOBEK);
+        assertThat(validPrefixList.getCodespaceTypeOf("CVT:VehicleType:abc", "VehicleType")).isEqualTo(SOBEK);
+        assertThat(validPrefixList.getCodespaceTypeOf("CVT:garbage", "VehicleType")).isEqualTo(SOBEK);
+        assertThat(validPrefixList.getCodespaceTypeOf("AKT:garbage", "Vehicle")).isEqualTo(REGISTERED);
+        assertThat(validPrefixList.getCodespaceTypeOf("AUTOSYS:garbage", "Vehicle")).isEqualTo(EXTERNAL);
     }
 
     @Test

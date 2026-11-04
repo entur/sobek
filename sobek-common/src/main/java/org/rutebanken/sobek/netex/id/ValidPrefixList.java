@@ -74,9 +74,10 @@ public class ValidPrefixList {
     }
 
     /**
-     * The type of the codespace the id is in, for an entity of the given type. An id that is not on the form
-     * {@code <codespace>:<type>:<number>} is treated as external, as it cannot be one Sobek or a registered
-     * codespace has assigned.
+     * The type of the codespace the id is in, for an entity of the given type. The codespace is the text before
+     * the first colon, whatever the rest of the id looks like: a malformed id such as {@code NMR:foo} or
+     * {@code CVT:VehicleType:abc} still claims Sobek's codespace, so it is treated as Sobek's (and rejected as a
+     * new id) rather than as an external id. Only an id with no colon at all has no codespace and is external.
      */
     public CodespaceType getCodespaceTypeOf(String netexId, Class<?> entityType) {
         return getCodespaceTypeOf(netexId, entityType.getSimpleName());
@@ -86,11 +87,11 @@ public class ValidPrefixList {
         if (netexId == null) {
             return CodespaceType.EXTERNAL;
         }
-        String[] parts = netexId.split(":", -1);
-        if (parts.length != 3) {
+        int firstColon = netexId.indexOf(':');
+        if (firstColon < 0) {
             return CodespaceType.EXTERNAL;
         }
-        return getCodespaceTypeOfPrefix(parts[0], type);
+        return getCodespaceTypeOfPrefix(netexId.substring(0, firstColon), type);
     }
 
     public CodespaceType getCodespaceTypeOfPrefix(String prefix, String type) {

@@ -87,6 +87,33 @@ class NetexIdAssignmentIT {
     }
 
     @Test
+    void import_malformedIdInCvt_isRejectedAndNeverBecomesContractual() throws Exception {
+        for (String id : new String[] {"CVT:VehicleType:abc", "CVT:garbage", "CVT:VehicleType:1:2"}) {
+            String body = importExpecting(400, "/fixtures/vehicle-type-import-with-id.xml", id);
+
+            assertThat(body).as(id).contains(SOBEK_ONLY_MESSAGE);
+            assertThat(rows("vehicle_type", id)).as(id).isZero();
+        }
+    }
+
+    @Test
+    void import_malformedIdInNmr_isRejected() throws Exception {
+        for (String id : new String[] {"NMR:VehicleType:abc", "NMR:garbage"}) {
+            String body = importExpecting(400, "/fixtures/vehicle-type-import-with-id.xml", id);
+
+            assertThat(body).as(id).contains(SOBEK_ONLY_MESSAGE);
+            assertThat(rows("vehicle_type", id)).as(id).isZero();
+        }
+    }
+
+    @Test
+    void graphQl_malformedIdInCvt_isRejected() {
+        graphQlMutationVehicleType("CVT:VehicleType:abc", "CONTRACTUAL", "Rejected")
+                .body("errors[0].extensions.classification", org.hamcrest.Matchers.equalTo("BAD_REQUEST"))
+                .body("errors[0].message", org.hamcrest.Matchers.containsString(SOBEK_ONLY_MESSAGE));
+    }
+
+    @Test
     void import_newDeckPlanWithIdInNmr_isRejected() throws Exception {
         String id = "NMR:DeckPlan:" + unique();
 
@@ -220,16 +247,13 @@ class NetexIdAssignmentIT {
         try (InputStream in = getClass().getResourceAsStream(fixture)) {
             xml = new String(in.readAllBytes(), StandardCharsets.UTF_8).replace("@ID@", id);
         }
-        return given()
+        io.restassured.response.Response response = given()
                 .contentType("application/xml")
                 .body(xml)
                 .when()
-                .post("/services/vehicles/netex")
-                .then()
-                .statusCode(status)
-                .extract()
-                .body()
-                .asString();
+                .post("/services/vehicles/netex");
+        assertThat(response.statusCode()).as("status of importing id %s: %s", id, response.body().asString()).isEqualTo(status);
+        return response.body().asString();
     }
 
     private String graphQlCreateVehicleType(String netexId, String kind, String name) {

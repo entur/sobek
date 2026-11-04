@@ -107,10 +107,16 @@ enum HybridCategory {
     NONCHARGEABLE
 }
 
+enum VehicleTypeKind {
+    PHYSICAL
+    CONTRACTUAL
+}
+
 # Filter inputs
 input VehicleTypeFilter {
     netexIds: [String!]
     transportModes: [TransportMode!]
+    vehicleTypeKind: VehicleTypeKind!
     name: String
     dataOwnerRef: String!
 }
@@ -308,6 +314,7 @@ type VehicleType {
     lowFloor: Boolean
     selfPropelled: Boolean
     hybridCategory: HybridCategory
+    vehicleTypeKind: VehicleTypeKind!
     version: String
     created: DateTime
     changed: DateTime
@@ -339,6 +346,8 @@ input VehicleTypeInput {
     lowFloor: Boolean
     selfPropelled: Boolean
     hybridCategory: HybridCategory
+    "Required when creating a vehicle type (no netexId, or a netexId that does not exist yet). Fixed after creation: omit it when updating, or repeat the existing value."
+    vehicleTypeKind: VehicleTypeKind
     dataOwnerRef: String!
 }
 

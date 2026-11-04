@@ -124,7 +124,9 @@ class GraphQLMutationsTest {
                 .post("/services/vehicles/graphql")
                 .then()
                 .statusCode(200)
-                .body("errors", is(not(empty())));
+                .body("errors", is(not(empty())))
+                .body("errors[0].extensions.classification", equalTo("BAD_REQUEST"))
+                .body("errors[0].message", containsString("not found"));
     }
 
     @Test
@@ -139,5 +141,82 @@ class GraphQLMutationsTest {
                 .then()
                 .statusCode(200)
                 .body("errors", is(not(empty())));
+    }
+
+    private io.restassured.response.ValidatableResponse graphql(String query) {
+        return given()
+                .contentType(ContentType.JSON)
+                .body(gql(query))
+                .when()
+                .post("/services/vehicles/graphql")
+                .then()
+                .statusCode(200);
+    }
+
+    private String createVehicleType(String kindLine) {
+        return graphql("mutation { createOrUpdateVehicleType(input: { name: { value: \"Kind test\" lang: \"en\" } "
+                + "transportMode: BUS " + kindLine + " dataOwnerRef: \"AKT\" }) }")
+                .body("errors", nullValue())
+                .extract().path("data.createOrUpdateVehicleType");
+    }
+
+    // --- vehicle type kind ---
+
+    @Test
+    void vehicleType_contractual_getsContractualCodespaceAndIsFoundByKind() {
+        String id = createVehicleType("vehicleTypeKind: CONTRACTUAL");
+        assertThat(id).startsWith("CVT:VehicleType:");
+
+        graphql("{ vehicleTypes(filter: { netexIds: [\"" + id + "\"] dataOwnerRef: \"AKT\" vehicleTypeKind: CONTRACTUAL }) "
+                + "{ content { netexId vehicleTypeKind } totalElements } }")
+                .body("data.vehicleTypes.totalElements", equalTo(1))
+                .body("data.vehicleTypes.content[0].vehicleTypeKind", equalTo("CONTRACTUAL"));
+
+        graphql("{ vehicleTypes(filter: { netexIds: [\"" + id + "\"] dataOwnerRef: \"AKT\" vehicleTypeKind: PHYSICAL }) "
+                + "{ totalElements } }")
+                .body("data.vehicleTypes.totalElements", equalTo(0));
+    }
+
+    @Test
+    void vehicleType_physical_keepsConfiguredCodespace() {
+        String id = createVehicleType("vehicleTypeKind: PHYSICAL");
+        assertThat(id).doesNotStartWith("CVT:").contains(":VehicleType:");
+    }
+
+    @Test
+    void vehicleType_withoutKind_onCreate_isBadRequest() {
+        graphql("mutation { createOrUpdateVehicleType(input: { transportMode: BUS dataOwnerRef: \"AKT\" }) }")
+                .body("errors[0].extensions.classification", equalTo("BAD_REQUEST"))
+                .body("errors[0].message", containsString("vehicleTypeKind is required"));
+    }
+
+    @Test
+    void vehicleType_changingKind_isBadRequest() {
+        String id = createVehicleType("vehicleTypeKind: CONTRACTUAL");
+
+        graphql("mutation { createOrUpdateVehicleType(input: { netexId: \"" + id + "\" transportMode: BUS "
+                + "vehicleTypeKind: PHYSICAL dataOwnerRef: \"AKT\" }) }")
+                .body("errors[0].extensions.classification", equalTo("BAD_REQUEST"))
+                .body("errors[0].message", containsString("cannot be changed"));
+    }
+
+    @Test
+    void vehicleType_updateWithoutKind_keepsKind() {
+        String id = createVehicleType("vehicleTypeKind: CONTRACTUAL");
+
+        graphql("mutation { createOrUpdateVehicleType(input: { netexId: \"" + id + "\" transportMode: BUS dataOwnerRef: \"AKT\" }) }")
+                .body("errors", nullValue());
+
+        graphql("{ vehicleTypes(filter: { netexIds: [\"" + id + "\"] dataOwnerRef: \"AKT\" vehicleTypeKind: CONTRACTUAL }) { totalElements } }")
+                .body("data.vehicleTypes.totalElements", equalTo(1));
+    }
+
+    @Test
+    void vehicle_referringToContractualVehicleType_isBadRequest() {
+        String contractualId = createVehicleType("vehicleTypeKind: CONTRACTUAL");
+
+        graphql(getFixtureContents("/fixtures/GraphQL_VehicleMutation1.QL").replace("AKT:VehicleType:124", contractualId))
+                .body("errors[0].extensions.classification", equalTo("BAD_REQUEST"))
+                .body("errors[0].message", containsString("contractual"));
     }
 }

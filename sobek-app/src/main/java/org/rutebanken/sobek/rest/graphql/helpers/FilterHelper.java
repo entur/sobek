@@ -1,7 +1,9 @@
 package org.rutebanken.sobek.rest.graphql.helpers;
 
+import jakarta.validation.ValidationException;
 import org.rutebanken.sobek.auth.AuthorizationService;
 import org.rutebanken.sobek.model.vehicle.AllPublicTransportModesEnumeration;
+import org.rutebanken.sobek.model.vehicle.VehicleTypeKindEnumeration;
 
 import java.util.List;
 import java.util.Map;
@@ -48,6 +50,17 @@ public class FilterHelper {
         return null;
     }
 
+    public static VehicleTypeKindEnumeration getVehicleTypeKindFromFilter(Map<String, Object> filter) {
+        Object kind = filter == null ? null : filter.get(FILTER_VEHICLE_TYPE_KIND);
+        if (kind instanceof VehicleTypeKindEnumeration k) {
+            return k;
+        }
+        if (kind instanceof String s) {
+            return VehicleTypeKindEnumeration.valueOf(s.toUpperCase());
+        }
+        throw new ValidationException("Missing required filter field '" + FILTER_VEHICLE_TYPE_KIND + "'");
+    }
+
     public static String getNameFromFilter(Map<String, Object> filter) {
         if(filter == null) { return null; }
         return (String)filter.get(FILTER_NAME);
@@ -60,7 +73,7 @@ public class FilterHelper {
 
     public static String getDataOwnerRefFromFilter(Map<String, Object> filter) {
         if (filter == null || filter.get(FILTER_DATA_OWNER_REF) == null) {
-            throw new IllegalArgumentException("Missing required filter field '" + FILTER_DATA_OWNER_REF + "'");
+            throw new ValidationException("Missing required filter field '" + FILTER_DATA_OWNER_REF + "'");
         }
         return (String) filter.get(FILTER_DATA_OWNER_REF);
     }

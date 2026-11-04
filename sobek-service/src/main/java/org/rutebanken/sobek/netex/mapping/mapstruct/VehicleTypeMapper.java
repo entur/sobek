@@ -6,6 +6,8 @@ import org.entur.netex2.model.ObjectFactory;
 import org.entur.netex2.model.VehicleType;
 import org.rutebanken.sobek.model.vehicle.DeckPlan;
 import org.rutebanken.sobek.model.vehicle.HybridCategoryEnumeration;
+import org.rutebanken.sobek.model.vehicle.VehicleTypeKindEnumeration;
+import org.rutebanken.sobek.netex.id.ValidPrefixList;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.rutebanken.sobek.netex.util.KeyValuesHelper;
@@ -81,6 +83,15 @@ public interface VehicleTypeMapper {
     );
 
     /**
+     * The kind of an incoming vehicle type follows from the codespace of its id.
+     */
+    static VehicleTypeKindEnumeration kindFromNetexId(String netexId) {
+        return netexId != null && netexId.startsWith(ValidPrefixList.CONTRACTUAL_VEHICLE_TYPE_PREFIX + ":")
+                ? VehicleTypeKindEnumeration.CONTRACTUAL
+                : VehicleTypeKindEnumeration.PHYSICAL;
+    }
+
+    /**
      * After mapping from NeTEx to Sobek: handle DeckPlanRef extraction.
      */
     @AfterMapping
@@ -95,6 +106,9 @@ public interface VehicleTypeMapper {
             KeyValuesHelper.SetFromKeyValues("RollResistanceCoefficient", source.getKeyList(), BigDecimal::new, target::setRollResistanceCoefficient);
             KeyValuesHelper.SetFromKeyValues("MaximumEngineEffectKW", source.getKeyList(), BigDecimal::new, target::setMaximumEngineEffectKW);
             KeyValuesHelper.SetFromKeyValues("HybridCategory", source.getKeyList(), HybridCategoryEnumeration::fromValue, target::setHybridCategory);
+            // NeTEx has no field for the kind (and a KeyValue would break the schema's uniqueness constraint on
+            // key/value pairs), so it is expressed by the codespace of the id: CVT is contractual, anything else physical.
+            target.setVehicleTypeKind(kindFromNetexId(source.getId()));
         }
 
         // Extract and resolve DeckPlanRef if present

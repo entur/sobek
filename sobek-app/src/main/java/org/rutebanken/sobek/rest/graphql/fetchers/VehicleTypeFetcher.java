@@ -54,7 +54,9 @@ public class VehicleTypeFetcher implements DataFetcher<Map<String, Object>> {
         String dataOwnerRef = FilterHelper.getDataOwnerRefFromFilter(filter);
         authorizationService.verifyCanViewDataOwner(dataOwnerRef);
 
-        var result = vehicleTypeRepository.findCurrentFiltered(dataOwnerRef, netexIds, modes, name, PageRequest.of(page, size));
+        var kind = FilterHelper.getVehicleTypeKindFromFilter(filter);
+
+        var result = vehicleTypeRepository.findCurrentFiltered(dataOwnerRef, netexIds, modes, kind, name, PageRequest.of(page, size));
         return PageResult.from(result, page, size);
     }
 }

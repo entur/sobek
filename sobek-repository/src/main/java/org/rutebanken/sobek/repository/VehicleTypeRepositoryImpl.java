@@ -3,6 +3,7 @@ package org.rutebanken.sobek.repository;
 import jakarta.persistence.*;
 import org.rutebanken.sobek.model.vehicle.AllPublicTransportModesEnumeration;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
+import org.rutebanken.sobek.model.vehicle.VehicleTypeKindEnumeration;
 import org.rutebanken.sobek.model.vehicle.Vehicle;
 import org.rutebanken.sobek.repository.utils.QueryHelper;
 import org.slf4j.Logger;
@@ -50,7 +51,7 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
             "AND (vt.validBetween.toDate IS NULL OR vt.validBetween.toDate >= :now)";
 
     @Override
-    public Page<VehicleType> findCurrentFiltered(String dataOwnerRef, List<String> netexIds, List<AllPublicTransportModesEnumeration> transportModes, String name, Pageable pageable) {
+    public Page<VehicleType> findCurrentFiltered(String dataOwnerRef, List<String> netexIds, List<AllPublicTransportModesEnumeration> transportModes, VehicleTypeKindEnumeration vehicleTypeKind, String name, Pageable pageable) {
         Instant now = Instant.now();
 
         // Build dynamic WHERE suffix for optional filters
@@ -61,6 +62,9 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
         if (transportModes != null && !transportModes.isEmpty()) {
             filterSuffix.append(" AND vt.transportMode IN :transportModes");
         }
+        if (vehicleTypeKind != null) {
+            filterSuffix.append(" AND vt.vehicleTypeKind = :vehicleTypeKind");
+        }
         if(name != null && !name.isEmpty()) {
             name = "%" + QueryHelper.escapeForLike(name.toLowerCase()) + "%";
             filterSuffix.append(" AND vt.name is not null and lower(vt.name.value) LIKE :name ESCAPE '\\'");
@@ -70,7 +74,7 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
         }
 
         if (pageable.isUnpaged()) {
-            List<VehicleType> vehicleTypes = fetchVehicleTypesWithValidVehicles(dataOwnerRef, netexIds, transportModes, name, now, filterSuffix.toString(), null);
+            List<VehicleType> vehicleTypes = fetchVehicleTypesWithValidVehicles(dataOwnerRef, netexIds, transportModes, vehicleTypeKind, name, now, filterSuffix.toString(), null);
             return new PageImpl<>(vehicleTypes);
         }
 
@@ -78,22 +82,25 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
         String countJpql = "SELECT COUNT(vt) FROM VehicleType vt " +
                 VT_CURRENT_WHERE + filterSuffix;
         TypedQuery<Long> countQuery = entityManager.createQuery(countJpql, Long.class);
-        setFilterParams(countQuery, dataOwnerRef, netexIds, transportModes, name, now);
+        setFilterParams(countQuery, dataOwnerRef, netexIds, transportModes, vehicleTypeKind, name, now);
         long total = countQuery.getSingleResult();
 
         // Fetch with pagination
-        List<VehicleType> vehicleTypes = fetchVehicleTypesWithValidVehicles(dataOwnerRef, netexIds, transportModes, name, now, filterSuffix.toString(), pageable);
+        List<VehicleType> vehicleTypes = fetchVehicleTypesWithValidVehicles(dataOwnerRef, netexIds, transportModes, vehicleTypeKind, name, now, filterSuffix.toString(), pageable);
 
         return new PageImpl<>(vehicleTypes, pageable, total);
     }
 
-    private void setFilterParams(Query query, String dataOwnerRef, List<String> netexIds, List<AllPublicTransportModesEnumeration> transportModes, String name, Instant now) {
+    private void setFilterParams(Query query, String dataOwnerRef, List<String> netexIds, List<AllPublicTransportModesEnumeration> transportModes, VehicleTypeKindEnumeration vehicleTypeKind, String name, Instant now) {
         query.setParameter("now", now);
         if (netexIds != null && !netexIds.isEmpty()) {
             query.setParameter("netexIds", netexIds);
         }
         if (transportModes != null && !transportModes.isEmpty()) {
             query.setParameter("transportModes", transportModes);
+        }
+        if (vehicleTypeKind != null) {
+            query.setParameter("vehicleTypeKind", vehicleTypeKind);
         }
         if(name != null && !name.isEmpty()) {
             query.setParameter("name", name);
@@ -144,6 +151,7 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
         String dataOwnerRef,
         List<String> netexIds,
         List<AllPublicTransportModesEnumeration> transportModes,
+        VehicleTypeKindEnumeration vehicleTypeKind,
         String name,
         Instant now,
         String filterSuffix,
@@ -155,7 +163,7 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
             " ORDER BY vt.id";
 
         TypedQuery<Long> idsQuery = entityManager.createQuery(idsJpql, Long.class);
-        setFilterParams(idsQuery, dataOwnerRef, netexIds, transportModes, name, now);
+        setFilterParams(idsQuery, dataOwnerRef, netexIds, transportModes, vehicleTypeKind, name, now);
 
         if (pageable != null) {
             idsQuery.setFirstResult((int) pageable.getOffset());

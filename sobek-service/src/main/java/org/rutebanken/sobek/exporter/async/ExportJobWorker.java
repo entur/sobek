@@ -20,6 +20,7 @@ import jakarta.xml.bind.JAXBException;
 import org.rutebanken.sobek.exporter.StreamingPublicationDelivery;
 import org.rutebanken.sobek.model.job.ExportJob;
 import org.rutebanken.sobek.model.job.ExportParams;
+import org.rutebanken.sobek.model.job.VehicleTypeKindSelection;
 import org.rutebanken.sobek.model.job.JobStatus;
 import org.rutebanken.sobek.netex.validation.NetexXmlReferenceValidator;
 import org.rutebanken.sobek.repository.ExportJobRepository;
@@ -111,7 +112,9 @@ public class ExportJobWorker implements Runnable {
     private void exportToLocalXmlFile(File localExportXmlFile) throws IOException, SAXException, JAXBException {
         logger.info("Start streaming publication delivery to local file {}", localExportXmlFile);
         FileOutputStream fileOutputStream = new FileOutputStream(localExportXmlFile);
-        streamingPublicationDelivery.streamVehicles(new ExportParams(), fileOutputStream);
+        ExportParams exportParams = new ExportParams();
+        exportParams.setVehicleTypeKind(VehicleTypeKindSelection.BOTH);
+        streamingPublicationDelivery.streamVehicles(exportParams, fileOutputStream);
     }
 
     private void uploadToGcp(File localExportFile) throws FileNotFoundException {

@@ -17,8 +17,11 @@ package org.rutebanken.sobek.versioning.save;
 
 
 import lombok.extern.java.Log;
+import org.rutebanken.sobek.error.VehicleTypeKindViolationException;
 import org.rutebanken.sobek.model.vehicle.PassengerCapacity;
+import org.rutebanken.sobek.netex.id.ValidPrefixList;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
+import org.rutebanken.sobek.model.vehicle.VehicleTypeKindEnumeration;
 import org.rutebanken.sobek.repository.VehicleRepository;
 import org.rutebanken.sobek.repository.VehicleTypeRepository;
 import org.rutebanken.sobek.repository.listener.NetexIdAssigner;
@@ -53,6 +56,9 @@ public class VehicleTypeVersionedSaverService {
     }
 
     public VehicleType saveNewVersion(VehicleType existingVersion, VehicleType newVersion, Instant defaultValidFrom) {
+        resolveVehicleTypeKind(existingVersion, newVersion);
+        verifyNetexIdMatchesKind(newVersion);
+
         // Assign netexId if not already assigned
         // PassengerCapacity doesn't have a independent lifecycle, meaning it's linked to the VehicleType at all times
         // Therefore, if the client doesn't control the netexId, we assign it here.
@@ -66,5 +72,44 @@ public class VehicleTypeVersionedSaverService {
             vehicleRepository.moveToTransportType(existingVersion.getId(), saved.getId());
         }
         return saved;
+    }
+
+    /**
+     * Contractual vehicle types live in their own codespace (CVT), physical ones never do.
+     * Generated ids always get this right (see NetexIdHelper); this guards explicitly claimed ids.
+     */
+    private void verifyNetexIdMatchesKind(VehicleType vehicleType) {
+        String netexId = vehicleType.getNetexId();
+        if (netexId == null) {
+            return;
+        }
+        boolean inContractualCodespace = netexId.startsWith(ValidPrefixList.CONTRACTUAL_VEHICLE_TYPE_PREFIX + ":");
+        boolean contractual = vehicleType.getVehicleTypeKind() == VehicleTypeKindEnumeration.CONTRACTUAL;
+        if (inContractualCodespace != contractual) {
+            throw new VehicleTypeKindViolationException("Vehicle type id " + netexId + " does not match its kind " + vehicleType.getVehicleTypeKind()
+                    + ". Only contractual vehicle types use the " + ValidPrefixList.CONTRACTUAL_VEHICLE_TYPE_PREFIX + " codespace.");
+        }
+    }
+
+    /**
+     * The kind (physical/contractual) is fixed when the vehicle type is created.
+     * Creating a new vehicle type: the kind is required.
+     * Updating: not specified inherits from the existing version; specified and different is rejected.
+     */
+    private void resolveVehicleTypeKind(VehicleType existingVersion, VehicleType newVersion) {
+        VehicleTypeKindEnumeration requested = newVersion.getVehicleTypeKind();
+        if (existingVersion == null) {
+            if (requested == null) {
+                throw new VehicleTypeKindViolationException("vehicleTypeKind is required when creating a vehicle type: PHYSICAL or CONTRACTUAL");
+            }
+            return;
+        }
+        VehicleTypeKindEnumeration existing = existingVersion.getVehicleTypeKind();
+        if (requested == null) {
+            newVersion.setVehicleTypeKind(existing);
+        } else if (existing != null && requested != existing) {
+            throw new VehicleTypeKindViolationException("Vehicle type " + existingVersion.getNetexId()
+                    + " is " + existing + " and cannot be changed to " + requested);
+        }
     }
 }

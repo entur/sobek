@@ -57,16 +57,13 @@ public class GenericNeTExIdConverter<X extends org.rutebanken.sobek.model.DataMa
             return object;
         }
 
-        // Try to find an existing object that has used the same ID previously
-        try {
-            var existingObjectId = genericEntityInVersionRepository.findByKeyValue(CustomKeyValueTypes.ORIGINAL_ID_KEY, Set.of(object.getNetexId()), classX);
-            if (existingObjectId != null) {
-                // We found it!
-                object.setNetexId(existingObjectId);
-                return object;
-            }
-        } catch (Exception e) {
-            logger.error("Error while trying to find existing object with ID {}", object.getNetexId(), e);
+        // Try to find an existing object that has used the same ID previously.
+        // A failing lookup is not "no match": it must fail the request, or a duplicate would be created.
+        var existingObjectId = genericEntityInVersionRepository.findByKeyValue(CustomKeyValueTypes.ORIGINAL_ID_KEY, Set.of(object.getNetexId()), classX);
+        if (existingObjectId != null) {
+            // We found it!
+            object.setNetexId(existingObjectId);
+            return object;
         }
         // We didn't find a match - this will be imported as a new vehicle type
         return object;

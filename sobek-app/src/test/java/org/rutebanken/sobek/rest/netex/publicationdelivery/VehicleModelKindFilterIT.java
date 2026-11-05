@@ -12,11 +12,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.rutebanken.sobek.model.EmbeddableMultilingualString;
 import org.rutebanken.sobek.model.vehicle.AllPublicTransportModesEnumeration;
+import org.rutebanken.sobek.model.vehicle.DeckPlan;
 import org.rutebanken.sobek.model.vehicle.VehicleModel;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
 import org.rutebanken.sobek.model.vehicle.VehicleTypeKindEnumeration;
 import org.rutebanken.sobek.repository.VehicleModelRepository;
 import org.rutebanken.sobek.rest.netex.SingleOrganisationAuthorizationConfiguration;
+import org.rutebanken.sobek.versioning.save.DeckPlanVersionedSaverService;
 import org.rutebanken.sobek.versioning.save.VehicleModelVersionedSaverService;
 import org.rutebanken.sobek.versioning.save.VehicleTypeVersionedSaverService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,15 +43,25 @@ class VehicleModelKindFilterIT {
 
     @Autowired private VehicleTypeVersionedSaverService vehicleTypeSaver;
     @Autowired private VehicleModelVersionedSaverService vehicleModelSaver;
+    @Autowired private DeckPlanVersionedSaverService deckPlanSaver;
     @Autowired private VehicleModelRepository vehicleModelRepository;
 
     private String physicalModel;
     private String contractualModel;
+    private String physicalDeckPlan;
+    private String contractualDeckPlan;
+    private String unconnectedDeckPlan;
 
     @BeforeAll
     void seed() {
-        physicalModel = saveModelOf(VehicleTypeKindEnumeration.PHYSICAL, "Model kind filter physical");
-        contractualModel = saveModelOf(VehicleTypeKindEnumeration.CONTRACTUAL, "Model kind filter contractual");
+        DeckPlan physicalPlan = saveDeckPlan("Kind filter physical deck plan");
+        DeckPlan contractualPlan = saveDeckPlan("Kind filter contractual deck plan");
+        physicalDeckPlan = physicalPlan.getNetexId();
+        contractualDeckPlan = contractualPlan.getNetexId();
+        unconnectedDeckPlan = saveDeckPlan("Kind filter unconnected deck plan").getNetexId();
+
+        physicalModel = saveModelOf(VehicleTypeKindEnumeration.PHYSICAL, "Model kind filter physical", physicalPlan);
+        contractualModel = saveModelOf(VehicleTypeKindEnumeration.CONTRACTUAL, "Model kind filter contractual", contractualPlan);
     }
 
     @BeforeEach
@@ -99,6 +111,31 @@ class VehicleModelKindFilterIT {
         assertThat(xml).contains(idAttribute(physicalModel), idAttribute(contractualModel));
     }
 
+    @Test
+    void export_physical_containsOnlyDeckPlansConnectedToPhysicalTypes() {
+        String xml = export("PHYSICAL");
+
+        assertThat(xml).contains(idAttribute(physicalDeckPlan))
+                .doesNotContain(idAttribute(contractualDeckPlan))
+                .doesNotContain(idAttribute(unconnectedDeckPlan));
+    }
+
+    @Test
+    void export_contractual_containsOnlyDeckPlansConnectedToContractualTypes() {
+        String xml = export("CONTRACTUAL");
+
+        assertThat(xml).contains(idAttribute(contractualDeckPlan))
+                .doesNotContain(idAttribute(physicalDeckPlan))
+                .doesNotContain(idAttribute(unconnectedDeckPlan));
+    }
+
+    @Test
+    void export_both_doesNotFilterDeckPlansOnKind() {
+        String xml = export("BOTH");
+
+        assertThat(xml).contains(idAttribute(physicalDeckPlan), idAttribute(contractualDeckPlan), idAttribute(unconnectedDeckPlan));
+    }
+
     private List<String> modelIds(VehicleTypeKindEnumeration kind) {
         return vehicleModelRepository
                 .findCurrentFiltered(DATA_OWNER, null, null, kind, null, Pageable.unpaged())
@@ -126,13 +163,21 @@ class VehicleModelKindFilterIT {
         return "id=\"" + netexId + "\"";
     }
 
-    /** Saves a vehicle type of the kind and its one vehicle model, through the real savers. */
-    private String saveModelOf(VehicleTypeKindEnumeration kind, String name) {
+    private DeckPlan saveDeckPlan(String name) {
+        DeckPlan deckPlan = new DeckPlan();
+        deckPlan.setName(new EmbeddableMultilingualString(name, "en"));
+        deckPlan.setDataOwnerRef(DATA_OWNER);
+        return deckPlanSaver.saveNewVersion(deckPlan);
+    }
+
+    /** Saves a vehicle type of the kind, connected to the deck plan, and its one vehicle model, through the real savers. */
+    private String saveModelOf(VehicleTypeKindEnumeration kind, String name, DeckPlan deckPlan) {
         VehicleType type = new VehicleType();
         type.setName(new EmbeddableMultilingualString(name, "en"));
         type.setTransportMode(AllPublicTransportModesEnumeration.BUS);
         type.setDataOwnerRef(DATA_OWNER);
         type.setVehicleTypeKind(kind);
+        type.setDeckPlan(deckPlan);
         VehicleType savedType = vehicleTypeSaver.saveNewVersion(type);
 
         VehicleModel model = new VehicleModel();

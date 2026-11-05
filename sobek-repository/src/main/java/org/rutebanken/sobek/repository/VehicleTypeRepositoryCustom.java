@@ -25,11 +25,6 @@ import java.util.List;
 
 public interface VehicleTypeRepositoryCustom extends DataManagedObjectStructureRepository<VehicleType> {
 
-    /** Finds current vehicle types of all kinds (physical and contractual). */
-    default Page<VehicleType> findCurrentFiltered(String dataOwnerRef, List<String> netexIds, List<AllPublicTransportModesEnumeration> transportModes, String name, Pageable pageable) {
-        return findCurrentFiltered(dataOwnerRef, netexIds, transportModes, null, name, pageable);
-    }
-
     /** @param vehicleTypeKind only return vehicle types of this kind; null returns all kinds */
     Page<VehicleType> findCurrentFiltered(String dataOwnerRef, List<String> netexIds, List<AllPublicTransportModesEnumeration> transportModes, VehicleTypeKindEnumeration vehicleTypeKind, String name, Pageable pageable);
 

@@ -87,7 +87,7 @@ public class VehicleTypeVersionedSaverService {
         if (netexId == null || validPrefixList.getCodespaceTypeOf(netexId, VehicleType.class) != CodespaceType.SOBEK) {
             return;
         }
-        boolean inContractualCodespace = netexId.startsWith(ValidPrefixList.CONTRACTUAL_VEHICLE_TYPE_PREFIX + ":");
+        boolean inContractualCodespace = ValidPrefixList.isContractualVehicleTypeId(netexId);
         boolean contractual = vehicleType.getVehicleTypeKind() == VehicleTypeKindEnumeration.CONTRACTUAL;
         if (inContractualCodespace != contractual) {
             throw new VehicleTypeKindViolationException("Vehicle type id " + netexId + " does not match its kind " + vehicleType.getVehicleTypeKind()

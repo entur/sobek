@@ -86,7 +86,7 @@ public interface VehicleTypeMapper {
      * The kind of an incoming vehicle type follows from the codespace of its id.
      */
     static VehicleTypeKindEnumeration kindFromNetexId(String netexId) {
-        return netexId != null && netexId.startsWith(ValidPrefixList.CONTRACTUAL_VEHICLE_TYPE_PREFIX + ":")
+        return netexId != null && ValidPrefixList.isContractualVehicleTypeId(netexId)
                 ? VehicleTypeKindEnumeration.CONTRACTUAL
                 : VehicleTypeKindEnumeration.PHYSICAL;
     }

@@ -62,7 +62,7 @@ public interface SpotColumnMapper {
         }
 
         if (source.isEmpty()) {
-            return new SpotColumns_RelStructure();
+            return null; // the NeTEx schema requires at least one child, so an empty container must be omitted
         }
 
         return new SpotColumns_RelStructure().withSpotColumn(source.stream()

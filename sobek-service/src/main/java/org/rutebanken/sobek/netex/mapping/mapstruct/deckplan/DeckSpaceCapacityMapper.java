@@ -63,7 +63,7 @@ public interface DeckSpaceCapacityMapper {
         }
 
         if (source.isEmpty()) {
-            return new DeckSpaceCapacities_RelStructure();
+            return null; // the NeTEx schema requires at least one child, so an empty container must be omitted
         }
 
         return new DeckSpaceCapacities_RelStructure().withDeckSpaceCapacity(source.stream()

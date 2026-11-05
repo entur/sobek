@@ -60,7 +60,7 @@ public interface SpotRowMapper {
         }
 
         if (source.isEmpty()) {
-            return new SpotRows_RelStructure();
+            return null; // the NeTEx schema requires at least one child, so an empty container must be omitted
         }
 
         return new SpotRows_RelStructure().withSpotRow(source.stream()

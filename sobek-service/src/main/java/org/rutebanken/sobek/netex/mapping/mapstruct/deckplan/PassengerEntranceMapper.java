@@ -72,7 +72,7 @@ public interface PassengerEntranceMapper {
         }
 
         if (source.isEmpty()) {
-            return new DeckEntrances_RelStructure();
+            return null; // the NeTEx schema requires at least one child, so an empty container must be omitted
         }
 
         return new DeckEntrances_RelStructure().withDeckEntranceRefOrDeckEntrance(source.stream()

@@ -51,7 +51,7 @@ class GraphQLMutationsTest {
                     .contentType("application/xml")
                     .body(xml)
                     .when()
-                    .post("/services/vehicles/netex")
+                    .post("/services/vehicles/netex?vehicleTypeKind=PHYSICAL")
                     .then()
                     .statusCode(200);
         }

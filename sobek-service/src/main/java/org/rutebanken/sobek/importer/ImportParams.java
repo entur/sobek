@@ -17,10 +17,17 @@ package org.rutebanken.sobek.importer;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.rutebanken.sobek.model.vehicle.VehicleTypeKindEnumeration;
 
 @Getter
 @Setter
 public class ImportParams {
 
     private boolean skipOutput = false;
+
+    /**
+     * The kind of the vehicle types in the import whose id does not say it: NeTEx has no field for the kind, so only
+     * an id in the contractual codespace (CVT) is contractual by itself. Ids in other codespaces get this kind.
+     */
+    private VehicleTypeKindEnumeration vehicleTypeKind;
 }

@@ -9,11 +9,13 @@ import org.rutebanken.sobek.error.VehicleTypeKindViolationException;
 import org.rutebanken.sobek.model.vehicle.Vehicle;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
 import org.rutebanken.sobek.model.vehicle.VehicleTypeKindEnumeration;
+import org.rutebanken.sobek.netex.id.ValidPrefixList;
 import org.rutebanken.sobek.repository.VehicleRepository;
 import org.rutebanken.sobek.repository.VehicleTypeRepository;
 import org.rutebanken.sobek.repository.listener.NetexIdAssigner;
 
 import java.time.Instant;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -39,7 +41,8 @@ class VehicleTypeKindRulesTest {
 
     @BeforeEach
     void setUp() {
-        vehicleTypeSaver = new VehicleTypeVersionedSaverService(vehicleTypeRepository, vehicleRepository, defaultVersionedSaverService, netexIdAssigner);
+        vehicleTypeSaver = new VehicleTypeVersionedSaverService(vehicleTypeRepository, vehicleRepository, defaultVersionedSaverService, netexIdAssigner,
+                new ValidPrefixList("NMR", List.of("RUT")));
         vehicleSaver = new VehicleVersionedSaverService(vehicleRepository, defaultVersionedSaverService);
     }
 
@@ -128,6 +131,29 @@ class VehicleTypeKindRulesTest {
         incoming.setNetexId("NMR:VehicleType:5");
         assertThrows(VehicleTypeKindViolationException.class, () -> vehicleTypeSaver.saveNewVersion(null, incoming, Instant.now()));
         verify(defaultVersionedSaverService, never()).saveNewVersion(any(), any(), any(Instant.class), any());
+    }
+
+    @Test
+    void contractualTypeWithIdInARegisteredCodespaceIsAccepted() {
+        stubSave();
+        VehicleType incoming = vehicleType(VehicleTypeKindEnumeration.CONTRACTUAL);
+        incoming.setNetexId("RUT:VehicleType:5");
+
+        VehicleType saved = vehicleTypeSaver.saveNewVersion(null, incoming, Instant.now());
+
+        assertEquals("RUT:VehicleType:5", saved.getNetexId());
+        assertEquals(VehicleTypeKindEnumeration.CONTRACTUAL, saved.getVehicleTypeKind());
+    }
+
+    @Test
+    void contractualTypeWithIdInAnExternalCodespaceIsAccepted() {
+        stubSave();
+        VehicleType incoming = vehicleType(VehicleTypeKindEnumeration.CONTRACTUAL);
+        incoming.setNetexId("EXT:VehicleType:5");
+
+        VehicleType saved = vehicleTypeSaver.saveNewVersion(null, incoming, Instant.now());
+
+        assertEquals(VehicleTypeKindEnumeration.CONTRACTUAL, saved.getVehicleTypeKind());
     }
 
     @Test

@@ -35,6 +35,7 @@ import org.entur.netex2.model.*;
 import org.rutebanken.sobek.importer.ImportParams;
 import org.rutebanken.sobek.importer.VehicleTypeImporter;
 import org.rutebanken.sobek.importer.converter.VehicleTypeIdConverter;
+import org.rutebanken.sobek.model.vehicle.VehicleTypeKindEnumeration;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.rutebanken.sobek.netex.mapping.mapstruct.VehicleTypeMapper;
 import org.rutebanken.sobek.netex.util.PublicationDeliveryHelper;
@@ -80,12 +81,15 @@ public class VehicleTypeImportHandler {
             logger.info("About to check if incoming vehicle types have previously been imported with the same id");
             var originalWithMappedIds = originalVehicleTypes.stream()
                     .filter(this::isVehicleType)
-                    .map(jaxbElement -> (VehicleType) jaxbElement.getValue())
-                    .map(vehicleTypeIdConverter::convertIncomingId);
+                    .map(jaxbElement -> (VehicleType) jaxbElement.getValue());
 
             logger.info("About to map {} vehicle types to internal model", originalVehicleTypes.size());
             List<org.rutebanken.sobek.model.vehicle.VehicleType> mappedVehicleTypes = originalWithMappedIds
-                    .map(vt -> vehicleTypeMapper.mapToSobek(vt, context))
+                    .map(vt -> {
+                        // Read the id the client sent before the converter swaps it for an already imported (e.g. CVT) id
+                        String clientId = vt.getId();
+                        return mapWithKind(vehicleTypeIdConverter.convertIncomingId(vt), clientId, importParams);
+                    })
                     .collect(Collectors.toList());
             logger.info("Mapped {} vehicle types to internal model", mappedVehicleTypes.size());
 
@@ -101,6 +105,21 @@ public class VehicleTypeImportHandler {
 
             logger.info("Finished importing vehicle types");
         }
+    }
+
+    /**
+     * The kind follows the id when the id the client sent is in the contractual codespace (CVT). Any other id says
+     * nothing about the kind, so the kind the client asked for in the import applies. This is decided on the client's
+     * original id: an external id that the converter resolved to an existing CVT id must still be checked against the
+     * requested kind, so that a conflicting kind is rejected by the saver.
+     */
+    private org.rutebanken.sobek.model.vehicle.VehicleType mapWithKind(VehicleType convertedVehicleType, String clientId, ImportParams importParams) {
+        var mapped = vehicleTypeMapper.mapToSobek(convertedVehicleType, context);
+        if (mapped != null && importParams.getVehicleTypeKind() != null
+                && VehicleTypeMapper.kindFromNetexId(clientId) == VehicleTypeKindEnumeration.PHYSICAL) {
+            mapped.setVehicleTypeKind(importParams.getVehicleTypeKind());
+        }
+        return mapped;
     }
 
     private boolean isVehicleType(JAXBElement<? extends DataManagedObjectStructure> jaxbElement) {

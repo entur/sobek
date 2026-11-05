@@ -32,7 +32,7 @@
                         <SeatingCapacity>30</SeatingCapacity>
                         <StandingCapacity>20</StandingCapacity>
                     </PassengerCapacity>
-                    <DeckPlanRef ref="NMR:DeckPlan:1"/>
+                    <DeckPlanRef ref="AKT:DeckPlan:1"/>
                     <Length>25000</Length>
                     <Width>5000</Width>
                     <Height>5000</Height>
@@ -74,7 +74,7 @@
                 </Vehicle>
             </vehicles>
             <deckPlans>
-                <DeckPlan id="NMR:DeckPlan:1" version="1">
+                <DeckPlan id="AKT:DeckPlan:1" version="1">
                     <Name>
                         <Text>
                             Enetasjes leddet lavgulvbuss (CG)

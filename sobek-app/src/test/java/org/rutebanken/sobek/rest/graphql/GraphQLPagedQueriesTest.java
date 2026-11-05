@@ -57,7 +57,7 @@ class GraphQLPagedQueriesTest {
                 .contentType("application/xml")
                 .body(xml)
                 .when()
-                .post("/services/vehicles/netex")
+                .post("/services/vehicles/netex?vehicleTypeKind=PHYSICAL")
                 .then()
                 .statusCode(200);
         }
@@ -339,7 +339,7 @@ class GraphQLPagedQueriesTest {
             .contentType(ContentType.JSON)
             .body(
                 gql(
-                    "{ deckPlans(page: 0, size: 10, filter: { netexIds: [ \"NMR:DeckPlan:1\" ]  dataOwnerRef: \"AKT\" } ) { content { netexId } totalElements page size } }"
+                    "{ deckPlans(page: 0, size: 10, filter: { netexIds: [ \"AKT:DeckPlan:1\" ]  dataOwnerRef: \"AKT\" } ) { content { netexId } totalElements page size } }"
                 )
             )
             .when()
@@ -350,7 +350,7 @@ class GraphQLPagedQueriesTest {
             .body("data.deckPlans.content", hasSize(1))
             .body(
                 "data.deckPlans.content[0].netexId",
-                equalTo("NMR:DeckPlan:1")
+                equalTo("AKT:DeckPlan:1")
             )
             .body("data.deckPlans.page", equalTo(0))
             .body("data.deckPlans.size", equalTo(10));

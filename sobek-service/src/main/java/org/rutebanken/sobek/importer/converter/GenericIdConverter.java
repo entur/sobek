@@ -18,6 +18,7 @@ package org.rutebanken.sobek.importer.converter;
 import org.rutebanken.sobek.model.CustomKeyValueTypes;
 import org.rutebanken.sobek.model.DataManagedObjectStructure;
 import org.rutebanken.sobek.netex.id.NetexIdHelper;
+import org.rutebanken.sobek.netex.id.CodespaceType;
 import org.rutebanken.sobek.netex.id.ValidPrefixList;
 import org.rutebanken.sobek.repository.generic.GenericEntityInVersionRepository;
 import org.slf4j.Logger;
@@ -52,21 +53,18 @@ public class GenericIdConverter<X extends org.entur.netex2.model.DataManagedObje
         }
 
         // If ID already valid - do nothing
-        if(validPrefixList.isValidPrefixForType(netexIdHelper.extractIdPrefix(object.getId()), sobekType)) {
+        if(validPrefixList.getCodespaceTypeOf(object.getId(), sobekType) != CodespaceType.EXTERNAL) {
             logger.debug("Detected ID with valid prefix: {}. ", object.getId());
             return object;
         }
 
-        // Try to find an existing object that has used the same ID previously
-        try {
-            var existingObjectId = genericEntityInVersionRepository.findByKeyValue(CustomKeyValueTypes.ORIGINAL_ID_KEY, Set.of(object.getId()), sobekType);
-            if (existingObjectId != null) {
-                // We found it!
-                object.setId(existingObjectId);
-                return object;
-            }
-        } catch (Exception e) {
-            logger.error("Error while trying to find existing object with ID {}", object.getId(), e);
+        // Try to find an existing object that has used the same ID previously.
+        // A failing lookup is not "no match": it must fail the request, or a duplicate would be created.
+        var existingObjectId = genericEntityInVersionRepository.findByKeyValue(CustomKeyValueTypes.ORIGINAL_ID_KEY, Set.of(object.getId()), sobekType);
+        if (existingObjectId != null) {
+            // We found it!
+            object.setId(existingObjectId);
+            return object;
         }
         // We didn't find a match - this will be imported as a new vehicle type
         return object;

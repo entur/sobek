@@ -19,6 +19,8 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
+import org.rutebanken.sobek.netex.id.CodespaceType;
+
 import static org.rutebanken.sobek.model.CustomKeyValueTypes.ORIGINAL_ID_KEY;
 
 /**
@@ -120,18 +122,14 @@ public interface DataManagedObjectStructureMapper {
         if(netexEntity.getId() == null) {
             sobekEntity.setNetexId(null);
         } else {
-            try {
-                String prefix = context.getNetexIdHelper().extractIdPrefix(netexEntity.getId());
-                if (context.getValidPrefixList().isValidPrefixForType(prefix, sobekEntity.getClass())) {
-                    logger.debug("Detected ID with valid prefix: {}. ", netexEntity.getId());
-                    sobekEntity.setNetexId(netexEntity.getId().trim());
-                } else {
-                    logger.debug("Received ID {}. Will map it as key value ", netexEntity.getId());
-                    moveOriginalIdToKeyValueList(sobekEntity, netexEntity.getId(), context.getNetexIdHelper());
-                    sobekEntity.setNetexId(null);
-                }
-            } catch (IllegalArgumentException e) {
-                logger.warn("Received malformed ID {}. Will map it as key value instead of failing", netexEntity.getId(), e);
+            // The codespace decides, whatever the rest of the id looks like: an id that claims Sobek's or a registered
+            // codespace (also a malformed one, e.g. CVT:garbage) is passed on as it is, for the saver to accept or reject.
+            // Only an id from another codespace is moved to the key values, to be given an id by Sobek.
+            if (context.getValidPrefixList().getCodespaceTypeOf(netexEntity.getId(), sobekEntity.getClass()) != CodespaceType.EXTERNAL) {
+                logger.debug("Detected ID with valid prefix: {}. ", netexEntity.getId());
+                sobekEntity.setNetexId(netexEntity.getId().trim());
+            } else {
+                logger.debug("Received ID {}. Will map it as key value ", netexEntity.getId());
                 moveOriginalIdToKeyValueList(sobekEntity, netexEntity.getId(), context.getNetexIdHelper());
                 sobekEntity.setNetexId(null);
             }

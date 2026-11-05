@@ -20,12 +20,16 @@
                     </roles>
                 </ResponsibilitySet>
             </responsibilitySets>
-            <vehicleTypes>
-                <VehicleType id="CVT:VehicleType:9001" version="1">
-                    <Name lang="nb"><Text>Contractual bus</Text></Name>
-                    <TransportMode>bus</TransportMode>
-                </VehicleType>
-            </vehicleTypes>
+            <vehicles>
+                <Vehicle id="@ID@" version="1">
+                    <ValidBetween>
+                        <FromDate>2026-04-17T00:00:00</FromDate>
+                    </ValidBetween>
+                    <Name lang="nb">Id policy test vehicle</Name>
+                    <RegistrationNumber>POL-0001</RegistrationNumber>
+                    <TransportTypeRef ref="@TYPE_ID@"/>
+                </Vehicle>
+            </vehicles>
         </ResourceFrame>
     </dataObjects>
 </PublicationDelivery>

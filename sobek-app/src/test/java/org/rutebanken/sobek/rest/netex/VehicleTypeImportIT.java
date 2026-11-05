@@ -16,6 +16,10 @@ import org.junit.jupiter.api.Test;
 import org.entur.netex2.model.PublicationDeliveryStructure;
 import org.entur.netex2.model.ResourceFrame;
 import org.entur.netex2.model.VehicleType;
+import org.rutebanken.sobek.model.vehicle.VehicleTypeKindEnumeration;
+import org.rutebanken.sobek.repository.VehicleTypeRepository;
+import org.rutebanken.sobek.versioning.save.VehicleTypeVersionedSaverService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -26,6 +30,10 @@ import org.springframework.context.annotation.Import;
 class VehicleTypeImportIT {
 
   @LocalServerPort int port;
+
+  @Autowired private VehicleTypeVersionedSaverService vehicleTypeSaver;
+
+  @Autowired private VehicleTypeRepository vehicleTypeRepository;
 
   @BeforeEach
   void setUp() {
@@ -44,7 +52,7 @@ class VehicleTypeImportIT {
             .contentType("application/xml")
             .body(xml)
             .when()
-            .post("/services/vehicles/netex")
+            .post("/services/vehicles/netex?vehicleTypeKind=PHYSICAL")
             .then()
             .statusCode(200)
             .extract()
@@ -94,7 +102,7 @@ class VehicleTypeImportIT {
                         .contentType("application/xml")
                         .body(xml)
                         .when()
-                        .post("/services/vehicles/netex")
+                        .post("/services/vehicles/netex?vehicleTypeKind=PHYSICAL")
                         .then()
                         .statusCode(200)
                         .extract()
@@ -126,13 +134,17 @@ class VehicleTypeImportIT {
     }
 
     @Test
-    void importContractualVehicleType_keepsItsContractualCodespaceId() throws Exception {
+    void importUpdateOfContractualVehicleType_keepsItsContractualId() throws Exception {
+        // A contractual vehicle type cannot be created by import (ids in CVT are Sobek's), but it can be updated
+        String id = vehicleTypeSaver.saveNewVersion(contractualVehicleType()).getNetexId();
+        assertThat(id).startsWith("CVT:VehicleType:");
+
         String responseXml =
                 given()
                         .contentType("application/xml")
-                        .body(fixture("/fixtures/vehicle-type-contractual-import.xml"))
+                        .body(fixture("/fixtures/vehicle-type-import-with-id.xml").replace("@ID@", id))
                         .when()
-                        .post("/services/vehicles/netex")
+                        .post("/services/vehicles/netex?vehicleTypeKind=PHYSICAL")
                         .then()
                         .statusCode(200)
                         .extract()
@@ -146,20 +158,26 @@ class VehicleTypeImportIT {
                         .map(ResourceFrame.class::cast)
                         .findFirst()
                         .orElseThrow(() -> new AssertionError("No ResourceFrame in response"));
-
         VehicleType imported =
                 (VehicleType) responseFrame.getVehicleTypes().getTransportType().getFirst().getValue();
-        assertThat(imported.getId()).isEqualTo("CVT:VehicleType:9001");
+
+        assertThat(imported.getId()).isEqualTo(id);
+        assertThat(vehicleTypeRepository.findFirstByNetexIdOrderByVersionDesc(id).getVehicleTypeKind())
+                .isEqualTo(VehicleTypeKindEnumeration.CONTRACTUAL);
     }
 
     @Test
     void importVehicleReferringToContractualVehicleType_isBadRequest() throws Exception {
+        String contractualId = vehicleTypeSaver.saveNewVersion(contractualVehicleType()).getNetexId();
+
         String body =
                 given()
                         .contentType("application/xml")
-                        .body(fixture("/fixtures/vehicle-refers-to-contractual-type.xml"))
+                        .body(fixture("/fixtures/vehicle-import-with-type-ref.xml")
+                                .replace("@ID@", "AKT:Vehicle:contractual-ref-" + System.nanoTime())
+                                .replace("@TYPE_ID@", contractualId))
                         .when()
-                        .post("/services/vehicles/netex")
+                        .post("/services/vehicles/netex?vehicleTypeKind=PHYSICAL")
                         .then()
                         .statusCode(400)
                         .extract()
@@ -167,6 +185,60 @@ class VehicleTypeImportIT {
                         .asString();
 
         assertThat(body).contains("contractual");
+    }
+
+    @Test
+    void reimportOfContractualVehicleTypeByExternalId_asPhysical_isRejected() throws Exception {
+        // Unique per run, so the test does not depend on what other tests left in the database
+        String externalId = "EXT:VehicleType:" + System.nanoTime();
+        String body = fixture("/fixtures/vehicle-type-import-with-id.xml").replace("@ID@", externalId);
+
+        // First import creates the vehicle type as CONTRACTUAL; Sobek assigns its own id and keeps the external one
+        String firstResponse = postImport(body, "CONTRACTUAL").statusCode(200).extract().body().asString();
+        String assignedId = importedId(firstResponse);
+        assertThat(vehicleTypeRepository.findFirstByNetexIdOrderByVersionDesc(assignedId).getVehicleTypeKind())
+            .isEqualTo(VehicleTypeKindEnumeration.CONTRACTUAL);
+        Long versionAfterFirstImport =
+            vehicleTypeRepository.findFirstByNetexIdOrderByVersionDesc(assignedId).getVersion();
+
+        // Reimport with the same external id resolves to the existing type, but now claims PHYSICAL
+        String errorBody = postImport(body, "PHYSICAL").statusCode(400).extract().body().asString();
+
+        assertThat(errorBody).contains("CONTRACTUAL").contains("PHYSICAL");
+        var afterReject = vehicleTypeRepository.findFirstByNetexIdOrderByVersionDesc(assignedId);
+        assertThat(afterReject.getVehicleTypeKind()).isEqualTo(VehicleTypeKindEnumeration.CONTRACTUAL);
+        assertThat(afterReject.getVersion()).isEqualTo(versionAfterFirstImport);
+
+        // Reimporting with the matching kind is still fine
+        postImport(body, "CONTRACTUAL").statusCode(200);
+    }
+
+    private io.restassured.response.ValidatableResponse postImport(String body, String kind) {
+        return given()
+            .contentType("application/xml")
+            .body(body)
+            .when()
+            .post("/services/vehicles/netex?vehicleTypeKind=" + kind)
+            .then();
+    }
+
+    private String importedId(String responseXml) throws Exception {
+        ResourceFrame frame =
+            unmarshal(responseXml).getDataObjects().getCompositeFrameOrCommonFrame().stream()
+                .map(JAXBElement::getValue)
+                .filter(ResourceFrame.class::isInstance)
+                .map(ResourceFrame.class::cast)
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("No ResourceFrame in response"));
+        return ((VehicleType) frame.getVehicleTypes().getTransportType().getFirst().getValue()).getId();
+    }
+
+    private static org.rutebanken.sobek.model.vehicle.VehicleType contractualVehicleType() {
+        var type = new org.rutebanken.sobek.model.vehicle.VehicleType();
+        type.setTransportMode(org.rutebanken.sobek.model.vehicle.AllPublicTransportModesEnumeration.BUS);
+        type.setDataOwnerRef(SingleOrganisationAuthorizationConfiguration.DATA_OWNER);
+        type.setVehicleTypeKind(VehicleTypeKindEnumeration.CONTRACTUAL);
+        return type;
     }
 
     private String fixture(String path) throws Exception {

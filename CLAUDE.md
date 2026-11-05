@@ -263,7 +263,7 @@ curl https://api.dev.entur.io/vehicles/v1/netex/export/{jobId}/content
 ```bash
 curl -XPOST -H "Content-Type: application/xml" \
   -d @vehicle-data.xml \
-  http://localhost:1997/services/vehicles/netex
+  "http://localhost:1997/services/vehicles/netex?vehicleTypeKind=PHYSICAL"
 ```
 
 ### Monitoring

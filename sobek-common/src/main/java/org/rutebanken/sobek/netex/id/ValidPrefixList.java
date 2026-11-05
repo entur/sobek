@@ -66,25 +66,47 @@ public class ValidPrefixList {
         return isValidPrefixForType(prefix, clazz.getSimpleName());
     }
 
+    /**
+     * True if the codespace is one Sobek keeps the id of as it is: its own or a registered one.
+     */
     public boolean isValidPrefixForType(String prefix, String type) {
+        return getCodespaceTypeOfPrefix(prefix, type) != CodespaceType.EXTERNAL;
+    }
 
-        if (prefix.equals(validNetexPrefix)) {
-            return true;
+    /**
+     * The type of the codespace the id is in, for an entity of the given type. The codespace is the text before
+     * the first colon, whatever the rest of the id looks like: a malformed id such as {@code NMR:foo} or
+     * {@code CVT:VehicleType:abc} still claims Sobek's codespace, so it is treated as Sobek's (and rejected as a
+     * new id) rather than as an external id. Only an id with no colon at all has no codespace and is external.
+     */
+    public CodespaceType getCodespaceTypeOf(String netexId, Class<?> entityType) {
+        return getCodespaceTypeOf(netexId, entityType.getSimpleName());
+    }
+
+    public CodespaceType getCodespaceTypeOf(String netexId, String type) {
+        if (netexId == null) {
+            return CodespaceType.EXTERNAL;
         }
-        if (prefix.equals(CONTRACTUAL_VEHICLE_TYPE_PREFIX) && "VehicleType".equals(type)) {
-            return true;
+        int firstColon = netexId.indexOf(':');
+        if (firstColon < 0) {
+            return CodespaceType.EXTERNAL;
+        }
+        return getCodespaceTypeOfPrefix(netexId.substring(0, firstColon), type);
+    }
+
+    public CodespaceType getCodespaceTypeOfPrefix(String prefix, String type) {
+        if (prefix == null) {
+            return CodespaceType.EXTERNAL;
+        }
+        if (prefix.equals(validNetexPrefix)
+                || (prefix.equals(CONTRACTUAL_VEHICLE_TYPE_PREFIX) && "VehicleType".equals(type))) {
+            return CodespaceType.SOBEK;
         }
 
-        List<String> validPrefixes = this.get(type);
-        if (validPrefixes == null) {
-            return false;
+        List<String> registered = this.get(type);
+        if (registered != null && (registered.contains(prefix) || registered.contains(ANY_PREFIX))) {
+            return CodespaceType.REGISTERED;
         }
-        if (validPrefixes.contains(prefix)) {
-            return true;
-        }
-        if (validPrefixes.contains(ANY_PREFIX)) {
-            return true;
-        }
-        return false;
+        return CodespaceType.EXTERNAL;
     }
 }

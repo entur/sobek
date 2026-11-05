@@ -17,7 +17,7 @@ Accept: application/json
 %}
 
 ### Import NeTEx XML
-POST http://localhost:37999/services/vehicles/netex
+POST http://localhost:37999/services/vehicles/netex?vehicleTypeKind=PHYSICAL
 Authorization: {{bearerToken}}
 Content-Type: application/xml
 

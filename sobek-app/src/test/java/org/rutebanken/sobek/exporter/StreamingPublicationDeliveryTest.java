@@ -1,5 +1,6 @@
 package org.rutebanken.sobek.exporter;
 
+import jakarta.validation.ValidationException;
 import org.entur.netex2.model.CompositeFrame;
 import org.entur.netex2.model.PublicationDeliveryStructure;
 import org.entur.netex2.model.ResourceFrame;
@@ -162,7 +163,7 @@ class StreamingPublicationDeliveryTest {
 
     @Test
     void streamVehicles_without_vehicleTypeKind_isRejected() {
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(ValidationException.class,
             () -> streamingPublicationDelivery.streamVehicles(exportParamsFor(DATA_OWNER, null), new ByteArrayOutputStream()));
         verifyNoInteractions(vehicleTypeRepository, vehicleModelRepository);
     }

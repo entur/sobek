@@ -15,6 +15,7 @@
 
 package org.rutebanken.sobek.exporter;
 
+import jakarta.validation.ValidationException;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.JAXBException;
@@ -140,7 +141,7 @@ public class StreamingPublicationDelivery {
         logger.info("Streaming export of vehicles initiated. Export params: {}", exportParams);
 
         if (exportParams.getVehicleTypeKind() == null) {
-            throw new IllegalArgumentException("vehicleTypeKind is required: PHYSICAL, CONTRACTUAL or BOTH");
+            throw new ValidationException("vehicleTypeKind is required: PHYSICAL, CONTRACTUAL or BOTH");
         }
         authorizationService.verifyCanViewDataOwner(exportParams.getDataOwner());
 

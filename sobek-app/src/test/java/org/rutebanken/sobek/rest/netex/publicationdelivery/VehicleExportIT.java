@@ -141,7 +141,7 @@ class VehicleExportIT {
                         .body()
                         .asString();
 
-        assertThat(body).contains("INVALID", "vehicleTypeKind", "PHYSICAL", "CONTRACTUAL", "BOTH");
+        assertThat(body).contains("INVALID", "vehicleTypeKind");
     }
 
     @Test

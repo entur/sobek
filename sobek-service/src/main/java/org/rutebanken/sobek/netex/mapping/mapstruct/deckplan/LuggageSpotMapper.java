@@ -68,7 +68,7 @@ public interface LuggageSpotMapper {
         }
 
         if (source.isEmpty()) {
-            return new LuggageSpots_RelStructure();
+            return null; // the NeTEx schema requires at least one child, so an empty container must be omitted
         }
 
         return new LuggageSpots_RelStructure().withLuggageSpotRefOrLuggageSpot(source.stream()

@@ -60,7 +60,7 @@ public interface DeckLevelMapper {
         }
 
         if (source.isEmpty()) {
-            return new DeckLevels_RelStructure();
+            return null; // the NeTEx schema requires at least one child, so an empty container must be omitted
         }
 
         return new DeckLevels_RelStructure().withDeckLevel(source.stream()

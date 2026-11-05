@@ -88,7 +88,7 @@ public interface DeckMapper {
         }
 
         if (source.isEmpty()) {
-            return new Decks_RelStructure();
+            return null; // the NeTEx schema requires at least one child, so an empty container must be omitted
         }
 
         return new Decks_RelStructure().withDeck(source.stream()

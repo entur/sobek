@@ -27,6 +27,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -43,7 +44,7 @@ public class GlobalExceptionHandler {
     public GlobalExceptionHandler() {
         mapping = new HashMap<>();
         mapping.put(HttpStatus.BAD_REQUEST,
-                Set.of(ValidationException.class, OptimisticLockException.class, 
+                Set.of(ValidationException.class, BindException.class, OptimisticLockException.class,
                        EntityNotFoundException.class, DataIntegrityViolationException.class, NetexMappingException.class));
         mapping.put(HttpStatus.CONFLICT, Set.of(EntityExistsException.class));
         mapping.put(HttpStatus.FORBIDDEN, Set.of(AccessDeniedException.class));

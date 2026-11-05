@@ -109,4 +109,8 @@ public class ValidPrefixList {
         }
         return CodespaceType.EXTERNAL;
     }
+
+    public static boolean isContractualVehicleTypeId(String netexId) {
+        return netexId.startsWith(ValidPrefixList.CONTRACTUAL_VEHICLE_TYPE_PREFIX + ":");
+    }
 }

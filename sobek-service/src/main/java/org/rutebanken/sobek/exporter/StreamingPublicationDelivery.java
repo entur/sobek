@@ -15,6 +15,7 @@
 
 package org.rutebanken.sobek.exporter;
 
+import jakarta.validation.ValidationException;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.JAXBException;
@@ -140,7 +141,7 @@ public class StreamingPublicationDelivery {
         logger.info("Streaming export of vehicles initiated. Export params: {}", exportParams);
 
         if (exportParams.getVehicleTypeKind() == null) {
-            throw new IllegalArgumentException("vehicleTypeKind is required: PHYSICAL, CONTRACTUAL or BOTH");
+            throw new ValidationException("vehicleTypeKind is required: PHYSICAL, CONTRACTUAL or BOTH");
         }
         authorizationService.verifyCanViewDataOwner(exportParams.getDataOwner());
 
@@ -166,7 +167,7 @@ public class StreamingPublicationDelivery {
         } else {
             logger.info("Contractual vehicle types requested only, skipping vehicles");
         }
-        prepareDeckPlans(exportParams.getDataOwner(), netexResourceFrame, null);
+        prepareDeckPlans(exportParams.getDataOwner(), exportParams.getVehicleTypeKind(), netexResourceFrame, null);
         prepareEquipments(exportParams.getDataOwner(), netexResourceFrame);
 
         PublicationDeliveryStructure publicationDeliveryStructure = publicationDeliveryCreator.createPublicationDelivery(netexCompositeFrame);
@@ -197,7 +198,7 @@ public class StreamingPublicationDelivery {
         netexCompositeFrame.withFrames(framesRelStructure);
 
         logger.info("Preparing scrollable iterators");
-        prepareDeckPlans(exportParams.getDataOwner(), netexResourceFrame, deckPlanId);
+        prepareDeckPlans(exportParams.getDataOwner(), null, netexResourceFrame, deckPlanId);
         //prepareEquipments(netexResourceFrame);
 
         PublicationDeliveryStructure publicationDeliveryStructure = publicationDeliveryCreator.createPublicationDelivery(netexCompositeFrame);
@@ -319,14 +320,14 @@ public class StreamingPublicationDelivery {
         }
     }
 
-    private void prepareDeckPlans(String dataOwnerRef, org.entur.netex2.model.ResourceFrame resourceFrame, String deckPlanId) {
+    private void prepareDeckPlans(String dataOwnerRef, VehicleTypeKindSelection kindSelection, org.entur.netex2.model.ResourceFrame resourceFrame, String deckPlanId) {
         List<DeckPlan> deckPlansInDb;
         if (deckPlanId != null) {
             DeckPlan deckPlan = deckPlanRepository.findFirstByNetexIdOrderByVersionDesc(deckPlanId);
             deckPlansInDb = isOwnedBy(dataOwnerRef, deckPlan) ? Collections.singletonList(deckPlan) : Collections.emptyList();
         } else {
             deckPlansInDb = deckPlanRepository
-                .findCurrentFiltered(dataOwnerRef, null, null, null, Pageable.unpaged())
+                .findCurrentFiltered(dataOwnerRef, null, null, kindSelection == null ? null : kindSelection.toKindOrNull(), null, Pageable.unpaged())
                 .getContent();
         }
 

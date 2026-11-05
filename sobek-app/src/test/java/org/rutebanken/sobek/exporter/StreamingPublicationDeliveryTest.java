@@ -92,7 +92,7 @@ class StreamingPublicationDeliveryTest {
             .thenReturn(new PageImpl<>(List.of()));
         lenient().when(vehicleTypeRepository.findCurrentFiltered(any(), any(), any(), any(), any(), any(Pageable.class)))
             .thenReturn(new PageImpl<>(List.of()));
-        lenient().when(deckPlanRepository.findCurrentFiltered(any(), any(), any(), any(), any(Pageable.class)))
+        lenient().when(deckPlanRepository.findCurrentFiltered(any(), any(), any(), any(), any(), any(Pageable.class)))
             .thenReturn(new PageImpl<>(List.of()));
         lenient().when(vehicleModelRepository.findCurrentFiltered(any(), any(), any(), any(), any(), any(Pageable.class)))
             .thenReturn(new PageImpl<>(List.of()));
@@ -119,7 +119,7 @@ class StreamingPublicationDeliveryTest {
 
         verify(vehicleRepository).findCurrentFiltered(eq(DATA_OWNER), isNull(), isNull(), isNull(), eq(Pageable.unpaged()));
         verify(vehicleTypeRepository).findCurrentFiltered(eq(DATA_OWNER), isNull(), isNull(), isNull(), isNull(), eq(Pageable.unpaged()));
-        verify(deckPlanRepository).findCurrentFiltered(eq(DATA_OWNER), isNull(), isNull(), isNull(), eq(Pageable.unpaged()));
+        verify(deckPlanRepository).findCurrentFiltered(eq(DATA_OWNER), isNull(), isNull(), isNull(), isNull(), eq(Pageable.unpaged()));
         verify(equipmentRepository).findCurrentFiltered(eq(DATA_OWNER), isNull(), isNull(), eq(Pageable.unpaged()));
         // BOTH is the default selection in these tests, so neither vehicle types nor vehicle models are filtered on kind
         verify(vehicleModelRepository).findCurrentFiltered(eq(DATA_OWNER), isNull(), isNull(), isNull(), isNull(), eq(Pageable.unpaged()));
@@ -133,7 +133,7 @@ class StreamingPublicationDeliveryTest {
 
         verify(vehicleRepository).findCurrentFiltered(isNull(), isNull(), isNull(), isNull(), eq(Pageable.unpaged()));
         verify(vehicleTypeRepository).findCurrentFiltered(isNull(), isNull(), isNull(), isNull(), isNull(), eq(Pageable.unpaged()));
-        verify(deckPlanRepository).findCurrentFiltered(isNull(), isNull(), isNull(), isNull(), eq(Pageable.unpaged()));
+        verify(deckPlanRepository).findCurrentFiltered(isNull(), isNull(), isNull(), isNull(), isNull(), eq(Pageable.unpaged()));
         verify(equipmentRepository).findCurrentFiltered(isNull(), isNull(), isNull(), eq(Pageable.unpaged()));
         verify(vehicleModelRepository).findCurrentFiltered(isNull(), isNull(), isNull(), isNull(), isNull(), eq(Pageable.unpaged()));
     }
@@ -146,6 +146,7 @@ class StreamingPublicationDeliveryTest {
 
         verify(vehicleTypeRepository).findCurrentFiltered(eq(DATA_OWNER), isNull(), isNull(), eq(VehicleTypeKindEnumeration.PHYSICAL), isNull(), eq(Pageable.unpaged()));
         verify(vehicleModelRepository).findCurrentFiltered(eq(DATA_OWNER), isNull(), isNull(), eq(VehicleTypeKindEnumeration.PHYSICAL), isNull(), eq(Pageable.unpaged()));
+        verify(deckPlanRepository).findCurrentFiltered(eq(DATA_OWNER), isNull(), isNull(), eq(VehicleTypeKindEnumeration.PHYSICAL), isNull(), eq(Pageable.unpaged()));
         verify(vehicleRepository).findCurrentFiltered(eq(DATA_OWNER), isNull(), isNull(), isNull(), eq(Pageable.unpaged()));
     }
 
@@ -155,6 +156,7 @@ class StreamingPublicationDeliveryTest {
 
         verify(vehicleTypeRepository).findCurrentFiltered(eq(DATA_OWNER), isNull(), isNull(), eq(VehicleTypeKindEnumeration.CONTRACTUAL), isNull(), eq(Pageable.unpaged()));
         verify(vehicleModelRepository).findCurrentFiltered(eq(DATA_OWNER), isNull(), isNull(), eq(VehicleTypeKindEnumeration.CONTRACTUAL), isNull(), eq(Pageable.unpaged()));
+        verify(deckPlanRepository).findCurrentFiltered(eq(DATA_OWNER), isNull(), isNull(), eq(VehicleTypeKindEnumeration.CONTRACTUAL), isNull(), eq(Pageable.unpaged()));
         verify(vehicleRepository, never()).findCurrentFiltered(any(), any(), any(), any(), any(Pageable.class));
     }
 

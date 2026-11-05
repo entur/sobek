@@ -53,7 +53,7 @@ public class DeckPlanFetcher implements DataFetcher<Map<String, Object>> {
         List<AllPublicTransportModesEnumeration> modes = FilterHelper.getModesFromFilter(filter);
         String dataOwnerRef = FilterHelper.getDataOwnerRefFromFilter(filter);
         authorizationService.verifyCanViewDataOwner(dataOwnerRef);
-        var result = deckPlanRepository.findCurrentFiltered(dataOwnerRef, netexIds, modes, name, PageRequest.of(page, size));
+        var result = deckPlanRepository.findCurrentFiltered(dataOwnerRef, netexIds, modes, null, name, PageRequest.of(page, size));
         return PageResult.from(result, page, size);
     }
 }

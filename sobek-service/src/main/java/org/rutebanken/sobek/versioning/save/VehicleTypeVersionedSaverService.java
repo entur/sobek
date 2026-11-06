@@ -28,6 +28,9 @@ import org.rutebanken.sobek.repository.VehicleTypeRepository;
 import org.rutebanken.sobek.repository.listener.NetexIdAssigner;
 import org.springframework.stereotype.Component;
 
+import jakarta.validation.ValidationException;
+import org.hibernate.Hibernate;
+
 import java.time.Instant;
 import java.util.logging.Level;
 
@@ -59,6 +62,7 @@ public class VehicleTypeVersionedSaverService {
     }
 
     public VehicleType saveNewVersion(VehicleType existingVersion, VehicleType newVersion, Instant defaultValidFrom) {
+        verifySameSubtype(existingVersion, newVersion);
         resolveVehicleTypeKind(existingVersion, newVersion);
         verifyNetexIdMatchesKind(newVersion);
 
@@ -73,8 +77,26 @@ public class VehicleTypeVersionedSaverService {
         var saved = defaultVersionedSaverService.saveNewVersion(existingVersion, newVersion, defaultValidFrom, vehicleTypeRepository);
         if(existingVersion != null && !saved.getId().equals(existingVersion.getId())) {
             vehicleRepository.moveToTransportType(existingVersion.getId(), saved.getId());
+            // Trains and compound trains that include this vehicle type follow it to the new version
+            vehicleTypeRepository.moveComponentReferences(existingVersion.getId(), saved.getId());
         }
         return saved;
+    }
+
+    /**
+     * A vehicle type is a plain VehicleType, a Train or a CompoundTrain from the moment it is created. A new version
+     * of another subtype would be stored as a different kind of row and lose the data of the previous version.
+     */
+    private void verifySameSubtype(VehicleType existingVersion, VehicleType newVersion) {
+        if (existingVersion == null) {
+            return;
+        }
+        Class<?> existingType = Hibernate.getClass(existingVersion);
+        Class<?> newType = Hibernate.getClass(newVersion);
+        if (existingType != newType) {
+            throw new ValidationException("Vehicle type " + existingVersion.getNetexId() + " is a " + existingType.getSimpleName()
+                    + " and cannot be changed to a " + newType.getSimpleName());
+        }
     }
 
     /**

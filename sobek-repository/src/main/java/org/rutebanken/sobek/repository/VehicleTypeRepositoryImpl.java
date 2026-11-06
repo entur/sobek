@@ -123,6 +123,20 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
 
 
     @Override
+    public void moveComponentReferences(Long fromVehicleTypeId, Long toVehicleTypeId) {
+        // Only components of owners that are valid now are moved, so that the history keeps pointing at what was current then
+        String currentOwner = " IN (SELECT id FROM vehicle_type WHERE (from_date is null or from_date <= now()) and (to_date is null or to_date >= now()))";
+        for (String statement : List.of(
+                "UPDATE train_component SET train_id = :to WHERE train_id = :from AND owner_train_id" + currentOwner,
+                "UPDATE train_in_compound_train SET train_id = :to WHERE train_id = :from AND owner_compound_train_id" + currentOwner)) {
+            Query query = entityManager.createNativeQuery(statement);
+            query.setParameter("to", toVehicleTypeId);
+            query.setParameter("from", fromVehicleTypeId);
+            query.executeUpdate();
+        }
+    }
+
+    @Override
     public void moveToDeckPlan(Long fromDeckPlanId, Long toDeckPlanId) {
         Query query = entityManager.createNativeQuery("UPDATE vehicle_type SET deck_plan_id = :toDeckPlanId WHERE deck_plan_id = :fromDeckPlanId " +
                 " and (from_date is null or from_date <= now()) and (to_date is null or to_date >= now())");

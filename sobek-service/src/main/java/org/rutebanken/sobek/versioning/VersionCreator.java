@@ -56,9 +56,7 @@ public class VersionCreator {
             // Copy vehicle, but keep the same transport type reference
             Vehicle original = (Vehicle) entityInVersionStructure;
             Vehicle vehicleCopy = mappingContext.getVersionCopyMapper().copy(original);
-            if(vehicleCopy.getTransportType() != null) {
-                vehicleCopy.getTransportType().setId(original.getTransportType().getId());
-            }
+            vehicleCopy.setTransportType(original.getTransportType());
             copy = type.cast(vehicleCopy);
         } else if (entityInVersionStructure instanceof VehicleType) {
             // Copy vehicle type, but keep the same deck plan reference

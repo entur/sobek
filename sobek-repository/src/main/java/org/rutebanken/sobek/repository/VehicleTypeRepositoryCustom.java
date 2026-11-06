@@ -28,6 +28,12 @@ public interface VehicleTypeRepositoryCustom extends DataManagedObjectStructureR
     /** @param vehicleTypeKind only return vehicle types of this kind; null returns all kinds */
     Page<VehicleType> findCurrentFiltered(String dataOwnerRef, List<String> netexIds, List<AllPublicTransportModesEnumeration> transportModes, VehicleTypeKindEnumeration vehicleTypeKind, String name, Pageable pageable);
 
+    /**
+     * Moves the references from train components (of trains and compound trains) that are valid now from one
+     * version of a vehicle type to another. Components of historic versions keep their references.
+     */
+    void moveComponentReferences(Long fromVehicleTypeId, Long toVehicleTypeId);
+
     void moveToDeckPlan(Long fromDeckPlanId, Long toDeckPlanId);
 
     boolean existsValidWithDeckPlan(String deckPlanNetexId, Long deckPlanVersion);

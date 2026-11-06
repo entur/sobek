@@ -34,6 +34,7 @@ import jakarta.validation.ValidationException;
 import org.hibernate.Hibernate;
 
 import java.time.Instant;
+import java.util.Objects;
 import java.util.logging.Level;
 
 @Component
@@ -67,6 +68,7 @@ public class VehicleTypeVersionedSaverService {
         verifySameSubtype(existingVersion, newVersion);
         resolveVehicleTypeKind(existingVersion, newVersion);
         verifyNetexIdMatchesKind(newVersion);
+        verifyComponents(newVersion);
 
         // Assign netexId if not already assigned
         // PassengerCapacity doesn't have a independent lifecycle, meaning it's linked to the VehicleType at all times
@@ -105,6 +107,36 @@ public class VehicleTypeVersionedSaverService {
         if (existingType != newType) {
             throw new ValidationException("Vehicle type " + existingVersion.getNetexId() + " is a " + existingType.getSimpleName()
                     + " and cannot be changed to a " + newType.getSimpleName());
+        }
+    }
+
+    /**
+     * The components of a train are positions for train elements, and a train element is held as a reference, so each
+     * component must have one. The components of a compound train are trains: the type of the field says they are, so
+     * what is left to check is that each exists and belongs to the same data owner (a compound train is a set of its
+     * owner's trains). A compound train cannot hold a compound train, so there are no cycles to look for.
+     */
+    private void verifyComponents(VehicleType vehicleType) {
+        if (vehicleType instanceof Train train && train.getComponents() != null) {
+            for (int i = 0; i < train.getComponents().size(); i++) {
+                String elementRef = train.getComponents().get(i).getTrainElementRef();
+                if (elementRef == null || elementRef.isBlank()) {
+                    throw new ValidationException("Component " + (i + 1) + " of train " + train.getNetexId() + " has no train element reference.");
+                }
+            }
+        } else if (vehicleType instanceof CompoundTrain compoundTrain && compoundTrain.getComponents() != null) {
+            for (int i = 0; i < compoundTrain.getComponents().size(); i++) {
+                Train part = compoundTrain.getComponents().get(i).getTrain();
+                String position = "Component " + (i + 1) + " of compound train " + compoundTrain.getNetexId();
+                if (part == null || part.getId() == null) {
+                    throw new ValidationException(position + " does not refer to an existing train.");
+                }
+                if (!Objects.equals(part.getDataOwnerRef(), compoundTrain.getDataOwnerRef())) {
+                    throw new ValidationException(position + " refers to train " + part.getNetexId() + ", which belongs to data owner "
+                            + part.getDataOwnerRef() + ". A compound train can only hold trains of its own data owner, "
+                            + compoundTrain.getDataOwnerRef() + ".");
+                }
+            }
         }
     }
 

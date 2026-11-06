@@ -106,7 +106,7 @@ public class VehicleTypeVersionedSaverService {
      */
     private void verifyNetexIdMatchesKind(VehicleType vehicleType) {
         String netexId = vehicleType.getNetexId();
-        if (netexId == null || validPrefixList.getCodespaceTypeOf(netexId, VehicleType.class) != CodespaceType.SOBEK) {
+        if (netexId == null || validPrefixList.getCodespaceTypeOf(netexId, Hibernate.getClass(vehicleType)) !=CodespaceType.SOBEK) {
             return;
         }
         boolean inContractualCodespace = ValidPrefixList.isContractualVehicleTypeId(netexId);

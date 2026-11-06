@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.rutebanken.sobek.error.VehicleTypeKindViolationException;
 import org.rutebanken.sobek.model.vehicle.CompoundTrain;
 import org.rutebanken.sobek.model.vehicle.Train;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
@@ -79,6 +80,32 @@ class VehicleTypeSubtypeRulesTest {
         VehicleType incoming = vehicleType(new Train(), 0L);
 
         assertThrows(ValidationException.class, () -> saver.saveNewVersion(existing, incoming, Instant.now()));
+    }
+
+    @Test
+    void contractualTrainMustBeInTheContractualCodespaceAndPhysicalTrainMustNot() {
+        VehicleType contractualInPhysicalCodespace = vehicleType(new Train(), 0L);
+        contractualInPhysicalCodespace.setNetexId("NMR:Train:1");
+        contractualInPhysicalCodespace.setVehicleTypeKind(VehicleTypeKindEnumeration.CONTRACTUAL);
+        VehicleType physicalInContractualCodespace = vehicleType(new CompoundTrain(), 0L);
+        physicalInContractualCodespace.setNetexId("CVT:CompoundTrain:1");
+
+        assertThrows(VehicleTypeKindViolationException.class,
+                () -> saver.saveNewVersion(null, contractualInPhysicalCodespace, Instant.now()));
+        assertThrows(VehicleTypeKindViolationException.class,
+                () -> saver.saveNewVersion(null, physicalInContractualCodespace, Instant.now()));
+    }
+
+    @Test
+    void contractualTrainInTheContractualCodespaceIsAccepted() {
+        stubSave();
+        VehicleType train = vehicleType(new Train(), 0L);
+        train.setNetexId("CVT:Train:1");
+        train.setVehicleTypeKind(VehicleTypeKindEnumeration.CONTRACTUAL);
+
+        saver.saveNewVersion(null, train, Instant.now());
+
+        verify(defaultVersionedSaverService).saveNewVersion(any(), any(), any(Instant.class), any());
     }
 
     @Test

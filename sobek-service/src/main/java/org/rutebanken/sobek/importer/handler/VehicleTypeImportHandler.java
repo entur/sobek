@@ -43,7 +43,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import jakarta.validation.ValidationException;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -72,6 +79,8 @@ public class VehicleTypeImportHandler {
         this.context = context;
     }
 
+    // One transaction for all vehicle types: they are saved one at a time, but a failure must still undo the whole file
+    @Transactional
     public void handleVehicleTypes(ResourceFrame netexResourceFrame, ImportParams importParams, AtomicInteger vehicleTypesCounter, ResourceFrame responseResourceframe) {
 
         if (publicationDeliveryHelper.hasVehicleTypes(netexResourceFrame)) {
@@ -79,24 +88,25 @@ public class VehicleTypeImportHandler {
             logger.info("Publication delivery contains {} vehicle types for import.", originalVehicleTypes.size());
 
             logger.info("About to check if incoming vehicle types have previously been imported with the same id");
-            var originalWithMappedIds = originalVehicleTypes.stream()
+            List<VehicleType_VersionStructure> incoming = originalVehicleTypes.stream()
                     .filter(this::isVehicleType)
-                    .map(jaxbElement -> (VehicleType) jaxbElement.getValue());
-
-            logger.info("About to map {} vehicle types to internal model", originalVehicleTypes.size());
-            List<org.rutebanken.sobek.model.vehicle.VehicleType> mappedVehicleTypes = originalWithMappedIds
-                    .map(vt -> {
-                        // Read the id the client sent before the converter swaps it for an already imported (e.g. CVT) id
-                        String clientId = vt.getId();
-                        return mapWithKind(vehicleTypeIdConverter.convertIncomingId(vt), clientId, importParams);
-                    })
+                    .map(jaxbElement -> (VehicleType_VersionStructure) jaxbElement.getValue())
                     .collect(Collectors.toList());
-            logger.info("Mapped {} vehicle types to internal model", mappedVehicleTypes.size());
 
-            List<VehicleType> importedVehicleTypes = vehicleTypeImporter.importVehicleTypes(mappedVehicleTypes, vehicleTypesCounter);
+            // A train refers to the trains it is made of, and a reference is resolved when the train is mapped. So a
+            // train is mapped and saved only after the trains it refers to in this file are saved. (Only compound trains refer to trains.)
+            logger.info("About to map and import {} vehicle types", incoming.size());
+            List<VehicleType_VersionStructure> importedVehicleTypes = new ArrayList<>();
+            for (VehicleType_VersionStructure vt : dependenciesFirst(incoming)) {
+                // Read the id the client sent before the converter swaps it for an already imported (e.g. CVT) id
+                String clientId = vt.getId();
+                var mapped = mapWithKind(vehicleTypeIdConverter.convertIncomingId(vt), clientId, importParams);
+                importedVehicleTypes.addAll(vehicleTypeImporter.importVehicleTypes(List.of(mapped), vehicleTypesCounter));
+            }
+            logger.info("Mapped and imported {} vehicle types", importedVehicleTypes.size());
 
             List<JAXBElement<? extends DataManagedObjectStructure>> vehicleTypeElements = importedVehicleTypes.stream()
-                    .map(vt -> new ObjectFactory().createVehicleType(vt))
+                    .map(VehicleTypeMapper::toJaxbElement)
                     .collect(java.util.stream.Collectors.toList());
 
             responseResourceframe.withVehicleTypes(
@@ -113,8 +123,8 @@ public class VehicleTypeImportHandler {
      * original id: an external id that the converter resolved to an existing CVT id must still be checked against the
      * requested kind, so that a conflicting kind is rejected by the saver.
      */
-    private org.rutebanken.sobek.model.vehicle.VehicleType mapWithKind(VehicleType convertedVehicleType, String clientId, ImportParams importParams) {
-        var mapped = vehicleTypeMapper.mapToSobek(convertedVehicleType, context);
+    private org.rutebanken.sobek.model.vehicle.VehicleType mapWithKind(VehicleType_VersionStructure convertedVehicleType, String clientId, ImportParams importParams) {
+        var mapped = vehicleTypeMapper.mapAnyToSobek(convertedVehicleType, context);
         if (mapped != null && importParams.getVehicleTypeKind() != null
                 && VehicleTypeMapper.kindFromNetexId(clientId) == VehicleTypeKindEnumeration.PHYSICAL) {
             mapped.setVehicleTypeKind(importParams.getVehicleTypeKind());
@@ -123,6 +133,46 @@ public class VehicleTypeImportHandler {
     }
 
     private boolean isVehicleType(JAXBElement<? extends DataManagedObjectStructure> jaxbElement) {
-        return jaxbElement.getValue() instanceof VehicleType;
+        Object value = jaxbElement.getValue();
+        return value instanceof VehicleType || value instanceof Train || value instanceof CompoundTrain;
+    }
+
+    /**
+     * Orders the vehicle types so that each comes after the trains it refers to in the same list. Types that do not
+     * depend on each other keep their order. A cycle cannot be saved and is rejected.
+     */
+    private static List<VehicleType_VersionStructure> dependenciesFirst(List<VehicleType_VersionStructure> vehicleTypes) {
+        Set<String> idsInFile = vehicleTypes.stream().map(EntityStructure::getId).filter(Objects::nonNull).collect(Collectors.toSet());
+        List<VehicleType_VersionStructure> pending = new ArrayList<>(vehicleTypes);
+        Set<String> doneIds = new HashSet<>();
+        List<VehicleType_VersionStructure> ordered = new ArrayList<>();
+        while (!pending.isEmpty()) {
+            var ready = pending.stream()
+                    .filter(vt -> referredTrainIds(vt).stream().noneMatch(ref -> idsInFile.contains(ref) && !doneIds.contains(ref) && !ref.equals(vt.getId())))
+                    .toList();
+            if (ready.isEmpty()) {
+                throw new ValidationException("Trains refer to each other in a cycle: "
+                        + pending.stream().map(EntityStructure::getId).collect(Collectors.joining(", ")));
+            }
+            ready.forEach(vt -> {
+                ordered.add(vt);
+                doneIds.add(vt.getId());
+            });
+            pending.removeAll(ready);
+        }
+        return ordered;
+    }
+
+    private static Set<String> referredTrainIds(VehicleType_VersionStructure vehicleType) {
+        Set<String> refs = new HashSet<>();
+        // Only a compound train refers to other vehicle types: its components are trains
+        if (vehicleType instanceof CompoundTrain compoundTrain && compoundTrain.getComponents() != null) {
+            for (var component : compoundTrain.getComponents().getTrainInCompoundTrain()) {
+                if (component.getTrainRef() != null && component.getTrainRef().getValue() != null) {
+                    refs.add(component.getTrainRef().getValue().getRef());
+                }
+            }
+        }
+        return refs;
     }
 }

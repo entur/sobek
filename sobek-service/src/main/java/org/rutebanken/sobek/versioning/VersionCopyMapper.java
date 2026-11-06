@@ -46,13 +46,12 @@ public interface VersionCopyMapper {
     @Mapping(target = "components", qualifiedByName = "copyTrainInCompoundTrains")
     CompoundTrain copy(CompoundTrain source);
 
+    @Mapping(target = "id", ignore = true)
+    TrainComponent copy(TrainComponent source);
+
     /** A copied component points at the same train as the original: only the owner is versioned. */
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "train", qualifiedByName = "sameTrain")
-    TrainComponent copy(TrainComponent source);
-
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "train", qualifiedByName = "sameVehicleType")
     TrainInCompoundTrain copy(TrainInCompoundTrain source);
 
     /**
@@ -72,11 +71,6 @@ public interface VersionCopyMapper {
     @Named("sameTrain")
     default Train sameTrain(Train train) {
         return train;
-    }
-
-    @Named("sameVehicleType")
-    default VehicleType sameVehicleType(VehicleType vehicleType) {
-        return vehicleType;
     }
 
     @Mapping(target = "id", ignore = true)

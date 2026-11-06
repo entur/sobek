@@ -7,15 +7,14 @@ import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.Setter;
 import org.rutebanken.sobek.model.EmbeddableMultilingualString;
 import org.rutebanken.sobek.model.VersionedChildStructure;
 
 /**
- * A component of a {@link Train}. The position in the owner's list is the NeTEx order.
- * The target is either another train ({@link #train}) or a TrainElement(Type) that is only held as a reference.
+ * A component of a {@link Train}: a train element in a position. The position in the owner's list is the NeTEx order.
+ * The train element is only held as a reference (the id of a NeTEx TrainElement or TrainElementType).
  */
 @Entity
 @Getter
@@ -35,9 +34,6 @@ public class TrainComponent extends VersionedChildStructure {
     })
     @Embedded
     private EmbeddableMultilingualString description;
-
-    @ManyToOne
-    private Train train;
 
     private String trainElementRef;
 

@@ -32,8 +32,8 @@ public class TrainVersionCopyTest {
     @Test
     public void copyOfTrainIsATrainWithCopiedComponentsInOrder() {
         Train original = train("TST:Train:1", 1L);
-        original.setComponents(new ArrayList<>(List.of(trainComponent("first", null, "TST:TrainElement:1", 10L),
-                trainComponent("second", null, "TST:TrainElement:2", 11L))));
+        original.setComponents(new ArrayList<>(List.of(trainComponent("first", "TST:TrainElement:1", 10L),
+                trainComponent("second", "TST:TrainElement:2", 11L))));
 
         VehicleType copy = versionCreator.createCopy((VehicleType) original, VehicleType.class);
 
@@ -79,18 +79,6 @@ public class TrainVersionCopyTest {
     }
 
     @Test
-    public void copyOfTrainComponentPointsAtTheSameTrain() {
-        Train target = train("TST:Train:2", 1L);
-        target.setId(7L);
-        Train original = train("TST:Train:1", 1L);
-        original.setComponents(new ArrayList<>(List.of(trainComponent("c", target, null, 20L))));
-
-        Train copy = (Train) versionCreator.createCopy((VehicleType) original, VehicleType.class);
-
-        assertThat(copy.getComponents().get(0).getTrain()).isSameAs(target);
-    }
-
-    @Test
     public void copyOfPlainVehicleTypeStaysAPlainVehicleType() {
         VehicleType original = new VehicleType();
         original.setId(3L);
@@ -130,12 +118,11 @@ public class TrainVersionCopyTest {
         return train;
     }
 
-    private static TrainComponent trainComponent(String label, Train target, String elementRef, Long id) {
+    private static TrainComponent trainComponent(String label, String elementRef, Long id) {
         TrainComponent component = new TrainComponent();
         component.setId(id);
         component.setVersion(1L);
         component.setLabel(new EmbeddableMultilingualString(label, "no"));
-        component.setTrain(target);
         component.setTrainElementRef(elementRef);
         component.setOperationalOrientation(VehicleOrientationEnumeration.FORWARDS);
         component.setForwardCouplingThroughAccess(ThroughAccessEnumeration.DOOR);

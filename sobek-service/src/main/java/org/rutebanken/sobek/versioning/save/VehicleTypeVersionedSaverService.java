@@ -18,7 +18,9 @@ package org.rutebanken.sobek.versioning.save;
 
 import lombok.extern.java.Log;
 import org.rutebanken.sobek.error.VehicleTypeKindViolationException;
+import org.rutebanken.sobek.model.vehicle.CompoundTrain;
 import org.rutebanken.sobek.model.vehicle.PassengerCapacity;
+import org.rutebanken.sobek.model.vehicle.Train;
 import org.rutebanken.sobek.netex.id.CodespaceType;
 import org.rutebanken.sobek.netex.id.ValidPrefixList;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
@@ -72,6 +74,13 @@ public class VehicleTypeVersionedSaverService {
         PassengerCapacity passengerCapacity = newVersion.getPassengerCapacity();
         if(passengerCapacity != null && passengerCapacity.getId() == null) {
             netexIdAssigner.assignNetexId(passengerCapacity);
+        }
+
+        // Components have no independent lifecycle either: they are children of the train, and Sobek assigns their ids
+        if (newVersion instanceof Train train && train.getComponents() != null) {
+            train.getComponents().stream().filter(c -> c.getNetexId() == null).forEach(netexIdAssigner::assignNetexId);
+        } else if (newVersion instanceof CompoundTrain compoundTrain && compoundTrain.getComponents() != null) {
+            compoundTrain.getComponents().stream().filter(c -> c.getNetexId() == null).forEach(netexIdAssigner::assignNetexId);
         }
 
         var saved = defaultVersionedSaverService.saveNewVersion(existingVersion, newVersion, defaultValidFrom, vehicleTypeRepository);

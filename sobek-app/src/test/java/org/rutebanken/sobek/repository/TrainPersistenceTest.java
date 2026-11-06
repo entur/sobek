@@ -97,19 +97,19 @@ public class TrainPersistenceTest {
     }
 
     /**
-     * Components point at one specific version (database row) of the train they include. When that train gets a new
-     * version, the components of trains that are in use now must follow it to the new version, or they would keep
-     * pointing at a version that has been replaced. Components of old, expired versions are history and must keep
-     * pointing at what was current when they were valid.
+     * A compound train points at one specific version (database row) of each train in it. When such a train gets a new
+     * version, the compound trains that are in use now must follow it to the new version, or they would keep pointing at
+     * a version that has been replaced. Compound trains that have expired are history and must keep pointing at what was
+     * current when they were valid.
      *
      * <pre>
      * Train "Part" has two versions: partV1 and partV2 (the new one).
-     * Currently valid owners of partV1:   "Express" (a Train) and "Fleet" (a CompoundTrain)
-     * Expired owner of partV1:            "Retired" (a Train that was only valid in 2020)
+     * Currently valid compound trains with Part:  "Fleet" and "Shuttle"
+     * Expired compound train with Part:           "Retired" (only valid in 2020)
      * </pre>
      */
     @Test
-    @DisplayName("When a train gets a new version, only current owners' components move to it")
+    @DisplayName("When a train gets a new version, only current compound trains move to it")
     public void componentReferencesMoveToTheNewVersionOnlyForCurrentOwners() {
         // Given
         Fixture fixture = transactionTemplate.execute(status -> {
@@ -118,23 +118,15 @@ public class TrainPersistenceTest {
             Train partV2 = train("TST:Train:part", 2, null);
             entityManager.persist(partV2);
 
-            Train express = train("TST:Train:express", 1, null);
-            express.setComponents(new ArrayList<>(List.of(trainComponentTo(partV1))));
-            entityManager.persist(express);
-
-            Train retired = train("TST:Train:retired", 1,
-                    new ValidBetween(Instant.parse("2020-01-01T00:00:00Z"), Instant.parse("2021-01-01T00:00:00Z")));
-            retired.setComponents(new ArrayList<>(List.of(trainComponentTo(partV1))));
+            CompoundTrain fleet = compoundTrain("TST:CompoundTrain:fleet", null, partV1);
+            entityManager.persist(fleet);
+            CompoundTrain shuttle = compoundTrain("TST:CompoundTrain:shuttle", null, partV1);
+            entityManager.persist(shuttle);
+            CompoundTrain retired = compoundTrain("TST:CompoundTrain:retired",
+                    new ValidBetween(Instant.parse("2020-01-01T00:00:00Z"), Instant.parse("2021-01-01T00:00:00Z")), partV1);
             entityManager.persist(retired);
 
-            CompoundTrain compound = new CompoundTrain();
-            compound.setNetexId("TST:CompoundTrain:compound");
-            compound.setVersion(1);
-            compound.setVehicleTypeKind(VehicleTypeKindEnumeration.PHYSICAL);
-            compound.setComponents(new ArrayList<>(List.of(inCompound("express", partV1))));
-            entityManager.persist(compound);
-
-            return new Fixture(partV1.getId(), partV2.getId(), express.getId(), retired.getId(), compound.getId());
+            return new Fixture(partV1.getId(), partV2.getId(), fleet.getId(), shuttle.getId(), retired.getId());
         });
 
         // When partV1 is replaced by partV2 (new version)
@@ -145,21 +137,31 @@ public class TrainPersistenceTest {
         transactionTemplate.executeWithoutResult(status -> {
             entityManager.clear();
 
-            Train express = (Train) entityManager.find(VehicleType.class, fixture.express);
-            assertThat(express.getComponents().get(0).getTrain().getId())
-                    .as("current Train owner follows to the new version").isEqualTo(fixture.partV2);
-
-            CompoundTrain compound = (CompoundTrain) entityManager.find(VehicleType.class, fixture.compound);
-            assertThat(compound.getComponents().get(0).getTrain().getId())
-                    .as("current CompoundTrain owner follows to the new version").isEqualTo(fixture.partV2);
-
-            Train retired = (Train) entityManager.find(VehicleType.class, fixture.retired);
-            assertThat(retired.getComponents().get(0).getTrain().getId())
-                    .as("expired owner keeps pointing at the version that was current then").isEqualTo(fixture.partV1);
+            assertThat(trainOf(fixture.fleet))
+                    .as("current compound train follows to the new version").isEqualTo(fixture.partV2);
+            assertThat(trainOf(fixture.shuttle))
+                    .as("every current compound train follows to the new version").isEqualTo(fixture.partV2);
+            assertThat(trainOf(fixture.retired))
+                    .as("expired compound train keeps pointing at the version that was current then").isEqualTo(fixture.partV1);
         });
     }
 
-    private record Fixture(long partV1, long partV2, long express, long retired, long compound) {
+    private long trainOf(long compoundTrainId) {
+        CompoundTrain compound = (CompoundTrain) entityManager.find(VehicleType.class, compoundTrainId);
+        return compound.getComponents().get(0).getTrain().getId();
+    }
+
+    private record Fixture(long partV1, long partV2, long fleet, long shuttle, long retired) {
+    }
+
+    private static CompoundTrain compoundTrain(String netexId, ValidBetween validBetween, Train includedTrain) {
+        CompoundTrain compound = new CompoundTrain();
+        compound.setNetexId(netexId);
+        compound.setVersion(1);
+        compound.setVehicleTypeKind(VehicleTypeKindEnumeration.PHYSICAL);
+        compound.setValidBetween(validBetween);
+        compound.setComponents(new ArrayList<>(List.of(inCompound("part", includedTrain))));
+        return compound;
     }
 
     private static Train train(String netexId, long version, ValidBetween validBetween) {
@@ -169,13 +171,6 @@ public class TrainPersistenceTest {
         train.setVehicleTypeKind(VehicleTypeKindEnumeration.PHYSICAL);
         train.setValidBetween(validBetween);
         return train;
-    }
-
-    private static TrainComponent trainComponentTo(Train target) {
-        TrainComponent component = new TrainComponent();
-        component.setVersion(1);
-        component.setTrain(target);
-        return component;
     }
 
     private static TrainComponent component(String label, VehicleOrientationEnumeration orientation, String elementRef) {

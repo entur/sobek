@@ -290,9 +290,10 @@ public class StreamingPublicationDelivery {
             logger.info("There are vehicle types to export");
 
             VehicleTypesInFrame_RelStructure vehicleTypesInFrameRelStructure = new VehicleTypesInFrame_RelStructure();
-            List<org.entur.netex2.model.VehicleType> vehicleTypes = vehicleTypesInDb.stream().map(vt -> vehicleTypeMapper.mapToNetex(vt, mappingContext)).toList();
+            List<org.entur.netex2.model.VehicleType_VersionStructure> vehicleTypes =vehicleTypesInDb.stream().map(vt -> vehicleTypeMapper.mapAnyToNetex(vt, mappingContext)).toList();
 
-            Collection<JAXBElement<? extends DataManagedObjectStructure>> jaxbVehicleTypes = vehicleTypes.stream().map(vt -> new ObjectFactory().createVehicleType(vt)).collect(Collectors.toSet());
+            // A list, not a set: the export keeps the order of the repository
+            Collection<JAXBElement<? extends DataManagedObjectStructure>> jaxbVehicleTypes = vehicleTypes.stream().map(VehicleTypeMapper::toJaxbElement).collect(Collectors.toList());
             vehicleTypesInFrameRelStructure.withTransportType(jaxbVehicleTypes);
             resourceFrame.setVehicleTypes(vehicleTypesInFrameRelStructure);
             mappedVehicleTypeCount.set(vehicleTypes.size());

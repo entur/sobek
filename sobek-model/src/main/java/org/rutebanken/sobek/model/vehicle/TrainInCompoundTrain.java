@@ -14,8 +14,7 @@ import org.rutebanken.sobek.model.EmbeddableMultilingualString;
 import org.rutebanken.sobek.model.VersionedChildStructure;
 
 /**
- * A component of a {@link CompoundTrain}. The position in the owner's list is the NeTEx order.
- * The target is a Train or another CompoundTrain ({@link #train}), or a TrainElementType that is only held as a reference.
+ * A component of a {@link CompoundTrain}: a {@link Train} in a position. The position in the owner's list is the NeTEx order.
  */
 @Entity
 @Getter
@@ -37,9 +36,7 @@ public class TrainInCompoundTrain extends VersionedChildStructure {
     private EmbeddableMultilingualString description;
 
     @ManyToOne
-    private VehicleType train;
-
-    private String trainElementTypeRef;
+    private Train train;
 
     @Enumerated(EnumType.STRING)
     private VehicleOrientationEnumeration operationalOrientation;

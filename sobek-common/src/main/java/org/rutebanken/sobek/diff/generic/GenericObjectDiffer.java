@@ -41,23 +41,23 @@ public class GenericObjectDiffer {
     private static final Logger logger = LoggerFactory.getLogger(GenericObjectDiffer.class);
 
     public List<Difference> compareObjects(Object oldObject, Object newObject, GenericDiffConfig genericDiffConfig) throws IllegalAccessException {
-        genericDiffConfig.depth = 0;
-        return compareObjects(null, oldObject, newObject, genericDiffConfig);
+        return compareObjects(null, oldObject, newObject, genericDiffConfig, 0);
     }
 
     public String diffListToString(List<Difference> differences) {
         return differences.stream().map(difference -> difference.toString()).collect(Collectors.joining("\n", "\n", "\n"));
     }
 
-    private List<Difference> compareObjects(String property, Object oldObject, Object newObject, GenericDiffConfig genericDiffConfig) throws IllegalAccessException {
+    private List<Difference> compareObjects(String property, Object oldObject, Object newObject, GenericDiffConfig genericDiffConfig, int depth) throws IllegalAccessException {
 
         List<Difference> differences = new ArrayList<>();
 
-        if (genericDiffConfig.depth > MAX_DEPTH) {
+        // The depth is how deeply this object is nested, so it is passed down and not kept in the (shared) config:
+        // the objects next to each other in a list or a map are not nested in one another.
+        if (depth > MAX_DEPTH) {
             logger.debug("Reached max depth of {}", MAX_DEPTH);
             return differences;
         }
-        genericDiffConfig.depth++;
 
         Class clazz = oldObject.getClass();
 
@@ -94,12 +94,12 @@ public class GenericObjectDiffer {
                 }
 
                 if (Collection.class.isAssignableFrom(field.getType())) {
-                    compareCollection(property + '.' + field.getName(), (Collection) oldValue, (Collection) newValue, differences, genericDiffConfig);
+                    compareCollection(property + '.' + field.getName(), field.getName(), (Collection) oldValue, (Collection) newValue, differences, genericDiffConfig, depth + 1);
                     continue;
 
                 } else if (Map.class.isAssignableFrom(field.getType())) {
                     String mapPropertyName = property + "." + field.getName();
-                    compareMap((Map) oldValue, (Map) newValue, differences, false, mapPropertyName, genericDiffConfig);
+                    compareMap((Map) oldValue, (Map) newValue, differences, false, mapPropertyName, genericDiffConfig, depth + 1);
                     continue;
                 }
 
@@ -122,7 +122,7 @@ public class GenericObjectDiffer {
                         differences.add(new Difference(childProperty, oldValue, newValue));
                     }
                 } else {
-                    differences.addAll(compareObjects(property + '.' + field.getName(), oldValue, newValue, genericDiffConfig));
+                    differences.addAll(compareObjects(property + '.' + field.getName(), oldValue, newValue, genericDiffConfig, depth + 1));
                 }
             } catch (IllegalAccessException | IllegalArgumentException e) {
                 throw new RuntimeException("Could not compare property " + property
@@ -139,7 +139,7 @@ public class GenericObjectDiffer {
         return value instanceof Number || value instanceof String || value instanceof Boolean;
     }
 
-    private void compareMap(Map<?, ?> map1, Map<?, ?> map2, List<Difference> differences, boolean reverse, String mapPropertyName, GenericDiffConfig genericDiffConfig) throws IllegalAccessException {
+    private void compareMap(Map<?, ?> map1, Map<?, ?> map2, List<Difference> differences, boolean reverse, String mapPropertyName, GenericDiffConfig genericDiffConfig, int depth) throws IllegalAccessException {
 
         Map<?, ?> leftMap;
         Map<?, ?> rightMap;
@@ -166,12 +166,12 @@ public class GenericObjectDiffer {
                 logger.debug("right map contain key {}", leftMapKey);
 
                 String childProperty = mapPropertyName + "{" + leftMapKey + "}";
-                differences.addAll(compareObjects(childProperty, leftMapValue, rightMap.get(leftMapKey), genericDiffConfig));
+                differences.addAll(compareObjects(childProperty, leftMapValue, rightMap.get(leftMapKey), genericDiffConfig, depth));
             }
         }
     }
 
-    private void compareCollection(final String propertyName, Collection oldCollection, Collection newCollection, List<Difference> differences, GenericDiffConfig genericDiffConfig) throws IllegalAccessException {
+    private void compareCollection(final String propertyName, String fieldName, Collection oldCollection, Collection newCollection, List<Difference> differences, GenericDiffConfig genericDiffConfig, int depth) throws IllegalAccessException {
 
         if (oldCollection == null && newCollection == null) {
             return;
@@ -183,15 +183,37 @@ public class GenericObjectDiffer {
             differences.add(new Difference(propertyName, oldCollection.size(), null));
         } else if (oldCollection.isEmpty() && newCollection.isEmpty()) {
             return;
+        } else if (genericDiffConfig.orderedCollections != null && genericDiffConfig.orderedCollections.contains(fieldName)) {
+            compareOrderedCollection(propertyName, oldCollection, newCollection, differences, genericDiffConfig, depth);
         } else {
             Set<Object> ignoreIdentifiers = new HashSet<>();
-            compareCollectionItems(propertyName, oldCollection, newCollection, differences, ignoreIdentifiers, false, genericDiffConfig);
-            compareCollectionItems(propertyName, newCollection, oldCollection, differences, ignoreIdentifiers, true, genericDiffConfig);
+            compareCollectionItems(propertyName, oldCollection, newCollection, differences, ignoreIdentifiers, false, genericDiffConfig, depth);
+            compareCollectionItems(propertyName, newCollection, oldCollection, differences, ignoreIdentifiers, true, genericDiffConfig, depth);
 
         }
     }
 
-    private void compareCollectionItems(String propertyName, Collection collectionLeft, Collection collectionRight, List<Difference> differences, Set<Object> ignoreIdentifiers, boolean reverse, GenericDiffConfig genericDiffConfig) throws IllegalAccessException {
+    /**
+     * For a collection where the position of an item is part of its meaning (e.g. the components of a train): the items
+     * are compared by position, not by identifier. An item that moved is a change in both the positions it left and
+     * took, and an item that has been added or removed is reported with its position.
+     */
+    private void compareOrderedCollection(String propertyName, Collection oldCollection, Collection newCollection, List<Difference> differences, GenericDiffConfig genericDiffConfig, int depth) throws IllegalAccessException {
+        List<Object> oldItems = new ArrayList<>(oldCollection);
+        List<Object> newItems = new ArrayList<>(newCollection);
+        for (int position = 0; position < Math.max(oldItems.size(), newItems.size()); position++) {
+            String itemProperty = propertyName + "[" + position + "]";
+            if (position >= oldItems.size()) {
+                differences.add(new Difference(DiffType.COLLECTION_ADD, itemProperty, null, newItems.get(position)));
+            } else if (position >= newItems.size()) {
+                differences.add(new Difference(DiffType.COLLECTION_REMOVE, itemProperty, oldItems.get(position), null));
+            } else if (oldItems.get(position) != newItems.get(position)) {
+                differences.addAll(compareObjects(itemProperty, oldItems.get(position), newItems.get(position), genericDiffConfig, depth));
+            }
+        }
+    }
+
+    private void compareCollectionItems(String propertyName, Collection collectionLeft, Collection collectionRight, List<Difference> differences, Set<Object> ignoreIdentifiers, boolean reverse, GenericDiffConfig genericDiffConfig, int depth) throws IllegalAccessException {
 
         for (Object itemLeft : collectionLeft) {
 
@@ -217,7 +239,7 @@ public class GenericObjectDiffer {
 
                         String newProperty = propertyName + "[" + itemRightIdentifier + "]";
                         ignoreIdentifiers.add(itemLeftIdentifier);
-                        differences.addAll(compareObjects(newProperty, itemLeft, itemRight, genericDiffConfig));
+                        differences.addAll(compareObjects(newProperty, itemLeft, itemRight, genericDiffConfig, depth));
                         foundMatchOnId = true;
                         break;
                     }

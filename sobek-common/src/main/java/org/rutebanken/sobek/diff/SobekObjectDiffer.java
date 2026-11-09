@@ -51,6 +51,8 @@ public class SobekObjectDiffer {
                 .identifiers(Sets.newHashSet("netexId", "ref"))
                 .ignoreFields(DIFF_IGNORE_FIELDS)
                 .onlyDoEqualsCheck(Sets.newHashSet(Geometry.class))
+commi                // The order of the components of a train or a compound train is their NeTEx order, so a move is a change
+                .orderedCollections(Sets.newHashSet("components"))
                 .build();
     }
 

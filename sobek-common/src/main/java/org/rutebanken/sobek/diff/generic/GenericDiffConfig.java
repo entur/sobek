@@ -19,17 +19,13 @@ import java.util.Set;
 
 public class GenericDiffConfig {
 
-    /**
-     * Current depth of recursive progression
-     * Actually, not a configuration, but a status.
-     */
-    protected int depth;
-
     protected Set<String> ignoreFields;
 
     protected Set<String> identifiers;
 
     protected Set<Class> onlyDoEqualsCheck;
+
+    protected Set<String> orderedCollections;
 
     public static GenericDiffConfigBuilder builder() {
         return new GenericDiffConfigBuilder();
@@ -55,6 +51,15 @@ public class GenericDiffConfig {
          */
         public GenericDiffConfigBuilder onlyDoEqualsCheck(Set<Class> onlyDoEqualsCheck ) {
             genericDiffConfig.onlyDoEqualsCheck = onlyDoEqualsCheck;
+            return this;
+        }
+
+        /**
+         * Names of collection fields where the position of an item matters. Their items are compared by position
+         * and not matched by identifier. Other collections are unaffected.
+         */
+        public GenericDiffConfigBuilder orderedCollections(Set<String> orderedCollections) {
+            genericDiffConfig.orderedCollections = orderedCollections;
             return this;
         }
 

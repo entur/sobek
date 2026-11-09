@@ -7,6 +7,8 @@ import org.rutebanken.sobek.model.vehicle.CompoundTrain;
 import org.rutebanken.sobek.model.vehicle.ThroughAccessEnumeration;
 import org.rutebanken.sobek.model.vehicle.Train;
 import org.rutebanken.sobek.model.vehicle.TrainComponent;
+import org.rutebanken.sobek.model.vehicle.TrainElement;
+import org.rutebanken.sobek.model.vehicle.TrainElementTypeEnumeration;
 import org.rutebanken.sobek.model.vehicle.TrainInCompoundTrain;
 import org.rutebanken.sobek.model.vehicle.TrainSizeEnumeration;
 import org.rutebanken.sobek.model.vehicle.VehicleOrientationEnumeration;
@@ -42,6 +44,13 @@ public class TrainPersistenceTest {
     @Test
     public void trainAndCompoundTrainRoundTripWithOrderedComponents() {
         long[] ids = transactionTemplate.execute(status -> {
+            TrainElement first = element("TST:TrainElement:1", 1, null);
+            TrainElement second = element("TST:TrainElement:2", 1, null);
+            TrainElement third = element("TST:TrainElement:3", 1, null);
+            entityManager.persist(first);
+            entityManager.persist(second);
+            entityManager.persist(third);
+
             Train train = new Train();
             train.setNetexId("TST:Train:persist-1");
             train.setVersion(1);
@@ -49,9 +58,9 @@ public class TrainPersistenceTest {
             train.setNumberOfCars(3);
             train.setTrainSizeType(TrainSizeEnumeration.SHORT);
             train.setComponents(new ArrayList<>(List.of(
-                    component("first", VehicleOrientationEnumeration.FORWARDS, "TST:TrainElement:1"),
-                    component("second", VehicleOrientationEnumeration.BACKWARDS, "TST:TrainElement:2"),
-                    component("third", VehicleOrientationEnumeration.UNKNOWN, "TST:TrainElement:3"))));
+                    component("first", VehicleOrientationEnumeration.FORWARDS, first),
+                    component("second", VehicleOrientationEnumeration.BACKWARDS, second),
+                    component("third", VehicleOrientationEnumeration.UNKNOWN, third))));
             entityManager.persist(train);
 
             CompoundTrain compound = new CompoundTrain();
@@ -81,7 +90,7 @@ public class TrainPersistenceTest {
             assertThat(t.getTrainSizeType()).isEqualTo(TrainSizeEnumeration.SHORT);
             assertThat(t.getComponents()).extracting(c -> c.getLabel().getValue())
                     .containsExactly("first", "second", "third");
-            assertThat(t.getComponents()).extracting(TrainComponent::getTrainElementRef)
+            assertThat(t.getComponents()).extracting(x -> x.getTrainElement().getNetexId())
                     .containsExactly("TST:TrainElement:1", "TST:TrainElement:2", "TST:TrainElement:3");
             assertThat(t.getComponents().get(1).getForwardCouplingThroughAccess()).isEqualTo(ThroughAccessEnumeration.DOOR);
 
@@ -146,6 +155,57 @@ public class TrainPersistenceTest {
         });
     }
 
+    /**
+     * A train component points at one specific version (database row) of its train element. As for the trains of a
+     * compound train, the trains that are in use now follow a new version of the element, and the ones that have
+     * expired keep pointing at what was current when they were valid.
+     */
+    @Test
+    @DisplayName("When a train element gets a new version, only current trains move to it")
+    public void trainComponentsMoveToTheNewVersionOfTheirElementOnlyForCurrentTrains() {
+        // Given: an element with two versions, a train in use now and a train that expired in 2021
+        long[] ids = transactionTemplate.execute(status -> {
+            TrainElement elementV1 = element("TST:TrainElement:moving", 1, null);
+            entityManager.persist(elementV1);
+            TrainElement elementV2 = element("TST:TrainElement:moving", 2, null);
+            entityManager.persist(elementV2);
+
+            Train current = train("TST:Train:uses-element", 1, null);
+            current.setComponents(new ArrayList<>(List.of(component("car", VehicleOrientationEnumeration.FORWARDS, elementV1))));
+            entityManager.persist(current);
+            Train expired = train("TST:Train:used-element", 1,
+                    new ValidBetween(Instant.parse("2020-01-01T00:00:00Z"), Instant.parse("2021-01-01T00:00:00Z")));
+            expired.setComponents(new ArrayList<>(List.of(component("car", VehicleOrientationEnumeration.FORWARDS, elementV1))));
+            entityManager.persist(expired);
+            return new long[]{elementV1.getId(), elementV2.getId(), current.getId(), expired.getId()};
+        });
+
+        // When
+        transactionTemplate.executeWithoutResult(status -> vehicleTypeRepository.moveComponentReferences(ids[0], ids[1]));
+
+        // Then
+        transactionTemplate.executeWithoutResult(status -> {
+            entityManager.clear();
+            assertThat(elementOf(ids[2])).as("the current train follows to the new version").isEqualTo(ids[1]);
+            assertThat(elementOf(ids[3])).as("the expired train keeps the version that was current then").isEqualTo(ids[0]);
+        });
+    }
+
+    private long elementOf(long trainId) {
+        Train train = (Train) entityManager.find(VehicleType.class, trainId);
+        return train.getComponents().get(0).getTrainElement().getId();
+    }
+
+    private static TrainElement element(String netexId, long version, ValidBetween validBetween) {
+        TrainElement element = new TrainElement();
+        element.setNetexId(netexId);
+        element.setVersion(version);
+        element.setVehicleTypeKind(VehicleTypeKindEnumeration.PHYSICAL);
+        element.setTrainElementType(TrainElementTypeEnumeration.CARRIAGE);
+        element.setValidBetween(validBetween);
+        return element;
+    }
+
     private long trainOf(long compoundTrainId) {
         CompoundTrain compound = (CompoundTrain) entityManager.find(VehicleType.class, compoundTrainId);
         return compound.getComponents().get(0).getTrain().getId();
@@ -173,12 +233,12 @@ public class TrainPersistenceTest {
         return train;
     }
 
-    private static TrainComponent component(String label, VehicleOrientationEnumeration orientation, String elementRef) {
+    private static TrainComponent component(String label, VehicleOrientationEnumeration orientation, TrainElement element) {
         TrainComponent component = new TrainComponent();
         component.setVersion(1);
         component.setLabel(multilingual(label));
         component.setOperationalOrientation(orientation);
-        component.setTrainElementRef(elementRef);
+        component.setTrainElement(element);
         component.setForwardCouplingThroughAccess(ThroughAccessEnumeration.DOOR);
         return component;
     }

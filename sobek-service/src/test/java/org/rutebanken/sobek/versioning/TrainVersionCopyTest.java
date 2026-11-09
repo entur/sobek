@@ -6,6 +6,7 @@ import org.rutebanken.sobek.model.vehicle.CompoundTrain;
 import org.rutebanken.sobek.model.vehicle.ThroughAccessEnumeration;
 import org.rutebanken.sobek.model.vehicle.Train;
 import org.rutebanken.sobek.model.vehicle.TrainComponent;
+import org.rutebanken.sobek.model.vehicle.TrainElement;
 import org.rutebanken.sobek.model.vehicle.TrainInCompoundTrain;
 import org.rutebanken.sobek.model.vehicle.TrainSizeEnumeration;
 import org.rutebanken.sobek.model.vehicle.Vehicle;
@@ -46,8 +47,11 @@ public class TrainVersionCopyTest {
         assertThat(trainCopy.getNumberOfCars()).isEqualTo(4);
         assertThat(trainCopy.getTrainSizeType()).isEqualTo(TrainSizeEnumeration.LONG);
         assertThat(trainCopy.getComponents()).extracting(c -> c.getLabel().getValue()).containsExactly("first", "second");
-        assertThat(trainCopy.getComponents()).extracting(TrainComponent::getTrainElementRef)
+        // A copied component places the same train element as the original: only the train is versioned
+        assertThat(trainCopy.getComponents()).extracting(c -> c.getTrainElement().getNetexId())
                 .containsExactly("TST:TrainElement:1", "TST:TrainElement:2");
+        assertThat(trainCopy.getComponents()).extracting(TrainComponent::getTrainElement)
+                .containsExactly(original.getComponents().get(0).getTrainElement(), original.getComponents().get(1).getTrainElement());
         assertThat(trainCopy.getComponents()).extracting(TrainComponent::getForwardCouplingThroughAccess)
                 .containsOnly(ThroughAccessEnumeration.DOOR);
         // The components are new rows, not the same objects as the original's
@@ -123,7 +127,12 @@ public class TrainVersionCopyTest {
         component.setId(id);
         component.setVersion(1L);
         component.setLabel(new EmbeddableMultilingualString(label, "no"));
-        component.setTrainElementRef(elementRef);
+        TrainElement element = new TrainElement();
+        element.setId(100L + id);
+        element.setNetexId(elementRef);
+        element.setVersion(1L);
+        element.setVehicleTypeKind(VehicleTypeKindEnumeration.PHYSICAL);
+        component.setTrainElement(element);
         component.setOperationalOrientation(VehicleOrientationEnumeration.FORWARDS);
         component.setForwardCouplingThroughAccess(ThroughAccessEnumeration.DOOR);
         return component;

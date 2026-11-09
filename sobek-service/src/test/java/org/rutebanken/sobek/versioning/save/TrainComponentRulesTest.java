@@ -7,9 +7,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.rutebanken.sobek.error.VehicleTypeKindViolationException;
 import org.rutebanken.sobek.model.vehicle.CompoundTrain;
 import org.rutebanken.sobek.model.vehicle.Train;
 import org.rutebanken.sobek.model.vehicle.TrainComponent;
+import org.rutebanken.sobek.model.vehicle.TrainElement;
 import org.rutebanken.sobek.model.vehicle.TrainInCompoundTrain;
 import org.rutebanken.sobek.model.vehicle.VehicleTypeKindEnumeration;
 import org.rutebanken.sobek.netex.id.ValidPrefixList;
@@ -53,16 +55,61 @@ class TrainComponentRulesTest {
     }
 
     @Test
-    @DisplayName("A train component without a train element reference is rejected")
-    void trainComponentWithoutElementRefIsRejected() {
+    @DisplayName("A train component without a train element, or with one that is not saved, is rejected")
+    void trainComponentWithoutExistingElementIsRejected() {
+        Train withoutElement = train("AKT:Train:1", OWNER);
+        withoutElement.getComponents().add(component(savedElement("AKT:TrainElement:a", OWNER)));
+        withoutElement.getComponents().add(component(null));
+        Train withUnsavedElement = train("AKT:Train:2", OWNER);
+        withUnsavedElement.getComponents().add(component(element("AKT:TrainElement:b", OWNER)));
+
+        ValidationException e = assertThrows(ValidationException.class, () -> saver.saveNewVersion(null, withoutElement, Instant.now()));
+
+        assertThat(e.getMessage()).contains("Component 2").contains("AKT:Train:1").contains("train element");
+        assertThrows(ValidationException.class, () -> saver.saveNewVersion(null, withUnsavedElement, Instant.now()));
+        verify(defaultVersionedSaverService, never()).saveNewVersion(any(), any(), any(Instant.class), any());
+    }
+
+    @Test
+    @DisplayName("A train made of train elements of another data owner is rejected")
+    void trainWithElementOfAnotherOwnerIsRejected() {
         Train train = train("AKT:Train:1", OWNER);
-        train.getComponents().add(component("AKT:TrainElement:a"));
-        train.getComponents().add(component(" "));
+        train.getComponents().add(component(savedElement("AKT:TrainElement:a", OWNER)));
+        train.getComponents().add(component(savedElement("RUT:TrainElement:9", "RUT")));
 
         ValidationException e = assertThrows(ValidationException.class, () -> saver.saveNewVersion(null, train, Instant.now()));
 
-        assertThat(e.getMessage()).contains("Component 2").contains("AKT:Train:1").contains("train element");
+        assertThat(e.getMessage()).contains("Component 2").contains("RUT:TrainElement:9").contains("RUT").contains(OWNER);
         verify(defaultVersionedSaverService, never()).saveNewVersion(any(), any(), any(Instant.class), any());
+    }
+
+    @Test
+    @DisplayName("A train and a compound train can only be made of elements and trains of their own kind")
+    void partsOfAnotherKindAreRejected() {
+        TrainElement contractualElement = savedElement("CVT:TrainElement:1", OWNER);
+        contractualElement.setVehicleTypeKind(VehicleTypeKindEnumeration.CONTRACTUAL);
+        Train physicalTrain = train("AKT:Train:1", OWNER);
+        physicalTrain.getComponents().add(component(contractualElement));
+
+        Train contractualTrain = savedTrain("CVT:Train:2", OWNER);
+        contractualTrain.setVehicleTypeKind(VehicleTypeKindEnumeration.CONTRACTUAL);
+        CompoundTrain physicalCompound = compoundTrain(OWNER, contractualTrain);
+
+        assertThrows(VehicleTypeKindViolationException.class, () -> saver.saveNewVersion(null, physicalTrain, Instant.now()));
+        assertThrows(VehicleTypeKindViolationException.class, () -> saver.saveNewVersion(null, physicalCompound, Instant.now()));
+        verify(defaultVersionedSaverService, never()).saveNewVersion(any(), any(), any(Instant.class), any());
+    }
+
+    @Test
+    @DisplayName("A train of train elements of its own data owner is saved")
+    void trainOfElementsOfTheSameOwnerIsSaved() {
+        when(defaultVersionedSaverService.saveNewVersion(any(), any(), any(Instant.class), any())).thenAnswer(inv -> inv.getArgument(1));
+        Train train = train("AKT:Train:1", OWNER);
+        train.getComponents().add(component(savedElement("AKT:TrainElement:a", OWNER)));
+
+        saver.saveNewVersion(null, train, Instant.now());
+
+        verify(defaultVersionedSaverService).saveNewVersion(any(), any(), any(Instant.class), any());
     }
 
     @Test
@@ -112,9 +159,23 @@ class TrainComponentRulesTest {
         return train;
     }
 
-    private static TrainComponent component(String elementRef) {
+    private static TrainElement element(String netexId, String owner) {
+        TrainElement element = new TrainElement();
+        element.setNetexId(netexId);
+        element.setDataOwnerRef(owner);
+        element.setVehicleTypeKind(VehicleTypeKindEnumeration.PHYSICAL);
+        return element;
+    }
+
+    private static TrainElement savedElement(String netexId, String owner) {
+        TrainElement element = element(netexId, owner);
+        element.setId(Math.abs((long) netexId.hashCode()));
+        return element;
+    }
+
+    private static TrainComponent component(TrainElement element) {
         TrainComponent component = new TrainComponent();
-        component.setTrainElementRef(elementRef);
+        component.setTrainElement(element);
         return component;
     }
 

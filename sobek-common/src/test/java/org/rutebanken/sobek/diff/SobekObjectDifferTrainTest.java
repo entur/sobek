@@ -8,6 +8,7 @@ import org.rutebanken.sobek.diff.generic.GenericObjectDiffer;
 import org.rutebanken.sobek.model.EmbeddableMultilingualString;
 import org.rutebanken.sobek.model.vehicle.Train;
 import org.rutebanken.sobek.model.vehicle.TrainComponent;
+import org.rutebanken.sobek.model.vehicle.TrainElement;
 
 import java.util.List;
 import java.util.stream.IntStream;
@@ -97,7 +98,9 @@ class SobekObjectDifferTrainTest {
         TrainComponent component = new TrainComponent();
         component.setNetexId("AKT:TrainComponent:" + id);
         component.setLabel(new EmbeddableMultilingualString(label, "en"));
-        component.setTrainElementRef("AKT:TrainElement:" + id);
+        TrainElement element = new TrainElement();
+        element.setNetexId("AKT:TrainElement:" + id);
+        component.setTrainElement(element);
         return component;
     }
 }

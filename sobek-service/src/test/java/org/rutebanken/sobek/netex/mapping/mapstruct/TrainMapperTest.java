@@ -17,6 +17,7 @@ import org.rutebanken.sobek.model.vehicle.VehicleType;
 import org.rutebanken.sobek.model.vehicle.VehicleTypeKindEnumeration;
 import org.rutebanken.sobek.netex.mapping.NetexMappingException;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
+import org.rutebanken.sobek.repository.VehicleTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -26,8 +27,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * Mapping of NeTEx Train and CompoundTrain. References from a compound train to its trains are resolved against the
- * database, so they are covered by the import/export integration test; this test covers the rest.
+ * Mapping of NeTEx Train, CompoundTrain and TrainElement. The references of a compound train to its trains are resolved
+ * against the database, so they are covered by the import/export integration test. The references of a train to its
+ * train elements are covered here: the elements the tests refer to are saved first.
  */
 @SpringBootTest
 class TrainMapperTest {
@@ -38,10 +40,27 @@ class TrainMapperTest {
     private MappingContext context;
     @Autowired
     private KeyListStructureMapper keyListStructureMapper;
+    @Autowired
+    private VehicleTypeRepository vehicleTypeRepository;
 
     @BeforeEach
     void setUp() {
         context.setKeyListStructureMapper(keyListStructureMapper);
+        saveIfMissing(new org.rutebanken.sobek.model.vehicle.TrainElement(), "AKT:TrainElement:a");
+        saveIfMissing(new org.rutebanken.sobek.model.vehicle.TrainElement(), "AKT:TrainElement:b");
+        saveIfMissing(new org.rutebanken.sobek.model.vehicle.TrainElement(), "AKT:TrainElement:c");
+        saveIfMissing(new org.rutebanken.sobek.model.vehicle.Train(), "AKT:Train:not-an-element");
+    }
+
+    /** The database is shared by the tests of the application context, so the objects are saved once. */
+    private void saveIfMissing(VehicleType vehicleType, String netexId) {
+        if (vehicleTypeRepository.findFirstByNetexIdOrderByVersionDesc(netexId) == null) {
+            vehicleType.setNetexId(netexId);
+            vehicleType.setVersion(1);
+            vehicleType.setDataOwnerRef("AKT");
+            vehicleType.setVehicleTypeKind(VehicleTypeKindEnumeration.PHYSICAL);
+            vehicleTypeRepository.save(vehicleType);
+        }
     }
 
     @Test
@@ -62,7 +81,7 @@ class TrainMapperTest {
         assertThat(train.getNumberOfCars()).isEqualTo(4);
         assertThat(train.getTrainSizeType()).isEqualTo(org.rutebanken.sobek.model.vehicle.TrainSizeEnumeration.LONG);
         assertThat(train.getComponents()).extracting(c -> c.getLabel().getValue()).containsExactly("first", "second");
-        assertThat(train.getComponents()).extracting(org.rutebanken.sobek.model.vehicle.TrainComponent::getTrainElementRef)
+        assertThat(train.getComponents()).extracting(c -> c.getTrainElement().getNetexId())
                 .containsExactly("AKT:TrainElement:a", "AKT:TrainElement:b");
         assertThat(train.getComponents().getFirst().getForwardCouplingThroughAccess())
                 .isEqualTo(org.rutebanken.sobek.model.vehicle.ThroughAccessEnumeration.DOOR);
@@ -173,6 +192,82 @@ class TrainMapperTest {
     }
 
     @Test
+    @DisplayName("A component whose train element is not in Sobek, or is not a train element, is rejected")
+    void componentWithUnknownOrWrongElementIsRejected() {
+        Train missing = new Train().withId("AKT:Train:1")
+                .withComponents(new TrainComponents_RelStructure().withTrainComponentRefOrTrainComponent(component("x", 1, "AKT:TrainElement:missing")));
+        Train wrongKind = new Train().withId("AKT:Train:2")
+                .withComponents(new TrainComponents_RelStructure().withTrainComponentRefOrTrainComponent(component("y", 1, "AKT:Train:not-an-element")));
+
+        assertThatThrownBy(() -> mapper.mapAnyToSobek(missing, context)).isInstanceOf(NetexMappingException.class)
+                .hasMessageContaining("AKT:TrainElement:missing").hasMessageContaining("not found");
+        assertThatThrownBy(() -> mapper.mapAnyToSobek(wrongKind, context)).isInstanceOf(NetexMappingException.class)
+                .hasMessageContaining("AKT:Train:not-an-element").hasMessageContaining("is not a train element");
+    }
+
+    @Test
+    @DisplayName("A NeTEx TrainElement becomes a Sobek TrainElement with the fields of a vehicle type and its element type")
+    void trainElementToSobek() {
+        org.entur.netex2.model.TrainElement netex = new org.entur.netex2.model.TrainElement().withId("AKT:TrainElement:car").withVersion("1")
+                .withName(new MultilingualString().withContent("Car").withLang("en"))
+                .withTrainElementType(org.entur.netex2.model.TrainElementTypeTypeEnumeration.SLEEPER_CARRIAGE)
+                .withLength(new java.math.BigDecimal("26.4"))
+                .withBoardingHeight(new java.math.BigDecimal("0.55"));
+        netex.setLowFloor(true);
+
+        VehicleType mapped = mapper.mapToSobek(netex, context);
+
+        assertThat(mapped).isInstanceOf(org.rutebanken.sobek.model.vehicle.TrainElement.class);
+        var element = (org.rutebanken.sobek.model.vehicle.TrainElement) mapped;
+        assertThat(element.getNetexId()).isEqualTo("AKT:TrainElement:car");
+        assertThat(element.getName().getValue()).isEqualTo("Car");
+        assertThat(element.getTrainElementType()).isEqualTo(org.rutebanken.sobek.model.vehicle.TrainElementTypeEnumeration.SLEEPER_CARRIAGE);
+        assertThat(element.getLength()).isEqualByComparingTo("26.4");
+        assertThat(element.getBoardingHeight()).isEqualByComparingTo("0.55");
+        assertThat(element.getLowFloor()).isTrue();
+        assertThat(element.getVehicleTypeKind()).isEqualTo(VehicleTypeKindEnumeration.PHYSICAL);
+    }
+
+    @Test
+    @DisplayName("A Sobek TrainElement is exported as a TrainElement with its element type")
+    void trainElementToNetex() {
+        var element = new org.rutebanken.sobek.model.vehicle.TrainElement();
+        element.setNetexId("CVT:TrainElement:7");
+        element.setVersion(2);
+        element.setVehicleTypeKind(VehicleTypeKindEnumeration.CONTRACTUAL);
+        element.setTrainElementType(org.rutebanken.sobek.model.vehicle.TrainElementTypeEnumeration.ENGINE);
+        element.setLength(new java.math.BigDecimal("20"));
+
+        var netex = mapper.mapToNetex(element, context);
+
+        assertThat(netex).isInstanceOf(org.entur.netex2.model.TrainElement.class);
+        var netexElement = (org.entur.netex2.model.TrainElement) netex;
+        assertThat(netexElement.getId()).isEqualTo("CVT:TrainElement:7");
+        assertThat(netexElement.getVersion()).isEqualTo("2");
+        assertThat(netexElement.getTrainElementType()).isEqualTo(org.entur.netex2.model.TrainElementTypeTypeEnumeration.ENGINE);
+        assertThat(netexElement.getLength()).isEqualByComparingTo("20");
+    }
+
+    @Test
+    @DisplayName("A train element is not a NeTEx vehicle type, so the vehicle type dispatcher rejects it")
+    void trainElementIsNotMappedAsAVehicleType() {
+        var element = new org.rutebanken.sobek.model.vehicle.TrainElement();
+        element.setNetexId("AKT:TrainElement:1");
+
+        assertThatThrownBy(() -> mapper.mapAnyToNetex(element, context)).isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("train element");
+    }
+
+    @Test
+    @DisplayName("The kind of a train element follows the codespace of its id")
+    void trainElementKindFollowsCodespace() {
+        assertThat(mapper.mapToSobek(new org.entur.netex2.model.TrainElement().withId("CVT:TrainElement:1"), context).getVehicleTypeKind())
+                .isEqualTo(VehicleTypeKindEnumeration.CONTRACTUAL);
+        assertThat(mapper.mapToSobek(new org.entur.netex2.model.TrainElement().withId("AKT:TrainElement:1"), context).getVehicleTypeKind())
+                .isEqualTo(VehicleTypeKindEnumeration.PHYSICAL);
+    }
+
+    @Test
     @DisplayName("A compound train component that is not a reference to a train is rejected")
     void compoundTrainComponentWithoutTrainRefIsRejected() {
         CompoundTrain netex = new CompoundTrain().withId("AKT:CompoundTrain:1")
@@ -193,10 +288,12 @@ class TrainMapperTest {
         return component;
     }
 
-    private static org.rutebanken.sobek.model.vehicle.TrainComponent sobekComponent(String label, String elementRef) {
+    private static org.rutebanken.sobek.model.vehicle.TrainComponent sobekComponent(String label, String elementId) {
         var component = new org.rutebanken.sobek.model.vehicle.TrainComponent();
         component.setLabel(new org.rutebanken.sobek.model.EmbeddableMultilingualString(label, "no"));
-        component.setTrainElementRef(elementRef);
+        var element = new org.rutebanken.sobek.model.vehicle.TrainElement();
+        element.setNetexId(elementId);
+        component.setTrainElement(element);
         component.setVersion(1);
         return component;
     }

@@ -32,9 +32,9 @@ import java.util.stream.IntStream;
  * <p>
  * Components are the children of their train and have no life of their own. An id sent in is kept when it is in Sobek's
  * or a registered codespace, as for any other entity; otherwise (or without an id) the saver assigns one. The version
- * sent in is ignored. The position in the list is the NeTEx {@code order}. A component of a Train holds the id of a
- * TrainElement, which is not stored in Sobek. A component of a CompoundTrain refers to a Train in Sobek, and a train
- * that cannot be found is an error: the component would otherwise be saved without its target.
+ * sent in is ignored. The position in the list is the NeTEx {@code order}. A component of a Train refers to a
+ * TrainElement in Sobek, and a component of a CompoundTrain to a Train in Sobek. A target that cannot be found is an
+ * error: the component would otherwise be saved without it.
  */
 public final class TrainStructureMapping {
 
@@ -83,7 +83,7 @@ public final class TrainStructureMapping {
 
     private static org.rutebanken.sobek.model.vehicle.TrainComponent componentToSobek(TrainComponent source, String ownerId, MappingContext context) {
         if (source.getTrainElement() != null) {
-            throw new NetexMappingException("Train " + ownerId + " has a TrainElement given in full. Refer to it with a TrainElementRef.");
+            throw new NetexMappingException("Train " + ownerId + " has a TrainElement given in full. Put it in the trainElementTypes of the frame, and refer to it with a TrainElementRef.");
         }
         var target = new org.rutebanken.sobek.model.vehicle.TrainComponent();
         target.setNetexId(idToKeep(source.getId(), target.getClass(), context));
@@ -96,13 +96,15 @@ public final class TrainStructureMapping {
         }
 
         // The TrainRef beside the element is the train that owns the component, which the list it is in already says
+        VersionOfObjectRefStructure elementRef;
         if (source.getTrainElementRef() != null) {
-            target.setTrainElementRef(source.getTrainElementRef().getRef());
+            elementRef = source.getTrainElementRef();
         } else if (source.getTrainElementTypeRef() != null && source.getTrainElementTypeRef().getValue() != null) {
-            target.setTrainElementRef(source.getTrainElementTypeRef().getValue().getRef());
+            elementRef = source.getTrainElementTypeRef().getValue();
         } else {
             throw new NetexMappingException("A component of train " + ownerId + " has no TrainElementRef.");
         }
+        target.setTrainElement(resolve(elementRef, org.rutebanken.sobek.model.vehicle.TrainElement.class, "Train element", ownerId, context));
         return target;
     }
 
@@ -134,7 +136,12 @@ public final class TrainStructureMapping {
 
     private static <T extends org.rutebanken.sobek.model.DataManagedObjectStructure> T resolve(
             VersionOfObjectRefStructure ref, Class<T> type, String typeName, String ownerId, MappingContext context) {
-        T resolved = ReferenceMapper.resolveReference(ref, type, context);
+        T resolved;
+        try {
+            resolved = ReferenceMapper.resolveReference(ref, type, context);
+        } catch (ClassCastException e) {
+            throw new NetexMappingException(ref.getRef() + ", referred to by " + ownerId + ", is not a " + typeName.toLowerCase() + ".");
+        }
         if (resolved == null) {
             throw new NetexMappingException(typeName + " " + ref.getRef() + ", referred to by " + ownerId + ", was not found. "
                     + "Import it first, or in the same file.");
@@ -203,8 +210,8 @@ public final class TrainStructureMapping {
             target.setForwardCoupling(new TrainComponentCouplingStructure()
                     .withThroughAccess(org.entur.netex2.model.ThroughAccessEnumeration.valueOf(source.getForwardCouplingThroughAccess().name())));
         }
-        if (source.getTrainElementRef() != null) {
-            target.setTrainElementRef(ReferenceMapper.createReference(source.getTrainElementRef(), TrainElementTypeRefStructure.class));
+        if (source.getTrainElement() != null) {
+            target.setTrainElementRef(ReferenceMapper.createReference(source.getTrainElement(), TrainElementTypeRefStructure.class));
         }
         return target;
     }

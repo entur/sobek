@@ -17,6 +17,7 @@ import org.entur.netex2.model.PublicationDeliveryStructure;
 import org.entur.netex2.model.ResourceFrame;
 import org.entur.netex2.model.Train;
 import org.entur.netex2.model.TrainComponent;
+import org.entur.netex2.model.TrainElementType_VersionStructure;
 import org.entur.netex2.model.VehicleType_VersionStructure;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -47,14 +48,17 @@ class TrainImportExportIT {
     }
 
     @Test
-    @DisplayName("Trains and a compound train that refers to them are imported, in dependency order, and exported again")
+    @DisplayName("Train elements, trains and a compound train that refer to each other are imported, in dependency order, and exported again")
     void importThenExportKeepsTypesOrderAndReferences() throws Exception {
         String run = String.valueOf(System.nanoTime());
         String trainA = "AKT:Train:run" + run + "a";
         String trainB = "AKT:Train:run" + run + "b";
         String compound = "AKT:CompoundTrain:run" + run + "c";
+        String front = "AKT:TrainElement:run" + run + "front";
+        String rear = "AKT:TrainElement:run" + run + "rear";
+        String single = "AKT:TrainElement:run" + run + "single";
 
-        // When: the compound train is first in the file, before the trains it refers to
+        // When: the compound train is first in the file, before the trains it refers to, and the train elements are last
         String importResponse = given()
                 .contentType(ContentType.XML)
                 .body(fixture("/fixtures/train-import.xml").replace("@RUN@", run))
@@ -64,10 +68,11 @@ class TrainImportExportIT {
                 .statusCode(200)
                 .extract().body().asString();
 
-        // Then: the response has all three, as the right types
+        // Then: the response has all of them, as the right types
         List<VehicleType_VersionStructure> imported = transportTypes(importResponse);
         assertThat(imported).hasSize(3);
         assertThat(imported).extracting(VehicleType_VersionStructure::getId).containsExactlyInAnyOrder(trainA, trainB, compound);
+        assertThat(trainElements(importResponse)).extracting(TrainElementType_VersionStructure::getId).containsExactlyInAnyOrder(front, rear, single);
         assertThat(find(imported, trainA)).isInstanceOf(Train.class);
         assertThat(find(imported, compound)).isInstanceOf(CompoundTrain.class);
 
@@ -77,6 +82,8 @@ class TrainImportExportIT {
             assertThat(storedTrain).isInstanceOf(org.rutebanken.sobek.model.vehicle.Train.class);
             var components = ((org.rutebanken.sobek.model.vehicle.Train) storedTrain).getComponents();
             assertThat(components).extracting(c -> c.getLabel().getValue()).containsExactly("first car", "second car");
+            assertThat(components).extracting(c -> c.getTrainElement().getNetexId()).containsExactly(front, rear);
+            assertThat(components.getFirst().getTrainElement()).isInstanceOf(org.rutebanken.sobek.model.vehicle.TrainElement.class);
             assertThat(components).extracting(org.rutebanken.sobek.model.vehicle.TrainComponent::getNetexId)
                     .containsExactly("AKT:TrainComponent:run" + run + "a1", "AKT:TrainComponent:run" + run + "a2");
 
@@ -96,11 +103,15 @@ class TrainImportExportIT {
                 .extract().body().asString();
 
         List<VehicleType_VersionStructure> exported = transportTypes(exportXml);
+        assertThat(trainElements(exportXml)).extracting(TrainElementType_VersionStructure::getId).contains(front, rear, single);
+        org.entur.netex2.model.TrainElement exportedFront = (org.entur.netex2.model.TrainElement) trainElements(exportXml).stream()
+                .filter(e -> front.equals(e.getId())).findFirst().orElseThrow();
+        assertThat(exportedFront.getTrainElementType()).isEqualTo(org.entur.netex2.model.TrainElementTypeTypeEnumeration.ENGINE);
         Train exportedA = (Train) find(exported, trainA);
         assertThat(exportedA.getTrainSize().getNumberOfCars().intValue()).isEqualTo(2);
         var exportedComponents = exportedA.getComponents().getTrainComponentRefOrTrainComponent().stream().map(TrainComponent.class::cast).toList();
         assertThat(exportedComponents).extracting(c -> c.getTrainElementRef().getRef())
-                .containsExactly("AKT:TrainElement:front", "AKT:TrainElement:rear");
+                .containsExactly(front, rear);
         assertThat(exportedComponents).extracting(c -> c.getOrder().intValue()).containsExactly(1, 2);
         assertThat(exportedComponents).extracting(TrainComponent::getId)
                 .containsExactly("AKT:TrainComponent:run" + run + "a1", "AKT:TrainComponent:run" + run + "a2");
@@ -132,6 +143,50 @@ class TrainImportExportIT {
                 .extract().body().asString();
 
         assertThat(body).contains("AKT:Train:missing" + run);
+    }
+
+    @Test
+    @DisplayName("A train that refers to a train element that does not exist is rejected, and nothing of the file is saved")
+    void trainReferringToUnknownElementIsBadRequest() throws Exception {
+        String run = String.valueOf(System.nanoTime());
+        // The elements of the fixture are removed, so that the trains refer to elements that are in neither the file nor Sobek
+        String xml = fixture("/fixtures/train-import.xml").replace("@RUN@", run)
+                .replaceAll("(?s)<trainElementTypes>.*?</trainElementTypes>", "");
+
+        String body = given()
+                .contentType(ContentType.XML)
+                .body(xml)
+                .when()
+                .post("/services/vehicles/netex?vehicleTypeKind=PHYSICAL")
+                .then()
+                .statusCode(400)
+                .extract().body().asString();
+
+        assertThat(body).contains("AKT:TrainElement:run" + run).contains("not found");
+        transactionTemplate.executeWithoutResult(status ->
+                assertThat(vehicleTypeRepository.findFirstByNetexIdOrderByVersionDesc("AKT:Train:run" + run + "a")).isNull());
+    }
+
+    @Test
+    @DisplayName("Train element types other than TrainElement are rejected")
+    void trailingElementTypeIsBadRequest() throws Exception {
+        String run = String.valueOf(System.nanoTime());
+        // A trailing element type (not a TrainElement) in the frame, in place of the elements of the fixture
+        String xml = fixture("/fixtures/train-import.xml").replace("@RUN@", run)
+                .replaceAll("(?s)<trainElementTypes>.*?</trainElementTypes>",
+                        "<trainElementTypes><TrailingElementType id=\"AKT:TrailingElementType:run" + run + "\" version=\"1\">"
+                                + "<Name lang=\"nb\"><Text>Trailing</Text></Name></TrailingElementType></trainElementTypes>");
+
+        String body = given()
+                .contentType(ContentType.XML)
+                .body(xml)
+                .when()
+                .post("/services/vehicles/netex?vehicleTypeKind=PHYSICAL")
+                .then()
+                .statusCode(400)
+                .extract().body().asString();
+
+        assertThat(body).contains("TrailingElementType");
     }
 
     @Test
@@ -184,6 +239,22 @@ class TrainImportExportIT {
                 .extract().body().asString();
 
         assertThat(body).contains("cycle");
+    }
+
+    private static List<TrainElementType_VersionStructure> trainElements(String xml) throws Exception {
+        Unmarshaller unmarshaller = JAXBContext.newInstance(PublicationDeliveryStructure.class).createUnmarshaller();
+        @SuppressWarnings("unchecked")
+        PublicationDeliveryStructure delivery = ((JAXBElement<PublicationDeliveryStructure>) unmarshaller.unmarshal(new StringReader(xml))).getValue();
+        return delivery.getDataObjects().getCompositeFrameOrCommonFrame().stream()
+                .map(JAXBElement::getValue)
+                .flatMap(frame -> frame instanceof org.entur.netex2.model.CompositeFrame composite
+                        ? composite.getFrames().getCommonFrame().stream().map(JAXBElement::getValue)
+                        : java.util.stream.Stream.of(frame))
+                .filter(ResourceFrame.class::isInstance)
+                .map(ResourceFrame.class::cast)
+                .filter(frame -> frame.getTrainElementTypes() != null)
+                .flatMap(frame -> frame.getTrainElementTypes().getTrailingElementTypeOrTractiveElementTypeOrTrainElement().stream())
+                .toList();
     }
 
     private static VehicleType_VersionStructure find(List<VehicleType_VersionStructure> types, String id) {

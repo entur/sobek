@@ -21,6 +21,7 @@ import org.rutebanken.sobek.error.VehicleTypeKindViolationException;
 import org.rutebanken.sobek.model.vehicle.CompoundTrain;
 import org.rutebanken.sobek.model.vehicle.PassengerCapacity;
 import org.rutebanken.sobek.model.vehicle.Train;
+import org.rutebanken.sobek.model.vehicle.TrainElement;
 import org.rutebanken.sobek.netex.id.CodespaceType;
 import org.rutebanken.sobek.netex.id.ValidPrefixList;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
@@ -111,17 +112,31 @@ public class VehicleTypeVersionedSaverService {
     }
 
     /**
-     * The components of a train are positions for train elements, and a train element is held as a reference, so each
-     * component must have one. The components of a compound train are trains: the type of the field says they are, so
-     * what is left to check is that each exists and belongs to the same data owner (a compound train is a set of its
-     * owner's trains). A compound train cannot hold a compound train, so there are no cycles to look for.
+     * The components of a train are positions for train elements, and the components of a compound train are trains:
+     * the types of the fields say so. What is left to check is that each component has its target, that the target
+     * exists, and that it belongs to the same data owner (a train is made of its owner's elements, and a compound train
+     * of its owner's trains). They must also be of the same kind, physical or contractual, as the train or compound train
+     * that holds them: the export of a kind has the elements and trains of that kind only, and a reference to one that is
+     * not in the export would make the export invalid. A compound train cannot hold a compound train, so there are no
+     * cycles to look for.
      */
     private void verifyComponents(VehicleType vehicleType) {
         if (vehicleType instanceof Train train && train.getComponents() != null) {
             for (int i = 0; i < train.getComponents().size(); i++) {
-                String elementRef = train.getComponents().get(i).getTrainElementRef();
-                if (elementRef == null || elementRef.isBlank()) {
-                    throw new ValidationException("Component " + (i + 1) + " of train " + train.getNetexId() + " has no train element reference.");
+                TrainElement element = train.getComponents().get(i).getTrainElement();
+                String position = "Component " + (i + 1) + " of train " + train.getNetexId();
+                if (element == null || element.getId() == null) {
+                    throw new ValidationException(position + " does not refer to an existing train element.");
+                }
+                if (!Objects.equals(element.getDataOwnerRef(), train.getDataOwnerRef())) {
+                    throw new ValidationException(position + " refers to train element " + element.getNetexId() + ", which belongs to data owner "
+                            + element.getDataOwnerRef() + ". A train can only be made of train elements of its own data owner, "
+                            + train.getDataOwnerRef() + ".");
+                }
+                if (element.getVehicleTypeKind() != train.getVehicleTypeKind()) {
+                    throw new VehicleTypeKindViolationException(position + " is of the train element " + element.getNetexId() + ", which is "
+                            + element.getVehicleTypeKind() + ". A " + train.getVehicleTypeKind() + " train can only be made of "
+                            + train.getVehicleTypeKind() + " train elements.");
                 }
             }
         } else if (vehicleType instanceof CompoundTrain compoundTrain && compoundTrain.getComponents() != null) {
@@ -135,6 +150,11 @@ public class VehicleTypeVersionedSaverService {
                     throw new ValidationException(position + " refers to train " + part.getNetexId() + ", which belongs to data owner "
                             + part.getDataOwnerRef() + ". A compound train can only hold trains of its own data owner, "
                             + compoundTrain.getDataOwnerRef() + ".");
+                }
+                if (part.getVehicleTypeKind() != compoundTrain.getVehicleTypeKind()) {
+                    throw new VehicleTypeKindViolationException(position + " is of the train " + part.getNetexId() + ", which is "
+                            + part.getVehicleTypeKind() + ". A " + compoundTrain.getVehicleTypeKind() + " compound train can only hold "
+                            + compoundTrain.getVehicleTypeKind() + " trains.");
                 }
             }
         }

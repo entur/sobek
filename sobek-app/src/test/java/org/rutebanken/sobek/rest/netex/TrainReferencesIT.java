@@ -17,6 +17,8 @@ import org.rutebanken.sobek.model.EmbeddableMultilingualString;
 import org.rutebanken.sobek.model.vehicle.AllPublicTransportModesEnumeration;
 import org.rutebanken.sobek.model.vehicle.Train;
 import org.rutebanken.sobek.model.vehicle.TrainComponent;
+import org.rutebanken.sobek.model.vehicle.TrainElement;
+import org.rutebanken.sobek.model.vehicle.TrainElementTypeEnumeration;
 import org.rutebanken.sobek.model.vehicle.Vehicle;
 import org.rutebanken.sobek.model.vehicle.VehicleModel;
 import org.rutebanken.sobek.model.vehicle.VehicleTypeKindEnumeration;
@@ -122,6 +124,10 @@ class TrainReferencesIT {
         Train train = saveTrain(VehicleTypeKindEnumeration.PHYSICAL, "References train with new version", 2);
         Vehicle vehicle = saveVehicleOf(train);
 
+        // The vehicle must have been valid for a moment: the repository decides what is valid now with the clock of the
+        // database, which in the test container is about 170 ms behind the application's
+        waitForTheDatabaseClock();
+
         // When: the train gets a new version, with another size
         Train newVersion = trainWithoutId(VehicleTypeKindEnumeration.PHYSICAL, "References train with new version", 3);
         newVersion.setNetexId(train.getNetexId());
@@ -137,11 +143,30 @@ class TrainReferencesIT {
         });
     }
 
+    private static void waitForTheDatabaseClock() {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
     private Train saveTrain(VehicleTypeKindEnumeration kind, String name, int cars) {
         return (Train) vehicleTypeSaver.saveNewVersion(trainWithoutId(kind, name, cars));
     }
 
-    private static Train trainWithoutId(VehicleTypeKindEnumeration kind, String name, int cars) {
+    /** A train element of its own for the train, of the kind of the train, saved first: a train is made of train elements that exist. */
+    private TrainElement trainElement(String name, VehicleTypeKindEnumeration kind) {
+        TrainElement element = new TrainElement();
+        element.setName(new EmbeddableMultilingualString(name + " element", "en"));
+        element.setTransportMode(AllPublicTransportModesEnumeration.RAIL);
+        element.setDataOwnerRef(DATA_OWNER);
+        element.setVehicleTypeKind(kind);
+        element.setTrainElementType(TrainElementTypeEnumeration.CARRIAGE);
+        return element;
+    }
+
+    private Train trainWithoutId(VehicleTypeKindEnumeration kind, String name, int cars) {
         Train train = new Train();
         train.setName(new EmbeddableMultilingualString(name, "en"));
         train.setTransportMode(AllPublicTransportModesEnumeration.RAIL);
@@ -149,7 +174,7 @@ class TrainReferencesIT {
         train.setVehicleTypeKind(kind);
         train.setNumberOfCars(cars);
         TrainComponent component = new TrainComponent();
-        component.setTrainElementRef("AKT:TrainElement:" + name.replace(' ', '-'));
+        component.setTrainElement((TrainElement) vehicleTypeSaver.saveNewVersion(trainElement(name, kind)));
         train.getComponents().add(component);
         return train;
     }

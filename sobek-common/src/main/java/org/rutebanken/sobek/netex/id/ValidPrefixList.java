@@ -35,7 +35,7 @@ public class ValidPrefixList {
     public static final String CONTRACTUAL_VEHICLE_TYPE_PREFIX = "CVT";
 
     /** The vehicle type and its subtypes. They share one id sequence and the contractual codespace. */
-    private static final Set<String> VEHICLE_TYPE_NAMES = Set.of("VehicleType", "Train", "CompoundTrain");
+    private static final Set<String> VEHICLE_TYPE_NAMES = Set.of("VehicleType", "Train", "CompoundTrain", "TrainElement");
 
     private final String validNetexPrefix;
 

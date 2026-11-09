@@ -4,6 +4,8 @@ import org.hibernate.Hibernate;
 import org.rutebanken.sobek.model.vehicle.CompoundTrain;
 import org.rutebanken.sobek.model.vehicle.Train;
 import org.rutebanken.sobek.model.vehicle.TrainComponent;
+import org.rutebanken.sobek.model.vehicle.TrainElement;
+import org.rutebanken.sobek.model.vehicle.TrainElementTypeEnumeration;
 import org.rutebanken.sobek.model.vehicle.TrainInCompoundTrain;
 import org.rutebanken.sobek.model.vehicle.TrainSizeEnumeration;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
@@ -105,6 +107,11 @@ public class QueryController {
     @SchemaMapping(typeName = "VehicleType", field = "trainSizeType")
     public TrainSizeEnumeration vehicleTypeTrainSizeType(VehicleType source) {
         return Hibernate.unproxy(source) instanceof Train train ? train.getTrainSizeType() : null;
+    }
+
+    @SchemaMapping(typeName = "VehicleType", field = "trainElementType")
+    public TrainElementTypeEnumeration vehicleTypeTrainElementType(VehicleType source) {
+        return Hibernate.unproxy(source) instanceof TrainElement element ? element.getTrainElementType() : null;
     }
 
     @SchemaMapping(typeName = "VehicleType", field = "trainComponents")

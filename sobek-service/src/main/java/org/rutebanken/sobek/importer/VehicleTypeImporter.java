@@ -64,6 +64,11 @@ public class VehicleTypeImporter {
 
     }
 
+    /** Imports a train element. In NeTEx it is not a vehicle type, so it is not imported with the vehicle types. */
+    public org.entur.netex2.model.TrainElement importTrainElement(org.rutebanken.sobek.model.vehicle.TrainElement trainElement, AtomicInteger vehicleTypesCounter) {
+        return vehicleTypeMapper.mapToNetex((org.rutebanken.sobek.model.vehicle.TrainElement) importVehicleType(trainElement, vehicleTypesCounter), context);
+    }
+
     private VehicleType importVehicleType(VehicleType incomingVehicleType, AtomicInteger vehicleTypesCounter) {
         logger.debug("{}", incomingVehicleType);
         incomingVehicleType = vehicleTypeVersionedSaverService.saveNewVersion(incomingVehicleType);

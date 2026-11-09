@@ -117,7 +117,7 @@ public class PublicationDeliveryImporter {
                 if(netexResourceFrame.getVehicleModels() != null) {
                     vehicleModelImportHandler.handleVehicleModels(netexResourceFrame, importParams, vehicleModelCounter, responseResourceFrame);
                 }
-                if(netexResourceFrame.getVehicleTypes() != null) {
+                if(netexResourceFrame.getVehicleTypes() != null || netexResourceFrame.getTrainElementTypes() != null) {
                     vehicleTypeImportHandler.handleVehicleTypes(netexResourceFrame, importParams, vehicleTypeCounter, responseResourceFrame);
                 }
                 if(netexResourceFrame.getVehicles() != null) {

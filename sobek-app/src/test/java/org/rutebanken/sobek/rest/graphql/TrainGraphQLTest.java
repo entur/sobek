@@ -34,14 +34,18 @@ class TrainGraphQLTest {
     @Test
     @DisplayName("A train is created with its size and components, and read back with the components in order")
     void trainWithComponentsIsCreatedAndReadBack() {
+        // Given: two train elements
+        String front = createTrainElement("ENGINE");
+        String rear = createTrainElement("SLEEPER_CARRIAGE");
+
         // When: a train is created with a component that has an id of its own and one that has none
         String trainId = createTrain("trainComponents: [ "
-                + "{ netexId: \"AKT:TrainComponent:gql-first\" label: { value: \"first car\" lang: \"en\" } trainElementRef: \"AKT:TrainElement:front\" "
+                + "{ netexId: \"AKT:TrainComponent:gql-first\" label: { value: \"first car\" lang: \"en\" } trainElement: { netexId: \"" + front + "\" } "
                 + "  operationalOrientation: FORWARDS forwardCouplingThroughAccess: DOOR }, "
-                + "{ label: { value: \"second car\" lang: \"en\" } trainElementRef: \"AKT:TrainElement:rear\" operationalOrientation: BACKWARDS } ]");
+                + "{ label: { value: \"second car\" lang: \"en\" } trainElement: { netexId: \"" + rear + "\" } operationalOrientation: BACKWARDS } ]");
 
         // Then: it is a train with the size and the components as given, in the order given
-        String components = "trainComponents { netexId label { value } trainElementRef operationalOrientation forwardCouplingThroughAccess }";
+        String components = "trainComponents { netexId label { value } trainElement { netexId subtype trainElementType } operationalOrientation forwardCouplingThroughAccess }";
         ValidatableResponse read = graphql("{ vehicleTypes(filter: { netexIds: [\"" + trainId + "\"] dataOwnerRef: \"AKT\" vehicleTypeKind: PHYSICAL }) "
                 + "{ content { subtype numberOfCars trainSizeType compoundTrainComponents { netexId } " + components + " } } }")
                 .body("errors", nullValue())
@@ -50,13 +54,68 @@ class TrainGraphQLTest {
                 .body("data.vehicleTypes.content[0].trainSizeType", equalTo("SHORT"))
                 .body("data.vehicleTypes.content[0].compoundTrainComponents", nullValue());
         read.body("data.vehicleTypes.content[0].trainComponents.label.value", org.hamcrest.Matchers.contains("first car", "second car"))
-                .body("data.vehicleTypes.content[0].trainComponents.trainElementRef", org.hamcrest.Matchers.contains("AKT:TrainElement:front", "AKT:TrainElement:rear"))
+                .body("data.vehicleTypes.content[0].trainComponents.trainElement.netexId", org.hamcrest.Matchers.contains(front, rear))
+                .body("data.vehicleTypes.content[0].trainComponents.trainElement.subtype", org.hamcrest.Matchers.contains("TRAIN_ELEMENT", "TRAIN_ELEMENT"))
+                .body("data.vehicleTypes.content[0].trainComponents.trainElement.trainElementType", org.hamcrest.Matchers.contains("ENGINE", "SLEEPER_CARRIAGE"))
                 .body("data.vehicleTypes.content[0].trainComponents[0].forwardCouplingThroughAccess", equalTo("DOOR"))
                 .body("data.vehicleTypes.content[0].trainComponents[1].operationalOrientation", equalTo("BACKWARDS"));
 
         // And: the id the client gave a component is kept, and the other component got one from Sobek
         assertThat(read.extract().<String>path("data.vehicleTypes.content[0].trainComponents[0].netexId")).isEqualTo("AKT:TrainComponent:gql-first");
         assertThat(read.extract().<String>path("data.vehicleTypes.content[0].trainComponents[1].netexId")).startsWith("NMR:TrainComponent:");
+    }
+
+    @Test
+    @DisplayName("A train element is created with its element type and size, and is found by its subtype")
+    void trainElementIsCreatedAndReadBack() {
+        String elementId = createVehicleType("subtype: TRAIN_ELEMENT vehicleTypeKind: PHYSICAL trainElementType: BUFFET_CAR length: 26.4 lowFloor: true");
+
+        graphql("{ vehicleTypes(filter: { netexIds: [\"" + elementId + "\"] dataOwnerRef: \"AKT\" vehicleTypeKind: PHYSICAL subtype: TRAIN_ELEMENT }) "
+                + "{ content { subtype trainElementType length lowFloor numberOfCars trainComponents { netexId } } totalElements } }")
+                .body("errors", nullValue())
+                .body("data.vehicleTypes.totalElements", equalTo(1))
+                .body("data.vehicleTypes.content[0].subtype", equalTo("TRAIN_ELEMENT"))
+                .body("data.vehicleTypes.content[0].trainElementType", equalTo("BUFFET_CAR"))
+                .body("data.vehicleTypes.content[0].length", equalTo(26.4f))
+                .body("data.vehicleTypes.content[0].lowFloor", equalTo(true))
+                .body("data.vehicleTypes.content[0].numberOfCars", nullValue())
+                .body("data.vehicleTypes.content[0].trainComponents", nullValue());
+        assertThat(countOf(elementId, "TRAIN")).as("a train element is not a train").isZero();
+    }
+
+    @Test
+    @DisplayName("A contractual train element is in the contractual codespace")
+    void contractualTrainElementIsInTheContractualCodespace() {
+        String elementId = createVehicleType("subtype: TRAIN_ELEMENT vehicleTypeKind: CONTRACTUAL trainElementType: CARRIAGE");
+
+        assertThat(elementId).startsWith("CVT:TrainElement:");
+    }
+
+    @Test
+    @DisplayName("A train can only be made of train elements that exist")
+    void trainOfNonElementsIsRejected() {
+        String otherTrain = createTrain("");
+
+        graphql(createMutation("subtype: TRAIN vehicleTypeKind: PHYSICAL trainComponents: [ { trainElement: { netexId: \"" + otherTrain + "\" } } ]"))
+                .body("errors[0].extensions.classification", equalTo("BAD_REQUEST"))
+                .body("errors[0].message", containsString("Only train elements can be put in a train"));
+
+        graphql(createMutation("subtype: TRAIN vehicleTypeKind: PHYSICAL trainComponents: [ { trainElement: { netexId: \"AKT:TrainElement:does-not-exist\" } } ]"))
+                .body("errors[0].extensions.classification", equalTo("BAD_REQUEST"))
+                .body("errors[0].message", containsString("not found"));
+    }
+
+    @Test
+    @DisplayName("A train element that is part of a train cannot be deactivated")
+    void trainElementInUseCannotBeDeactivated() {
+        String elementId = createTrainElement("CARRIAGE");
+        createTrain("trainComponents: [ { trainElement: { netexId: \"" + elementId + "\" } } ]");
+        String version = graphql("{ vehicleTypes(filter: { netexIds: [\"" + elementId + "\"] dataOwnerRef: \"AKT\" vehicleTypeKind: PHYSICAL }) { content { version } } }")
+                .extract().path("data.vehicleTypes.content[0].version");
+
+        graphql("mutation { deactivateVehicleType(input: { netexId: \"" + elementId + "\" version: " + version + " deactivateAt: \"2099-01-01T00:00:00.000+0000\" }) { netexId } }")
+                .body("errors[0].extensions.classification", equalTo("BAD_REQUEST"))
+                .body("errors[0].message", containsString("still part of a train"));
     }
 
     @Test
@@ -113,6 +172,9 @@ class TrainGraphQLTest {
         graphql(createMutation("vehicleTypeKind: PHYSICAL numberOfCars: 3"))
                 .body("errors[0].extensions.classification", equalTo("BAD_REQUEST"))
                 .body("errors[0].message", org.hamcrest.Matchers.allOf(containsString("numberOfCars"), containsString("VEHICLE_TYPE")));
+        graphql(createMutation("subtype: TRAIN vehicleTypeKind: PHYSICAL trainElementType: CARRIAGE"))
+                .body("errors[0].extensions.classification", equalTo("BAD_REQUEST"))
+                .body("errors[0].message", org.hamcrest.Matchers.allOf(containsString("trainElementType"), containsString("TRAIN")));
 
         String trainId = createTrain("");
         graphql("mutation { createOrUpdateVehicleType(input: { netexId: \"" + trainId + "\" transportMode: RAIL dataOwnerRef: \"AKT\" }) }")
@@ -138,6 +200,11 @@ class TrainGraphQLTest {
         return graphql("{ vehicleTypes(filter: { netexIds: [\"" + netexId + "\"] dataOwnerRef: \"AKT\" vehicleTypeKind: PHYSICAL" + subtypeFilter + " }) { totalElements } }")
                 .body("errors", nullValue())
                 .extract().path("data.vehicleTypes.totalElements");
+    }
+
+    /** A physical train element of the given type (an element type of the schema, e.g. CARRIAGE). */
+    private String createTrainElement(String elementType) {
+        return createVehicleType("subtype: TRAIN_ELEMENT vehicleTypeKind: PHYSICAL trainElementType: " + elementType);
     }
 
     /** A physical train of two cars, with the given extra input fields (e.g. components). */

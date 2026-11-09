@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- The compound train is listed first and refers to the two trains after it: the import must save the trains first.
+<!-- The compound train is listed first and refers to the two trains after it, and the trains refer to the train elements
+     in trainElementTypes, which comes last in the frame: the import must save the elements first, then the trains.
      @RUN@ makes the ids unique to one test run. -->
 <PublicationDelivery xmlns="http://www.netex.org.uk/netex" version="1.0">
     <PublicationTimestamp>2026-03-16T10:25:00.619Z</PublicationTimestamp>
@@ -48,7 +49,7 @@
                     <components>
                         <TrainComponent id="AKT:TrainComponent:run@RUN@b1" version="1" order="1">
                             <Label>only car</Label>
-                            <TrainElementRef ref="AKT:TrainElement:single"/>
+                            <TrainElementRef ref="AKT:TrainElement:run@RUN@single"/>
                         </TrainComponent>
                     </components>
                 </Train>
@@ -62,12 +63,12 @@
                     <components>
                         <TrainComponent id="AKT:TrainComponent:run@RUN@a2" version="1" order="2">
                             <Label>second car</Label>
-                            <TrainElementRef ref="AKT:TrainElement:rear"/>
+                            <TrainElementRef ref="AKT:TrainElement:run@RUN@rear"/>
                             <OperationalOrientation>backwards</OperationalOrientation>
                         </TrainComponent>
                         <TrainComponent id="AKT:TrainComponent:run@RUN@a1" version="1" order="1">
                             <Label>first car</Label>
-                            <TrainElementRef ref="AKT:TrainElement:front"/>
+                            <TrainElementRef ref="AKT:TrainElement:run@RUN@front"/>
                             <OperationalOrientation>forwards</OperationalOrientation>
                             <ForwardCoupling>
                                 <ThroughAccess>door</ThroughAccess>
@@ -76,6 +77,20 @@
                     </components>
                 </Train>
             </vehicleTypes>
+            <trainElementTypes>
+                <TrainElement id="AKT:TrainElement:run@RUN@single" version="1">
+                    <Name lang="nb"><Text>Single car</Text></Name>
+                    <TrainElementType>carriage</TrainElementType>
+                </TrainElement>
+                <TrainElement id="AKT:TrainElement:run@RUN@rear" version="1">
+                    <Name lang="nb"><Text>Rear car</Text></Name>
+                    <TrainElementType>sleeperCarriage</TrainElementType>
+                </TrainElement>
+                <TrainElement id="AKT:TrainElement:run@RUN@front" version="1">
+                    <Name lang="nb"><Text>Front car</Text></Name>
+                    <TrainElementType>engine</TrainElementType>
+                </TrainElement>
+            </trainElementTypes>
         </ResourceFrame>
     </dataObjects>
 </PublicationDelivery>

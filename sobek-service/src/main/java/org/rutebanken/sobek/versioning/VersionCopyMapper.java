@@ -8,6 +8,7 @@ import org.rutebanken.sobek.model.vehicle.CompoundTrain;
 import org.rutebanken.sobek.model.vehicle.DeckPlan;
 import org.rutebanken.sobek.model.vehicle.PassengerCapacity;
 import org.rutebanken.sobek.model.vehicle.Train;
+import org.rutebanken.sobek.model.vehicle.TrainElement;
 import org.rutebanken.sobek.model.vehicle.TrainComponent;
 import org.rutebanken.sobek.model.vehicle.TrainInCompoundTrain;
 import org.rutebanken.sobek.model.vehicle.Vehicle;
@@ -33,6 +34,7 @@ public interface VersionCopyMapper {
      */
     @SubclassMapping(source = Train.class, target = Train.class)
     @SubclassMapping(source = CompoundTrain.class, target = CompoundTrain.class)
+    @SubclassMapping(source = TrainElement.class, target = TrainElement.class)
     @Mapping(target = "id", ignore = true)
     VehicleType copy(VehicleType source);
 
@@ -47,6 +49,12 @@ public interface VersionCopyMapper {
     CompoundTrain copy(CompoundTrain source);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "vehicles", ignore = true)
+    TrainElement copy(TrainElement source);
+
+    /** A copied component places the same train element as the original: only the owner is versioned. */
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "trainElement", qualifiedByName = "sameTrainElement")
     TrainComponent copy(TrainComponent source);
 
     /** A copied component points at the same train as the original: only the owner is versioned. */
@@ -66,6 +74,11 @@ public interface VersionCopyMapper {
     @Named("copyTrainInCompoundTrains")
     default List<TrainInCompoundTrain> copyTrainInCompoundTrains(List<TrainInCompoundTrain> components) {
         return components == null ? null : components.stream().map(this::copy).collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    @Named("sameTrainElement")
+    default TrainElement sameTrainElement(TrainElement trainElement) {
+        return trainElement;
     }
 
     @Named("sameTrain")

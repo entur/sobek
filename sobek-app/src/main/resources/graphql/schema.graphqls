@@ -119,6 +119,20 @@ enum VehicleTypeSubtype {
     TRAIN
     "A compound train: a vehicle type made of trains"
     COMPOUND_TRAIN
+    "A train element: a single car or engine that trains are made of"
+    TRAIN_ELEMENT
+}
+
+enum TrainElementType {
+    BUFFET_CAR
+    CARRIAGE
+    ENGINE
+    CAR_TRANSPORTER
+    LARGE_VEHICLE_TRANSPORTER
+    SLEEPER_CARRIAGE
+    LUGGAGE_VAN
+    RESTAURANT_CARRIAGE
+    OTHER
 }
 
 enum TrainSize {
@@ -322,8 +336,8 @@ type TrainComponent {
     netexId: String
     label: MultilingualString
     description: MultilingualString
-    "The id of the NeTEx TrainElement that is in this position. Train elements are not stored in Sobek."
-    trainElementRef: String
+    "The train element that is in this position"
+    trainElement: VehicleType
     operationalOrientation: VehicleOrientation
     forwardCouplingThroughAccess: ThroughAccess
 }
@@ -333,7 +347,8 @@ input TrainComponentInput {
     netexId: String
     label: MultilingualStringInput
     description: MultilingualStringInput
-    trainElementRef: String!
+    "The train element, which must have the same data owner as the train"
+    trainElement: VehicleTypeReferenceInput!
     operationalOrientation: VehicleOrientation
     forwardCouplingThroughAccess: ThroughAccess
 }
@@ -368,6 +383,8 @@ type VehicleType {
     trainComponents: [TrainComponent!]
     "Only for compound trains, in order"
     compoundTrainComponents: [TrainInCompoundTrain!]
+    "Only for train elements"
+    trainElementType: TrainElementType
     netexId: String!
     name: MultilingualString
     shortName: MultilingualString
@@ -412,6 +429,8 @@ input VehicleTypeInput {
     trainComponents: [TrainComponentInput!]
     "Only for compound trains. The list replaces the components of the previous version."
     compoundTrainComponents: [TrainInCompoundTrainInput!]
+    "Only for train elements"
+    trainElementType: TrainElementType
     name: MultilingualStringInput
     shortName: MultilingualStringInput
     description: MultilingualStringInput

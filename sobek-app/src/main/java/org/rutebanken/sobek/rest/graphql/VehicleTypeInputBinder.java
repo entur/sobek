@@ -9,6 +9,7 @@ import org.rutebanken.sobek.model.vehicle.CompoundTrain;
 import org.rutebanken.sobek.model.vehicle.ThroughAccessEnumeration;
 import org.rutebanken.sobek.model.vehicle.Train;
 import org.rutebanken.sobek.model.vehicle.TrainComponent;
+import org.rutebanken.sobek.model.vehicle.TrainElement;
 import org.rutebanken.sobek.model.vehicle.TrainInCompoundTrain;
 import org.rutebanken.sobek.model.vehicle.VehicleOrientationEnumeration;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
@@ -73,6 +74,9 @@ public class VehicleTypeInputBinder {
         if (subtype != VehicleTypeSubtype.COMPOUND_TRAIN) {
             rejectFields(raw, subtype, "compoundTrainComponents");
         }
+        if (subtype != VehicleTypeSubtype.TRAIN_ELEMENT) {
+            rejectFields(raw, subtype, "trainElementType");
+        }
     }
 
     private static void rejectFields(Map<String, Object> raw, VehicleTypeSubtype subtype, String... fields) {
@@ -96,7 +100,7 @@ public class VehicleTypeInputBinder {
             component.setNetexId(idToKeep(rawComponent, TrainComponent.class));
             component.setLabel(multilingual(rawComponent.get("label")));
             component.setDescription(multilingual(rawComponent.get("description")));
-            component.setTrainElementRef((String) rawComponent.get("trainElementRef"));
+            component.setTrainElement(findTrainElement(rawComponent.get("trainElement")));
             component.setOperationalOrientation(enumValue(VehicleOrientationEnumeration.class, rawComponent.get("operationalOrientation")));
             component.setForwardCouplingThroughAccess(enumValue(ThroughAccessEnumeration.class, rawComponent.get("forwardCouplingThroughAccess")));
             components.add(component);
@@ -112,28 +116,36 @@ public class VehicleTypeInputBinder {
             component.setLabel(multilingual(rawComponent.get("label")));
             component.setDescription(multilingual(rawComponent.get("description")));
             component.setOperationalOrientation(enumValue(VehicleOrientationEnumeration.class, rawComponent.get("operationalOrientation")));
-            component.setTrain(findTrain(rawComponent.get("train")));
+            component.setTrain(findOfType(rawComponent.get("train"), Train.class, "Compound train", "train", "trains"));
             components.add(component);
         }
         return components;
     }
 
-    /** The train a reference names, in its latest version. It is an error if there is none, or it is not a train. */
+    private TrainElement findTrainElement(Object reference) {
+        return findOfType(reference, TrainElement.class, "Train", "train element", "train elements");
+    }
+
+    /**
+     * The vehicle type a reference names, in its latest version. It is an error if there is none, or it is not of the
+     * type the holder can hold (a train holds train elements, a compound train holds trains).
+     */
     @SuppressWarnings("unchecked")
-    private Train findTrain(Object reference) {
+    private <T extends VehicleType> T findOfType(Object reference, Class<T> type, String holder, String what, String whatPlural) {
         String netexId = (String) ((Map<String, Object>) reference).get("netexId");
-        Train asGiven = new Train();
+        VehicleType asGiven = new VehicleType();
         asGiven.setNetexId(netexId);
         String convertedId = vehicleTypeIdConverter.convertIncomingId(asGiven).getNetexId();
         VehicleType found = vehicleTypeRepository.findFirstByNetexIdOrderByVersionDesc(convertedId);
         if (found == null) {
-            throw new ValidationException("Compound train refers to a train that is not found in the database: " + netexId);
+            throw new ValidationException(holder + " refers to a " + what + " that is not found in the database: " + netexId);
         }
-        if (!(Hibernate.unproxy(found) instanceof Train train)) {
-            throw new ValidationException("Compound train refers to " + netexId + ", which is a " + VehicleTypeSubtype.of(found)
-                    + ". Only trains can be put in a compound train.");
+        Object real = Hibernate.unproxy(found);
+        if (!type.isInstance(real)) {
+            throw new ValidationException(holder + " refers to " + netexId + ", which is a " + VehicleTypeSubtype.of(found)
+                    + ". Only " + whatPlural + " can be put in a " + holder.toLowerCase() + ".");
         }
-        return train;
+        return type.cast(real);
     }
 
     /** An id in a codespace Sobek accepts is kept; any other, or none, is replaced by an id assigned on save. */

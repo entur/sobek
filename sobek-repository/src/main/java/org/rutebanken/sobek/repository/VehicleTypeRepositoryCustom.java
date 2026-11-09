@@ -43,8 +43,14 @@ public interface VehicleTypeRepositoryCustom extends DataManagedObjectStructureR
     boolean existsValidCompoundTrainWithTrain(String trainNetexId, Long trainVersion);
 
     /**
-     * Moves the references from train components (of trains and compound trains) that are valid now from one
-     * version of a vehicle type to another. Components of historic versions keep their references.
+     * True if a train that is valid now has a component with this version of a train element. A train element in use
+     * cannot be deactivated.
+     */
+    boolean existsValidTrainWithTrainElement(String trainElementNetexId, Long trainElementVersion);
+
+    /**
+     * Moves the references from the components of trains and compound trains that are valid now from one version of
+     * a train or train element to another. Components of historic versions keep their references.
      */
     void moveComponentReferences(Long fromVehicleTypeId, Long toVehicleTypeId);
 

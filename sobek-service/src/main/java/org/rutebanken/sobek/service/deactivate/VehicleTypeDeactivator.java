@@ -55,6 +55,9 @@ public class VehicleTypeDeactivator extends GenericDeactivator<VehicleType> {
                     if(vehicleRepository.existsValidWithVehicleType(netexId, expectedVersion)) {
                         return "Cannot deactivate vehicle type " + netexId + " because it is still in use.";
                     }
+                    if (vehicleTypeRepository.existsValidCompoundTrainWithTrain(netexId, expectedVersion)) {
+                        return "Cannot deactivate train " + netexId + " because it is still part of a compound train.";
+                    }
                     return null;
                 });
     }

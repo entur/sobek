@@ -112,11 +112,41 @@ enum VehicleTypeKind {
     CONTRACTUAL
 }
 
+enum VehicleTypeSubtype {
+    "A vehicle type that is neither of the two below"
+    VEHICLE_TYPE
+    "A train: a vehicle type made of components, each a reference to a train element"
+    TRAIN
+    "A compound train: a vehicle type made of trains"
+    COMPOUND_TRAIN
+}
+
+enum TrainSize {
+    NORMAL
+    SHORT
+    LONG
+}
+
+enum VehicleOrientation {
+    FORWARDS
+    BACKWARDS
+    UNKNOWN
+}
+
+enum ThroughAccess {
+    NO_THROUGH_ACCESS
+    OPEN_ENTRANCE
+    DOOR
+    UNKNOWN
+}
+
 # Filter inputs
 input VehicleTypeFilter {
     netexIds: [String!]
     transportModes: [TransportMode!]
     vehicleTypeKind: VehicleTypeKind!
+    "Only vehicle types of this subtype. Omit to get all subtypes."
+    subtype: VehicleTypeSubtype
     name: String
     dataOwnerRef: String!
 }
@@ -287,8 +317,57 @@ type VehiclePage {
     size: Int!
 }
 
+# A component of a train: a train element in a position. The position is the place in the list.
+type TrainComponent {
+    netexId: String
+    label: MultilingualString
+    description: MultilingualString
+    "The id of the NeTEx TrainElement that is in this position. Train elements are not stored in Sobek."
+    trainElementRef: String
+    operationalOrientation: VehicleOrientation
+    forwardCouplingThroughAccess: ThroughAccess
+}
+
+input TrainComponentInput {
+    "Leave out to get an id assigned. An id in your own codespace is kept."
+    netexId: String
+    label: MultilingualStringInput
+    description: MultilingualStringInput
+    trainElementRef: String!
+    operationalOrientation: VehicleOrientation
+    forwardCouplingThroughAccess: ThroughAccess
+}
+
+# A component of a compound train: a train in a position. The position is the place in the list.
+type TrainInCompoundTrain {
+    netexId: String
+    label: MultilingualString
+    description: MultilingualString
+    train: VehicleType
+    operationalOrientation: VehicleOrientation
+}
+
+input TrainInCompoundTrainInput {
+    "Leave out to get an id assigned. An id in your own codespace is kept."
+    netexId: String
+    label: MultilingualStringInput
+    description: MultilingualStringInput
+    "The train, which must have the same data owner as the compound train"
+    train: VehicleTypeReferenceInput!
+    operationalOrientation: VehicleOrientation
+}
+
 type VehicleType {
     dataOwnerRef: String!
+    subtype: VehicleTypeSubtype!
+    "Only for trains"
+    numberOfCars: Int
+    "Only for trains"
+    trainSizeType: TrainSize
+    "Only for trains, in order"
+    trainComponents: [TrainComponent!]
+    "Only for compound trains, in order"
+    compoundTrainComponents: [TrainInCompoundTrain!]
     netexId: String!
     name: MultilingualString
     shortName: MultilingualString
@@ -323,6 +402,16 @@ type VehicleType {
 
 input VehicleTypeInput {
     netexId: String
+    "Fixed when the vehicle type is created. Omitted means VEHICLE_TYPE, so it must be repeated when updating a train or a compound train."
+    subtype: VehicleTypeSubtype
+    "Only for trains"
+    numberOfCars: Int
+    "Only for trains"
+    trainSizeType: TrainSize
+    "Only for trains. The list replaces the components of the previous version."
+    trainComponents: [TrainComponentInput!]
+    "Only for compound trains. The list replaces the components of the previous version."
+    compoundTrainComponents: [TrainInCompoundTrainInput!]
     name: MultilingualStringInput
     shortName: MultilingualStringInput
     description: MultilingualStringInput

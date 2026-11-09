@@ -1,5 +1,13 @@
 package org.rutebanken.sobek.rest.graphql;
 
+import org.hibernate.Hibernate;
+import org.rutebanken.sobek.model.vehicle.CompoundTrain;
+import org.rutebanken.sobek.model.vehicle.Train;
+import org.rutebanken.sobek.model.vehicle.TrainComponent;
+import org.rutebanken.sobek.model.vehicle.TrainInCompoundTrain;
+import org.rutebanken.sobek.model.vehicle.TrainSizeEnumeration;
+import org.rutebanken.sobek.model.vehicle.VehicleType;
+import java.util.List;
 import org.rutebanken.sobek.auth.AuthorizationService;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
@@ -81,6 +89,32 @@ public class QueryController {
     public Object vehicleTypeDeckPlan(Object source)  {
         graphql.schema.DataFetchingEnvironment env = createFieldEnvironment(source);
         return vehicleTypeDeckPlanFetcher.get(env);
+    }
+
+    // The fields of trains and compound trains. The source can be a lazy proxy, whose class does not say what it is.
+    @SchemaMapping(typeName = "VehicleType", field = "subtype")
+    public VehicleTypeSubtype vehicleTypeSubtype(VehicleType source) {
+        return VehicleTypeSubtype.of(source);
+    }
+
+    @SchemaMapping(typeName = "VehicleType", field = "numberOfCars")
+    public Integer vehicleTypeNumberOfCars(VehicleType source) {
+        return Hibernate.unproxy(source) instanceof Train train ? train.getNumberOfCars() : null;
+    }
+
+    @SchemaMapping(typeName = "VehicleType", field = "trainSizeType")
+    public TrainSizeEnumeration vehicleTypeTrainSizeType(VehicleType source) {
+        return Hibernate.unproxy(source) instanceof Train train ? train.getTrainSizeType() : null;
+    }
+
+    @SchemaMapping(typeName = "VehicleType", field = "trainComponents")
+    public List<TrainComponent> vehicleTypeTrainComponents(VehicleType source) {
+        return Hibernate.unproxy(source) instanceof Train train ? train.getComponents() : null;
+    }
+
+    @SchemaMapping(typeName = "VehicleType", field = "compoundTrainComponents")
+    public List<TrainInCompoundTrain> vehicleTypeCompoundTrainComponents(VehicleType source) {
+        return Hibernate.unproxy(source) instanceof CompoundTrain compoundTrain ? compoundTrain.getComponents() : null;
     }
 
     @SchemaMapping(typeName = "VehicleType", field = "changedBy")

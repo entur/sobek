@@ -19,6 +19,7 @@ import org.rutebanken.sobek.repository.VehicleTypeRepository;
 import org.rutebanken.sobek.versioning.save.DeckPlanVersionedSaverService;
 import org.rutebanken.sobek.versioning.save.VehicleTypeVersionedSaverService;
 import org.rutebanken.sobek.versioning.save.VehicleVersionedSaverService;
+import graphql.schema.DataFetchingEnvironment;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.SchemaMapping;
@@ -41,6 +42,7 @@ public class MutationController {
     private final VehicleTypeDeactivator vehicleTypeDeactivator;
     private final DeckPlanDeactivator deckPlanDeactivator;
     private final DeckPlanRepository deckPlanRepository;
+    private final VehicleTypeInputBinder vehicleTypeInputBinder;
 
     public MutationController(
             VehicleVersionedSaverService vehicleVersionedSaverService,
@@ -49,7 +51,7 @@ public class MutationController {
             VehicleTypeNeTExIdConverter vehicleTypeIdConverter,
             DeckPlanVersionedSaverService deckPlanVersionedSaverService,
             DeckPlanNeTExIdConverter deckPlanNeTExIdConverter,
-            VehicleTypeRepository vehicleTypeRepository, AuthorizationService authorizationService, VehicleDeactivator vehicleDeactivator, VehicleTypeDeactivator vehicleTypeDeactivator, DeckPlanDeactivator deckPlanDeactivator, DeckPlanRepository deckPlanRepository) {
+            VehicleTypeRepository vehicleTypeRepository, AuthorizationService authorizationService, VehicleDeactivator vehicleDeactivator, VehicleTypeDeactivator vehicleTypeDeactivator, DeckPlanDeactivator deckPlanDeactivator, DeckPlanRepository deckPlanRepository, VehicleTypeInputBinder vehicleTypeInputBinder) {
         this.vehicleVersionedSaverService = vehicleVersionedSaverService;
         this.vehicleIdConverter = vehicleIdConverter;
         this.vehicleTypeVersionedSaverService = vehicleTypeVersionedSaverService;
@@ -62,6 +64,7 @@ public class MutationController {
         this.vehicleTypeDeactivator = vehicleTypeDeactivator;
         this.deckPlanDeactivator = deckPlanDeactivator;
         this.deckPlanRepository = deckPlanRepository;
+        this.vehicleTypeInputBinder = vehicleTypeInputBinder;
     }
 
     @MutationMapping
@@ -84,8 +87,9 @@ public class MutationController {
 
     @MutationMapping
     public String createOrUpdateVehicleType (
-            @Argument VehicleType input
+            DataFetchingEnvironment env
     ) throws ValidationException {
+        VehicleType input = vehicleTypeInputBinder.bind(env);
         authorizationService.verifyCanEditEntities(List.of(input));
         input = vehicleTypeIdConverter.convertIncomingId(input);
         if (input.getDeckPlan() != null) {

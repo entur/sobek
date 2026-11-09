@@ -1,6 +1,9 @@
 package org.rutebanken.sobek.model.vehicle;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.FetchType;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
@@ -20,7 +23,10 @@ import java.util.List;
 @Setter
 public class CompoundTrain extends VehicleType {
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    // Eager: GraphQL and the exports read the components after the query that loaded the vehicle type has ended.
+    // SUBSELECT loads the components of all vehicle types of a query in one extra select.
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @Fetch(FetchMode.SUBSELECT)
     @JoinColumn(name = "owner_compound_train_id")
     @OrderColumn(name = "component_order")
     private List<TrainInCompoundTrain> components = new ArrayList<>();

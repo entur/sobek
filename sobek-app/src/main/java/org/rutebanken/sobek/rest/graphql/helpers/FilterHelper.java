@@ -4,6 +4,7 @@ import jakarta.validation.ValidationException;
 import org.rutebanken.sobek.auth.AuthorizationService;
 import org.rutebanken.sobek.model.vehicle.AllPublicTransportModesEnumeration;
 import org.rutebanken.sobek.model.vehicle.VehicleTypeKindEnumeration;
+import org.rutebanken.sobek.rest.graphql.VehicleTypeSubtype;
 
 import java.util.List;
 import java.util.Map;
@@ -59,6 +60,15 @@ public class FilterHelper {
             return VehicleTypeKindEnumeration.valueOf(s.toUpperCase());
         }
         throw new ValidationException("Missing required filter field '" + FILTER_VEHICLE_TYPE_KIND + "'");
+    }
+
+    /** The subtype to filter by, or null for all subtypes. */
+    public static VehicleTypeSubtype getSubtypeFromFilter(Map<String, Object> filter) {
+        Object subtype = filter == null ? null : filter.get(FILTER_SUBTYPE);
+        if (subtype == null) {
+            return null;
+        }
+        return subtype instanceof VehicleTypeSubtype s ? s : VehicleTypeSubtype.valueOf(subtype.toString().toUpperCase());
     }
 
     public static String getNameFromFilter(Map<String, Object> filter) {

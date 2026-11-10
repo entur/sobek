@@ -113,7 +113,7 @@ enum VehicleTypeKind {
 }
 
 enum VehicleTypeSubtype {
-    "A vehicle type that is neither of the two below"
+    "A vehicle type that is none of the ones below"
     VEHICLE_TYPE
     "A train: a vehicle type made of components, each a reference to a train element"
     TRAIN

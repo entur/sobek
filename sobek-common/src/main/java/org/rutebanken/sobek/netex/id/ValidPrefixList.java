@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class ValidPrefixList {
@@ -32,6 +33,9 @@ public class ValidPrefixList {
 
     /** Codespace of contractual vehicle types. Physical vehicle types use the configured netex.validPrefix. */
     public static final String CONTRACTUAL_VEHICLE_TYPE_PREFIX = "CVT";
+
+    /** The vehicle type and its subtypes. They share one id sequence and the contractual codespace. */
+    private static final Set<String> VEHICLE_TYPE_NAMES = Set.of("VehicleType", "Train", "CompoundTrain", "TrainElement");
 
     private final String validNetexPrefix;
 
@@ -99,7 +103,7 @@ public class ValidPrefixList {
             return CodespaceType.EXTERNAL;
         }
         if (prefix.equals(validNetexPrefix)
-                || (prefix.equals(CONTRACTUAL_VEHICLE_TYPE_PREFIX) && "VehicleType".equals(type))) {
+                || (prefix.equals(CONTRACTUAL_VEHICLE_TYPE_PREFIX) && VEHICLE_TYPE_NAMES.contains(type))) {
             return CodespaceType.SOBEK;
         }
 

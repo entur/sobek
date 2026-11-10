@@ -49,7 +49,7 @@ public class VehicleTypeImporter {
         this.context = context;
     }
 
-    public List<org.entur.netex2.model.VehicleType> importVehicleTypes(List<VehicleType> vehicleTypes, AtomicInteger vehicleTypesCounter) {
+    public List<org.entur.netex2.model.VehicleType_VersionStructure> importVehicleTypes(List<VehicleType> vehicleTypes, AtomicInteger vehicleTypesCounter) {
 
         logger.info("Importing {} incoming vehicle types", vehicleTypes.size());
 
@@ -60,8 +60,13 @@ public class VehicleTypeImporter {
             result.add(importVehicleType(incomingVehicleType, vehicleTypesCounter));
         }
 
-        return result.stream().map(vt -> vehicleTypeMapper.mapToNetex(vt, context)).collect(toList());
+        return result.stream().map(vt -> vehicleTypeMapper.mapAnyToNetex(vt, context)).collect(toList());
 
+    }
+
+    /** Imports a train element. In NeTEx it is not a vehicle type, so it is not imported with the vehicle types. */
+    public org.entur.netex2.model.TrainElement importTrainElement(org.rutebanken.sobek.model.vehicle.TrainElement trainElement, AtomicInteger vehicleTypesCounter) {
+        return vehicleTypeMapper.mapToNetex((org.rutebanken.sobek.model.vehicle.TrainElement) importVehicleType(trainElement, vehicleTypesCounter), context);
     }
 
     private VehicleType importVehicleType(VehicleType incomingVehicleType, AtomicInteger vehicleTypesCounter) {

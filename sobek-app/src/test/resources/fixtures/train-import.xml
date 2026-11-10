@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The compound train is listed first and refers to the two trains after it, and the trains refer to the train elements
+     in trainElementTypes, which comes last in the frame: the import must save the elements first, then the trains.
+     @RUN@ makes the ids unique to one test run. -->
+<PublicationDelivery xmlns="http://www.netex.org.uk/netex" version="1.0">
+    <PublicationTimestamp>2026-03-16T10:25:00.619Z</PublicationTimestamp>
+    <ParticipantRef>TST</ParticipantRef>
+    <dataObjects>
+        <ResourceFrame id="RF:1" version="1">
+            <FrameDefaults>
+                <DefaultResponsibilitySetRef ref="TST:ResponsibilitySet:1" />
+                <DefaultLocale>
+                    <TimeZone>Europe/Oslo</TimeZone>
+                </DefaultLocale>
+            </FrameDefaults>
+            <responsibilitySets>
+                <ResponsibilitySet id="TST:ResponsibilitySet:1" version="1">
+                    <roles>
+                        <ResponsibilityRoleAssignment id="TST:ResponsibilityRoleAssignment:1" version="1">
+                            <DataRoleType>owns</DataRoleType>
+                            <ResponsibleOrganisationRef ref="AKT"/>
+                        </ResponsibilityRoleAssignment>
+                    </roles>
+                </ResponsibilitySet>
+            </responsibilitySets>
+            <vehicleTypes>
+                <CompoundTrain id="AKT:CompoundTrain:run@RUN@c" version="1">
+                    <Name lang="nb"><Text>Double set</Text></Name>
+                    <TransportMode>rail</TransportMode>
+                    <components>
+                        <TrainInCompoundTrain id="AKT:TrainInCompoundTrain:run@RUN@2" version="1" order="2">
+                            <TrainRef ref="AKT:Train:run@RUN@b"/>
+                            <Label>rear</Label>
+                            <OperationalOrientation>backwards</OperationalOrientation>
+                        </TrainInCompoundTrain>
+                        <TrainInCompoundTrain id="AKT:TrainInCompoundTrain:run@RUN@1" version="1" order="1">
+                            <TrainRef ref="AKT:Train:run@RUN@a"/>
+                            <Label>front</Label>
+                            <OperationalOrientation>forwards</OperationalOrientation>
+                        </TrainInCompoundTrain>
+                    </components>
+                </CompoundTrain>
+                <Train id="AKT:Train:run@RUN@b" version="1">
+                    <Name lang="nb"><Text>Unit B</Text></Name>
+                    <TransportMode>rail</TransportMode>
+                    <TrainSize>
+                        <NumberOfCars>1</NumberOfCars>
+                    </TrainSize>
+                    <components>
+                        <TrainComponent id="AKT:TrainComponent:run@RUN@b1" version="1" order="1">
+                            <Label>only car</Label>
+                            <TrainElementRef ref="AKT:TrainElement:run@RUN@single"/>
+                        </TrainComponent>
+                    </components>
+                </Train>
+                <Train id="AKT:Train:run@RUN@a" version="1">
+                    <Name lang="nb"><Text>Unit A</Text></Name>
+                    <TransportMode>rail</TransportMode>
+                    <TrainSize>
+                        <NumberOfCars>2</NumberOfCars>
+                        <TrainSizeType>short</TrainSizeType>
+                    </TrainSize>
+                    <components>
+                        <TrainComponent id="AKT:TrainComponent:run@RUN@a2" version="1" order="2">
+                            <Label>second car</Label>
+                            <TrainElementRef ref="AKT:TrainElement:run@RUN@rear"/>
+                            <OperationalOrientation>backwards</OperationalOrientation>
+                        </TrainComponent>
+                        <TrainComponent id="AKT:TrainComponent:run@RUN@a1" version="1" order="1">
+                            <Label>first car</Label>
+                            <TrainElementRef ref="AKT:TrainElement:run@RUN@front"/>
+                            <OperationalOrientation>forwards</OperationalOrientation>
+                            <ForwardCoupling>
+                                <ThroughAccess>door</ThroughAccess>
+                            </ForwardCoupling>
+                        </TrainComponent>
+                    </components>
+                </Train>
+            </vehicleTypes>
+            <trainElementTypes>
+                <TrainElement id="AKT:TrainElement:run@RUN@single" version="1">
+                    <Name lang="nb"><Text>Single car</Text></Name>
+                    <TrainElementType>carriage</TrainElementType>
+                </TrainElement>
+                <TrainElement id="AKT:TrainElement:run@RUN@rear" version="1">
+                    <Name lang="nb"><Text>Rear car</Text></Name>
+                    <TrainElementType>sleeperCarriage</TrainElementType>
+                </TrainElement>
+                <TrainElement id="AKT:TrainElement:run@RUN@front" version="1">
+                    <Name lang="nb"><Text>Front car</Text></Name>
+                    <TrainElementType>engine</TrainElementType>
+                </TrainElement>
+            </trainElementTypes>
+        </ResourceFrame>
+    </dataObjects>
+</PublicationDelivery>

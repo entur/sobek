@@ -8,6 +8,7 @@ import org.rutebanken.sobek.model.EntityInVersionStructure;
 import java.util.List;
 
 @Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Getter
 @Setter
 public class VehicleType extends VehicleType_VersionStructure {

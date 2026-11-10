@@ -27,7 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Transactional
 @Component
-public class VehicleTypeIdConverter extends GenericIdConverter<org.entur.netex2.model.VehicleType> {
+public class VehicleTypeIdConverter extends GenericIdConverter<org.entur.netex2.model.VehicleType_VersionStructure> {
 
     public VehicleTypeIdConverter(ValidPrefixList validPrefixList, NetexIdHelper netexIdHelper, GenericEntityInVersionRepository genericEntityInVersionRepository) {
         super(validPrefixList, netexIdHelper, genericEntityInVersionRepository, VehicleType.class);

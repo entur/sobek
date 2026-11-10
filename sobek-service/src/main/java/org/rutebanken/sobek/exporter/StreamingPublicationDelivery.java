@@ -289,16 +289,34 @@ public class StreamingPublicationDelivery {
         if (!vehicleTypesInDb.isEmpty()) {
             logger.info("There are vehicle types to export");
 
-            VehicleTypesInFrame_RelStructure vehicleTypesInFrameRelStructure = new VehicleTypesInFrame_RelStructure();
-            List<org.entur.netex2.model.VehicleType> vehicleTypes = vehicleTypesInDb.stream().map(vt -> vehicleTypeMapper.mapToNetex(vt, mappingContext)).toList();
-
-            Collection<JAXBElement<? extends DataManagedObjectStructure>> jaxbVehicleTypes = vehicleTypes.stream().map(vt -> new ObjectFactory().createVehicleType(vt)).collect(Collectors.toSet());
-            vehicleTypesInFrameRelStructure.withTransportType(jaxbVehicleTypes);
-            resourceFrame.setVehicleTypes(vehicleTypesInFrameRelStructure);
-            mappedVehicleTypeCount.set(vehicleTypes.size());
+            // Train elements are in a container of their own in the frame. A container is left out when it is empty,
+            // as the schema does not allow an empty one.
+            List<org.entur.netex2.model.TrainElementType_VersionStructure> trainElements = vehicleTypesInDb.stream()
+                    .filter(StreamingPublicationDelivery::isTrainElement)
+                    .map(vt -> (org.rutebanken.sobek.model.vehicle.TrainElement) org.hibernate.Hibernate.unproxy(vt))
+                    .map(element -> (org.entur.netex2.model.TrainElementType_VersionStructure) vehicleTypeMapper.mapToNetex(element, mappingContext))
+                    .toList();
+            // A list, not a set: the export keeps the order of the repository
+            Collection<JAXBElement<? extends DataManagedObjectStructure>> jaxbVehicleTypes = vehicleTypesInDb.stream()
+                    .filter(vt -> !isTrainElement(vt))
+                    .map(vt -> vehicleTypeMapper.mapAnyToNetex(vt, mappingContext))
+                    .map(VehicleTypeMapper::toJaxbElement)
+                    .collect(Collectors.toList());
+            if (!jaxbVehicleTypes.isEmpty()) {
+                resourceFrame.setVehicleTypes(new VehicleTypesInFrame_RelStructure().withTransportType(jaxbVehicleTypes));
+            }
+            if (!trainElements.isEmpty()) {
+                resourceFrame.setTrainElementTypes(new org.entur.netex2.model.TrainElementTypesInFrame_RelStructure()
+                        .withTrailingElementTypeOrTractiveElementTypeOrTrainElement(trainElements));
+            }
+            mappedVehicleTypeCount.set(vehicleTypesInDb.size());
         } else {
             logger.info("No vehicle types to export");
         }
+    }
+
+    private static boolean isTrainElement(VehicleType vehicleType) {
+        return org.hibernate.Hibernate.unproxy(vehicleType) instanceof org.rutebanken.sobek.model.vehicle.TrainElement;
     }
 
     private void prepareVehicleModels(String dataOwnerRef, VehicleTypeKindSelection vehicleTypeKindSelection, AtomicInteger mappedVehicleModelCount, org.entur.netex2.model.ResourceFrame resourceFrame) {

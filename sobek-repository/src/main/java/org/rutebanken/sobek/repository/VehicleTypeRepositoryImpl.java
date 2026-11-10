@@ -51,7 +51,7 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
             "AND (vt.validBetween.toDate IS NULL OR vt.validBetween.toDate >= :now)";
 
     @Override
-    public Page<VehicleType> findCurrentFiltered(String dataOwnerRef, List<String> netexIds, List<AllPublicTransportModesEnumeration> transportModes, VehicleTypeKindEnumeration vehicleTypeKind, String name, Pageable pageable) {
+    public Page<VehicleType> findCurrentFiltered(String dataOwnerRef, List<String> netexIds, List<AllPublicTransportModesEnumeration> transportModes, VehicleTypeKindEnumeration vehicleTypeKind, Class<? extends VehicleType> subtype, String name, Pageable pageable) {
         Instant now = Instant.now();
 
         // Build dynamic WHERE suffix for optional filters
@@ -65,6 +65,10 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
         if (vehicleTypeKind != null) {
             filterSuffix.append(" AND vt.vehicleTypeKind = :vehicleTypeKind");
         }
+        if (subtype != null) {
+            // TYPE() is the exact class, so VehicleType gives the plain ones and not the trains
+            filterSuffix.append(" AND TYPE(vt) = :subtype");
+        }
         if(name != null && !name.isEmpty()) {
             name = "%" + QueryHelper.escapeForLike(name.toLowerCase()) + "%";
             filterSuffix.append(" AND vt.name is not null and lower(vt.name.value) LIKE :name ESCAPE '\\'");
@@ -74,7 +78,7 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
         }
 
         if (pageable.isUnpaged()) {
-            List<VehicleType> vehicleTypes = fetchVehicleTypesWithValidVehicles(dataOwnerRef, netexIds, transportModes, vehicleTypeKind, name, now, filterSuffix.toString(), null);
+            List<VehicleType> vehicleTypes = fetchVehicleTypesWithValidVehicles(dataOwnerRef, netexIds, transportModes, vehicleTypeKind, subtype, name, now, filterSuffix.toString(), null);
             return new PageImpl<>(vehicleTypes);
         }
 
@@ -82,16 +86,16 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
         String countJpql = "SELECT COUNT(vt) FROM VehicleType vt " +
                 VT_CURRENT_WHERE + filterSuffix;
         TypedQuery<Long> countQuery = entityManager.createQuery(countJpql, Long.class);
-        setFilterParams(countQuery, dataOwnerRef, netexIds, transportModes, vehicleTypeKind, name, now);
+        setFilterParams(countQuery, dataOwnerRef, netexIds, transportModes, vehicleTypeKind, subtype, name, now);
         long total = countQuery.getSingleResult();
 
         // Fetch with pagination
-        List<VehicleType> vehicleTypes = fetchVehicleTypesWithValidVehicles(dataOwnerRef, netexIds, transportModes, vehicleTypeKind, name, now, filterSuffix.toString(), pageable);
+        List<VehicleType> vehicleTypes = fetchVehicleTypesWithValidVehicles(dataOwnerRef, netexIds, transportModes, vehicleTypeKind, subtype, name, now, filterSuffix.toString(), pageable);
 
         return new PageImpl<>(vehicleTypes, pageable, total);
     }
 
-    private void setFilterParams(Query query, String dataOwnerRef, List<String> netexIds, List<AllPublicTransportModesEnumeration> transportModes, VehicleTypeKindEnumeration vehicleTypeKind, String name, Instant now) {
+    private void setFilterParams(Query query, String dataOwnerRef, List<String> netexIds, List<AllPublicTransportModesEnumeration> transportModes, VehicleTypeKindEnumeration vehicleTypeKind, Class<? extends VehicleType> subtype, String name, Instant now) {
         query.setParameter("now", now);
         if (netexIds != null && !netexIds.isEmpty()) {
             query.setParameter("netexIds", netexIds);
@@ -101,6 +105,9 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
         }
         if (vehicleTypeKind != null) {
             query.setParameter("vehicleTypeKind", vehicleTypeKind);
+        }
+        if (subtype != null) {
+            query.setParameter("subtype", subtype);
         }
         if(name != null && !name.isEmpty()) {
             query.setParameter("name", name);
@@ -121,6 +128,56 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
         return exists;
     }
 
+
+    @Override
+    public boolean existsValidCompoundTrainWithTrain(String trainNetexId, Long trainVersion) {
+        Query query = entityManager.createNativeQuery("SELECT EXISTS (SELECT 1 FROM train_in_compound_train tic " +
+                "JOIN vehicle_type train ON tic.train_id = train.id " +
+                "JOIN vehicle_type compound ON tic.owner_compound_train_id = compound.id " +
+                "WHERE train.netex_id = :trainNetexId AND train.version = :trainVersion " +
+                "AND (compound.from_date IS NULL OR compound.from_date <= :now) AND (compound.to_date IS NULL OR compound.to_date >= :now))");
+        query.setParameter("now", Instant.now());
+        query.setParameter("trainNetexId", trainNetexId);
+        query.setParameter("trainVersion", trainVersion);
+        Object result = query.getSingleResult();
+        return (result instanceof Boolean b) ? b : ((Number) result).intValue() == 1;
+    }
+
+    @Override
+    public boolean existsValidTrainWithTrainElement(String trainElementNetexId, Long trainElementVersion) {
+        Query query = entityManager.createNativeQuery("SELECT EXISTS (SELECT 1 FROM train_component tc " +
+                "JOIN vehicle_type element ON tc.train_element_id = element.id " +
+                "JOIN vehicle_type train ON tc.owner_train_id = train.id " +
+                "WHERE element.netex_id = :elementNetexId AND element.version = :elementVersion " +
+                "AND (train.from_date IS NULL OR train.from_date <= :now) AND (train.to_date IS NULL OR train.to_date >= :now))");
+        query.setParameter("now", Instant.now());
+        query.setParameter("elementNetexId", trainElementNetexId);
+        query.setParameter("elementVersion", trainElementVersion);
+        Object result = query.getSingleResult();
+        return (result instanceof Boolean b) ? b : ((Number) result).intValue() == 1;
+    }
+
+    @Override
+    public void moveComponentReferences(Long fromVehicleTypeId, Long toVehicleTypeId) {
+        // Only components of owners that are valid now are moved, so that the history keeps pointing at what was current then
+        String currentOwner = " IN (SELECT id FROM vehicle_type WHERE (from_date is null or from_date <= :now) and (to_date is null or to_date >= :now))";
+        // The ids are those of vehicle_type rows, so a row is either a train (held by compound trains) or a train element
+        // (held by trains): only one of the two updates changes anything.
+        Instant now = Instant.now();
+        Query compoundTrains = entityManager.createNativeQuery(
+                "UPDATE train_in_compound_train SET train_id = :to WHERE train_id = :from AND owner_compound_train_id" + currentOwner);
+        compoundTrains.setParameter("to", toVehicleTypeId);
+        compoundTrains.setParameter("from", fromVehicleTypeId);
+        compoundTrains.setParameter("now", now);
+        compoundTrains.executeUpdate();
+
+        Query trains = entityManager.createNativeQuery(
+                "UPDATE train_component SET train_element_id = :to WHERE train_element_id = :from AND owner_train_id" + currentOwner);
+        trains.setParameter("to", toVehicleTypeId);
+        trains.setParameter("from", fromVehicleTypeId);
+        trains.setParameter("now", now);
+        trains.executeUpdate();
+    }
 
     @Override
     public void moveToDeckPlan(Long fromDeckPlanId, Long toDeckPlanId) {
@@ -152,6 +209,7 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
         List<String> netexIds,
         List<AllPublicTransportModesEnumeration> transportModes,
         VehicleTypeKindEnumeration vehicleTypeKind,
+        Class<? extends VehicleType> subtype,
         String name,
         Instant now,
         String filterSuffix,
@@ -163,7 +221,7 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
             " ORDER BY vt.id";
 
         TypedQuery<Long> idsQuery = entityManager.createQuery(idsJpql, Long.class);
-        setFilterParams(idsQuery, dataOwnerRef, netexIds, transportModes, vehicleTypeKind, name, now);
+        setFilterParams(idsQuery, dataOwnerRef, netexIds, transportModes, vehicleTypeKind, subtype, name, now);
 
         if (pageable != null) {
             idsQuery.setFirstResult((int) pageable.getOffset());

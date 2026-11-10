@@ -26,7 +26,33 @@ import java.util.List;
 public interface VehicleTypeRepositoryCustom extends DataManagedObjectStructureRepository<VehicleType> {
 
     /** @param vehicleTypeKind only return vehicle types of this kind; null returns all kinds */
-    Page<VehicleType> findCurrentFiltered(String dataOwnerRef, List<String> netexIds, List<AllPublicTransportModesEnumeration> transportModes, VehicleTypeKindEnumeration vehicleTypeKind, String name, Pageable pageable);
+    default Page<VehicleType> findCurrentFiltered(String dataOwnerRef, List<String> netexIds, List<AllPublicTransportModesEnumeration> transportModes, VehicleTypeKindEnumeration vehicleTypeKind, String name, Pageable pageable) {
+        return findCurrentFiltered(dataOwnerRef, netexIds, transportModes, vehicleTypeKind, null, name, pageable);
+    }
+
+    /**
+     * @param vehicleTypeKind only return vehicle types of this kind; null returns all kinds
+     * @param subtype only return vehicle types of exactly this class: VehicleType for the plain ones, Train or
+     *                CompoundTrain; null returns all subtypes
+     */
+    Page<VehicleType> findCurrentFiltered(String dataOwnerRef, List<String> netexIds, List<AllPublicTransportModesEnumeration> transportModes, VehicleTypeKindEnumeration vehicleTypeKind, Class<? extends VehicleType> subtype, String name, Pageable pageable);
+
+    /**
+     * True if a compound train that is valid now holds this version of a train. A train in use cannot be deactivated.
+     */
+    boolean existsValidCompoundTrainWithTrain(String trainNetexId, Long trainVersion);
+
+    /**
+     * True if a train that is valid now has a component with this version of a train element. A train element in use
+     * cannot be deactivated.
+     */
+    boolean existsValidTrainWithTrainElement(String trainElementNetexId, Long trainElementVersion);
+
+    /**
+     * Moves the references from the components of trains and compound trains that are valid now from one version of
+     * a train or train element to another. Components of historic versions keep their references.
+     */
+    void moveComponentReferences(Long fromVehicleTypeId, Long toVehicleTypeId);
 
     void moveToDeckPlan(Long fromDeckPlanId, Long toDeckPlanId);
 

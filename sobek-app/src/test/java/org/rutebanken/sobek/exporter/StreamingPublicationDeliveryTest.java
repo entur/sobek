@@ -16,6 +16,7 @@ import org.rutebanken.sobek.model.vehicle.VehicleTypeKindEnumeration;
 import org.rutebanken.sobek.model.vehicle.DeckPlan;
 import org.rutebanken.sobek.model.vehicle.Vehicle;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
+import org.rutebanken.sobek.netex.mapping.mapstruct.FleetMapper;
 import org.rutebanken.sobek.netex.mapping.mapstruct.VehicleMapper;
 import org.rutebanken.sobek.netex.mapping.mapstruct.VehicleModelMapper;
 import org.rutebanken.sobek.netex.mapping.mapstruct.VehicleTypeMapper;
@@ -23,6 +24,7 @@ import org.rutebanken.sobek.netex.mapping.mapstruct.deckplan.DeckPlanMapper;
 import org.rutebanken.sobek.netex.mapping.mapstruct.equipment.EquipmentMapper;
 import org.rutebanken.sobek.repository.DeckPlanRepository;
 import org.rutebanken.sobek.repository.EquipmentRepository;
+import org.rutebanken.sobek.repository.FleetRepository;
 import org.rutebanken.sobek.repository.VehicleModelRepository;
 import org.rutebanken.sobek.repository.VehicleRepository;
 import org.rutebanken.sobek.repository.VehicleTypeRepository;
@@ -45,6 +47,7 @@ class StreamingPublicationDeliveryTest {
     private static final String DATA_OWNER = "AKT";
 
     @Mock private VehicleRepository vehicleRepository;
+    @Mock private FleetRepository fleetRepository;
     @Mock private VehicleTypeRepository vehicleTypeRepository;
     @Mock private VehicleModelRepository vehicleModelRepository;
     @Mock private DeckPlanRepository deckPlanRepository;
@@ -53,6 +56,7 @@ class StreamingPublicationDeliveryTest {
     @Mock private VehicleTypeMapper vehicleTypeMapper;
     @Mock private EquipmentMapper equipmentMapper;
     @Mock private VehicleMapper vehicleMapper;
+    @Mock private FleetMapper fleetMapper;
     @Mock private DeckPlanMapper deckPlanMapper;
     @Mock private VehicleModelMapper vehicleModelMapper;
     @Mock private AuthorizationService authorizationService;
@@ -66,6 +70,7 @@ class StreamingPublicationDeliveryTest {
     void setUp() {
         streamingPublicationDelivery = new StreamingPublicationDelivery(
             vehicleRepository,
+            fleetRepository,
             vehicleTypeRepository,
             vehicleModelRepository,
             deckPlanRepository,
@@ -74,6 +79,7 @@ class StreamingPublicationDeliveryTest {
             vehicleTypeMapper,
             equipmentMapper,
             vehicleMapper,
+            fleetMapper,
             deckPlanMapper,
             vehicleModelMapper,
             authorizationService,
@@ -89,6 +95,8 @@ class StreamingPublicationDeliveryTest {
             .thenReturn(new PublicationDeliveryStructure());
 
         // No data: the tests are about which repository methods are used, and with what arguments
+        lenient().when(fleetRepository.findCurrentFiltered(any(), any(), any(), any(Pageable.class)))
+            .thenReturn(new PageImpl<>(List.of()));
         lenient().when(vehicleRepository.findCurrentFiltered(any(), any(), any(), any(), any(Pageable.class)))
             .thenReturn(new PageImpl<>(List.of()));
         lenient().when(vehicleTypeRepository.findCurrentFiltered(any(), any(), any(), any(), any(), any(Pageable.class)))

@@ -11,6 +11,7 @@ import org.rutebanken.sobek.auth.AuthorizationService;
 import org.rutebanken.sobek.auth.UsernameFetcher;
 import org.rutebanken.sobek.model.ValidBetween;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
+import org.rutebanken.sobek.repository.FleetRepository;
 import org.rutebanken.sobek.repository.VehicleRepository;
 import org.rutebanken.sobek.repository.VehicleTypeRepository;
 import org.rutebanken.sobek.versioning.VersionCreator;
@@ -45,6 +46,9 @@ class VehicleTypeDeactivatorTest {
 
     @Mock
     private VehicleRepository vehicleRepository;
+
+    @Mock
+    private FleetRepository fleetRepository;
 
     @InjectMocks
     private VehicleTypeDeactivator vehicleTypeDeactivator;

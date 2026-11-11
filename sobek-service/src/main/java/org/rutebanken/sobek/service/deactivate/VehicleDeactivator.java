@@ -19,6 +19,7 @@ import jakarta.validation.ValidationException;
 import org.rutebanken.sobek.auth.AuthorizationService;
 import org.rutebanken.sobek.auth.UsernameFetcher;
 import org.rutebanken.sobek.model.vehicle.Vehicle;
+import org.rutebanken.sobek.repository.FleetRepository;
 import org.rutebanken.sobek.repository.VehicleRepository;
 import org.rutebanken.sobek.versioning.VersionCreator;
 import org.rutebanken.sobek.versioning.save.VehicleVersionedSaverService;
@@ -29,18 +30,24 @@ import java.time.Instant;
 public class VehicleDeactivator extends GenericDeactivator<Vehicle> {
     private final VehicleVersionedSaverService vehicleVersionedSaverService;
     private final VehicleRepository vehicleRepository;
+    private final FleetRepository fleetRepository;
 
     public VehicleDeactivator(VehicleVersionedSaverService vehicleVersionedSaverService,
                               VehicleRepository vehicleRepository,
+                              FleetRepository fleetRepository,
                               AuthorizationService authorizationService,
                               UsernameFetcher usernameFetcher,
                               VersionCreator versionCreator) {
         super(usernameFetcher, versionCreator, authorizationService, Vehicle.class);
         this.vehicleVersionedSaverService = vehicleVersionedSaverService;
         this.vehicleRepository = vehicleRepository;
+        this.fleetRepository = fleetRepository;
     }
 
     public Vehicle deactivateVehicle(String netexId, Long expectedVersion, Instant deactivateAt) throws ValidationException {
-        return super.deactivateObject(netexId, expectedVersion, deactivateAt, "vehicle", vehicleRepository::findFirstByNetexIdOrderByVersionDesc, vehicleVersionedSaverService::saveNewVersion, v -> null);
+        return super.deactivateObject(netexId, expectedVersion, deactivateAt, "vehicle", vehicleRepository::findFirstByNetexIdOrderByVersionDesc, vehicleVersionedSaverService::saveNewVersion,
+                vehicle -> fleetRepository.existsUnexpiredWithMember(netexId)
+                        ? "Cannot deactivate vehicle " + netexId + " because it is still a member of a fleet."
+                        : null);
     }
 }

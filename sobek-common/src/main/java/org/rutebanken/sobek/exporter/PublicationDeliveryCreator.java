@@ -57,6 +57,20 @@ public class PublicationDeliveryCreator {
         return publicationDeliveryStructure;
     }
 
+    /**
+     * A delivery with a resource frame and, when there is one, a mobility service frame (for the fleets).
+     */
+    public PublicationDeliveryStructure createPublicationDelivery(ResourceFrame netexResourceFrame,
+                                                                  org.entur.netex2.model.MobilityServiceFrame mobilityServiceFrame
+    ) {
+        PublicationDeliveryStructure publicationDeliveryStructure = createPublicationDelivery(netexResourceFrame);
+        if (mobilityServiceFrame != null) {
+            publicationDeliveryStructure.getDataObjects()
+                    .withCompositeFrameOrCommonFrame(new ObjectFactory().createMobilityServiceFrame(mobilityServiceFrame));
+        }
+        return publicationDeliveryStructure;
+    }
+
     public PublicationDeliveryStructure createPublicationDelivery(org.entur.netex2.model.ServiceFrame serviceFrame,
                                                                   ResourceFrame netexResourceFrame
     ) {

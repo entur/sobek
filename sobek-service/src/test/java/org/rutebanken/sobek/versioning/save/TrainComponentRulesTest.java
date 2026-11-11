@@ -15,6 +15,7 @@ import org.rutebanken.sobek.model.vehicle.TrainElement;
 import org.rutebanken.sobek.model.vehicle.TrainInCompoundTrain;
 import org.rutebanken.sobek.model.vehicle.VehicleTypeKindEnumeration;
 import org.rutebanken.sobek.netex.id.ValidPrefixList;
+import org.rutebanken.sobek.repository.FleetRepository;
 import org.rutebanken.sobek.repository.VehicleRepository;
 import org.rutebanken.sobek.repository.VehicleTypeRepository;
 import org.rutebanken.sobek.repository.listener.NetexIdAssigner;
@@ -42,6 +43,8 @@ class TrainComponentRulesTest {
     @Mock
     private VehicleRepository vehicleRepository;
     @Mock
+    private FleetRepository fleetRepository;
+    @Mock
     private DefaultMergingVersionedSaverService defaultVersionedSaverService;
     @Mock
     private NetexIdAssigner netexIdAssigner;
@@ -50,7 +53,7 @@ class TrainComponentRulesTest {
 
     @BeforeEach
     void setUp() {
-        saver = new VehicleTypeVersionedSaverService(vehicleTypeRepository, vehicleRepository, defaultVersionedSaverService, netexIdAssigner,
+        saver = new VehicleTypeVersionedSaverService(vehicleTypeRepository, vehicleRepository, fleetRepository, defaultVersionedSaverService, netexIdAssigner,
                 new ValidPrefixList("NMR", List.of("AKT", "RUT")));
     }
 

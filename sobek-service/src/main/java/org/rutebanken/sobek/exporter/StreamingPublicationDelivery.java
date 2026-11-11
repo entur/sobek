@@ -71,6 +71,7 @@ public class StreamingPublicationDelivery {
     private static final ObjectFactory netexObjectFactory = new ObjectFactory();
 
     private final VehicleRepository vehicleRepository;
+    private final FleetRepository fleetRepository;
     private final VehicleTypeRepository vehicleTypeRepository;
     private final VehicleModelRepository vehicleModelRepository;
     private final DeckPlanRepository deckPlanRepository;
@@ -79,6 +80,7 @@ public class StreamingPublicationDelivery {
     private final VehicleTypeMapper vehicleTypeMapper;
     private final EquipmentMapper equipmentMapper;
     private final VehicleMapper vehicleMapper;
+    private final FleetMapper fleetMapper;
     private final DeckPlanMapper deckPlanMapper;
     private final VehicleModelMapper vehicleModelMapper;
     private final AuthorizationService authorizationService;
@@ -93,6 +95,7 @@ public class StreamingPublicationDelivery {
 
     @Autowired
     public StreamingPublicationDelivery(VehicleRepository vehicleRepository,
+                                        FleetRepository fleetRepository,
                                         VehicleTypeRepository vehicleTypeRepository,
                                         VehicleModelRepository vehicleModelRepository,
                                         DeckPlanRepository deckPlanRepository,
@@ -101,6 +104,7 @@ public class StreamingPublicationDelivery {
                                         VehicleTypeMapper vehicleTypeMapper,
                                         EquipmentMapper equipmentMapper,
                                         VehicleMapper vehicleMapper,
+                                        FleetMapper fleetMapper,
                                         DeckPlanMapper deckPlanMapper,
                                         VehicleModelMapper vehicleModelMapper, AuthorizationService authorizationService,
                                         MappingContext mappingContext,
@@ -108,6 +112,7 @@ public class StreamingPublicationDelivery {
                                         SobekComositeFrameExporter sobekComositeFrameExporter
                                         ) {
         this.vehicleRepository = vehicleRepository;
+        this.fleetRepository = fleetRepository;
         this.vehicleTypeRepository = vehicleTypeRepository;
         this.vehicleModelRepository = vehicleModelRepository;
         this.deckPlanRepository = deckPlanRepository;
@@ -116,6 +121,7 @@ public class StreamingPublicationDelivery {
         this.vehicleTypeMapper = vehicleTypeMapper;
         this.equipmentMapper = equipmentMapper;
         this.vehicleMapper = vehicleMapper;
+        this.fleetMapper = fleetMapper;
         this.deckPlanMapper = deckPlanMapper;
         this.vehicleModelMapper = vehicleModelMapper;
         this.authorizationService = authorizationService;
@@ -149,6 +155,7 @@ public class StreamingPublicationDelivery {
         AtomicInteger mappedVehicleTypeCount = new AtomicInteger();
         AtomicInteger mappedVehicleModelCount = new AtomicInteger();
         AtomicInteger mappedTrainCount = new AtomicInteger();
+        AtomicInteger mappedFleetCount = new AtomicInteger();
 
         org.entur.netex2.model.CompositeFrame netexCompositeFrame = sobekComositeFrameExporter.createCompositeFrame("Composite frame");
 
@@ -164,6 +171,8 @@ public class StreamingPublicationDelivery {
         prepareVehicleModels(exportParams.getDataOwner(), exportParams.getVehicleTypeKind(), mappedVehicleModelCount, netexResourceFrame);
         if (exportParams.getVehicleTypeKind().includesPhysical()) {
             prepareVehicles(exportParams.getDataOwner(), mappedVehicleCount, netexResourceFrame);
+            // Fleets are made of physical vehicles and vehicle types, so they are exported with those
+            prepareFleets(exportParams.getDataOwner(), mappedFleetCount, framesRelStructure);
         } else {
             logger.info("Contractual vehicle types requested only, skipping vehicles");
         }
@@ -176,10 +185,11 @@ public class StreamingPublicationDelivery {
 
         logger.info("Start marshalling publication delivery");
         marshaller.marshal(netexObjectFactory.createPublicationDelivery(publicationDeliveryStructure), outputStream);
-        logger.info("Mapped {} vehicles, {} vehicleTypes, and {} trains to netex",
+        logger.info("Mapped {} vehicles, {} vehicleTypes, {} trains and {} fleets to netex",
                 mappedVehicleCount.get(),
                 mappedVehicleTypeCount.get(),
-                mappedTrainCount.get());
+                mappedTrainCount.get(),
+                mappedFleetCount.get());
 
     }
 
@@ -279,6 +289,29 @@ public class StreamingPublicationDelivery {
         } else {
             logger.info("No vehicles to export");
         }
+    }
+
+    /**
+     * The fleets are in a mobility service frame of their own, next to the resource frame. The frame is left out
+     * when there are no fleets.
+     */
+    private void prepareFleets(String dataOwnerRef, AtomicInteger mappedFleetCount, Frames_RelStructure framesRelStructure) {
+        List<org.rutebanken.sobek.model.vehicle.Fleet> fleetsInDb = fleetRepository
+                .findCurrentFiltered(dataOwnerRef, null, null, Pageable.unpaged())
+                .getContent();
+
+        if (fleetsInDb.isEmpty()) {
+            logger.info("No fleets to export");
+            return;
+        }
+
+        logger.info("There are fleets to export");
+        List<org.entur.netex2.model.Fleet> fleets = fleetsInDb.stream().map(f -> fleetMapper.mapToNetex(f, mappingContext)).toList();
+
+        MobilityServiceFrame mobilityServiceFrame = sobekResourceFrameExporter.createMobilityServiceFrame("Mobility service frame");
+        mobilityServiceFrame.setFleets(new Fleets_RelStructure().withFleet(fleets));
+        framesRelStructure.withCommonFrame(netexObjectFactory.createMobilityServiceFrame(mobilityServiceFrame));
+        mappedFleetCount.set(fleets.size());
     }
 
     private void prepareVehicleTypes(String dataOwnerRef, VehicleTypeKindSelection kindSelection, AtomicInteger mappedVehicleTypeCount, org.entur.netex2.model.ResourceFrame resourceFrame) {

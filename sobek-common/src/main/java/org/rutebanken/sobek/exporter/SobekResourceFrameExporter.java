@@ -16,6 +16,7 @@
 package org.rutebanken.sobek.exporter;
 
 import org.entur.netex2.model.LocaleStructure;
+import org.entur.netex2.model.MobilityServiceFrame;
 import org.entur.netex2.model.MultilingualString;
 import org.entur.netex2.model.ResourceFrame;
 import org.entur.netex2.model.VersionFrameDefaultsStructure;
@@ -48,6 +49,18 @@ public class SobekResourceFrameExporter {
         resourceFrame.setId(netexIdHelper.getNetexId("ResourceFrame",resourceFrame.hashCode()));
 
         return resourceFrame;
+    }
+
+    /**
+     * The frame the fleets are in: NeTEx has no place for them in a resource frame.
+     */
+    public MobilityServiceFrame createMobilityServiceFrame(String description) {
+        MobilityServiceFrame mobilityServiceFrame = new MobilityServiceFrame();
+        mobilityServiceFrame.setDescription(new MultilingualString().withContent(description));
+        mobilityServiceFrame.setVersion("1");
+        mobilityServiceFrame.setId(netexIdHelper.getNetexId("MobilityServiceFrame", mobilityServiceFrame.hashCode()));
+
+        return mobilityServiceFrame;
     }
 
     public void setFrameDefaultLocale(ResourceFrame resourceFrame) {

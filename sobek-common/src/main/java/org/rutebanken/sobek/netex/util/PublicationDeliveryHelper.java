@@ -66,6 +66,40 @@ public class PublicationDeliveryHelper {
 
     }
 
+    /**
+     * The frame with the fleets, which NeTEx puts in a MobilityServiceFrame. It is found in the delivery itself or
+     * in a composite frame. Only one is used per delivery.
+     */
+    public MobilityServiceFrame findMobilityServiceFrame(PublicationDeliveryStructure incomingPublicationDelivery) {
+        List<JAXBElement<? extends Common_VersionFrameStructure>> frames = incomingPublicationDelivery.getDataObjects().getCompositeFrameOrCommonFrame();
+
+        Optional<MobilityServiceFrame> mobilityServiceFrame = frames.stream()
+                .filter(element -> element.getValue() instanceof MobilityServiceFrame)
+                .map(element -> (MobilityServiceFrame) element.getValue())
+                .findFirst();
+
+        if (mobilityServiceFrame.isPresent()) {
+            return mobilityServiceFrame.get();
+        }
+
+        return frames.stream()
+                .filter(element -> element.getValue() instanceof CompositeFrame)
+                .map(element -> (CompositeFrame) element.getValue())
+                .map(Composite_VersionFrameStructure::getFrames)
+                .flatMap(compositeFrames -> compositeFrames.getCommonFrame().stream())
+                .filter(jaxbElement -> jaxbElement.getValue() instanceof MobilityServiceFrame)
+                .map(jaxbElement -> (MobilityServiceFrame) jaxbElement.getValue())
+                .findAny()
+                .orElse(null);
+    }
+
+    public boolean hasFleets(MobilityServiceFrame mobilityServiceFrame) {
+        return mobilityServiceFrame != null
+                && mobilityServiceFrame.getFleets() != null
+                && mobilityServiceFrame.getFleets().getFleet() != null
+                && !mobilityServiceFrame.getFleets().getFleet().isEmpty();
+    }
+
     public boolean hasVehicles(ResourceFrame netexResourceFrame) {
         return netexResourceFrame.getVehicles() != null
                 && netexResourceFrame.getVehicles().getVehicle() != null

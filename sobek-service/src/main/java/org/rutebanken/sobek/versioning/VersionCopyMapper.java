@@ -6,6 +6,7 @@ import org.mapstruct.Named;
 import org.mapstruct.SubclassMapping;
 import org.rutebanken.sobek.model.vehicle.CompoundTrain;
 import org.rutebanken.sobek.model.vehicle.DeckPlan;
+import org.rutebanken.sobek.model.vehicle.Fleet;
 import org.rutebanken.sobek.model.vehicle.PassengerCapacity;
 import org.rutebanken.sobek.model.vehicle.Train;
 import org.rutebanken.sobek.model.vehicle.TrainElement;
@@ -84,6 +85,26 @@ public interface VersionCopyMapper {
     @Named("sameTrain")
     default Train sameTrain(Train train) {
         return train;
+    }
+
+    /**
+     * A new version of a fleet has the same members and transport types as the previous one: the references are to the
+     * same rows, and the vehicles and vehicle types are not copied. The lists are new, as each version has its own rows
+     * in the join tables.
+     */
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "members", qualifiedByName = "sameVehicles")
+    @Mapping(target = "transportTypes", qualifiedByName = "sameVehicleTypes")
+    Fleet copy(Fleet source);
+
+    @Named("sameVehicles")
+    default List<Vehicle> sameVehicles(List<Vehicle> vehicles) {
+        return vehicles == null ? new ArrayList<>() : new ArrayList<>(vehicles);
+    }
+
+    @Named("sameVehicleTypes")
+    default List<VehicleType> sameVehicleTypes(List<VehicleType> vehicleTypes) {
+        return vehicleTypes == null ? new ArrayList<>() : new ArrayList<>(vehicleTypes);
     }
 
     @Mapping(target = "id", ignore = true)

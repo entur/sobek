@@ -28,6 +28,7 @@ import java.util.Map;
 public class QueryController {
 
     private final VehicleFetcher vehicleFetcher;
+    private final FleetFetcher fleetFetcher;
     private final VehicleTypeFetcher vehicleTypeFetcher;
     private final DeckPlanFetcher deckPlanFetcher;
     private final OrganisationFetcher organisationFetcher;
@@ -37,12 +38,14 @@ public class QueryController {
 
     public QueryController(
         VehicleFetcher vehicleFetcher,
+        FleetFetcher fleetFetcher,
         VehicleTypeFetcher vehicleTypeFetcher,
         DeckPlanFetcher deckPlanFetcher,
         OrganisationFetcher organisationFetcher, CodeValueFetcher codeValueFetcher,
         VehicleTypeDeckPlanFetcher vehicleTypeDeckPlanFetcher,
         AuthorizationService authorizationService) {
         this.vehicleFetcher = vehicleFetcher;
+        this.fleetFetcher = fleetFetcher;
         this.vehicleTypeFetcher = vehicleTypeFetcher;
         this.deckPlanFetcher = deckPlanFetcher;
         this.organisationFetcher = organisationFetcher;
@@ -57,6 +60,13 @@ public class QueryController {
     public Object vehicles(@Argument Map<String, Object> filter, @Argument Integer page, @Argument Integer size) throws Exception {
         graphql.schema.DataFetchingEnvironment env = createEnvironment(filter, page, size);
         return vehicleFetcher.get(env);
+    }
+
+    @QueryMapping
+    @Transactional(readOnly = true)  // Single transaction for entire query
+    public Object fleets(@Argument Map<String, Object> filter, @Argument Integer page, @Argument Integer size) {
+        graphql.schema.DataFetchingEnvironment env = createEnvironment(filter, page, size);
+        return fleetFetcher.get(env);
     }
 
     @QueryMapping
@@ -138,6 +148,12 @@ public class QueryController {
     // Field mappings for VehicleTypeVehicle
     @SchemaMapping(typeName = "VehicleTypeVehicle", field = "changedBy")
     public String vehicleTypeVehicleChangedBy(Object source) {
+        return getChangedBy(source);
+    }
+
+    // Field mappings for Fleet
+    @SchemaMapping(typeName = "Fleet", field = "changedBy")
+    public String fleetChangedBy(Object source) {
         return getChangedBy(source);
     }
 

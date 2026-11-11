@@ -55,7 +55,7 @@ public class FleetRepositoryImpl implements FleetRepositoryCustom {
             TypedQuery<Fleet> fetchQuery = entityManager.createQuery(fetchJpql, Fleet.class);
             fetchQuery.setParameter("now", now);
             setFilterParams(fetchQuery, dataOwnerRef, netexIds, name);
-            return new PageImpl<>(fetchQuery.getResultList());
+            return new PageImpl<>(withKeyValues(fetchQuery.getResultList()));
         }
 
         String countJpql = "SELECT COUNT(f) FROM Fleet f WHERE " + QueryHelper.objectValidCondition("f", "now") + filterSuffix;
@@ -70,7 +70,20 @@ public class FleetRepositoryImpl implements FleetRepositoryCustom {
         fetchQuery.setFirstResult((int) pageable.getOffset());
         fetchQuery.setMaxResults(pageable.getPageSize());
 
-        return new PageImpl<>(fetchQuery.getResultList(), pageable, total);
+        return new PageImpl<>(withKeyValues(fetchQuery.getResultList()), pageable, total);
+    }
+
+    /**
+     * The key values are a lazy collection, and GraphQL reads them after the transaction has ended. They are loaded here
+     * for all the fleets at once, as the members and transport types are (those are eager).
+     */
+    private List<Fleet> withKeyValues(List<Fleet> fleets) {
+        if (!fleets.isEmpty()) {
+            entityManager.createQuery("SELECT DISTINCT f FROM Fleet f LEFT JOIN FETCH f.keyValues WHERE f IN :fleets", Fleet.class)
+                    .setParameter("fleets", fleets)
+                    .getResultList();
+        }
+        return fleets;
     }
 
     private void setFilterParams(Query query, String dataOwnerRef, List<String> netexIds, String name) {

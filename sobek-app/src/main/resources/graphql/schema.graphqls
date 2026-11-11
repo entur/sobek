@@ -21,6 +21,10 @@ input DeckPlanReferenceInput {
     netexId: String!
 }
 
+input VehicleReferenceInput {
+    netexId: String!
+}
+
 input DeactivateInput {
     netexId: String!
     version: Int!
@@ -168,6 +172,12 @@ input VehicleTypeFilter {
 input VehicleFilter {
     netexIds: [String!]
     transportModes: [TransportMode!]
+    name: String
+    dataOwnerRef: String!
+}
+
+input FleetFilter {
+    netexIds: [String!]
     name: String
     dataOwnerRef: String!
 }
@@ -331,6 +341,46 @@ type VehiclePage {
     size: Int!
 }
 
+# Fleet: a group of vehicles that are managed together
+type Fleet {
+    dataOwnerRef: String!
+    netexId: String!
+    name: MultilingualString
+    shortName: MultilingualString
+    description: MultilingualString
+    privateCode: PrivateCode
+    keyValues: [KeyValues!]
+    "The vehicles of the fleet, in their latest versions"
+    members: [Vehicle!]!
+    "The vehicle types the fleet is made of"
+    transportTypes: [VehicleType!]!
+    version: String
+    created: DateTime
+    changed: DateTime
+    changedBy: String
+}
+
+input FleetInput {
+    netexId: String
+    name: MultilingualStringInput
+    shortName: MultilingualStringInput
+    description: MultilingualStringInput
+    privateCode: PrivateCodeInput
+    keyValues: [KeyValuesInput!]
+    "The list replaces the members of the previous version. The vehicles must exist and have the same data owner as the fleet."
+    members: [VehicleReferenceInput!]
+    "The list replaces the transport types of the previous version. They must be physical vehicle types of the same data owner as the fleet."
+    transportTypes: [VehicleTypeReferenceInput!]
+    dataOwnerRef: String!
+}
+
+type FleetPage {
+    content: [Fleet!]!
+    totalElements: Int!
+    page: Int!
+    size: Int!
+}
+
 # A component of a train: a train element in a position. The position is the place in the list.
 type TrainComponent {
     netexId: String
@@ -469,6 +519,7 @@ type VehicleTypePage {
 # Root query type
 type Query {
     vehicles(filter: VehicleFilter, page: Int = 0, size: Int = 20): VehiclePage!
+    fleets(filter: FleetFilter, page: Int = 0, size: Int = 20): FleetPage!
     vehicleTypes(filter: VehicleTypeFilter, page: Int = 0, size: Int = 20): VehicleTypePage!
     deckPlans(filter: DeckPlanFilter, page: Int = 0, size: Int = 20): DeckPlanPage!
     organisations(filter: OrganisationsFilter, page: Int = 0, size: Int = 20): OrganisationPage!
@@ -477,10 +528,12 @@ type Query {
 
 type Mutation {
     createOrUpdateVehicle(input: VehicleInput!): String
+    createOrUpdateFleet(input: FleetInput!): String
     createOrUpdateVehicleType(input: VehicleTypeInput!): String
     createOrUpdateDeckPlan(input: DeckPlanInput!): String
 
     deactivateVehicle(input: DeactivateInput!): Vehicle
+    deactivateFleet(input: DeactivateInput!): Fleet
     deactivateVehicleType(input: DeactivateInput!): VehicleType
     deactivateDeckPlan(input: DeactivateInput!): DeckPlan
 }

@@ -16,6 +16,16 @@ public interface FleetRepositoryCustom extends DataManagedObjectStructureReposit
     List<String> findCurrentNeTExIds();
 
     /**
+     * The fleets in use now that have the vehicle (by NeTEx id, in any of its versions) as a member.
+     */
+    List<Fleet> findCurrentWithMember(String vehicleNetexId);
+
+    /**
+     * The fleets in use now that have the vehicle type (by NeTEx id, in any of its versions) as a transport type.
+     */
+    List<Fleet> findCurrentWithTransportType(String vehicleTypeNetexId);
+
+    /**
      * Makes the fleets that have the vehicle row as a member (and have not expired) have the new row instead. Called
      * when a vehicle gets a new version, so that the members of a fleet stay the current versions of its vehicles.
      */

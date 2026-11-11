@@ -315,6 +315,8 @@ type Vehicle {
     chassisNumber: String
     buildDate: Date
     registrationDate: Date
+    "The fleets in use now that the vehicle is a member of"
+    fleets: [Fleet!]!
     version: String
     created: DateTime
     changed: DateTime
@@ -448,6 +450,8 @@ type VehicleType {
     keyValues: [KeyValues!]
     deckPlan: DeckPlan
     vehicles: [Vehicle!]
+    "The fleets in use now that have the vehicle type as a transport type"
+    fleets: [Fleet!]!
     formDragCoefficient: Float
     rollResistanceCoefficient: Float
     maximumEngineEffectKW: Float

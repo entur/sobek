@@ -107,6 +107,25 @@ public class FleetRepositoryImpl implements FleetRepositoryCustom {
     }
 
     @Override
+    public List<Fleet> findCurrentWithMember(String vehicleNetexId) {
+        return findCurrentWith("members", vehicleNetexId);
+    }
+
+    @Override
+    public List<Fleet> findCurrentWithTransportType(String vehicleTypeNetexId) {
+        return findCurrentWith("transportTypes", vehicleTypeNetexId);
+    }
+
+    private List<Fleet> findCurrentWith(String collection, String netexId) {
+        TypedQuery<Fleet> query = entityManager.createQuery(
+                "SELECT DISTINCT f FROM Fleet f JOIN f." + collection + " x WHERE x.netexId = :netexId AND "
+                        + QueryHelper.objectValidCondition("f", "now") + " ORDER BY f.netexId", Fleet.class);
+        query.setParameter("netexId", netexId);
+        query.setParameter("now", Instant.now());
+        return withKeyValues(query.getResultList());
+    }
+
+    @Override
     public void moveMember(Long fromVehicleId, Long toVehicleId) {
         moveReference("fleet_members", "members_id", fromVehicleId, toVehicleId);
     }

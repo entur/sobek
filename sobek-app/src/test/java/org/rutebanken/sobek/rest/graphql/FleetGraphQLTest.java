@@ -123,6 +123,34 @@ class FleetGraphQLTest {
                 .body("data.deactivateFleet.version", equalTo("2"));
     }
 
+    @Test
+    @DisplayName("A vehicle and a vehicle type have the fleets they are in, and none when they are in no fleet")
+    void vehiclesAndVehicleTypesHaveTheirFleets() {
+        String type = createVehicleType("AKT");
+        String otherType = createVehicleType("AKT");
+        String inTwo = createVehicle("AKT", type, "In two fleets");
+        String inNone = createVehicle("AKT", type, "In no fleet");
+        String firstFleet = createFleet("AKT", "First of two", "members: [ { netexId: \"" + inTwo + "\" } ] transportTypes: [ { netexId: \"" + type + "\" } ]");
+        String secondFleet = createFleet("AKT", "Second of two", "members: [ { netexId: \"" + inTwo + "\" } ]");
+
+        graphql("{ vehicles(filter: { netexIds: [\"" + inTwo + "\", \"" + inNone + "\"] dataOwnerRef: \"AKT\" }) { content { netexId fleets { netexId name { value } } } } }")
+                .body("errors", nullValue())
+                .body("data.vehicles.content.find { it.netexId == '" + inTwo + "' }.fleets.netexId",
+                        org.hamcrest.Matchers.containsInAnyOrder(firstFleet, secondFleet))
+                .body("data.vehicles.content.find { it.netexId == '" + inNone + "' }.fleets", org.hamcrest.Matchers.empty());
+
+        graphql("{ vehicleTypes(filter: { netexIds: [\"" + type + "\", \"" + otherType + "\"] dataOwnerRef: \"AKT\" vehicleTypeKind: PHYSICAL }) { content { netexId fleets { netexId } } } }")
+                .body("errors", nullValue())
+                .body("data.vehicleTypes.content.find { it.netexId == '" + type + "' }.fleets.netexId", org.hamcrest.Matchers.contains(firstFleet))
+                .body("data.vehicleTypes.content.find { it.netexId == '" + otherType + "' }.fleets", org.hamcrest.Matchers.empty());
+
+        // And the other way round: a fleet's members have their fleets too
+        graphql("{ fleets(filter: { netexIds: [\"" + firstFleet + "\"] dataOwnerRef: \"AKT\" }) { content { members { fleets { netexId } } transportTypes { fleets { netexId } } } } }")
+                .body("errors", nullValue())
+                .body("data.fleets.content[0].members[0].fleets.netexId", org.hamcrest.Matchers.containsInAnyOrder(firstFleet, secondFleet))
+                .body("data.fleets.content[0].transportTypes[0].fleets.netexId", org.hamcrest.Matchers.contains(firstFleet));
+    }
+
     private String createVehicleType(String dataOwner) {
         return graphql("mutation { createOrUpdateVehicleType(input: { name: { value: \"Fleet test type\" lang: \"en\" } transportMode: BUS "
                 + "vehicleTypeKind: PHYSICAL dataOwnerRef: \"" + dataOwner + "\" }) }")

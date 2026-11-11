@@ -112,6 +112,34 @@ class FleetReferencesIT {
     }
 
     @Test
+    @DisplayName("A new version of a fleet has key values of its own, with the same content as the previous version")
+    void newVersionOfAFleetHasItsOwnKeyValues() {
+        Fleet fleet = new Fleet();
+        fleet.setName(new EmbeddableMultilingualString("Key value fleet", "en"));
+        fleet.setDataOwnerRef(DATA_OWNER);
+        fleet.addKeyValue("garage", "North");
+        Fleet first = fleetSaver.saveNewVersion(fleet);
+
+        Fleet copy = transactionTemplate.execute(status ->
+                versionCreator.createCopy(fleetRepository.findFirstByNetexIdOrderByVersionDesc(first.getNetexId()), Fleet.class));
+        transactionTemplate.executeWithoutResult(status -> fleetSaver.saveNewVersion(
+                fleetRepository.findFirstByNetexIdOrderByVersionDesc(first.getNetexId()), copy, Instant.now()));
+
+        transactionTemplate.executeWithoutResult(status -> {
+            Fleet old = fleetRepository.findFirstByNetexIdAndVersion(first.getNetexId(), first.getVersion());
+            Fleet newest = fleetRepository.findFirstByNetexIdOrderByVersionDesc(first.getNetexId());
+            assertThat(newest.getVersion()).isEqualTo(first.getVersion() + 1);
+            // The new version is the one in use, and the old one has ended: they do not share the validity
+            assertThat(newest.getValidBetween().getToDate()).isNull();
+            assertThat(old.getValidBetween().getToDate()).isNotNull();
+            assertThat(newest.getKeyValues()).extracting("key", "value").containsExactly(org.assertj.core.groups.Tuple.tuple("garage", "North"));
+            assertThat(old.getKeyValues()).extracting("key", "value").containsExactly(org.assertj.core.groups.Tuple.tuple("garage", "North"));
+            // A key value belongs to one version: changing it in one version must not change the other
+            assertThat(newest.getKeyValues().getFirst().getId()).isNotEqualTo(old.getKeyValues().getFirst().getId());
+        });
+    }
+
+    @Test
     @DisplayName("A vehicle or a vehicle type that a fleet is made of cannot be deactivated, until the fleet is deactivated")
     void deactivationIsRefusedWhileAFleetUsesTheObject() throws Exception {
         // The transport type is one no vehicle uses, so that it is the fleet that keeps it from being deactivated

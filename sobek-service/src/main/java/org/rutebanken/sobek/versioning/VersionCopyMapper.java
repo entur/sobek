@@ -1,9 +1,12 @@
 package org.rutebanken.sobek.versioning;
 
+import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 import org.mapstruct.SubclassMapping;
+import org.rutebanken.sobek.model.ValidBetween;
 import org.rutebanken.sobek.model.vehicle.CompoundTrain;
 import org.rutebanken.sobek.model.vehicle.DeckPlan;
 import org.rutebanken.sobek.model.vehicle.Fleet;
@@ -93,9 +96,23 @@ public interface VersionCopyMapper {
      * in the join tables.
      */
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "keyValues", ignore = true) // Copied in @AfterMapping: a key value belongs to one version
     @Mapping(target = "members", qualifiedByName = "sameVehicles")
     @Mapping(target = "transportTypes", qualifiedByName = "sameVehicleTypes")
     Fleet copy(Fleet source);
+
+    /**
+     * What a version must not share with the previous one. The key values are rows of their own, one per version of the
+     * fleet (the join table has a unique key value). The validity is changed in place when the previous version is
+     * terminated, so a shared one would terminate the new version too.
+     */
+    @AfterMapping
+    default void copyPartsOfTheVersion(Fleet source, @MappingTarget Fleet target) {
+        source.getKeyValues().forEach(keyValue -> target.addKeyValue(keyValue.getKey(), keyValue.getValue()));
+        if (source.getValidBetween() != null) {
+            target.setValidBetween(new ValidBetween(source.getValidBetween().getFromDate(), source.getValidBetween().getToDate()));
+        }
+    }
 
     @Named("sameVehicles")
     default List<Vehicle> sameVehicles(List<Vehicle> vehicles) {

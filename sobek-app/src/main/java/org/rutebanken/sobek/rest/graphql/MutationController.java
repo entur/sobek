@@ -3,6 +3,8 @@ package org.rutebanken.sobek.rest.graphql;
 import org.rutebanken.sobek.auth.AuthorizationService;
 import org.rutebanken.sobek.repository.DeckPlanRepository;
 import org.rutebanken.sobek.rest.dto.DeactivateInput;
+import org.rutebanken.sobek.rest.dto.FleetChangeInput;
+import org.rutebanken.sobek.service.fleet.FleetMembershipService;
 import org.rutebanken.sobek.service.deactivate.DeckPlanDeactivator;
 import org.rutebanken.sobek.service.deactivate.FleetDeactivator;
 import org.rutebanken.sobek.service.deactivate.VehicleDeactivator;
@@ -54,6 +56,7 @@ public class MutationController {
     private final FleetNeTExIdConverter fleetIdConverter;
     private final FleetDeactivator fleetDeactivator;
     private final VehicleRepository vehicleRepository;
+    private final FleetMembershipService fleetMembershipService;
 
     public MutationController(
             VehicleVersionedSaverService vehicleVersionedSaverService,
@@ -72,7 +75,8 @@ public class MutationController {
             FleetVersionedSaverService fleetVersionedSaverService,
             FleetNeTExIdConverter fleetIdConverter,
             FleetDeactivator fleetDeactivator,
-            VehicleRepository vehicleRepository) {
+            VehicleRepository vehicleRepository,
+            FleetMembershipService fleetMembershipService) {
         this.vehicleVersionedSaverService = vehicleVersionedSaverService;
         this.vehicleIdConverter = vehicleIdConverter;
         this.vehicleTypeVersionedSaverService = vehicleTypeVersionedSaverService;
@@ -90,6 +94,7 @@ public class MutationController {
         this.fleetIdConverter = fleetIdConverter;
         this.fleetDeactivator = fleetDeactivator;
         this.vehicleRepository = vehicleRepository;
+        this.fleetMembershipService = fleetMembershipService;
     }
 
     @MutationMapping
@@ -168,6 +173,16 @@ public class MutationController {
 
         var output = fleetVersionedSaverService.saveNewVersion(input);
         return output.getNetexId();
+    }
+
+    @MutationMapping
+    public String addToFleet(@Argument FleetChangeInput input) throws ValidationException {
+        return fleetMembershipService.add(input.fleetNetexId(), input.vehicleNetexIds(), input.transportTypeNetexIds()).getNetexId();
+    }
+
+    @MutationMapping
+    public String removeFromFleet(@Argument FleetChangeInput input) throws ValidationException {
+        return fleetMembershipService.remove(input.fleetNetexId(), input.vehicleNetexIds(), input.transportTypeNetexIds()).getNetexId();
     }
 
     /**

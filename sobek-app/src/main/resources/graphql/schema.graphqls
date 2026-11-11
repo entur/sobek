@@ -176,6 +176,14 @@ input VehicleFilter {
     dataOwnerRef: String!
 }
 
+input FleetChangeInput {
+    fleetNetexId: String!
+    "The vehicles to add or remove"
+    vehicles: [VehicleReferenceInput!]
+    "The vehicle types to add or remove, as transport types of the fleet"
+    transportTypes: [VehicleTypeReferenceInput!]
+}
+
 input FleetFilter {
     netexIds: [String!]
     name: String
@@ -533,6 +541,10 @@ type Query {
 type Mutation {
     createOrUpdateVehicle(input: VehicleInput!): String
     createOrUpdateFleet(input: FleetInput!): String
+    "Adds vehicles and vehicle types to a fleet in one new version, which is otherwise unchanged. At least one vehicle or vehicle type must be given. What already is in the fleet is left as it is. If anything is refused, nothing is changed. Returns the id of the fleet."
+    addToFleet(input: FleetChangeInput!): String
+    "Removes vehicles and vehicle types from a fleet in one new version, which is otherwise unchanged. At least one vehicle or vehicle type must be given. What is not in the fleet is left out. Returns the id of the fleet."
+    removeFromFleet(input: FleetChangeInput!): String
     createOrUpdateVehicleType(input: VehicleTypeInput!): String
     createOrUpdateDeckPlan(input: DeckPlanInput!): String
 

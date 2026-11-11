@@ -8,6 +8,7 @@ import static org.hamcrest.Matchers.nullValue;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.ValidatableResponse;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -149,6 +150,138 @@ class FleetGraphQLTest {
                 .body("errors", nullValue())
                 .body("data.fleets.content[0].members[0].fleets.netexId", org.hamcrest.Matchers.containsInAnyOrder(firstFleet, secondFleet))
                 .body("data.fleets.content[0].transportTypes[0].fleets.netexId", org.hamcrest.Matchers.contains(firstFleet));
+    }
+
+    @Test
+    @DisplayName("Vehicles and vehicle types are added to and removed from a fleet in one new version, and the fleet is otherwise unchanged")
+    void vehiclesAndTransportTypesAreAddedAndRemoved() {
+        String type = createVehicleType("AKT");
+        String addedType = createVehicleType("AKT");
+        String neverInFleet = createVehicleType("AKT");
+        String kept = createVehicle("AKT", type, "Kept bus");
+        String added = createVehicle("AKT", type, "Added bus");
+        String addedToo = createVehicle("AKT", type, "Added bus too");
+        String neverMember = createVehicle("AKT", type, "Never a member");
+        String fleetId = createFleet("AKT", "Membership fleet", "members: [ { netexId: \"" + kept + "\" } ] transportTypes: [ { netexId: \"" + type + "\" } ] "
+                + "shortName: { value: \"MF\" lang: \"en\" } privateCode: { type: \"depot\" value: \"MF-1\" } keyValues: [ { key: \"garage\" value: \"North\" } ]");
+
+        // When: two vehicles and a vehicle type are added in one call, with a vehicle listed twice and one that already is a member
+        graphql(change("addToFleet", fleetId, List.of(added, addedToo, added, kept), List.of(addedType, type)))
+                .body("errors", nullValue())
+                .body("data.addToFleet", equalTo(fleetId));
+
+        // Then: it is one new version with the three vehicles and the two vehicle types, and the rest of the fleet is as it was
+        readFleet(fleetId, "AKT")
+                .body("data.fleets.content[0].version", equalTo("2"))
+                .body("data.fleets.content[0].members.netexId", org.hamcrest.Matchers.containsInAnyOrder(kept, added, addedToo))
+                .body("data.fleets.content[0].transportTypes.netexId", org.hamcrest.Matchers.containsInAnyOrder(type, addedType))
+                .body("data.fleets.content[0].name.value", equalTo("Membership fleet"))
+                .body("data.fleets.content[0].shortName.value", equalTo("MF"))
+                .body("data.fleets.content[0].privateCode.value", equalTo("MF-1"))
+                .body("data.fleets.content[0].privateCode.type", equalTo("depot"))
+                .body("data.fleets.content[0].keyValues.key", org.hamcrest.Matchers.contains("garage"))
+                .body("data.fleets.content[0].keyValues.value", org.hamcrest.Matchers.contains("North"));
+
+        // When: a vehicle and a vehicle type are removed, together with ones that are not in the fleet
+        graphql(change("removeFromFleet", fleetId, List.of(added, neverMember), List.of(type, neverInFleet)))
+                .body("errors", nullValue())
+                .body("data.removeFromFleet", equalTo(fleetId));
+
+        // Then: one more new version without them, and still otherwise unchanged
+        readFleet(fleetId, "AKT")
+                .body("data.fleets.content[0].version", equalTo("3"))
+                .body("data.fleets.content[0].members.netexId", org.hamcrest.Matchers.containsInAnyOrder(kept, addedToo))
+                .body("data.fleets.content[0].transportTypes.netexId", org.hamcrest.Matchers.contains(addedType))
+                .body("data.fleets.content[0].name.value", equalTo("Membership fleet"))
+                .body("data.fleets.content[0].shortName.value", equalTo("MF"))
+                .body("data.fleets.content[0].keyValues.value", org.hamcrest.Matchers.contains("North"));
+    }
+
+    @Test
+    @DisplayName("Vehicles alone or vehicle types alone are enough for a change")
+    void eitherKindAloneIsEnough() {
+        String type = createVehicleType("AKT");
+        String vehicle = createVehicle("AKT", type, "Single kind bus");
+        String fleetId = createFleet("AKT", "Single kind fleet", "");
+
+        graphql(change("addToFleet", fleetId, List.of(), List.of(type)))
+                .body("errors", nullValue());
+        readFleet(fleetId, "AKT")
+                .body("data.fleets.content[0].version", equalTo("2"))
+                .body("data.fleets.content[0].transportTypes.netexId", org.hamcrest.Matchers.contains(type))
+                .body("data.fleets.content[0].members", org.hamcrest.Matchers.empty());
+
+        graphql(change("addToFleet", fleetId, List.of(vehicle), List.of()))
+                .body("errors", nullValue());
+        readFleet(fleetId, "AKT")
+                .body("data.fleets.content[0].version", equalTo("3"))
+                .body("data.fleets.content[0].members.netexId", org.hamcrest.Matchers.contains(vehicle))
+                .body("data.fleets.content[0].transportTypes.netexId", org.hamcrest.Matchers.contains(type));
+
+        graphql(change("removeFromFleet", fleetId, List.of(), List.of(type)))
+                .body("errors", nullValue());
+        readFleet(fleetId, "AKT")
+                .body("data.fleets.content[0].version", equalTo("4"))
+                .body("data.fleets.content[0].members.netexId", org.hamcrest.Matchers.contains(vehicle))
+                .body("data.fleets.content[0].transportTypes", org.hamcrest.Matchers.empty());
+    }
+
+    @Test
+    @DisplayName("A change that cannot be done is rejected as a whole, and the fleet keeps its version")
+    void changesThatCannotBeDoneAreRejected() {
+        String type = createVehicleType("AKT");
+        String vehicle = createVehicle("AKT", type, "Membership bus");
+        String other = createVehicle("AKT", type, "Other bus");
+        String contractualType = graphql("mutation { createOrUpdateVehicleType(input: { name: { value: \"Contractual\" lang: \"en\" } "
+                + "transportMode: BUS vehicleTypeKind: CONTRACTUAL dataOwnerRef: \"AKT\" }) }")
+                .body("errors", nullValue()).extract().path("data.createOrUpdateVehicleType");
+        String fleetId = createFleet("AKT", "Rejecting fleet", "members: [ { netexId: \"" + vehicle + "\" } ]");
+
+        graphql(change("addToFleet", "AKT:Fleet:does-not-exist", List.of(vehicle), List.of()))
+                .body("errors[0].extensions.classification", equalTo("BAD_REQUEST"))
+                .body("errors[0].message", containsString("AKT:Fleet:does-not-exist"));
+        graphql(change("addToFleet", fleetId, List.of("AKT:Vehicle:does-not-exist"), List.of()))
+                .body("errors[0].extensions.classification", equalTo("BAD_REQUEST"))
+                .body("errors[0].message", containsString("AKT:Vehicle:does-not-exist"));
+        graphql(change("removeFromFleet", fleetId, List.of("AKT:Vehicle:does-not-exist"), List.of()))
+                .body("errors[0].extensions.classification", equalTo("BAD_REQUEST"));
+        graphql(change("addToFleet", fleetId, List.of(), List.of("AKT:VehicleType:does-not-exist")))
+                .body("errors[0].extensions.classification", equalTo("BAD_REQUEST"))
+                .body("errors[0].message", containsString("AKT:VehicleType:does-not-exist"));
+        graphql(change("addToFleet", fleetId, List.of(), List.of()))
+                .body("errors[0].extensions.classification", equalTo("BAD_REQUEST"))
+                .body("errors[0].message", containsString("At least one vehicle or vehicle type"));
+
+        // A fleet can only have physical vehicle types
+        graphql(change("addToFleet", fleetId, List.of(), List.of(contractualType)))
+                .body("errors[0].extensions.classification", equalTo("BAD_REQUEST"))
+                .body("errors[0].message", containsString("contractual"));
+
+        // One thing that is refused refuses the whole call: the vehicle that was fine is not added either
+        graphql(change("addToFleet", fleetId, List.of(other), List.of(contractualType)))
+                .body("errors[0].extensions.classification", equalTo("BAD_REQUEST"));
+
+        readFleet(fleetId, "AKT")
+                .body("data.fleets.content[0].version", equalTo("1"))
+                .body("data.fleets.content[0].members.netexId", org.hamcrest.Matchers.contains(vehicle))
+                .body("data.fleets.content[0].transportTypes", org.hamcrest.Matchers.empty());
+    }
+
+    /** An addToFleet or removeFromFleet mutation for the fleet, with the vehicles and the vehicle types that are not empty. */
+    private static String change(String mutation, String fleetId, List<String> vehicleIds, List<String> vehicleTypeIds) {
+        return "mutation { " + mutation + "(input: { fleetNetexId: \"" + fleetId + "\" "
+                + references("vehicles", vehicleIds) + references("transportTypes", vehicleTypeIds) + "}) }";
+    }
+
+    private static String references(String field, List<String> netexIds) {
+        if (netexIds.isEmpty()) {
+            return "";
+        }
+        StringBuilder references = new StringBuilder(field + ": [ ");
+        for (String netexId : netexIds) {
+            references.append("{ netexId: \"").append(netexId).append("\" } ");
+        }
+        return references.append("] ").toString();
     }
 
     private String createVehicleType(String dataOwner) {

@@ -128,9 +128,14 @@ public class VehicleRepositoryImpl implements VehicleRepositoryCustom {
             entityManager.createQuery("SELECT DISTINCT v FROM Vehicle v LEFT JOIN FETCH v.keyValues WHERE v IN :vehicles", Vehicle.class)
                     .setParameter("vehicles", vehicles)
                     .getResultList();
-            // The vehicle types are fetched with the vehicles, and GraphQL can ask for their key values too
             entityManager.createQuery("SELECT DISTINCT vt FROM VehicleType vt LEFT JOIN FETCH vt.keyValues "
                             + "WHERE vt IN (SELECT v.transportType FROM Vehicle v WHERE v IN :vehicles)", VehicleType.class)
+                    .setParameter("vehicles", vehicles)
+                    .getResultList();
+            entityManager.createQuery("SELECT DISTINCT dp FROM DeckPlan dp LEFT JOIN FETCH dp.keyValues "
+                            + "WHERE dp IN (SELECT vt.deckPlan FROM VehicleType vt "
+                            + "WHERE vt IN (SELECT v.transportType FROM Vehicle v WHERE v IN :vehicles))",
+                            org.rutebanken.sobek.model.vehicle.DeckPlan.class)
                     .setParameter("vehicles", vehicles)
                     .getResultList();
         }

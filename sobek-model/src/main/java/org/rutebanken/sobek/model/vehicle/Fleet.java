@@ -9,6 +9,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Fetch;
@@ -89,7 +90,13 @@ public class Fleet extends DataManagedObjectStructure implements OwnedEntity {
      */
     private String contractNumber;
 
+    @Setter(AccessLevel.NONE)
     private String dataOwnerRef;
+
+    @Override
+    public void setDataOwnerRef(String dataOwnerRef) {
+        this.dataOwnerRef = dataOwnerRef;
+    }
 
     @Override
     public void mergeWithExistingVersion(EntityInVersionStructure existingVersion) {

@@ -125,6 +125,7 @@ public class MutationController {
         VehicleType input = vehicleTypeInputBinder.bind(env);
         authorizationService.verifyCanEditEntities(List.of(input));
         input = vehicleTypeIdConverter.convertIncomingId(input);
+        addKeyValues(input, env);
         if (input.getDeckPlan() != null) {
             DeckPlan dp = deckPlanIdConverter.convertIncomingId(input.getDeckPlan());
             dp = deckPlanRepository.findFirstByNetexIdOrderByVersionDesc(dp.getNetexId());

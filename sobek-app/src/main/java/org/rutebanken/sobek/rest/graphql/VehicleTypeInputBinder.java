@@ -59,24 +59,12 @@ public class VehicleTypeInputBinder {
         } catch (BindException e) {
             throw new ValidationException("Invalid vehicle type input: " + e.getMessage(), e);
         }
-        addKeyValues(bound, raw);
         if (bound instanceof Train train) {
             train.setComponents(trainComponents(rawList(raw, "trainComponents")));
         } else if (bound instanceof CompoundTrain compoundTrain) {
             compoundTrain.setComponents(trainsInCompoundTrain(rawList(raw, "compoundTrainComponents")));
         }
         return bound;
-    }
-
-    /**
-     * The key values of the input are not bound to the entity, as it has no setter for them. As for any new version, the
-     * key values of the previous version that the input does not give again are kept.
-     */
-    private static void addKeyValues(VehicleType vehicleType, Map<String, Object> raw) {
-        for (Map<String, Object> keyValue : rawList(raw, "keyValues")) {
-            vehicleType.removeKeyValue((String) keyValue.get("key"));
-            vehicleType.addKeyValue((String) keyValue.get("key"), (String) keyValue.get("value"));
-        }
     }
 
     private static void rejectFieldsOfOtherSubtypes(Map<String, Object> raw, VehicleTypeSubtype subtype) {

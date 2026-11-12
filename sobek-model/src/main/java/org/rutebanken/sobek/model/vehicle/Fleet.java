@@ -76,6 +76,19 @@ public class Fleet extends DataManagedObjectStructure implements OwnedEntity {
             inverseJoinColumns = @JoinColumn(name = "transport_types_id"))
     private List<VehicleType> transportTypes = new ArrayList<>();
 
+    /**
+     * The organisation of the fleet, as the id of an organisation in the organisation registry. It is a generic
+     * organisation: its type (authority, operator or other) is not part of the fleet. In NeTEx it is the
+     * TransportOrganisationRef, which can only be written as an OperatorRef or an AuthorityRef.
+     */
+    private String transportOrganisationRef;
+
+    /**
+     * The number of the contract of the fleet. NeTEx has no place for it in a Fleet, so it is a key value there (see
+     * {@link org.rutebanken.sobek.model.CustomKeyValueTypes#CONTRACT_NUMBER_KEY}).
+     */
+    private String contractNumber;
+
     private String dataOwnerRef;
 
     @Override

@@ -23,6 +23,9 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class FleetGraphQLTest {
 
+    /** A general organisation (neither an operator nor an authority) in the organisation registry of the tests. */
+    private static final String GENERAL_ORGANISATION = "NOG:GeneralOrganisation:Jw1qIduoQM";
+
     @LocalServerPort
     int port;
 
@@ -41,10 +44,13 @@ class FleetGraphQLTest {
         String fleetId = createFleet("AKT", "City buses", "members: [ { netexId: \"" + first + "\" }, { netexId: \"" + second + "\" } ] "
                 + "transportTypes: [ { netexId: \"" + type + "\" } ] "
                 + "shortName: { value: \"CB\" lang: \"en\" } privateCode: { type: \"depot\" value: \"CB-1\" } "
-                + "keyValues: [ { key: \"garage\" value: \"North\" } ]");
+                + "keyValues: [ { key: \"garage\" value: \"North\" } ] "
+                + "transportOrganisationRef: \"" + GENERAL_ORGANISATION + "\" contractNumber: \"C-2026-1\"");
 
         readFleet(fleetId, "AKT")
                 .body("errors", nullValue())
+                .body("data.fleets.content[0].transportOrganisationRef", equalTo(GENERAL_ORGANISATION))
+                .body("data.fleets.content[0].contractNumber", equalTo("C-2026-1"))
                 .body("data.fleets.totalElements", equalTo(1))
                 .body("data.fleets.content[0].netexId", equalTo(fleetId))
                 .body("data.fleets.content[0].version", equalTo("1"))
@@ -163,7 +169,8 @@ class FleetGraphQLTest {
         String addedToo = createVehicle("AKT", type, "Added bus too");
         String neverMember = createVehicle("AKT", type, "Never a member");
         String fleetId = createFleet("AKT", "Membership fleet", "members: [ { netexId: \"" + kept + "\" } ] transportTypes: [ { netexId: \"" + type + "\" } ] "
-                + "shortName: { value: \"MF\" lang: \"en\" } privateCode: { type: \"depot\" value: \"MF-1\" } keyValues: [ { key: \"garage\" value: \"North\" } ]");
+                + "shortName: { value: \"MF\" lang: \"en\" } privateCode: { type: \"depot\" value: \"MF-1\" } keyValues: [ { key: \"garage\" value: \"North\" } ] "
+                + "transportOrganisationRef: \"" + GENERAL_ORGANISATION + "\" contractNumber: \"C-MF\"");
 
         // When: two vehicles and a vehicle type are added in one call, with a vehicle listed twice and one that already is a member
         graphql(change("addToFleet", fleetId, List.of(added, addedToo, added, kept), List.of(addedType, type)))
@@ -180,7 +187,9 @@ class FleetGraphQLTest {
                 .body("data.fleets.content[0].privateCode.value", equalTo("MF-1"))
                 .body("data.fleets.content[0].privateCode.type", equalTo("depot"))
                 .body("data.fleets.content[0].keyValues.key", org.hamcrest.Matchers.contains("garage"))
-                .body("data.fleets.content[0].keyValues.value", org.hamcrest.Matchers.contains("North"));
+                .body("data.fleets.content[0].keyValues.value", org.hamcrest.Matchers.contains("North"))
+                .body("data.fleets.content[0].transportOrganisationRef", equalTo(GENERAL_ORGANISATION))
+                .body("data.fleets.content[0].contractNumber", equalTo("C-MF"));
 
         // When: a vehicle and a vehicle type are removed, together with ones that are not in the fleet
         graphql(change("removeFromFleet", fleetId, List.of(added, neverMember), List.of(type, neverInFleet)))
@@ -194,7 +203,9 @@ class FleetGraphQLTest {
                 .body("data.fleets.content[0].transportTypes.netexId", org.hamcrest.Matchers.contains(addedType))
                 .body("data.fleets.content[0].name.value", equalTo("Membership fleet"))
                 .body("data.fleets.content[0].shortName.value", equalTo("MF"))
-                .body("data.fleets.content[0].keyValues.value", org.hamcrest.Matchers.contains("North"));
+                .body("data.fleets.content[0].keyValues.value", org.hamcrest.Matchers.contains("North"))
+                .body("data.fleets.content[0].transportOrganisationRef", equalTo(GENERAL_ORGANISATION))
+                .body("data.fleets.content[0].contractNumber", equalTo("C-MF"));
     }
 
     @Test
@@ -224,6 +235,36 @@ class FleetGraphQLTest {
                 .body("data.fleets.content[0].version", equalTo("4"))
                 .body("data.fleets.content[0].members.netexId", org.hamcrest.Matchers.contains(vehicle))
                 .body("data.fleets.content[0].transportTypes", org.hamcrest.Matchers.empty());
+    }
+
+    @Test
+    @DisplayName("The organisation and the contract number are replaced by an update, and can be left out")
+    void organisationAndContractNumberAreUpdated() {
+        String fleetId = createFleet("AKT", "Contract fleet", "transportOrganisationRef: \"" + GENERAL_ORGANISATION + "\" contractNumber: \"C-OLD\"");
+
+        graphql("mutation { createOrUpdateFleet(input: { netexId: \"" + fleetId + "\" name: { value: \"Contract fleet\" lang: \"en\" } "
+                + "transportOrganisationRef: \"AKT\" contractNumber: \"C-NEW\" dataOwnerRef: \"AKT\" }) }")
+                .body("errors", nullValue());
+        readFleet(fleetId, "AKT")
+                .body("data.fleets.content[0].version", equalTo("2"))
+                .body("data.fleets.content[0].transportOrganisationRef", equalTo("AKT"))
+                .body("data.fleets.content[0].contractNumber", equalTo("C-NEW"));
+
+        // The fleet of the new version has what the input has: without them, it has neither
+        graphql("mutation { createOrUpdateFleet(input: { netexId: \"" + fleetId + "\" name: { value: \"Contract fleet\" lang: \"en\" } dataOwnerRef: \"AKT\" }) }")
+                .body("errors", nullValue());
+        readFleet(fleetId, "AKT")
+                .body("data.fleets.content[0].version", equalTo("3"))
+                .body("data.fleets.content[0].transportOrganisationRef", nullValue())
+                .body("data.fleets.content[0].contractNumber", nullValue());
+    }
+
+    @Test
+    @DisplayName("An organisation that is not in the organisation registry is rejected")
+    void unknownOrganisationIsRejected() {
+        graphql(createMutation("AKT", "Unknown organisation fleet", "transportOrganisationRef: \"NOG:GeneralOrganisation:does-not-exist\""))
+                .body("errors[0].extensions.classification", equalTo("BAD_REQUEST"))
+                .body("errors[0].message", containsString("NOG:GeneralOrganisation:does-not-exist"));
     }
 
     @Test
@@ -312,6 +353,7 @@ class FleetGraphQLTest {
     private ValidatableResponse readFleet(String fleetId, String dataOwner) {
         return graphql("{ fleets(filter: { netexIds: [\"" + fleetId + "\"] dataOwnerRef: \"" + dataOwner + "\" }) { totalElements content { "
                 + "netexId version dataOwnerRef name { value } shortName { value } privateCode { type value } keyValues { key value } "
+                + "transportOrganisationRef contractNumber "
                 + "members { netexId name { value } } transportTypes { netexId } } } }");
     }
 

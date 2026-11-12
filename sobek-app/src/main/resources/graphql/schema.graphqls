@@ -360,6 +360,9 @@ type Fleet {
     description: MultilingualString
     privateCode: PrivateCode
     keyValues: [KeyValues!]
+    "The id of the organisation of the fleet in the organisation registry. It can be an organisation of any type."
+    transportOrganisationRef: String
+    contractNumber: String
     "The vehicles of the fleet, in their latest versions"
     members: [Vehicle!]!
     "The vehicle types the fleet is made of"
@@ -377,6 +380,10 @@ input FleetInput {
     description: MultilingualStringInput
     privateCode: PrivateCodeInput
     keyValues: [KeyValuesInput!]
+    "The id of an organisation in the organisation registry, of any type. Replaces the one of the previous version."
+    transportOrganisationRef: String
+    "Replaces the contract number of the previous version"
+    contractNumber: String
     "The list replaces the members of the previous version. The vehicles must exist and have the same data owner as the fleet."
     members: [VehicleReferenceInput!]
     "The list replaces the transport types of the previous version. They must be physical vehicle types of the same data owner as the fleet."

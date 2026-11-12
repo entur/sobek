@@ -56,6 +56,10 @@
                             <Key>depot</Key>
                             <Value>North</Value>
                         </KeyValue>
+                        <KeyValue>
+                            <Key>contract-number</Key>
+                            <Value>C-2026-@RUN@</Value>
+                        </KeyValue>
                     </keyList>
                     <Name lang="nb">City buses</Name>
                     <ShortName lang="nb">CB</ShortName>
@@ -65,6 +69,7 @@
                         <VehicleRef ref="AKT:Vehicle:run@RUN@v1"/>
                         <VehicleRef ref="AKT:Vehicle:run@RUN@v2"/>
                     </members>
+                    <OperatorRef ref="NOG:GeneralOrganisation:Jw1qIduoQM"/>
                     <transportTypes>
                         <TransportTypeRef ref="AKT:VehicleType:run@RUN@t"/>
                     </transportTypes>

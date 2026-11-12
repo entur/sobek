@@ -5,6 +5,7 @@ import org.rutebanken.sobek.model.vehicle.Fleet;
 import org.rutebanken.sobek.model.vehicle.Vehicle;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
 import org.rutebanken.sobek.model.vehicle.VehicleTypeKindEnumeration;
+import org.rutebanken.sobek.organisation.OrganisationRegistry;
 import org.rutebanken.sobek.repository.FleetRepository;
 import org.springframework.stereotype.Component;
 
@@ -16,10 +17,13 @@ public class FleetVersionedSaverService {
 
     private final FleetRepository fleetRepository;
     private final DefaultMergingVersionedSaverService defaultVersionedSaverService;
+    private final OrganisationRegistry organisationRegistry;
 
-    public FleetVersionedSaverService(FleetRepository fleetRepository, DefaultMergingVersionedSaverService defaultVersionedSaverService) {
+    public FleetVersionedSaverService(FleetRepository fleetRepository, DefaultMergingVersionedSaverService defaultVersionedSaverService,
+                                      OrganisationRegistry organisationRegistry) {
         this.fleetRepository = fleetRepository;
         this.defaultVersionedSaverService = defaultVersionedSaverService;
+        this.organisationRegistry = organisationRegistry;
     }
 
     public Fleet saveNewVersion(Fleet newVersion) {
@@ -39,6 +43,12 @@ public class FleetVersionedSaverService {
      */
     private void verifyMembersAndTransportTypes(Fleet fleet) {
         String fleetId = fleet.getNetexId() == null ? "(new)" : fleet.getNetexId();
+
+        // The organisation of the fleet can be of any type, but it must be in the organisation registry. If it is not,
+        // the registry says so with a ValidationException
+        if (fleet.getTransportOrganisationRef() != null) {
+            organisationRegistry.validateOrganisationRef(fleet.getTransportOrganisationRef());
+        }
 
         for (Vehicle member : fleet.getMembers()) {
             if (member == null || member.getId() == null) {

@@ -36,6 +36,11 @@ import org.springframework.transaction.support.TransactionTemplate;
 @Import(SingleOrganisationAuthorizationConfiguration.class)
 class FleetImportExportIT {
 
+    /** A general organisation (neither an operator nor an authority) in the organisation registry of the tests. */
+    private static final String GENERAL_ORGANISATION = "NOG:GeneralOrganisation:Jw1qIduoQM";
+    /** An authority in the registry of the tests, which is also the data owner of the tests. */
+    private static final String AUTHORITY = "AKT";
+
     @LocalServerPort int port;
 
     @Autowired private FleetRepository fleetRepository;
@@ -74,6 +79,11 @@ class FleetImportExportIT {
             assertThat(stored.getMembers()).extracting(IdentifiedEntity::getNetexId).containsExactlyInAnyOrder(vehicle1, vehicle2);
             assertThat(stored.getTransportTypes()).extracting(IdentifiedEntity::getNetexId).containsExactly(vehicleType);
             assertThat(stored.getKeyValues()).extracting(KeyValue::getKey).contains("depot");
+            // The organisation is a general organisation of the registry, and the contract number is a property of its own:
+            // it is in NeTEx as a key value, and is not kept as a key value as well
+            assertThat(stored.getTransportOrganisationRef()).isEqualTo(GENERAL_ORGANISATION);
+            assertThat(stored.getContractNumber()).isEqualTo("C-2026-" + run);
+            assertThat(stored.getKeyValues()).extracting(KeyValue::getKey).doesNotContain("contract-number");
         });
 
         // The export has the fleet in a mobility service frame next to the resource frame, and it is valid against the schema
@@ -85,6 +95,62 @@ class FleetImportExportIT {
         assertThat(exported.getTransportTypes().getTransportTypeRef())
                 .extracting(JAXBElement::getValue).extracting(TransportTypeRefStructure::getRef).containsExactly(vehicleType);
         assertThat(exported.getKeyList().getKeyValue()).extracting(KeyValueStructure::getKey).contains("depot");
+
+        // The organisation is written as an OperatorRef without a version, and the contract number as a key value
+        assertThat(exported.getTransportOrganisationRef().getValue()).isInstanceOf(OperatorRefStructure.class);
+        assertThat(exported.getTransportOrganisationRef().getValue().getRef()).isEqualTo(GENERAL_ORGANISATION);
+        assertThat(exported.getTransportOrganisationRef().getValue().getVersion()).isNull();
+        assertThat(exported.getKeyList().getKeyValue()).filteredOn(kv -> "contract-number".equals(kv.getKey()))
+                .extracting(KeyValueStructure::getValue).containsExactly("C-2026-" + run);
+    }
+
+    @Test
+    @DisplayName("An AuthorityRef is accepted as the organisation of a fleet too, and is exported as an OperatorRef")
+    void authorityRefIsAcceptedAndExportedAsOperatorRef() throws Exception {
+        String run = String.valueOf(System.nanoTime());
+        String fleetId = "AKT:Fleet:run" + run + "f";
+        importFleet(fixture(run).replace("<OperatorRef ref=\"" + GENERAL_ORGANISATION + "\"/>", "<AuthorityRef ref=\"" + AUTHORITY + "\"/>"));
+
+        transactionTemplate.executeWithoutResult(status ->
+                assertThat(fleetRepository.findFirstByNetexIdOrderByVersionDesc(fleetId).getTransportOrganisationRef()).isEqualTo(AUTHORITY));
+
+        Fleet exported = fleets(export("PHYSICAL")).stream().filter(f -> fleetId.equals(f.getId())).findFirst().orElseThrow();
+        assertThat(exported.getTransportOrganisationRef().getValue()).isInstanceOf(OperatorRefStructure.class);
+        assertThat(exported.getTransportOrganisationRef().getValue().getRef()).isEqualTo(AUTHORITY);
+    }
+
+    @Test
+    @DisplayName("A fleet with an organisation that is not in the organisation registry is rejected")
+    void unknownOrganisationIsBadRequest() throws Exception {
+        String run = String.valueOf(System.nanoTime());
+        String xml = fixture(run).replace(GENERAL_ORGANISATION, "NOG:GeneralOrganisation:missing" + run);
+
+        String body = given().contentType(ContentType.XML).body(xml)
+                .when().post("/services/vehicles/netex?vehicleTypeKind=PHYSICAL")
+                .then().statusCode(400)
+                .extract().body().asString();
+
+        assertThat(body).contains("NOG:GeneralOrganisation:missing" + run);
+    }
+
+    @Test
+    @DisplayName("A fleet without an organisation and without a contract number is imported, and exported without them")
+    void fleetWithoutOrganisationAndContractNumber() throws Exception {
+        String run = String.valueOf(System.nanoTime());
+        String fleetId = "AKT:Fleet:run" + run + "f";
+        String xml = fixture(run)
+                .replace("<OperatorRef ref=\"" + GENERAL_ORGANISATION + "\"/>", "")
+                .replaceAll("(?s)<KeyValue>\\s*<Key>contract-number</Key>.*?</KeyValue>", "");
+        importFleet(xml);
+
+        transactionTemplate.executeWithoutResult(status -> {
+            var stored = fleetRepository.findFirstByNetexIdOrderByVersionDesc(fleetId);
+            assertThat(stored.getTransportOrganisationRef()).isNull();
+            assertThat(stored.getContractNumber()).isNull();
+        });
+        Fleet exported = fleets(export("PHYSICAL")).stream().filter(f -> fleetId.equals(f.getId())).findFirst().orElseThrow();
+        assertThat(exported.getTransportOrganisationRef()).isNull();
+        assertThat(exported.getKeyList().getKeyValue()).extracting(KeyValueStructure::getKey).doesNotContain("contract-number");
     }
 
     @Test

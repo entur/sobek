@@ -1,12 +1,16 @@
 package org.rutebanken.sobek.exporter;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.Marshaller;
 import java.io.StringWriter;
 import org.entur.netex2.model.Fleet;
+import org.entur.netex2.model.KeyListStructure;
+import org.entur.netex2.model.KeyValueStructure;
+import org.entur.netex2.model.OperatorRefStructure;
 import org.entur.netex2.model.Fleets_RelStructure;
 import org.entur.netex2.model.MobilityServiceFrame;
 import org.entur.netex2.model.ObjectFactory;
@@ -67,6 +71,9 @@ class PublicationDeliveryCreatorTest {
                 .withMembers(new Vehicles_RelStructure().withVehicleRefOrVehicle(
                         objectFactory.createVehicleRef(new VehicleRefStructure().withRef("AKT:Vehicle:1").withVersion("1")),
                         objectFactory.createVehicleRef(new VehicleRefStructure().withRef("AKT:Vehicle:2").withVersion("1"))))
+                // The organisation is not in the delivery, and the reference has no version, so the schema accepts it
+                .withTransportOrganisationRef(objectFactory.createOperatorRef(new OperatorRefStructure().withRef("NOG:GeneralOrganisation:1")))
+                .withKeyList(new KeyListStructure().withKeyValue(new KeyValueStructure().withKey("contract-number").withValue("C-2026-17")))
                 .withTransportTypes(new TransportTypeRefs_RelStructure().withTransportTypeRef(
                         objectFactory.createTransportTypeRef(new TransportTypeRefStructure().withRef("AKT:VehicleType:1").withVersion("1"))));
         // The schema has key references: the vehicles and the vehicle type that the fleet refers to must be in the delivery
@@ -91,7 +98,30 @@ class PublicationDeliveryCreatorTest {
                 // The order of the attributes is up to the serializer
                 .contains("id=\"AKT:Fleet:1\"", "<members>", "<transportTypes>")
                 .containsOnlyOnce("<VehicleRef ref=\"AKT:Vehicle:1\"")
-                .containsOnlyOnce("<VehicleRef ref=\"AKT:Vehicle:2\"");
+                .containsOnlyOnce("<VehicleRef ref=\"AKT:Vehicle:2\"")
+                .contains("<OperatorRef ref=\"NOG:GeneralOrganisation:1\"")
+                .contains("<Key>contract-number</Key>", "<Value>C-2026-17</Value>");
+    }
+
+    @Test
+    @DisplayName("An OperatorRef with a version needs the Operator in the same delivery, which is why the fleet's is written without one")
+    void operatorRefWithVersionIsRefusedWithoutTheOperator() throws Exception {
+        ObjectFactory objectFactory = new ObjectFactory();
+        Fleet fleet = new Fleet()
+                .withId("AKT:Fleet:1")
+                .withVersion("1")
+                .withTransportOrganisationRef(objectFactory.createOperatorRef(
+                        new OperatorRefStructure().withRef("NOG:GeneralOrganisation:1").withVersion("1")));
+        PublicationDeliveryStructure delivery = creator.createPublicationDelivery(
+                new ResourceFrame().withId("RF:1").withVersion("1"),
+                new MobilityServiceFrame().withId("MSF:1").withVersion("1").withFleets(new Fleets_RelStructure().withFleet(fleet)));
+
+        Marshaller marshaller = JAXBContext.newInstance(PublicationDeliveryStructure.class).createMarshaller();
+        marshaller.setSchema(NeTExValidator.getNeTExValidator().getSchema());
+
+        assertThatThrownBy(() -> marshaller.marshal(objectFactory.createPublicationDelivery(delivery), new StringWriter()))
+                // The schema's message is the cause of the marshalling exception
+                .hasStackTraceContaining("Operator_KeyRef");
     }
 
     private static Vehicle vehicle(ObjectFactory objectFactory, String id) {

@@ -17,6 +17,7 @@ import org.rutebanken.sobek.graphql.converter.FleetNeTExIdConverter;
 import org.rutebanken.sobek.graphql.converter.VehicleNeTExIdConverter;
 import org.rutebanken.sobek.graphql.converter.VehicleTypeNeTExIdConverter;
 import org.rutebanken.sobek.model.vehicle.DeckPlan;
+import org.rutebanken.sobek.model.DataManagedObjectStructure;
 import org.rutebanken.sobek.model.vehicle.Fleet;
 import org.rutebanken.sobek.model.vehicle.Vehicle;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
@@ -99,10 +100,12 @@ public class MutationController {
 
     @MutationMapping
     public String createOrUpdateVehicle (
-            @Argument Vehicle input
+            @Argument Vehicle input,
+            DataFetchingEnvironment env
     ) throws ValidationException {
         authorizationService.verifyCanEditEntities(List.of(input));
         input = vehicleIdConverter.convertIncomingId(input);
+        addKeyValues(input, env);
         if (input.getTransportType() != null) {
             VehicleType vt = vehicleTypeIdConverter.convertIncomingId(input.getTransportType());
             vt = vehicleTypeRepository.findFirstByNetexIdOrderByVersionDesc(vt.getNetexId());
@@ -122,6 +125,7 @@ public class MutationController {
         VehicleType input = vehicleTypeInputBinder.bind(env);
         authorizationService.verifyCanEditEntities(List.of(input));
         input = vehicleTypeIdConverter.convertIncomingId(input);
+        addKeyValues(input, env);
         if (input.getDeckPlan() != null) {
             DeckPlan dp = deckPlanIdConverter.convertIncomingId(input.getDeckPlan());
             dp = deckPlanRepository.findFirstByNetexIdOrderByVersionDesc(dp.getNetexId());
@@ -190,24 +194,26 @@ public class MutationController {
      * key values of the previous version that the input does not give again are kept.
      */
     @SuppressWarnings("unchecked")
-    private static void addKeyValues(Fleet fleet, DataFetchingEnvironment env) {
+    private static void addKeyValues(DataManagedObjectStructure entity, DataFetchingEnvironment env) {
         Map<String, Object> rawInput = env.getArgument("input");
         Object rawKeyValues = rawInput == null ? null : rawInput.get("keyValues");
         if (rawKeyValues == null) {
             return;
         }
         for (Map<String, Object> keyValue : (List<Map<String, Object>>) rawKeyValues) {
-            fleet.removeKeyValue((String) keyValue.get("key"));
-            fleet.addKeyValue((String) keyValue.get("key"), (String) keyValue.get("value"));
+            entity.removeKeyValue((String) keyValue.get("key"));
+            entity.addKeyValue((String) keyValue.get("key"), (String) keyValue.get("value"));
         }
     }
 
     @MutationMapping
     public String createOrUpdateDeckPlan (
-            @Argument DeckPlan input
+            @Argument DeckPlan input,
+            DataFetchingEnvironment env
     ) {
         authorizationService.verifyCanEditEntities(List.of(input));
         input = deckPlanIdConverter.convertIncomingId(input);
+        addKeyValues(input, env);
         var output = deckPlanVersionedSaverService.saveNewVersion(input);
         return output.getNetexId();
     }

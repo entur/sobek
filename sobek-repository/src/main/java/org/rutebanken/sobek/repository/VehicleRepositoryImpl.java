@@ -3,6 +3,7 @@ package org.rutebanken.sobek.repository;
 import jakarta.persistence.*;
 import org.rutebanken.sobek.model.vehicle.AllPublicTransportModesEnumeration;
 import org.rutebanken.sobek.model.vehicle.Vehicle;
+import org.rutebanken.sobek.model.vehicle.VehicleType;
 import org.rutebanken.sobek.repository.utils.QueryHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,7 +93,7 @@ public class VehicleRepositoryImpl implements VehicleRepositoryCustom {
             TypedQuery<Vehicle> fetchQuery = entityManager.createQuery(fetchJpql, Vehicle.class);
             fetchQuery.setParameter("now", now);
             setFilterParams(fetchQuery, dataOwnerRef, netexIds, transportModes, name);
-            return new PageImpl<>(fetchQuery.getResultList());
+            return new PageImpl<>(withKeyValues(fetchQuery.getResultList()));
         }
 
         // Count — no Vehicle JOIN, no DISTINCT needed
@@ -115,7 +116,30 @@ public class VehicleRepositoryImpl implements VehicleRepositoryCustom {
         fetchQuery.setFirstResult((int) pageable.getOffset());
         fetchQuery.setMaxResults(pageable.getPageSize());
 
-        return new PageImpl<>(fetchQuery.getResultList(), pageable, total);
+        return new PageImpl<>(withKeyValues(fetchQuery.getResultList()), pageable, total);
+    }
+
+    /**
+     * The key values are a lazy collection, and GraphQL reads them after the transaction has ended. They are loaded here
+     * for all the vehicles at once, in a query of their own so that they do not multiply the rows of the one above.
+     */
+    private List<Vehicle> withKeyValues(List<Vehicle> vehicles) {
+        if (!vehicles.isEmpty()) {
+            entityManager.createQuery("SELECT DISTINCT v FROM Vehicle v LEFT JOIN FETCH v.keyValues WHERE v IN :vehicles", Vehicle.class)
+                    .setParameter("vehicles", vehicles)
+                    .getResultList();
+            entityManager.createQuery("SELECT DISTINCT vt FROM VehicleType vt LEFT JOIN FETCH vt.keyValues "
+                            + "WHERE vt IN (SELECT v.transportType FROM Vehicle v WHERE v IN :vehicles)", VehicleType.class)
+                    .setParameter("vehicles", vehicles)
+                    .getResultList();
+            entityManager.createQuery("SELECT DISTINCT dp FROM DeckPlan dp LEFT JOIN FETCH dp.keyValues "
+                            + "WHERE dp IN (SELECT vt.deckPlan FROM VehicleType vt "
+                            + "WHERE vt IN (SELECT v.transportType FROM Vehicle v WHERE v IN :vehicles))",
+                            org.rutebanken.sobek.model.vehicle.DeckPlan.class)
+                    .setParameter("vehicles", vehicles)
+                    .getResultList();
+        }
+        return vehicles;
     }
 
     @Override

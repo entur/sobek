@@ -91,7 +91,13 @@ public class Fleet extends DataManagedObjectStructure implements OwnedEntity {
     private String contractNumber;
 
     @Setter(AccessLevel.NONE)
+    @Getter(AccessLevel.NONE)
     private String dataOwnerRef;
+
+    @Override
+    public String getDataOwnerRef() {
+        return dataOwnerRef;
+    }
 
     @Override
     public void setDataOwnerRef(String dataOwnerRef) {

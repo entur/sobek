@@ -10,6 +10,7 @@ import org.rutebanken.sobek.model.vehicle.Vehicle;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
 import org.rutebanken.sobek.model.vehicle.VehicleTypeKindEnumeration;
 import org.rutebanken.sobek.netex.id.ValidPrefixList;
+import org.rutebanken.sobek.repository.FleetRepository;
 import org.rutebanken.sobek.repository.VehicleRepository;
 import org.rutebanken.sobek.repository.VehicleTypeRepository;
 import org.rutebanken.sobek.repository.listener.NetexIdAssigner;
@@ -32,6 +33,8 @@ class VehicleTypeKindRulesTest {
     @Mock
     private VehicleRepository vehicleRepository;
     @Mock
+    private FleetRepository fleetRepository;
+    @Mock
     private DefaultMergingVersionedSaverService defaultVersionedSaverService;
     @Mock
     private NetexIdAssigner netexIdAssigner;
@@ -41,9 +44,9 @@ class VehicleTypeKindRulesTest {
 
     @BeforeEach
     void setUp() {
-        vehicleTypeSaver = new VehicleTypeVersionedSaverService(vehicleTypeRepository, vehicleRepository, defaultVersionedSaverService, netexIdAssigner,
+        vehicleTypeSaver = new VehicleTypeVersionedSaverService(vehicleTypeRepository, vehicleRepository, fleetRepository, defaultVersionedSaverService, netexIdAssigner,
                 new ValidPrefixList("NMR", List.of("RUT")));
-        vehicleSaver = new VehicleVersionedSaverService(vehicleRepository, defaultVersionedSaverService);
+        vehicleSaver = new VehicleVersionedSaverService(vehicleRepository, fleetRepository, defaultVersionedSaverService);
     }
 
     private VehicleType vehicleType(VehicleTypeKindEnumeration kind) {
@@ -164,14 +167,14 @@ class VehicleTypeKindRulesTest {
 
         assertThrows(VehicleTypeKindViolationException.class, () -> vehicleSaver.saveNewVersion(vehicle));
         assertThrows(VehicleTypeKindViolationException.class, () -> vehicleSaver.saveNewVersion(null, vehicle, Instant.now()));
-        verify(defaultVersionedSaverService, never()).saveNewVersion(any(Vehicle.class), any());
+        verify(defaultVersionedSaverService, never()).saveNewVersion(any(), any(Vehicle.class), any(Instant.class), any());
     }
 
     @Test
     void vehicleCanReferencePhysicalVehicleType() {
         Vehicle vehicle = new Vehicle();
         vehicle.setTransportType(vehicleType(VehicleTypeKindEnumeration.PHYSICAL));
-        when(defaultVersionedSaverService.saveNewVersion(any(Vehicle.class), any())).thenReturn(vehicle);
+        when(defaultVersionedSaverService.saveNewVersion(any(), any(Vehicle.class), any(Instant.class), any())).thenReturn(vehicle);
 
         assertEquals(vehicle, vehicleSaver.saveNewVersion(vehicle));
     }

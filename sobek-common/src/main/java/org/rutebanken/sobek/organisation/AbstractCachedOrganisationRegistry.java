@@ -24,9 +24,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import com.google.common.base.Strings;
 import jakarta.annotation.PostConstruct;
 import org.rutebanken.sobek.error.CodedError;
-import org.rutebanken.sobek.error.CodedIllegalArgumentException;
 import org.rutebanken.sobek.error.ErrorCodeEnumeration;
-import org.rutebanken.sobek.netex.util.Preconditions;
+import org.rutebanken.sobek.error.OrganisationRefViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -171,17 +170,18 @@ public abstract class AbstractCachedOrganisationRegistry implements Organisation
     @Override
     public void validateOrganisationRef(String organisationRef) {
         if (Strings.isNullOrEmpty(organisationRef) || organisationRef.isBlank()) {
-            throw new CodedIllegalArgumentException(
+            throw new OrganisationRefViolationException(
                 "Organisation ref is null or blank",
                 CodedError.fromErrorCode(ErrorCodeEnumeration.ORGANISATION_REF_NULL)
             );
         }
+        // Not being able to read the registry is not the fault of the reference: that is not a violation
         ensureFreshData();
-        Preconditions.checkArgument(
-            organisations.stream().anyMatch(org -> organisationRef.equals(org.netexId())),
-            CodedError.fromErrorCode(ErrorCodeEnumeration.ORGANISATION_NOT_IN_ORGANISATION_REGISTRY),
-            "Organisation with ref %s not found in organisation registry",
-            organisationRef
-        );
+        if (organisations.stream().noneMatch(org -> organisationRef.equals(org.netexId()))) {
+            throw new OrganisationRefViolationException(
+                "Organisation with ref " + organisationRef + " not found in organisation registry",
+                CodedError.fromErrorCode(ErrorCodeEnumeration.ORGANISATION_NOT_IN_ORGANISATION_REGISTRY)
+            );
+        }
     }
 }

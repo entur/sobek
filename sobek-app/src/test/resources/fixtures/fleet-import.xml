@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- A fleet of two vehicles and one vehicle type. The fleet is in a MobilityServiceFrame of its own, after the
+     ResourceFrame that has the vehicles and the vehicle type it refers to, and that gives the data owner.
+     @RUN@ makes the ids unique to one test run. -->
+<PublicationDelivery xmlns="http://www.netex.org.uk/netex" version="1.0">
+    <PublicationTimestamp>2026-03-16T10:25:00.619Z</PublicationTimestamp>
+    <ParticipantRef>TST</ParticipantRef>
+    <dataObjects>
+        <ResourceFrame id="RF:1" version="1">
+            <FrameDefaults>
+                <DefaultResponsibilitySetRef ref="TST:ResponsibilitySet:1" />
+                <DefaultLocale>
+                    <TimeZone>Europe/Oslo</TimeZone>
+                </DefaultLocale>
+            </FrameDefaults>
+            <responsibilitySets>
+                <ResponsibilitySet id="TST:ResponsibilitySet:1" version="1">
+                    <roles>
+                        <ResponsibilityRoleAssignment id="TST:ResponsibilityRoleAssignment:1" version="1">
+                            <DataRoleType>owns</DataRoleType>
+                            <ResponsibleOrganisationRef ref="AKT"/>
+                        </ResponsibilityRoleAssignment>
+                    </roles>
+                </ResponsibilitySet>
+            </responsibilitySets>
+            <vehicleTypes>
+                <VehicleType id="AKT:VehicleType:run@RUN@t" version="1">
+                    <Name lang="nb"><Text>Fleet bus</Text></Name>
+                    <TransportMode>bus</TransportMode>
+                </VehicleType>
+            </vehicleTypes>
+            <vehicles>
+                <Vehicle id="AKT:Vehicle:run@RUN@v1" version="1">
+                    <ValidBetween>
+                        <FromDate>2026-01-01T00:00:00</FromDate>
+                    </ValidBetween>
+                    <Name lang="nb">First bus</Name>
+                    <RegistrationNumber>FL-@RUN@-1</RegistrationNumber>
+                    <TransportTypeRef ref="AKT:VehicleType:run@RUN@t"/>
+                </Vehicle>
+                <Vehicle id="AKT:Vehicle:run@RUN@v2" version="1">
+                    <ValidBetween>
+                        <FromDate>2026-01-01T00:00:00</FromDate>
+                    </ValidBetween>
+                    <Name lang="nb">Second bus</Name>
+                    <RegistrationNumber>FL-@RUN@-2</RegistrationNumber>
+                    <TransportTypeRef ref="AKT:VehicleType:run@RUN@t"/>
+                </Vehicle>
+            </vehicles>
+        </ResourceFrame>
+        <MobilityServiceFrame id="MSF:1" version="1">
+            <fleets>
+                <Fleet id="AKT:Fleet:run@RUN@f" version="1">
+                    <keyList>
+                        <KeyValue>
+                            <Key>depot</Key>
+                            <Value>North</Value>
+                        </KeyValue>
+                        <KeyValue>
+                            <Key>contract-number</Key>
+                            <Value>C-2026-@RUN@</Value>
+                        </KeyValue>
+                    </keyList>
+                    <Name lang="nb">City buses</Name>
+                    <ShortName lang="nb">CB</ShortName>
+                    <Description lang="nb">The buses of the city lines</Description>
+                    <PrivateCode>CB-1</PrivateCode>
+                    <members>
+                        <VehicleRef ref="AKT:Vehicle:run@RUN@v1"/>
+                        <VehicleRef ref="AKT:Vehicle:run@RUN@v2"/>
+                    </members>
+                    <OperatorRef ref="NOG:GeneralOrganisation:Jw1qIduoQM"/>
+                    <transportTypes>
+                        <TransportTypeRef ref="AKT:VehicleType:run@RUN@t"/>
+                    </transportTypes>
+                </Fleet>
+            </fleets>
+        </MobilityServiceFrame>
+    </dataObjects>
+</PublicationDelivery>

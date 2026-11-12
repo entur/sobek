@@ -15,6 +15,7 @@
 
 package org.rutebanken.sobek.importer;
 
+import org.entur.netex2.model.MobilityServiceFrame;
 import org.entur.netex2.model.PublicationDeliveryStructure;
 import org.entur.netex2.model.ResourceFrame;
 import org.rutebanken.sobek.exporter.PublicationDeliveryCreator;
@@ -48,13 +49,15 @@ public class PublicationDeliveryImporter {
     private final EquipmentImportHandler equipmentImportHandler;
     private final VehicleModelImportHandler vehicleModelImportHandler;
     private final SchematicMapImportHandler schematicMapImportHandler;
+    private final FleetImportHandler fleetImportHandler;
     private final MappingContext mappingContext;
 
     @Autowired
     public PublicationDeliveryImporter(PublicationDeliveryHelper publicationDeliveryHelper,
                                        PublicationDeliveryCreator publicationDeliveryCreator,
                                        VehicleImportHandler vehicleImportHandler, VehicleTypeImportHandler vehicleTypeImportHandler, DeckPlanImportHandler deckPlanImportHandler, EquipmentImportHandler equipmentImportHandler, VehicleModelImportHandler vehicleModelImportHandler,
-                                        SchematicMapImportHandler schematicMapImportHandler, MappingContext mappingContext) {
+                                        SchematicMapImportHandler schematicMapImportHandler, FleetImportHandler fleetImportHandler, MappingContext mappingContext) {
+        this.fleetImportHandler = fleetImportHandler;
         this.publicationDeliveryHelper = publicationDeliveryHelper;
         this.publicationDeliveryCreator = publicationDeliveryCreator;
         this.vehicleImportHandler = vehicleImportHandler;
@@ -97,6 +100,10 @@ public class PublicationDeliveryImporter {
 
         mappingContext.updateMappingContext(incomingPublicationDelivery, netexResourceFrame);
 
+        // The fleets are in a mobility service frame of their own. Like the resource frame, only one is used per delivery.
+        MobilityServiceFrame netexMobilityServiceFrame = publicationDeliveryHelper.findMobilityServiceFrame(incomingPublicationDelivery);
+        MobilityServiceFrame responseMobilityServiceFrame = null;
+
         ResourceFrame responseResourceFrame = null;
         if(netexResourceFrame != null) {
             String requestId = netexResourceFrame.getId();
@@ -125,12 +132,20 @@ public class PublicationDeliveryImporter {
                 }
                 if(netexResourceFrame.getSchematicMaps() != null)
                     schematicMapImportHandler.handleSchematicMaps(netexResourceFrame, importParams, schematicMapCounter, responseResourceFrame);
+
+                // Fleets refer to vehicles and vehicle types, so they come after those
+                if (publicationDeliveryHelper.hasFleets(netexMobilityServiceFrame)) {
+                    responseMobilityServiceFrame = new MobilityServiceFrame()
+                            .withId(netexMobilityServiceFrame.getId() + "-response")
+                            .withVersion("1");
+                    fleetImportHandler.handleFleets(netexMobilityServiceFrame, new AtomicInteger(0), responseMobilityServiceFrame);
+                }
             } finally {
                 MDC.remove(IMPORT_CORRELATION_ID);
                 loggerTimer.cancel();
             }
         }
-        return publicationDeliveryCreator.createPublicationDelivery(responseResourceFrame);
+        return publicationDeliveryCreator.createPublicationDelivery(responseResourceFrame, responseMobilityServiceFrame);
     }
 
 

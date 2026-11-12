@@ -17,6 +17,7 @@ package org.rutebanken.sobek.versioning;
 
 import org.rutebanken.sobek.model.EntityInVersionStructure;
 import org.rutebanken.sobek.model.vehicle.DeckPlan;
+import org.rutebanken.sobek.model.vehicle.Fleet;
 import org.rutebanken.sobek.model.vehicle.Vehicle;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
@@ -66,6 +67,9 @@ public class VersionCreator {
                 vehicleTypeCopy.getDeckPlan().setId(original.getDeckPlan().getId());
             }
             copy = type.cast(vehicleTypeCopy);
+        } else if (entityInVersionStructure instanceof Fleet fleet) {
+            // Copy the fleet, but keep the same members and transport types
+            copy = type.cast(mappingContext.getVersionCopyMapper().copy(fleet));
         } else if (entityInVersionStructure instanceof DeckPlan) {
             // For deck plan, we can just copy the entity as they don't have references to Vehicle or VehicleType
             copy = type.cast(mappingContext.getVersionCopyMapper().copy((DeckPlan) entityInVersionStructure));

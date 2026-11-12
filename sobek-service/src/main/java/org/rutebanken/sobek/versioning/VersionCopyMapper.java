@@ -1,11 +1,15 @@
 package org.rutebanken.sobek.versioning;
 
+import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 import org.mapstruct.SubclassMapping;
+import org.rutebanken.sobek.model.ValidBetween;
 import org.rutebanken.sobek.model.vehicle.CompoundTrain;
 import org.rutebanken.sobek.model.vehicle.DeckPlan;
+import org.rutebanken.sobek.model.vehicle.Fleet;
 import org.rutebanken.sobek.model.vehicle.PassengerCapacity;
 import org.rutebanken.sobek.model.vehicle.Train;
 import org.rutebanken.sobek.model.vehicle.TrainElement;
@@ -84,6 +88,40 @@ public interface VersionCopyMapper {
     @Named("sameTrain")
     default Train sameTrain(Train train) {
         return train;
+    }
+
+    /**
+     * A new version of a fleet has the same members and transport types as the previous one: the references are to the
+     * same rows, and the vehicles and vehicle types are not copied. The lists are new, as each version has its own rows
+     * in the join tables.
+     */
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "keyValues", ignore = true) // Copied in @AfterMapping: a key value belongs to one version
+    @Mapping(target = "members", qualifiedByName = "sameVehicles")
+    @Mapping(target = "transportTypes", qualifiedByName = "sameVehicleTypes")
+    Fleet copy(Fleet source);
+
+    /**
+     * What a version must not share with the previous one. The key values are rows of their own, one per version of the
+     * fleet (the join table has a unique key value). The validity is changed in place when the previous version is
+     * terminated, so a shared one would terminate the new version too.
+     */
+    @AfterMapping
+    default void copyPartsOfTheVersion(Fleet source, @MappingTarget Fleet target) {
+        source.getKeyValues().forEach(keyValue -> target.addKeyValue(keyValue.getKey(), keyValue.getValue()));
+        if (source.getValidBetween() != null) {
+            target.setValidBetween(new ValidBetween(source.getValidBetween().getFromDate(), source.getValidBetween().getToDate()));
+        }
+    }
+
+    @Named("sameVehicles")
+    default List<Vehicle> sameVehicles(List<Vehicle> vehicles) {
+        return vehicles == null ? new ArrayList<>() : new ArrayList<>(vehicles);
+    }
+
+    @Named("sameVehicleTypes")
+    default List<VehicleType> sameVehicleTypes(List<VehicleType> vehicleTypes) {
+        return vehicleTypes == null ? new ArrayList<>() : new ArrayList<>(vehicleTypes);
     }
 
     @Mapping(target = "id", ignore = true)

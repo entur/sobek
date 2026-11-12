@@ -2,6 +2,9 @@ package org.rutebanken.sobek.rest.graphql;
 
 import org.hibernate.Hibernate;
 import org.rutebanken.sobek.model.vehicle.CompoundTrain;
+import org.rutebanken.sobek.model.vehicle.Fleet;
+import org.rutebanken.sobek.model.vehicle.Vehicle;
+import org.rutebanken.sobek.repository.FleetRepository;
 import org.rutebanken.sobek.model.vehicle.Train;
 import org.rutebanken.sobek.model.vehicle.TrainComponent;
 import org.rutebanken.sobek.model.vehicle.TrainElement;
@@ -28,6 +31,8 @@ import java.util.Map;
 public class QueryController {
 
     private final VehicleFetcher vehicleFetcher;
+    private final FleetFetcher fleetFetcher;
+    private final FleetRepository fleetRepository;
     private final VehicleTypeFetcher vehicleTypeFetcher;
     private final DeckPlanFetcher deckPlanFetcher;
     private final OrganisationFetcher organisationFetcher;
@@ -37,12 +42,16 @@ public class QueryController {
 
     public QueryController(
         VehicleFetcher vehicleFetcher,
+        FleetFetcher fleetFetcher,
+        FleetRepository fleetRepository,
         VehicleTypeFetcher vehicleTypeFetcher,
         DeckPlanFetcher deckPlanFetcher,
         OrganisationFetcher organisationFetcher, CodeValueFetcher codeValueFetcher,
         VehicleTypeDeckPlanFetcher vehicleTypeDeckPlanFetcher,
         AuthorizationService authorizationService) {
         this.vehicleFetcher = vehicleFetcher;
+        this.fleetFetcher = fleetFetcher;
+        this.fleetRepository = fleetRepository;
         this.vehicleTypeFetcher = vehicleTypeFetcher;
         this.deckPlanFetcher = deckPlanFetcher;
         this.organisationFetcher = organisationFetcher;
@@ -57,6 +66,13 @@ public class QueryController {
     public Object vehicles(@Argument Map<String, Object> filter, @Argument Integer page, @Argument Integer size) throws Exception {
         graphql.schema.DataFetchingEnvironment env = createEnvironment(filter, page, size);
         return vehicleFetcher.get(env);
+    }
+
+    @QueryMapping
+    @Transactional(readOnly = true)  // Single transaction for entire query
+    public Object fleets(@Argument Map<String, Object> filter, @Argument Integer page, @Argument Integer size) {
+        graphql.schema.DataFetchingEnvironment env = createEnvironment(filter, page, size);
+        return fleetFetcher.get(env);
     }
 
     @QueryMapping
@@ -138,6 +154,27 @@ public class QueryController {
     // Field mappings for VehicleTypeVehicle
     @SchemaMapping(typeName = "VehicleTypeVehicle", field = "changedBy")
     public String vehicleTypeVehicleChangedBy(Object source) {
+        return getChangedBy(source);
+    }
+
+    // The fleets of a vehicle and of a vehicle type. They are read after the query that found the parent has ended,
+    // so they have a transaction of their own. A fleet has the data owner of its vehicles and vehicle types, so the
+    // user who may see the parent may see its fleets.
+    @SchemaMapping(typeName = "Vehicle", field = "fleets")
+    @Transactional(readOnly = true)
+    public List<Fleet> vehicleFleets(Vehicle source) {
+        return fleetRepository.findCurrentWithMember(source.getNetexId());
+    }
+
+    @SchemaMapping(typeName = "VehicleType", field = "fleets")
+    @Transactional(readOnly = true)
+    public List<Fleet> vehicleTypeFleets(VehicleType source) {
+        return fleetRepository.findCurrentWithTransportType(source.getNetexId());
+    }
+
+    // Field mappings for Fleet
+    @SchemaMapping(typeName = "Fleet", field = "changedBy")
+    public String fleetChangedBy(Object source) {
         return getChangedBy(source);
     }
 

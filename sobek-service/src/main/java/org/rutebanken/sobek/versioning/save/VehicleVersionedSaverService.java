@@ -20,6 +20,7 @@ import org.rutebanken.sobek.error.VehicleTypeKindViolationException;
 import org.rutebanken.sobek.model.vehicle.Vehicle;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
 import org.rutebanken.sobek.model.vehicle.VehicleTypeKindEnumeration;
+import org.rutebanken.sobek.repository.FleetRepository;
 import org.rutebanken.sobek.repository.VehicleRepository;
 import org.springframework.stereotype.Component;
 
@@ -29,21 +30,29 @@ import java.time.Instant;
 public class VehicleVersionedSaverService {
 
     private final VehicleRepository vehicleRepository;
+    private final FleetRepository fleetRepository;
     private final DefaultMergingVersionedSaverService defaultVersionedSaverService;
 
-    public VehicleVersionedSaverService(VehicleRepository vehicleRepository, DefaultMergingVersionedSaverService defaultVersionedSaverService) {
+    public VehicleVersionedSaverService(VehicleRepository vehicleRepository, FleetRepository fleetRepository, DefaultMergingVersionedSaverService defaultVersionedSaverService) {
         this.vehicleRepository = vehicleRepository;
+        this.fleetRepository = fleetRepository;
         this.defaultVersionedSaverService = defaultVersionedSaverService;
     }
 
     public Vehicle saveNewVersion(Vehicle newVersion) {
-        verifyTransportTypeIsPhysical(newVersion);
-        return defaultVersionedSaverService.saveNewVersion(newVersion, vehicleRepository);
+        Vehicle existingVersion = newVersion.getNetexId() == null ? null
+                : vehicleRepository.findFirstByNetexIdOrderByVersionDesc(newVersion.getNetexId());
+        return saveNewVersion(existingVersion, newVersion, Instant.now());
     }
 
     public Vehicle saveNewVersion(Vehicle existingVersion, Vehicle newVersion, Instant defaultValidFrom) {
         verifyTransportTypeIsPhysical(newVersion);
-        return defaultVersionedSaverService.saveNewVersion(existingVersion, newVersion, defaultValidFrom, vehicleRepository);
+        Vehicle saved = defaultVersionedSaverService.saveNewVersion(existingVersion, newVersion, defaultValidFrom, vehicleRepository);
+        if (existingVersion != null && !saved.getId().equals(existingVersion.getId())) {
+            // The fleets that have this vehicle as a member follow it to the new version
+            fleetRepository.moveMember(existingVersion.getId(), saved.getId());
+        }
+        return saved;
     }
 
     /**

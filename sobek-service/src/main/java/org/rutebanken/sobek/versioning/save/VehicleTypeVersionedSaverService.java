@@ -26,6 +26,7 @@ import org.rutebanken.sobek.netex.id.CodespaceType;
 import org.rutebanken.sobek.netex.id.ValidPrefixList;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
 import org.rutebanken.sobek.model.vehicle.VehicleTypeKindEnumeration;
+import org.rutebanken.sobek.repository.FleetRepository;
 import org.rutebanken.sobek.repository.VehicleRepository;
 import org.rutebanken.sobek.repository.VehicleTypeRepository;
 import org.rutebanken.sobek.repository.listener.NetexIdAssigner;
@@ -44,15 +45,17 @@ public class VehicleTypeVersionedSaverService {
 
     private final VehicleTypeRepository vehicleTypeRepository;
     private final VehicleRepository vehicleRepository;
+    private final FleetRepository fleetRepository;
     private final DefaultMergingVersionedSaverService defaultVersionedSaverService;
     private final NetexIdAssigner netexIdAssigner;
     private final ValidPrefixList validPrefixList;
 
 
-    public VehicleTypeVersionedSaverService(VehicleTypeRepository vehicleTypeRepository, VehicleRepository vehicleRepository, DefaultMergingVersionedSaverService defaultVersionedSaverService, NetexIdAssigner netexIdAssigner, ValidPrefixList validPrefixList) {
+    public VehicleTypeVersionedSaverService(VehicleTypeRepository vehicleTypeRepository, VehicleRepository vehicleRepository, FleetRepository fleetRepository, DefaultMergingVersionedSaverService defaultVersionedSaverService, NetexIdAssigner netexIdAssigner, ValidPrefixList validPrefixList) {
         this.validPrefixList = validPrefixList;
         this.vehicleTypeRepository = vehicleTypeRepository;
         this.vehicleRepository = vehicleRepository;
+        this.fleetRepository = fleetRepository;
         this.defaultVersionedSaverService = defaultVersionedSaverService;
         this.netexIdAssigner = netexIdAssigner;
     }
@@ -91,6 +94,8 @@ public class VehicleTypeVersionedSaverService {
             vehicleRepository.moveToTransportType(existingVersion.getId(), saved.getId());
             // Trains and compound trains that include this vehicle type follow it to the new version
             vehicleTypeRepository.moveComponentReferences(existingVersion.getId(), saved.getId());
+            // Fleets that have this vehicle type as a transport type follow it to the new version
+            fleetRepository.moveTransportType(existingVersion.getId(), saved.getId());
         }
         return saved;
     }

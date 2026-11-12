@@ -20,7 +20,7 @@ package org.rutebanken.sobek.organisation;
 import java.util.List;
 import java.util.Optional;
 
-import org.rutebanken.sobek.error.CodedIllegalArgumentException;
+import org.rutebanken.sobek.error.OrganisationRefViolationException;
 
 /**
  * Represents an organisation registry used to populate authorities and operators references
@@ -39,7 +39,8 @@ public interface OrganisationRegistry {
     /**
      * Check if the organisation represented by the reference id is a valid organisation of any type (authority, operator, general)
      * @param organisationRef The organisation id
-     * @throws CodedIllegalArgumentException if the organisation is not a valid organisation
+     * @throws OrganisationRefViolationException (a ValidationException, so a bad request to API users) if the
+     *         reference is blank, or the organisation is not in the registry
      */
     void validateOrganisationRef(String organisationRef);
 

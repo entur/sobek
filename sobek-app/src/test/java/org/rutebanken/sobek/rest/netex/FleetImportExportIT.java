@@ -118,6 +118,22 @@ class FleetImportExportIT {
     }
 
     @Test
+    @DisplayName("An import with a data owner that is not in the organisation registry is rejected as a bad request")
+    void unknownDataOwnerIsBadRequest() throws Exception {
+        // The data owner goes through the check of the organisation registry, which says so with a ValidationException:
+        // it is a client error, and not an internal error
+        String run = String.valueOf(System.nanoTime());
+        String xml = fixture(run).replace("<ResponsibleOrganisationRef ref=\"AKT\"/>", "<ResponsibleOrganisationRef ref=\"ZZZ" + run + "\"/>");
+
+        String body = given().contentType(ContentType.XML).body(xml)
+                .when().post("/services/vehicles/netex?vehicleTypeKind=PHYSICAL")
+                .then().statusCode(400)
+                .extract().body().asString();
+
+        assertThat(body).contains("ZZZ" + run);
+    }
+
+    @Test
     @DisplayName("A fleet that has a member that does not exist is rejected")
     void fleetWithUnknownMemberIsBadRequest() throws Exception {
         String run = String.valueOf(System.nanoTime());

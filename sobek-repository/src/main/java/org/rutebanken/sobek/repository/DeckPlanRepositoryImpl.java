@@ -74,7 +74,7 @@ public class DeckPlanRepositoryImpl implements DeckPlanRepositoryCustom {
         if (pageable.isUnpaged()) {
             TypedQuery<DeckPlan> query = entityManager.createQuery(baseJpql, DeckPlan.class);
             setFilterParams(query, dataOwnerRef, netexIds, transportModes, vehicleTypeKind, name, now);
-            List<DeckPlan> results = query.getResultList();
+            List<DeckPlan> results = withKeyValues(query.getResultList());
             return new PageImpl<>(results);
         }
 
@@ -89,7 +89,7 @@ public class DeckPlanRepositoryImpl implements DeckPlanRepositoryCustom {
         query.setFirstResult((int) pageable.getOffset());
         query.setMaxResults(pageable.getPageSize());
 
-        return new PageImpl<>(query.getResultList(), pageable, total);
+        return new PageImpl<>(withKeyValues(query.getResultList()), pageable, total);
     }
 
     private void setFilterParams(Query query, String dataOwnerRef, List<String> netexIds, List<AllPublicTransportModesEnumeration> transportModes, VehicleTypeKindEnumeration vehicleTypeKind, String name, Instant now) {
@@ -109,6 +109,19 @@ public class DeckPlanRepositoryImpl implements DeckPlanRepositoryCustom {
         if(dataOwnerRef != null) {
             query.setParameter("dataOwnerRef", dataOwnerRef);
         }
+    }
+
+    /**
+     * The key values are a lazy collection, and GraphQL reads them after the transaction has ended. They are loaded here
+     * for all the deck plans at once.
+     */
+    private List<DeckPlan> withKeyValues(List<DeckPlan> deckPlans) {
+        if (!deckPlans.isEmpty()) {
+            entityManager.createQuery("SELECT DISTINCT dp FROM DeckPlan dp LEFT JOIN FETCH dp.keyValues WHERE dp IN :deckPlans", DeckPlan.class)
+                    .setParameter("deckPlans", deckPlans)
+                    .getResultList();
+        }
+        return deckPlans;
     }
 
     @Override

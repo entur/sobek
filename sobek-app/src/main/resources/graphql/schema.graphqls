@@ -268,12 +268,14 @@ type DeckPlan {
     version: String
     created: DateTime
     changed: DateTime
+    keyValues: [KeyValues!]
 }
 input DeckPlanInput {
     netexId: String
     name: MultilingualStringInput
     description: MultilingualStringInput
     dataOwnerRef: String!
+    keyValues: [KeyValuesInput!]
 }
 
 type DeckPlanPage {
@@ -329,6 +331,7 @@ type Vehicle {
     created: DateTime
     changed: DateTime
     changedBy: String
+    keyValues: [KeyValues!]
 }
 
 input VehicleInput {
@@ -342,6 +345,7 @@ input VehicleInput {
     buildDate: Date
     registrationDate: Date
     dataOwnerRef: String!
+    keyValues: [KeyValuesInput!]
 }
 
 type VehiclePage {

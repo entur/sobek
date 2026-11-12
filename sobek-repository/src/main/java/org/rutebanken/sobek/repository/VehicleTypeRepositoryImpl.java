@@ -2,6 +2,7 @@ package org.rutebanken.sobek.repository;
 
 import jakarta.persistence.*;
 import org.rutebanken.sobek.model.vehicle.AllPublicTransportModesEnumeration;
+import org.rutebanken.sobek.model.vehicle.DeckPlan;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
 import org.rutebanken.sobek.model.vehicle.VehicleTypeKindEnumeration;
 import org.rutebanken.sobek.model.vehicle.Vehicle;
@@ -244,8 +245,19 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
         fetchVtQuery.setParameter("ids", vehicleTypeIds);
         List<VehicleType> vehicleTypes = fetchVtQuery.getResultList();
 
+        // The key values are a lazy collection, and GraphQL reads them after the transaction has ended. They are loaded
+        // here, in a query of their own so that they do not multiply the rows of the one above.
+        entityManager.createQuery("SELECT DISTINCT vt FROM VehicleType vt LEFT JOIN FETCH vt.keyValues WHERE vt.id IN :ids", VehicleType.class)
+                .setParameter("ids", vehicleTypeIds)
+                .getResultList();
+        // The same for the deck plans of the vehicle types, as GraphQL can ask for theirs
+        entityManager.createQuery("SELECT DISTINCT dp FROM DeckPlan dp LEFT JOIN FETCH dp.keyValues "
+                        + "WHERE dp IN (SELECT vt.deckPlan FROM VehicleType vt WHERE vt.id IN :ids)", DeckPlan.class)
+                .setParameter("ids", vehicleTypeIds)
+                .getResultList();
+
         // Step 3: Fetch only the currently valid Vehicles for these VehicleTypes
-        String fetchVehiclesJpql = "SELECT v FROM Vehicle v " +
+        String fetchVehiclesJpql = "SELECT DISTINCT v FROM Vehicle v LEFT JOIN FETCH v.keyValues " +
             "WHERE v.transportType.id IN :ids " +
             "AND v.validBetween.fromDate <= :now " +
             "AND (v.validBetween.toDate IS NULL OR v.validBetween.toDate >= :now)";

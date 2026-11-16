@@ -67,7 +67,7 @@ public class StreamingPublicationDelivery {
 
     private static final Logger logger = LoggerFactory.getLogger(StreamingPublicationDelivery.class);
 
-    private static final JAXBContext publicationDeliveryContext = createContext(PublicationDeliveryStructure.class);
+    private static final JAXBContext publicationDeliveryContext = createContext(PublicationDeliveryStructure.class, org.rutebanken.sobek.netex.extension.gridmarker.GridMarkersExtension.class);
     private static final ObjectFactory netexObjectFactory = new ObjectFactory();
 
     private final VehicleRepository vehicleRepository;
@@ -130,7 +130,7 @@ public class StreamingPublicationDelivery {
         this.sobekComositeFrameExporter = sobekComositeFrameExporter;
     }
 
-    private static JAXBContext createContext(Class clazz) {
+    private static JAXBContext createContext(Class... clazz) {
         try {
             JAXBContext jaxbContext = newInstance(clazz);
             logger.info("Created context {}", jaxbContext.getClass());

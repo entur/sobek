@@ -38,6 +38,7 @@ public interface DeckSpaceMapper {
     @ZoneMapper.ToSobekMappings
     @Mapping(target = "incomingId", source = "id")
     @Mapping(target = "spotAffinities", ignore = true) // Handled by AfterMapping.
+    @Mapping(target = "gridMarkers", ignore = true) // Handled by AfterMapping, from the Extensions.
     @Mapping(target = "parentDeckSpace", ignore = true) // Handled by AfterMapping.
     org.rutebanken.sobek.model.vehicle.PassengerSpace mapToSobek(
             PassengerSpace source,
@@ -65,6 +66,7 @@ public interface DeckSpaceMapper {
     @ZoneMapper.ToSobekMappings
     @Mapping(target = "incomingId", source = "id")
     @Mapping(target = "spotAffinities", ignore = true) // Handled by AfterMapping.
+    @Mapping(target = "gridMarkers", ignore = true) // Handled by AfterMapping, from the Extensions.
     @Mapping(target = "parentDeckSpace", ignore = true) // Handled by AfterMapping.
     void updateSobekFromNetex(
             PassengerSpace source,
@@ -79,6 +81,8 @@ public interface DeckSpaceMapper {
         if(target != null) {
             context.setCurrentSobekDeckSpace(target);
             target.setSpotAffinities(context.getSpotAffinityMapper().mapListToSobek(source.getSpotAffinities(), context));
+            // Not a part of NeTEx: carried in the Extensions. The rows and columns are those of the deck of the space.
+            target.setGridMarkers(GridMarkerExtensionMapper.toSobek(source.getExtensions(), context.getCurrentSobekDeck()));
         }
     }
 
@@ -88,6 +92,7 @@ public interface DeckSpaceMapper {
                                  @Context MappingContext context) {
         if(target != null) {
             target.setSpotAffinities(context.getSpotAffinityMapper().mapListToNetex(source.getSpotAffinities(), context));
+            target.setExtensions(GridMarkerExtensionMapper.toNetex(source.getGridMarkers()));
 
             if(source.getParentDeckSpace() != null) {
                 target.setParentDeckSpaceRef(new DeckSpaceRefStructure().withRef(source.getParentDeckSpace().getNetexId()));

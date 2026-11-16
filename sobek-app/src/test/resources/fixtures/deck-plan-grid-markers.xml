@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PublicationDelivery xmlns="http://www.netex.org.uk/netex" version="1.0">
+    <PublicationTimestamp>2026-11-13T10:25:00.619Z</PublicationTimestamp>
+    <ParticipantRef>AKT</ParticipantRef>
+    <dataObjects>
+        <ResourceFrame id="AKT:ResourceFrame:run@RUN@" version="1">
+            <FrameDefaults>
+                <DefaultResponsibilitySetRef ref="AKT:ResponsibilitySet:run@RUN@" />
+                <DefaultLocale>
+                    <TimeZone>Europe/Oslo</TimeZone>
+                </DefaultLocale>
+            </FrameDefaults>
+            <responsibilitySets>
+                <ResponsibilitySet id="AKT:ResponsibilitySet:run@RUN@" version="1">
+                    <roles>
+                        <ResponsibilityRoleAssignment id="AKT:ResponsibilityRoleAssignment:run@RUN@" version="1">
+                            <DataRoleType>owns</DataRoleType>
+                            <ResponsibleOrganisationRef ref="AKT"/>
+                        </ResponsibilityRoleAssignment>
+                    </roles>
+                </ResponsibilitySet>
+            </responsibilitySets>
+            <deckPlans>
+                <DeckPlan id="AKT:DeckPlan:run@RUN@" version="1">
+                    <Name><Text>Grid marker deck plan</Text></Name>
+                    <decks>
+                        <Deck id="AKT:Deck:run@RUN@" version="1">
+                            <deckSpaces>
+                                <!-- A room without spots: the marker is the only thing that places it on the grid -->
+                                <PassengerSpace id="AKT:PassengerSpace:run@RUN@toilet" version="1">
+                                    <Extensions>
+                                        <gm:GridMarkers xmlns:gm="urn:entur:sobek:ext:gridmarkers:1.0">
+                                            <gm:GridMarker spotRowRef="AKT:SpotRow:run@RUN@r1" spotColumnRef="AKT:SpotColumn:run@RUN@c1">
+                                                <gm:Label lang="nb">WC</gm:Label>
+                                            </gm:GridMarker>
+                                            <gm:GridMarker spotRowRef="AKT:SpotRow:run@RUN@r2" spotColumnRef="AKT:SpotColumn:run@RUN@c1">
+                                                <gm:Label lang="nb">WC rullestol</gm:Label>
+                                            </gm:GridMarker>
+                                        </gm:GridMarkers>
+                                    </Extensions>
+                                </PassengerSpace>
+                                <PassengerSpace id="AKT:PassengerSpace:run@RUN@silent" version="1">
+                                    <Extensions>
+                                        <gm:GridMarkers xmlns:gm="urn:entur:sobek:ext:gridmarkers:1.0">
+                                            <gm:GridMarker spotRowRef="AKT:SpotRow:run@RUN@r2" spotColumnRef="AKT:SpotColumn:run@RUN@c2">
+                                                <gm:Label lang="nb">Stillevogn</gm:Label>
+                                            </gm:GridMarker>
+                                        </gm:GridMarkers>
+                                    </Extensions>
+                                </PassengerSpace>
+                            </deckSpaces>
+                            <spotRows>
+                                <SpotRow id="AKT:SpotRow:run@RUN@r1" version="1"/>
+                                <SpotRow id="AKT:SpotRow:run@RUN@r2" version="1"/>
+                            </spotRows>
+                            <spotColumns>
+                                <SpotColumn id="AKT:SpotColumn:run@RUN@c1" version="1"/>
+                                <SpotColumn id="AKT:SpotColumn:run@RUN@c2" version="1"/>
+                            </spotColumns>
+                        </Deck>
+                    </decks>
+                </DeckPlan>
+            </deckPlans>
+        </ResourceFrame>
+    </dataObjects>
+</PublicationDelivery>

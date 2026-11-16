@@ -47,7 +47,7 @@ public class PublicationDeliveryUnmarshaller {
 
     static {
         try {
-            jaxbContext = newInstance(PublicationDeliveryStructure.class);
+            jaxbContext = newInstance(PublicationDeliveryStructure.class, org.rutebanken.sobek.netex.extension.gridmarker.GridMarkersExtension.class);
         } catch (JAXBException e) {
             throw new RuntimeException(e);
         }

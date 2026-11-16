@@ -31,6 +31,9 @@ public abstract class DeckSpace_VersionStructure extends DeckComponent_VersionSt
     @OneToMany(cascade = CascadeType.ALL)
     protected List<DeckSpaceCapacity> deckSpaceCapacities;
 
+    @OneToMany(cascade = CascadeType.ALL)
+    protected List<GridMarker> gridMarkers;
+
     // TODO - TBD
 //    protected TypeOfDeckSpaceProfileRefStructure typeOfDeckSpaceRef;
 //    protected DeckEntranceCouples_RelStructure deckEntranceCouples;

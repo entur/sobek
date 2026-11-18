@@ -3,4 +3,5 @@ WORKDIR /deployments
 COPY --chown=65532:65532 target/sobek.jar sobek.jar
 COPY --chown=65532:65532 docker/data /deployments/data
 EXPOSE 8780
+ENTRYPOINT ["java", "-XX:-UseBASE64Intrinsics", "-jar"]
 CMD ["sobek.jar"]

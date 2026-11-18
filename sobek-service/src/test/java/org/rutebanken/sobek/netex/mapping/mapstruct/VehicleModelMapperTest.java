@@ -1,6 +1,7 @@
 package org.rutebanken.sobek.netex.mapping.mapstruct;
 
 import jakarta.xml.bind.JAXBElement;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.entur.netex2.model.ObjectFactory;
@@ -52,8 +53,12 @@ class VehicleModelMapperTest extends DataManagedObjectStructureMapperTestBase<
         return mapper.mapToNetex(source, context);
     }
 
+    // The mapping context is shared by the tests of the module: put back what this test changes, see FleetMapperTest
+    private ReferenceResolver originalReferenceResolver;
+
     @BeforeEach
     void setUp() {
+        originalReferenceResolver = context.getReferenceResolver();
         // Create mock resolver
         org.rutebanken.sobek.model.vehicle.VehicleModel mockVehicleModel = new org.rutebanken.sobek.model.vehicle.VehicleModel();
         mockVehicleModel.setNetexId("NMR:VehicleModel:1");
@@ -68,6 +73,11 @@ class VehicleModelMapperTest extends DataManagedObjectStructureMapperTestBase<
         context.setNetexIdHelper(netexIdHelper);
         context.setValidPrefixList(validPrefixList);
         context.setDataManagedObjectStructureMapper(dataManagedObjectStructureMapper);
+    }
+
+    @AfterEach
+    void restoreContext() {
+        context.setReferenceResolver(originalReferenceResolver);
     }
 
     @Test

@@ -128,6 +128,10 @@ public class DefaultMergingVersionedSaverService {
 
         logger.info("Object {}, version {} changed by user {}", newVersion.getNetexId(), newVersion.getVersion(), usernameForAuthenticatedUser);
 
+        // Objects owned by this one are saved with it and have no saver of their own, so they get their ids here.
+        // The importer moves an external id to the key values and leaves the id empty, so most of them have none.
+        netexIdAssigner.assignMissingNetexIdsInTree(newVersion);
+
         newVersion = entityInVersionRepository.save(newVersion);
         if(existingVersion != null) {
             sobekObjectDiffer.logDifference(existingVersion, newVersion);

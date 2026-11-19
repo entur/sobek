@@ -8,6 +8,7 @@ import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -222,6 +223,30 @@ class NetexIdAssignmentIT {
         // Importing the external id again is an update of the same object
         assertThat(importVehicleType(externalId)).isEqualTo(id);
         assertThat(currentVehicleType(id, "PHYSICAL").get("version")).isEqualTo("2");
+    }
+
+    // --- objects owned by the imported object are saved with it, and get their ids from Sobek too ---
+
+    @Test
+    void import_deckPlanWithExternalIdsInAllItsObjects_givesEveryObjectAnId() throws Exception {
+        String body = importExpecting(200, "/fixtures/deck-plan-import-with-nested-external-ids.xml", "EXT:DeckPlan:" + unique());
+
+        // The response is built from the saved objects: an object without an id cannot be written
+        assertThat(body).contains("<Deck ").contains("<PassengerSpot ").contains("<SpotRow ");
+
+        List<String> tables = jdbcTemplate.queryForList(
+                "SELECT DISTINCT table_name FROM information_schema.columns WHERE column_name = 'netex_id' AND table_name IN"
+                        + " ('deck_plan', 'deck_level', 'deck', 'deck_space', 'passenger_space', 'passenger_entrance',"
+                        + " 'locatable_spot', 'passenger_spot', 'spot_row', 'spot_column')",
+                String.class);
+        assertThat(tables).contains("deck_plan", "deck_level", "deck", "spot_row", "spot_column");
+        for (String table : tables) {
+            assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM " + table + " WHERE netex_id IS NULL", Long.class))
+                    .as("rows without an id in %s", table)
+                    .isZero();
+        }
+        assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM deck WHERE netex_id LIKE 'NMR:Deck:%'", Long.class))
+                .isPositive();
     }
 
     // --- the kind of imported vehicle types: NeTEx cannot say it, so the import asks for it ---

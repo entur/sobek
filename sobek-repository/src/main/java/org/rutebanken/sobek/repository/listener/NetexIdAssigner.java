@@ -15,11 +15,25 @@
 
 package org.rutebanken.sobek.repository.listener;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import org.hibernate.Hibernate;
 import org.rutebanken.sobek.model.identification.IdentifiedEntity;
-import org.rutebanken.sobek.netex.id.NetexIdHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Assign Netex ID to IdentifiedObject.
@@ -30,6 +44,8 @@ import org.springframework.stereotype.Component;
 public class NetexIdAssigner {
 
     private static final Logger logger = LoggerFactory.getLogger(NetexIdAssigner.class);
+
+    private static final Map<Class<?>, List<Field>> CASCADED_RELATIONS_BY_TYPE = new ConcurrentHashMap<>();
 
     private final NetexIdProvider netexIdProvider;
 
@@ -46,6 +62,85 @@ public class NetexIdAssigner {
         } else {
             logger.trace("Incoming object claims explicit netex ID {}.", identifiedEntity.getNetexId());
             netexIdProvider.claimId(identifiedEntity);
+        }
+    }
+
+    /**
+     * Gives an id to every object owned by the root that does not have one: the objects reached through
+     * relations the root cascades persist to (a deck plan's decks, spaces, spots, entrances and so on).
+     * These objects are saved together with the root and have no saver service of their own, so nothing
+     * else assigns them an id. An id the client controls is kept as it is. The root itself is not touched.
+     *
+     * @param root the entity about to be saved
+     */
+    public void assignMissingNetexIdsInTree(IdentifiedEntity root) {
+        assignMissingNetexIdsInTree(root, Collections.newSetFromMap(new IdentityHashMap<>()));
+    }
+
+    private void assignMissingNetexIdsInTree(IdentifiedEntity entity, Set<Object> visited) {
+        if (!visited.add(entity)) {
+            return;
+        }
+        for (Field field : cascadedRelations(entity.getClass())) {
+            Object value = readField(field, entity);
+            if (value == null || !Hibernate.isInitialized(value)) {
+                continue;
+            }
+            if (value instanceof Collection<?> collection) {
+                collection.forEach(element -> assignChild(element, visited));
+            } else {
+                assignChild(value, visited);
+            }
+        }
+    }
+
+    private void assignChild(Object child, Set<Object> visited) {
+        if (child instanceof IdentifiedEntity childEntity) {
+            if (childEntity.getNetexId() == null) {
+                assignNetexId(childEntity);
+            }
+            assignMissingNetexIdsInTree(childEntity, visited);
+        }
+    }
+
+    /**
+     * The fields that own children: one-to-many and one-to-one relations that cascade persist. Relations that
+     * only point to another entity (many-to-one, many-to-many, the inverse side of a relation) are left out,
+     * as the referenced entity is saved on its own.
+     */
+    private static List<Field> cascadedRelations(Class<?> type) {
+        return CASCADED_RELATIONS_BY_TYPE.computeIfAbsent(type, t -> {
+            List<Field> fields = new ArrayList<>();
+            for (Class<?> c = t; c != null && c != Object.class; c = c.getSuperclass()) {
+                for (Field field : c.getDeclaredFields()) {
+                    if (ownsChildren(field)) {
+                        field.setAccessible(true);
+                        fields.add(field);
+                    }
+                }
+            }
+            return fields;
+        });
+    }
+
+    private static boolean ownsChildren(Field field) {
+        OneToMany oneToMany = field.getAnnotation(OneToMany.class);
+        if (oneToMany != null) {
+            return oneToMany.mappedBy().isEmpty() && cascadesPersist(oneToMany.cascade());
+        }
+        OneToOne oneToOne = field.getAnnotation(OneToOne.class);
+        return oneToOne != null && oneToOne.mappedBy().isEmpty() && cascadesPersist(oneToOne.cascade());
+    }
+
+    private static boolean cascadesPersist(CascadeType[] cascade) {
+        return Arrays.stream(cascade).anyMatch(c -> c == CascadeType.ALL || c == CascadeType.PERSIST);
+    }
+
+    private static Object readField(Field field, Object target) {
+        try {
+            return field.get(target);
+        } catch (IllegalAccessException e) {
+            throw new IllegalStateException("Cannot read " + field, e);
         }
     }
 }

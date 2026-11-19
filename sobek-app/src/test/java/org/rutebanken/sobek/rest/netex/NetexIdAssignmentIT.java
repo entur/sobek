@@ -249,6 +249,28 @@ class NetexIdAssignmentIT {
                 .isPositive();
     }
 
+    @Test
+    void import_vehicleTypeWithAnExternalPassengerCapacityId_givesThePassengerCapacityAnId() throws Exception {
+        String externalId = "EXT:VehicleType:" + unique();
+
+        String body = importExpecting(200, "/fixtures/vehicle-type-import-with-external-capacity-id.xml", externalId);
+
+        assertThat(body).contains("<PassengerCapacity ");
+        assertNoRowsWithoutId("passenger_capacity", "vehicle_type");
+        assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM passenger_capacity WHERE netex_id LIKE 'NMR:PassengerCapacity:%'", Long.class))
+                .isPositive();
+    }
+
+    @Test
+    void import_trainWithExternalIds_givesTheComponentsAnId() throws Exception {
+        String body = importExpecting(200, "/fixtures/train-import-external-ids.xml", String.valueOf(unique()));
+
+        assertThat(body).contains("<TrainComponent ");
+        assertNoRowsWithoutId("train_component", "vehicle_type");
+        assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM train_component WHERE netex_id LIKE 'NMR:TrainComponent:%'", Long.class))
+                .isPositive();
+    }
+
     // --- the kind of imported vehicle types: NeTEx cannot say it, so the import asks for it ---
 
     @Test
@@ -312,6 +334,14 @@ class NetexIdAssignmentIT {
 
     private static long unique() {
         return 800_000_000L + (System.nanoTime() % 100_000_000L);
+    }
+
+    private void assertNoRowsWithoutId(String... tables) {
+        for (String table : tables) {
+            assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM " + table + " WHERE netex_id IS NULL", Long.class))
+                    .as("rows without an id in %s", table)
+                    .isZero();
+        }
     }
 
     private long rows(String table, String netexId) {

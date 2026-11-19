@@ -20,7 +20,6 @@ import lombok.extern.java.Log;
 import org.rutebanken.sobek.model.vehicle.DeckPlan;
 import org.rutebanken.sobek.repository.DeckPlanRepository;
 import org.rutebanken.sobek.repository.VehicleTypeRepository;
-import org.rutebanken.sobek.repository.listener.NetexIdAssigner;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -33,13 +32,11 @@ public class DeckPlanVersionedSaverService {
     private final DeckPlanRepository deckPlanRepository;
     private final VehicleTypeRepository vehicleTypeRepository;
     private final DefaultMergingVersionedSaverService defaultVersionedSaverService;
-    private final NetexIdAssigner netexIdAssigner;
 
-    public DeckPlanVersionedSaverService(DeckPlanRepository deckPlanRepository, VehicleTypeRepository vehicleTypeRepository, DefaultMergingVersionedSaverService defaultVersionedSaverService, NetexIdAssigner netexIdAssigner) {
+    public DeckPlanVersionedSaverService(DeckPlanRepository deckPlanRepository, VehicleTypeRepository vehicleTypeRepository, DefaultMergingVersionedSaverService defaultVersionedSaverService) {
         this.deckPlanRepository = deckPlanRepository;
         this.vehicleTypeRepository = vehicleTypeRepository;
         this.defaultVersionedSaverService = defaultVersionedSaverService;
-        this.netexIdAssigner = netexIdAssigner;
     }
 
 

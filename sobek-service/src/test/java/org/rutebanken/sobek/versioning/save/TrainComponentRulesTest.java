@@ -18,7 +18,6 @@ import org.rutebanken.sobek.netex.id.ValidPrefixList;
 import org.rutebanken.sobek.repository.FleetRepository;
 import org.rutebanken.sobek.repository.VehicleRepository;
 import org.rutebanken.sobek.repository.VehicleTypeRepository;
-import org.rutebanken.sobek.repository.listener.NetexIdAssigner;
 
 import java.time.Instant;
 import java.util.List;
@@ -46,14 +45,11 @@ class TrainComponentRulesTest {
     private FleetRepository fleetRepository;
     @Mock
     private DefaultMergingVersionedSaverService defaultVersionedSaverService;
-    @Mock
-    private NetexIdAssigner netexIdAssigner;
-
     private VehicleTypeVersionedSaverService saver;
 
     @BeforeEach
     void setUp() {
-        saver = new VehicleTypeVersionedSaverService(vehicleTypeRepository, vehicleRepository, fleetRepository, defaultVersionedSaverService, netexIdAssigner,
+        saver = new VehicleTypeVersionedSaverService(vehicleTypeRepository, vehicleRepository, fleetRepository, defaultVersionedSaverService,
                 new ValidPrefixList("NMR", List.of("AKT", "RUT")));
     }
 

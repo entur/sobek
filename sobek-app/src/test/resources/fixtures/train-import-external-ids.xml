@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- A train with a component and a train element, all with ids in a codespace that is not Sobek's nor registered.
+     @ID@ makes the ids unique to one test run. -->
+<PublicationDelivery xmlns="http://www.netex.org.uk/netex" version="1.0">
+    <PublicationTimestamp>2026-03-16T10:25:00.619Z</PublicationTimestamp>
+    <ParticipantRef>TST</ParticipantRef>
+    <dataObjects>
+        <ResourceFrame id="RF:1" version="1">
+            <FrameDefaults>
+                <DefaultResponsibilitySetRef ref="TST:ResponsibilitySet:1" />
+                <DefaultLocale>
+                    <TimeZone>Europe/Oslo</TimeZone>
+                </DefaultLocale>
+            </FrameDefaults>
+            <responsibilitySets>
+                <ResponsibilitySet id="TST:ResponsibilitySet:1" version="1">
+                    <roles>
+                        <ResponsibilityRoleAssignment id="TST:ResponsibilityRoleAssignment:1" version="1">
+                            <DataRoleType>owns</DataRoleType>
+                            <ResponsibleOrganisationRef ref="AKT"/>
+                        </ResponsibilityRoleAssignment>
+                    </roles>
+                </ResponsibilitySet>
+            </responsibilitySets>
+            <vehicleTypes>
+                <Train id="EXT:Train:@ID@" version="1">
+                    <Name lang="nb"><Text>External train</Text></Name>
+                    <TransportMode>rail</TransportMode>
+                    <TrainSize>
+                        <NumberOfCars>1</NumberOfCars>
+                    </TrainSize>
+                    <components>
+                        <TrainComponent id="EXT:TrainComponent:@ID@" version="1" order="1">
+                            <Label>only car</Label>
+                            <TrainElementRef ref="EXT:TrainElement:@ID@"/>
+                        </TrainComponent>
+                    </components>
+                </Train>
+            </vehicleTypes>
+            <trainElementTypes>
+                <TrainElement id="EXT:TrainElement:@ID@" version="1">
+                    <Name lang="nb"><Text>External car</Text></Name>
+                    <TrainElementType>carriage</TrainElementType>
+                </TrainElement>
+            </trainElementTypes>
+        </ResourceFrame>
+    </dataObjects>
+</PublicationDelivery>

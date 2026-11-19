@@ -8,6 +8,7 @@ import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -224,6 +225,77 @@ class NetexIdAssignmentIT {
         assertThat(currentVehicleType(id, "PHYSICAL").get("version")).isEqualTo("2");
     }
 
+    // --- objects owned by the imported object are saved with it, and get their ids from Sobek too ---
+
+    @Test
+    void import_deckPlanWithExternalIdsInAllItsObjects_givesEveryObjectAnId() throws Exception {
+        String body = importExpecting(200, "/fixtures/deck-plan-import-with-nested-external-ids.xml", "EXT:DeckPlan:" + unique());
+
+        // The response is built from the saved objects: an object without an id cannot be written
+        assertThat(body).contains("<Deck ").contains("<PassengerSpot ").contains("<SpotRow ");
+
+        List<String> tables = jdbcTemplate.queryForList(
+                "SELECT DISTINCT table_name FROM information_schema.columns WHERE column_name = 'netex_id' AND table_name IN"
+                        + " ('deck_plan', 'deck_level', 'deck', 'deck_space', 'passenger_space', 'passenger_entrance',"
+                        + " 'locatable_spot', 'passenger_spot', 'spot_row', 'spot_column')",
+                String.class);
+        assertThat(tables).contains("deck_plan", "deck_level", "deck", "spot_row", "spot_column");
+        for (String table : tables) {
+            assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM " + table + " WHERE netex_id IS NULL", Long.class))
+                    .as("rows without an id in %s", table)
+                    .isZero();
+        }
+        assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM deck WHERE netex_id LIKE 'NMR:Deck:%'", Long.class))
+                .isPositive();
+    }
+
+    @Test
+    void import_deckPlanAgain_keepsTheIdsOfTheObjectsItOwns() throws Exception {
+        String externalId = "EXT:DeckPlan:" + unique();
+
+        importExpecting(200, "/fixtures/deck-plan-import-with-nested-external-ids.xml", externalId);
+        importExpecting(200, "/fixtures/deck-plan-import-with-nested-external-ids.xml", externalId);
+
+        // The deck plan has two versions, and the deck and the deck level have the same ids in both
+        assertSameChildIdInBothVersions(externalId, "deck", "deck_plan_decks", "decks_id");
+        assertSameChildIdInBothVersions(externalId, "deck_level", "deck_plan_deck_levels", "deck_levels_id");
+    }
+
+    private void assertSameChildIdInBothVersions(String planImportedId, String childTable, String joinTable, String joinColumn) {
+        List<String> childIds = jdbcTemplate.queryForList(
+                "SELECT c.netex_id FROM deck_plan p"
+                        + " JOIN deck_plan_key_values pk ON pk.deck_plan_id = p.id"
+                        + " JOIN key_value kv ON kv.id = pk.key_values_id"
+                        + " JOIN " + joinTable + " j ON j.deck_plan_id = p.id"
+                        + " JOIN " + childTable + " c ON c.id = j." + joinColumn
+                        + " WHERE kv.key = 'imported-id' AND kv.value = ? ORDER BY p.version",
+                String.class, planImportedId);
+        assertThat(childIds).as("%s in the two versions of the deck plan", childTable).hasSize(2);
+        assertThat(childIds.get(0)).startsWith("NMR:").isEqualTo(childIds.get(1));
+    }
+
+    @Test
+    void import_vehicleTypeWithAnExternalPassengerCapacityId_givesThePassengerCapacityAnId() throws Exception {
+        String externalId = "EXT:VehicleType:" + unique();
+
+        String body = importExpecting(200, "/fixtures/vehicle-type-import-with-external-capacity-id.xml", externalId);
+
+        assertThat(body).contains("<PassengerCapacity ");
+        assertNoRowsWithoutId("passenger_capacity", "vehicle_type");
+        assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM passenger_capacity WHERE netex_id LIKE 'NMR:PassengerCapacity:%'", Long.class))
+                .isPositive();
+    }
+
+    @Test
+    void import_trainWithExternalIds_givesTheComponentsAnId() throws Exception {
+        String body = importExpecting(200, "/fixtures/train-import-external-ids.xml", String.valueOf(unique()));
+
+        assertThat(body).contains("<TrainComponent ");
+        assertNoRowsWithoutId("train_component", "vehicle_type");
+        assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM train_component WHERE netex_id LIKE 'NMR:TrainComponent:%'", Long.class))
+                .isPositive();
+    }
+
     // --- the kind of imported vehicle types: NeTEx cannot say it, so the import asks for it ---
 
     @Test
@@ -289,6 +361,14 @@ class NetexIdAssignmentIT {
         return 800_000_000L + (System.nanoTime() % 100_000_000L);
     }
 
+    private void assertNoRowsWithoutId(String... tables) {
+        for (String table : tables) {
+            assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM " + table + " WHERE netex_id IS NULL", Long.class))
+                    .as("rows without an id in %s", table)
+                    .isZero();
+        }
+    }
+
     private long rows(String table, String netexId) {
         return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM " + table + " WHERE netex_id = ?", Long.class, netexId);
     }
@@ -312,7 +392,7 @@ class NetexIdAssignmentIT {
     private String importExpecting(int status, String fixture, String id, String kind) throws Exception {
         String xml;
         try (InputStream in = getClass().getResourceAsStream(fixture)) {
-            xml = new String(in.readAllBytes(), StandardCharsets.UTF_8).replace("@ID@", id);
+            xml = new String(in.readAllBytes(), StandardCharsets.UTF_8).replace("@ID@", id).replace("@RUN@", id.replaceAll("[^0-9]", ""));
         }
         io.restassured.response.Response response = given()
                 .contentType("application/xml")

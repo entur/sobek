@@ -19,7 +19,6 @@ package org.rutebanken.sobek.versioning.save;
 import lombok.extern.java.Log;
 import org.rutebanken.sobek.error.VehicleTypeKindViolationException;
 import org.rutebanken.sobek.model.vehicle.CompoundTrain;
-import org.rutebanken.sobek.model.vehicle.PassengerCapacity;
 import org.rutebanken.sobek.model.vehicle.Train;
 import org.rutebanken.sobek.model.vehicle.TrainElement;
 import org.rutebanken.sobek.netex.id.CodespaceType;
@@ -29,7 +28,6 @@ import org.rutebanken.sobek.model.vehicle.VehicleTypeKindEnumeration;
 import org.rutebanken.sobek.repository.FleetRepository;
 import org.rutebanken.sobek.repository.VehicleRepository;
 import org.rutebanken.sobek.repository.VehicleTypeRepository;
-import org.rutebanken.sobek.repository.listener.NetexIdAssigner;
 import org.springframework.stereotype.Component;
 
 import jakarta.validation.ValidationException;
@@ -47,17 +45,15 @@ public class VehicleTypeVersionedSaverService {
     private final VehicleRepository vehicleRepository;
     private final FleetRepository fleetRepository;
     private final DefaultMergingVersionedSaverService defaultVersionedSaverService;
-    private final NetexIdAssigner netexIdAssigner;
     private final ValidPrefixList validPrefixList;
 
 
-    public VehicleTypeVersionedSaverService(VehicleTypeRepository vehicleTypeRepository, VehicleRepository vehicleRepository, FleetRepository fleetRepository, DefaultMergingVersionedSaverService defaultVersionedSaverService, NetexIdAssigner netexIdAssigner, ValidPrefixList validPrefixList) {
+    public VehicleTypeVersionedSaverService(VehicleTypeRepository vehicleTypeRepository, VehicleRepository vehicleRepository, FleetRepository fleetRepository, DefaultMergingVersionedSaverService defaultVersionedSaverService, ValidPrefixList validPrefixList) {
         this.validPrefixList = validPrefixList;
         this.vehicleTypeRepository = vehicleTypeRepository;
         this.vehicleRepository = vehicleRepository;
         this.fleetRepository = fleetRepository;
         this.defaultVersionedSaverService = defaultVersionedSaverService;
-        this.netexIdAssigner = netexIdAssigner;
     }
 
     public VehicleType saveNewVersion(VehicleType newVersion) {
@@ -74,21 +70,7 @@ public class VehicleTypeVersionedSaverService {
         verifyNetexIdMatchesKind(newVersion);
         verifyComponents(newVersion);
 
-        // Assign netexId if not already assigned
-        // PassengerCapacity doesn't have a independent lifecycle, meaning it's linked to the VehicleType at all times
-        // Therefore, if the client doesn't control the netexId, we assign it here.
-        PassengerCapacity passengerCapacity = newVersion.getPassengerCapacity();
-        if(passengerCapacity != null && passengerCapacity.getId() == null) {
-            netexIdAssigner.assignNetexId(passengerCapacity);
-        }
-
-        // Components have no independent lifecycle either: they are children of the train, and Sobek assigns their ids
-        if (newVersion instanceof Train train && train.getComponents() != null) {
-            train.getComponents().stream().filter(c -> c.getNetexId() == null).forEach(netexIdAssigner::assignNetexId);
-        } else if (newVersion instanceof CompoundTrain compoundTrain && compoundTrain.getComponents() != null) {
-            compoundTrain.getComponents().stream().filter(c -> c.getNetexId() == null).forEach(netexIdAssigner::assignNetexId);
-        }
-
+        // The passenger capacity and the components of a train get their ids when the vehicle type is saved
         var saved = defaultVersionedSaverService.saveNewVersion(existingVersion, newVersion, defaultValidFrom, vehicleTypeRepository);
         if(existingVersion != null && !saved.getId().equals(existingVersion.getId())) {
             vehicleRepository.moveToTransportType(existingVersion.getId(), saved.getId());

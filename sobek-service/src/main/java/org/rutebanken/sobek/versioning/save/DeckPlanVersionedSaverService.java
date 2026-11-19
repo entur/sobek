@@ -20,7 +20,6 @@ import lombok.extern.java.Log;
 import org.rutebanken.sobek.model.vehicle.DeckPlan;
 import org.rutebanken.sobek.repository.DeckPlanRepository;
 import org.rutebanken.sobek.repository.VehicleTypeRepository;
-import org.rutebanken.sobek.repository.listener.NetexIdAssigner;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -33,27 +32,16 @@ public class DeckPlanVersionedSaverService {
     private final DeckPlanRepository deckPlanRepository;
     private final VehicleTypeRepository vehicleTypeRepository;
     private final DefaultMergingVersionedSaverService defaultVersionedSaverService;
-    private final NetexIdAssigner netexIdAssigner;
 
-    public DeckPlanVersionedSaverService(DeckPlanRepository deckPlanRepository, VehicleTypeRepository vehicleTypeRepository, DefaultMergingVersionedSaverService defaultVersionedSaverService, NetexIdAssigner netexIdAssigner) {
+    public DeckPlanVersionedSaverService(DeckPlanRepository deckPlanRepository, VehicleTypeRepository vehicleTypeRepository, DefaultMergingVersionedSaverService defaultVersionedSaverService) {
         this.deckPlanRepository = deckPlanRepository;
         this.vehicleTypeRepository = vehicleTypeRepository;
         this.defaultVersionedSaverService = defaultVersionedSaverService;
-        this.netexIdAssigner = netexIdAssigner;
     }
 
 
     public DeckPlan saveNewVersion(DeckPlan existingVersion, DeckPlan newVersion, Instant defaultValidFrom) {
-        // Assign netexId if not already assigned
-        // DeckLevel doesn't have a independent lifecycle, meaning it's linked to the DeckPlan at all times
-        // Therefore, if the client doesn't control the netexId, we assign it here.
-        if(newVersion.getDeckLevels() != null && !newVersion.getDeckLevels().isEmpty()) {
-            newVersion.getDeckLevels().forEach(deckLevel -> {
-                if(deckLevel.getNetexId() == null) {
-                    netexIdAssigner.assignNetexId(deckLevel);
-                }
-            });
-        }
+        // The deck levels, decks and everything below them get their ids when the plan is saved
         var saved = defaultVersionedSaverService.saveNewVersion(existingVersion, newVersion, defaultValidFrom, deckPlanRepository);
         if(existingVersion != null && !saved.getId().equals(existingVersion.getId())) {
             vehicleTypeRepository.moveToDeckPlan(existingVersion.getId(), saved.getId());

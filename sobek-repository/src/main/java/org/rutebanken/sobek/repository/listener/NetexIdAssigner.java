@@ -15,11 +15,30 @@
 
 package org.rutebanken.sobek.repository.listener;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import org.hibernate.Hibernate;
+import org.rutebanken.sobek.model.DataManagedObjectStructure;
+import org.rutebanken.sobek.model.KeyValue;
 import org.rutebanken.sobek.model.identification.IdentifiedEntity;
-import org.rutebanken.sobek.netex.id.NetexIdHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
+import static org.rutebanken.sobek.model.CustomKeyValueTypes.ORIGINAL_ID_KEY;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Assign Netex ID to IdentifiedObject.
@@ -30,6 +49,8 @@ import org.springframework.stereotype.Component;
 public class NetexIdAssigner {
 
     private static final Logger logger = LoggerFactory.getLogger(NetexIdAssigner.class);
+
+    private static final Map<Class<?>, List<Field>> CASCADED_RELATIONS_BY_TYPE = new ConcurrentHashMap<>();
 
     private final NetexIdProvider netexIdProvider;
 
@@ -46,6 +67,153 @@ public class NetexIdAssigner {
         } else {
             logger.trace("Incoming object claims explicit netex ID {}.", identifiedEntity.getNetexId());
             netexIdProvider.claimId(identifiedEntity);
+        }
+    }
+
+    /**
+     * Gives an id to every object owned by the root that does not have one: the objects reached through
+     * relations the root cascades persist to (a deck plan's decks, spaces, spots, entrances and so on).
+     * These objects are saved together with the root and have no saver service of their own, so nothing
+     * else assigns them an id. An id the client controls is kept as it is. The root itself is not touched.
+     *
+     * @param root the entity about to be saved
+     */
+    public void assignMissingNetexIdsInTree(IdentifiedEntity root) {
+        for (IdentifiedEntity owned : ownedEntities(root, false)) {
+            if (owned.getNetexId() == null) {
+                assignNetexId(owned);
+            }
+        }
+    }
+
+    /**
+     * Gives the objects owned by a new version the ids of the objects they replace in the existing version.
+     * <p>
+     * An object that arrives with an id from an external codespace has no id of its own: the external id is kept
+     * as its imported-id, and Sobek assigns an id. Sent again, the owner matches the existing version by its
+     * imported-id and becomes a new version of it, but the objects it owns do not: without this they would get
+     * new ids with every version. They are matched by type and imported-id. An object with an id of its own is
+     * left alone, and so is one without an imported-id.
+     * <p>
+     * Call before {@link #assignMissingNetexIdsInTree}, which gives an id to those that found no match.
+     *
+     * @param existingVersion the version the new one replaces
+     * @param newVersion      the version about to be saved
+     */
+    public void reuseIdsOfExistingOwnedEntities(IdentifiedEntity existingVersion, IdentifiedEntity newVersion) {
+        Map<OwnedKey, IdentifiedEntity> existingByImportedId = null;
+        for (IdentifiedEntity owned : ownedEntities(newVersion, false)) {
+            String importedId = owned.getNetexId() == null ? importedIdOf(owned) : null;
+            if (importedId == null) {
+                continue;
+            }
+            if (existingByImportedId == null) {
+                existingByImportedId = new HashMap<>();
+                for (IdentifiedEntity existing : ownedEntities(existingVersion, true)) {
+                    String existingImportedId = importedIdOf(existing);
+                    if (existingImportedId != null && existing.getNetexId() != null) {
+                        existingByImportedId.putIfAbsent(new OwnedKey(Hibernate.getClass(existing), existingImportedId), existing);
+                    }
+                }
+            }
+            // An object is the replacement of one existing object only
+            IdentifiedEntity replaced = existingByImportedId.remove(new OwnedKey(owned.getClass(), importedId));
+            if (replaced != null) {
+                logger.trace("Reusing ID {} for the replacement of {}", replaced.getNetexId(), importedId);
+                owned.setNetexId(replaced.getNetexId());
+            }
+        }
+    }
+
+    private record OwnedKey(Class<?> type, String importedId) {
+    }
+
+    private static String importedIdOf(IdentifiedEntity entity) {
+        if (entity instanceof DataManagedObjectStructure dataManaged) {
+            return dataManaged.getKeyValues().stream()
+                    .filter(kv -> ORIGINAL_ID_KEY.equals(kv.getKey()))
+                    .map(KeyValue::getValue)
+                    .findFirst()
+                    .orElse(null);
+        }
+        return null;
+    }
+
+    /**
+     * The objects the root owns, at any depth, in the order they are reached. Not the root itself.
+     *
+     * @param initialize true to load relations that are not loaded yet (for an entity loaded from the database, in
+     *                   a transaction), false to skip them (for a new object, they are all there)
+     */
+    private List<IdentifiedEntity> ownedEntities(IdentifiedEntity root, boolean initialize) {
+        List<IdentifiedEntity> result = new ArrayList<>();
+        Set<Object> visited = Collections.newSetFromMap(new IdentityHashMap<>());
+        collectOwnedEntities(root, initialize, visited, result);
+        return result;
+    }
+
+    private void collectOwnedEntities(IdentifiedEntity entity, boolean initialize, Set<Object> visited, List<IdentifiedEntity> result) {
+        if (!visited.add(entity)) {
+            return;
+        }
+        for (Field field : cascadedRelations(Hibernate.getClass(entity))) {
+            Object value = readField(field, entity);
+            if (value == null) {
+                continue;
+            }
+            if (initialize) {
+                Hibernate.initialize(value);
+            } else if (!Hibernate.isInitialized(value)) {
+                continue;
+            }
+            Collection<?> children = value instanceof Collection<?> collection ? collection : List.of(value);
+            for (Object child : children) {
+                if (child instanceof IdentifiedEntity childEntity && !visited.contains(childEntity)) {
+                    result.add(childEntity);
+                    collectOwnedEntities(childEntity, initialize, visited, result);
+                }
+            }
+        }
+    }
+
+    /**
+     * The fields that own children: one-to-many and one-to-one relations that cascade persist. Relations that
+     * only point to another entity (many-to-one, many-to-many, the inverse side of a relation) are left out,
+     * as the referenced entity is saved on its own.
+     */
+    private static List<Field> cascadedRelations(Class<?> type) {
+        return CASCADED_RELATIONS_BY_TYPE.computeIfAbsent(type, t -> {
+            List<Field> fields = new ArrayList<>();
+            for (Class<?> c = t; c != null && c != Object.class; c = c.getSuperclass()) {
+                for (Field field : c.getDeclaredFields()) {
+                    if (ownsChildren(field)) {
+                        field.setAccessible(true);
+                        fields.add(field);
+                    }
+                }
+            }
+            return fields;
+        });
+    }
+
+    private static boolean ownsChildren(Field field) {
+        OneToMany oneToMany = field.getAnnotation(OneToMany.class);
+        if (oneToMany != null) {
+            return oneToMany.mappedBy().isEmpty() && cascadesPersist(oneToMany.cascade());
+        }
+        OneToOne oneToOne = field.getAnnotation(OneToOne.class);
+        return oneToOne != null && oneToOne.mappedBy().isEmpty() && cascadesPersist(oneToOne.cascade());
+    }
+
+    private static boolean cascadesPersist(CascadeType[] cascade) {
+        return Arrays.stream(cascade).anyMatch(c -> c == CascadeType.ALL || c == CascadeType.PERSIST);
+    }
+
+    private static Object readField(Field field, Object target) {
+        try {
+            return field.get(target);
+        } catch (IllegalAccessException e) {
+            throw new IllegalStateException("Cannot read " + field, e);
         }
     }
 }

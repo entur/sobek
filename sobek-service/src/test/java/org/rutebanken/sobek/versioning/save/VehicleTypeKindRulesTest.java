@@ -13,7 +13,6 @@ import org.rutebanken.sobek.netex.id.ValidPrefixList;
 import org.rutebanken.sobek.repository.FleetRepository;
 import org.rutebanken.sobek.repository.VehicleRepository;
 import org.rutebanken.sobek.repository.VehicleTypeRepository;
-import org.rutebanken.sobek.repository.listener.NetexIdAssigner;
 
 import java.time.Instant;
 import java.util.List;
@@ -36,15 +35,12 @@ class VehicleTypeKindRulesTest {
     private FleetRepository fleetRepository;
     @Mock
     private DefaultMergingVersionedSaverService defaultVersionedSaverService;
-    @Mock
-    private NetexIdAssigner netexIdAssigner;
-
     private VehicleTypeVersionedSaverService vehicleTypeSaver;
     private VehicleVersionedSaverService vehicleSaver;
 
     @BeforeEach
     void setUp() {
-        vehicleTypeSaver = new VehicleTypeVersionedSaverService(vehicleTypeRepository, vehicleRepository, fleetRepository, defaultVersionedSaverService, netexIdAssigner,
+        vehicleTypeSaver = new VehicleTypeVersionedSaverService(vehicleTypeRepository, vehicleRepository, fleetRepository, defaultVersionedSaverService,
                 new ValidPrefixList("NMR", List.of("RUT")));
         vehicleSaver = new VehicleVersionedSaverService(vehicleRepository, fleetRepository, defaultVersionedSaverService);
     }

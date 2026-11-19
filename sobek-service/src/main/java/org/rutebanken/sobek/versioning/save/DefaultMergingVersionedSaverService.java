@@ -130,6 +130,9 @@ public class DefaultMergingVersionedSaverService {
 
         // Objects owned by this one are saved with it and have no saver of their own, so they get their ids here.
         // The importer moves an external id to the key values and leaves the id empty, so most of them have none.
+        if (existingVersion != null) {
+            netexIdAssigner.reuseIdsOfExistingOwnedEntities(existingVersion, newVersion);
+        }
         netexIdAssigner.assignMissingNetexIdsInTree(newVersion);
 
         newVersion = entityInVersionRepository.save(newVersion);

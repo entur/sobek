@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- A deck plan whose objects all have ids in a codespace that is not Sobek's nor registered (as from Varelager).
-     @ID@ is the id of the deck plan itself. -->
+     @ID@ is the id of the deck plan itself, and @RUN@ makes the ids of the objects in it unique to one test (an external id may not be used twice). -->
 <PublicationDelivery xmlns="http://www.netex.org.uk/netex" xmlns:gml="http://www.opengis.net/gml/3.2" version="1.0">
     <PublicationTimestamp>2026-03-16T10:25:00.619Z</PublicationTimestamp>
     <ParticipantRef>TST</ParticipantRef>
@@ -26,40 +26,40 @@
                 <DeckPlan id="@ID@" version="1">
                     <Name>Nested external ids</Name>
                     <deckLevels>
-                        <DeckLevel id="ENT:DeckLevel:1-1-0" version="1">
+                        <DeckLevel id="ENT:DeckLevel:@RUN@-0" version="1">
                             <Name>Deck 0</Name>
                         </DeckLevel>
                     </deckLevels>
                     <decks>
-                        <Deck id="ENT:Deck:1-1-0" version="1">
+                        <Deck id="ENT:Deck:@RUN@-0" version="1">
                             <Name>Deck</Name>
-                            <DeckLevelRef ref="ENT:DeckLevel:1-1-0" version="1"/>
+                            <DeckLevelRef ref="ENT:DeckLevel:@RUN@-0" version="1"/>
                             <deckSpaces>
-                                <PassengerSpace id="ENT:PassengerSpace:1-1-seating" version="1">
+                                <PassengerSpace id="ENT:PassengerSpace:@RUN@-seating" version="1">
                                     <deckEntrances>
-                                        <PassengerEntrance id="ENT:DeckEntrance:1-1-1" version="1">
+                                        <PassengerEntrance id="ENT:DeckEntrance:@RUN@-1" version="1">
                                             <Name>EXIT_LEFT</Name>
                                             <VehicleSide>leftSide</VehicleSide>
                                         </PassengerEntrance>
                                     </deckEntrances>
                                     <PassengerSpaceType>seatingArea</PassengerSpaceType>
                                     <passengerSpots>
-                                        <PassengerSpot id="ENT:PassengerSpot:1-1-1" version="1">
+                                        <PassengerSpot id="ENT:PassengerSpot:@RUN@-1" version="1">
                                             <Label>1</Label>
                                             <LocatableSpotType>seat</LocatableSpotType>
-                                            <SpotRowRef ref="ENT:SpotRow:1-1-r0" version="1"/>
-                                            <SpotColumnRef ref="ENT:SpotColumn:1-1-c0" version="1"/>
+                                            <SpotRowRef ref="ENT:SpotRow:@RUN@-r0" version="1"/>
+                                            <SpotColumnRef ref="ENT:SpotColumn:@RUN@-c0" version="1"/>
                                         </PassengerSpot>
                                     </passengerSpots>
                                 </PassengerSpace>
                             </deckSpaces>
                             <spotRows>
-                                <SpotRow id="ENT:SpotRow:1-1-r0" version="1">
+                                <SpotRow id="ENT:SpotRow:@RUN@-r0" version="1">
                                     <Label>1</Label>
                                 </SpotRow>
                             </spotRows>
                             <spotColumns>
-                                <SpotColumn id="ENT:SpotColumn:1-1-c0" version="1">
+                                <SpotColumn id="ENT:SpotColumn:@RUN@-c0" version="1">
                                     <Label>1</Label>
                                 </SpotColumn>
                             </spotColumns>

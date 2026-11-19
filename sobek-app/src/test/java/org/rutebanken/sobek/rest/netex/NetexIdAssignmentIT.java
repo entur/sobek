@@ -250,6 +250,31 @@ class NetexIdAssignmentIT {
     }
 
     @Test
+    void import_deckPlanAgain_keepsTheIdsOfTheObjectsItOwns() throws Exception {
+        String externalId = "EXT:DeckPlan:" + unique();
+
+        importExpecting(200, "/fixtures/deck-plan-import-with-nested-external-ids.xml", externalId);
+        importExpecting(200, "/fixtures/deck-plan-import-with-nested-external-ids.xml", externalId);
+
+        // The deck plan has two versions, and the deck and the deck level have the same ids in both
+        assertSameChildIdInBothVersions(externalId, "deck", "deck_plan_decks", "decks_id");
+        assertSameChildIdInBothVersions(externalId, "deck_level", "deck_plan_deck_levels", "deck_levels_id");
+    }
+
+    private void assertSameChildIdInBothVersions(String planImportedId, String childTable, String joinTable, String joinColumn) {
+        List<String> childIds = jdbcTemplate.queryForList(
+                "SELECT c.netex_id FROM deck_plan p"
+                        + " JOIN deck_plan_key_values pk ON pk.deck_plan_id = p.id"
+                        + " JOIN key_value kv ON kv.id = pk.key_values_id"
+                        + " JOIN " + joinTable + " j ON j.deck_plan_id = p.id"
+                        + " JOIN " + childTable + " c ON c.id = j." + joinColumn
+                        + " WHERE kv.key = 'imported-id' AND kv.value = ? ORDER BY p.version",
+                String.class, planImportedId);
+        assertThat(childIds).as("%s in the two versions of the deck plan", childTable).hasSize(2);
+        assertThat(childIds.get(0)).startsWith("NMR:").isEqualTo(childIds.get(1));
+    }
+
+    @Test
     void import_vehicleTypeWithAnExternalPassengerCapacityId_givesThePassengerCapacityAnId() throws Exception {
         String externalId = "EXT:VehicleType:" + unique();
 
@@ -367,7 +392,7 @@ class NetexIdAssignmentIT {
     private String importExpecting(int status, String fixture, String id, String kind) throws Exception {
         String xml;
         try (InputStream in = getClass().getResourceAsStream(fixture)) {
-            xml = new String(in.readAllBytes(), StandardCharsets.UTF_8).replace("@ID@", id);
+            xml = new String(in.readAllBytes(), StandardCharsets.UTF_8).replace("@ID@", id).replace("@RUN@", id.replaceAll("[^0-9]", ""));
         }
         io.restassured.response.Response response = given()
                 .contentType("application/xml")

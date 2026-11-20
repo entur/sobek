@@ -6,12 +6,17 @@ A simplified view of the core entities in Sobek. It leaves out detail that is no
 
 ### Contractual data space
 
+This shows the relationship between the contractual vehicle types and routing data
+
 ```mermaid
 erDiagram
     SERVICE_JOURNEY }o--o{ CONTRACTUAL_VEHICLE_TYPE: "serviced by"
 ```
 
 ### Vehicles - realtime data
+
+This shows the relationship between the realtime data and the vehicles.
+Note that the current data in SIRI contains vehicleRef, but the contents today don't match the vehicleRefs in Sobek. There remains work to map between those.
 
 ```mermaid
 erDiagram
@@ -47,7 +52,7 @@ erDiagram
 ```
 ## Simplifications
 
-- **`CONTRACTUAL_VEHICLE_TYPE`** 
+- **`CONTRACTUAL_VEHICLE_TYPE`** A vehicle type used for routing and contractual purposes.
 - **`DECK_PLAN`** stands for the whole deck plan tree: `DeckLevel`, `Deck`, `DeckSpace`, `PassengerSpace`, `PassengerSpot`, `SpotRow`, `SpotColumn`, `LocatableSpot`, `SchematicMap` and the equipment placed on them.
 - **Left out entirely:** `Equipment` and `VehicleEquipmentProfile`, the `KeyValue`, `CodeValue` and `AlternativeName` helper entities, and `ExportJob`.
 - Only a subset of the attributes is listed for each entity.

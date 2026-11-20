@@ -4,6 +4,8 @@ import org.rutebanken.sobek.auth.AuthorizationService;
 import org.rutebanken.sobek.repository.DeckPlanRepository;
 import org.rutebanken.sobek.rest.dto.DeactivateInput;
 import org.rutebanken.sobek.rest.dto.FleetChangeInput;
+import org.rutebanken.sobek.rest.dto.FleetSharingInput;
+import org.rutebanken.sobek.service.fleet.FleetSharingService;
 import org.rutebanken.sobek.service.fleet.FleetMembershipService;
 import org.rutebanken.sobek.service.deactivate.DeckPlanDeactivator;
 import org.rutebanken.sobek.service.deactivate.FleetDeactivator;
@@ -57,6 +59,7 @@ public class MutationController {
     private final FleetDeactivator fleetDeactivator;
     private final VehicleRepository vehicleRepository;
     private final FleetMembershipService fleetMembershipService;
+    private final FleetSharingService fleetSharingService;
 
     public MutationController(
             VehicleVersionedSaverService vehicleVersionedSaverService,
@@ -76,7 +79,8 @@ public class MutationController {
             FleetNeTExIdConverter fleetIdConverter,
             FleetDeactivator fleetDeactivator,
             VehicleRepository vehicleRepository,
-            FleetMembershipService fleetMembershipService) {
+            FleetMembershipService fleetMembershipService,
+            FleetSharingService fleetSharingService) {
         this.vehicleVersionedSaverService = vehicleVersionedSaverService;
         this.vehicleIdConverter = vehicleIdConverter;
         this.vehicleTypeVersionedSaverService = vehicleTypeVersionedSaverService;
@@ -95,6 +99,7 @@ public class MutationController {
         this.fleetDeactivator = fleetDeactivator;
         this.vehicleRepository = vehicleRepository;
         this.fleetMembershipService = fleetMembershipService;
+        this.fleetSharingService = fleetSharingService;
     }
 
     @MutationMapping
@@ -183,6 +188,16 @@ public class MutationController {
     @MutationMapping
     public String removeFromFleet(@Argument FleetChangeInput input) throws ValidationException {
         return fleetMembershipService.remove(input.fleetNetexId(), input.vehicleNetexIds(), input.transportTypeNetexIds()).getNetexId();
+    }
+
+    @MutationMapping
+    public String shareFleet(@Argument FleetSharingInput input) throws ValidationException {
+        return fleetSharingService.share(input.fleetNetexId(), input.isEveryone(), input.organisationRefs()).getNetexId();
+    }
+
+    @MutationMapping
+    public String unshareFleet(@Argument FleetSharingInput input) throws ValidationException {
+        return fleetSharingService.unshare(input.fleetNetexId(), input.isEveryone(), input.organisationRefs()).getNetexId();
     }
 
     /**

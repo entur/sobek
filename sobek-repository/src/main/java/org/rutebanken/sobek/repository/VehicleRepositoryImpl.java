@@ -77,7 +77,9 @@ public class VehicleRepositoryImpl implements VehicleRepositoryCustom {
             filterSuffix.append(" AND ((v.name is not null and lower(v.name.value) LIKE :name ESCAPE '\\') or (v.transportType is not null and v.transportType.name is not null and lower(v.transportType.name.value) LIKE :name ESCAPE '\\'))");
         }
         if(dataOwnerRef != null) {
-            filterSuffix.append(" AND v.dataOwnerRef = :dataOwnerRef and (v.transportType is null or v.transportType.dataOwnerRef = :dataOwnerRef)");
+            // The vehicles of the organisation, and the ones that are in a fleet that another organisation shares with it
+            filterSuffix.append(" AND ((v.dataOwnerRef = :dataOwnerRef and (v.transportType is null or v.transportType.dataOwnerRef = :dataOwnerRef))"
+                    + " OR " + QueryHelper.inSharedFleetCondition("v", "members", "dataOwnerRef", "now") + ")");
         }
 
         String fetchJpql = "SELECT DISTINCT v FROM Vehicle v " +

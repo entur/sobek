@@ -5,6 +5,8 @@ import org.rutebanken.sobek.model.vehicle.Deck;
 import org.rutebanken.sobek.model.vehicle.DeckPlan;
 import org.rutebanken.sobek.model.vehicle.Equipment;
 import org.rutebanken.sobek.model.vehicle.PassengerSpace;
+import org.rutebanken.sobek.model.vehicle.PassengerSpot;
+import org.rutebanken.sobek.model.vehicle.SpotAffinity;
 import org.rutebanken.sobek.repository.listener.NetexIdAssigner;
 
 import java.util.List;
@@ -41,5 +43,28 @@ class OwnedEntityVersionTest {
         assertThat(deck.getVersion()).isEqualTo(3);
         assertThat(space.getVersion()).isEqualTo(3);
         assertThat(referenced.getVersion()).isEqualTo(7);
+    }
+
+    @Test
+    void spotsHeldOnlyByAnAffinity_cascadePersistAndFollowTheRoot() {
+        PassengerSpot member = new PassengerSpot();
+        member.setVersion(1);
+
+        SpotAffinity affinity = new SpotAffinity();
+        affinity.setMembers(List.of(member));
+
+        PassengerSpace space = new PassengerSpace();
+        space.setSpotAffinities(List.of(affinity));
+
+        Deck deck = new Deck();
+        deck.setDeckSpaces(List.of(space));
+
+        DeckPlan plan = new DeckPlan();
+        plan.setVersion(4);
+        plan.setDecks(List.of(deck));
+
+        assigner.assignVersionOfRootToOwnedEntities(plan);
+
+        assertThat(member.getVersion()).isEqualTo(4);
     }
 }

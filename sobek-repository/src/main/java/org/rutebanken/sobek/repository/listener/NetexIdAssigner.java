@@ -16,10 +16,13 @@
 package org.rutebanken.sobek.repository.listener;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import org.hibernate.Hibernate;
 import org.rutebanken.sobek.model.DataManagedObjectStructure;
+import org.rutebanken.sobek.model.EntityInVersionStructure;
 import org.rutebanken.sobek.model.KeyValue;
 import org.rutebanken.sobek.model.identification.IdentifiedEntity;
 import org.slf4j.Logger;
@@ -125,6 +128,26 @@ public class NetexIdAssigner {
         }
     }
 
+    /**
+     * Gives every object owned by the root the version of the root. A new version of the root is a deep copy, so the
+     * objects it owns would otherwise keep the id and version of the ones they copy: a NeTEx id and a version must
+     * identify one row.
+     * <p>
+     * Only owned objects are touched: those reached through relations that cascade persist. An object that is only
+     * referenced (a relation without cascade persist, such as the equipment of
+     * a space, or a spot's row and column) is saved on its own and has a version sequence of its own. A relation to such an object must not
+     * cascade persist.
+     *
+     * @param root the entity about to be saved, with its version set
+     */
+    public void assignVersionOfRootToOwnedEntities(EntityInVersionStructure root) {
+        for (IdentifiedEntity owned : ownedEntities(root, false)) {
+            if (owned instanceof EntityInVersionStructure versioned) {
+                versioned.setVersion(root.getVersion());
+            }
+        }
+    }
+
     private record OwnedKey(Class<?> type, String importedId) {
     }
 
@@ -177,9 +200,10 @@ public class NetexIdAssigner {
     }
 
     /**
-     * The fields that own children: one-to-many and one-to-one relations that cascade persist. Relations that
-     * only point to another entity (many-to-one, many-to-many, the inverse side of a relation) are left out,
-     * as the referenced entity is saved on its own.
+     * The fields that own children: the relations that cascade persist, as the persistence provider will persist what
+     * they hold together with this object. That is read from the JPA cascade of one-to-many, one-to-one, many-to-one
+     * and many-to-many relations, and from Hibernate's own {@code @Cascade}. A relation that does not cascade persist
+     * only points to an entity that is saved on its own, and the inverse side of a relation (mappedBy) is left out.
      */
     private static List<Field> cascadedRelations(Class<?> type) {
         return CASCADED_RELATIONS_BY_TYPE.computeIfAbsent(type, t -> {
@@ -197,12 +221,28 @@ public class NetexIdAssigner {
     }
 
     private static boolean ownsChildren(Field field) {
+        boolean persists = false;
         OneToMany oneToMany = field.getAnnotation(OneToMany.class);
-        if (oneToMany != null) {
-            return oneToMany.mappedBy().isEmpty() && cascadesPersist(oneToMany.cascade());
-        }
         OneToOne oneToOne = field.getAnnotation(OneToOne.class);
-        return oneToOne != null && oneToOne.mappedBy().isEmpty() && cascadesPersist(oneToOne.cascade());
+        ManyToOne manyToOne = field.getAnnotation(ManyToOne.class);
+        ManyToMany manyToMany = field.getAnnotation(ManyToMany.class);
+        if (oneToMany != null) {
+            persists = oneToMany.mappedBy().isEmpty() && cascadesPersist(oneToMany.cascade());
+        } else if (oneToOne != null) {
+            persists = oneToOne.mappedBy().isEmpty() && cascadesPersist(oneToOne.cascade());
+        } else if (manyToOne != null) {
+            persists = cascadesPersist(manyToOne.cascade());
+        } else if (manyToMany != null) {
+            persists = manyToMany.mappedBy().isEmpty() && cascadesPersist(manyToMany.cascade());
+        } else {
+            return false;
+        }
+        org.hibernate.annotations.Cascade hibernateCascade = field.getAnnotation(org.hibernate.annotations.Cascade.class);
+        if (!persists && hibernateCascade != null) {
+            persists = Arrays.stream(hibernateCascade.value())
+                    .anyMatch(c -> c == org.hibernate.annotations.CascadeType.ALL || c == org.hibernate.annotations.CascadeType.PERSIST);
+        }
+        return persists;
     }
 
     private static boolean cascadesPersist(CascadeType[] cascade) {

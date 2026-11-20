@@ -20,6 +20,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import org.hibernate.Hibernate;
 import org.rutebanken.sobek.model.DataManagedObjectStructure;
+import org.rutebanken.sobek.model.EntityInVersionStructure;
 import org.rutebanken.sobek.model.KeyValue;
 import org.rutebanken.sobek.model.identification.IdentifiedEntity;
 import org.slf4j.Logger;
@@ -121,6 +122,26 @@ public class NetexIdAssigner {
             if (replaced != null) {
                 logger.trace("Reusing ID {} for the replacement of {}", replaced.getNetexId(), importedId);
                 owned.setNetexId(replaced.getNetexId());
+            }
+        }
+    }
+
+    /**
+     * Gives every object owned by the root the version of the root. A new version of the root is a deep copy, so the
+     * objects it owns would otherwise keep the id and version of the ones they copy: a NeTEx id and a version must
+     * identify one row.
+     * <p>
+     * Only owned objects are touched: those reached through relations that cascade persist. An object that is only
+     * referenced (many-to-one, many-to-many, or a one-to-many that does not cascade persist, such as the equipment of
+     * a space) is saved on its own and has a version sequence of its own. A relation to such an object must not
+     * cascade persist.
+     *
+     * @param root the entity about to be saved, with its version set
+     */
+    public void assignVersionOfRootToOwnedEntities(EntityInVersionStructure root) {
+        for (IdentifiedEntity owned : ownedEntities(root, false)) {
+            if (owned instanceof EntityInVersionStructure versioned) {
+                versioned.setVersion(root.getVersion());
             }
         }
     }

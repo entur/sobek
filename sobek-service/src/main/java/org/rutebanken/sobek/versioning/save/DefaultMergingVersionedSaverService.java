@@ -134,6 +134,7 @@ public class DefaultMergingVersionedSaverService {
             netexIdAssigner.reuseIdsOfExistingOwnedEntities(existingVersion, newVersion);
         }
         netexIdAssigner.assignMissingNetexIdsInTree(newVersion);
+        netexIdAssigner.assignVersionOfRootToOwnedEntities(newVersion);
 
         newVersion = entityInVersionRepository.save(newVersion);
         if(existingVersion != null) {

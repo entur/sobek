@@ -158,18 +158,26 @@ public class QueryController {
     }
 
     // The fleets of a vehicle and of a vehicle type. They are read after the query that found the parent has ended,
-    // so they have a transaction of their own. A fleet has the data owner of its vehicles and vehicle types, so the
-    // user who may see the parent may see its fleets.
+    // so they have a transaction of their own. A fleet has the data owner of its vehicles and vehicle types, but the
+    // parent can be seen through a shared fleet, so the fleets are limited to the ones that the user may see.
     @SchemaMapping(typeName = "Vehicle", field = "fleets")
     @Transactional(readOnly = true)
     public List<Fleet> vehicleFleets(Vehicle source) {
-        return fleetRepository.findCurrentWithMember(source.getNetexId());
+        return visibleFleets(fleetRepository.findCurrentWithMember(source.getNetexId()));
     }
 
     @SchemaMapping(typeName = "VehicleType", field = "fleets")
     @Transactional(readOnly = true)
     public List<Fleet> vehicleTypeFleets(VehicleType source) {
-        return fleetRepository.findCurrentWithTransportType(source.getNetexId());
+        return visibleFleets(fleetRepository.findCurrentWithTransportType(source.getNetexId()));
+    }
+
+    /**
+     * A vehicle or a vehicle type of another organisation can be seen because a fleet of it is shared, and its other fleets
+     * are not: only the fleets that the user may see are given.
+     */
+    private List<Fleet> visibleFleets(List<Fleet> fleets) {
+        return fleets.stream().filter(authorizationService::canViewFleet).toList();
     }
 
     // Field mappings for Fleet

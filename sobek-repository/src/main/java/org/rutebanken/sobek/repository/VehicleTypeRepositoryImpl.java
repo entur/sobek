@@ -74,7 +74,8 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
             filterSuffix.append(" AND vt.name is not null and lower(vt.name.value) LIKE :name ESCAPE '\\'");
         }
         if(dataOwnerRef != null) {
-            filterSuffix.append(" AND vt.dataOwnerRef = :dataOwnerRef");
+            // The vehicle types of the organisation, and the ones that are transport types of a fleet that another organisation shares with it
+            filterSuffix.append(" AND (vt.dataOwnerRef = :dataOwnerRef OR " + QueryHelper.inSharedFleetCondition("vt", "transportTypes", "dataOwnerRef", "now") + ")");
         }
 
         if (pageable.isUnpaged()) {
@@ -200,6 +201,30 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
     }
 
     /**
+     * The vehicles of the organisation, and the ones of other organisations that are in a fleet in use now that is shared
+     * with it. A vehicle type that is shared through a fleet does not show the owner's other vehicles.
+     */
+    private List<Vehicle> onlyVisibleTo(String dataOwnerRef, List<Vehicle> vehicles, Instant now) {
+        List<Long> foreignIds = vehicles.stream()
+                .filter(v -> !dataOwnerRef.equals(v.getDataOwnerRef()))
+                .map(Vehicle::getId)
+                .toList();
+        if (foreignIds.isEmpty()) {
+            return vehicles;
+        }
+        List<Long> sharedIds = entityManager.createQuery(
+                        "SELECT DISTINCT m.id FROM Fleet f JOIN f.members m WHERE m.id IN :ids AND "
+                                + QueryHelper.objectValidCondition("f", "now") + " AND " + QueryHelper.sharedWithCondition("f", "dataOwnerRef"), Long.class)
+                .setParameter("ids", foreignIds)
+                .setParameter("now", now)
+                .setParameter("dataOwnerRef", dataOwnerRef)
+                .getResultList();
+        return vehicles.stream()
+                .filter(v -> dataOwnerRef.equals(v.getDataOwnerRef()) || sharedIds.contains(v.getId()))
+                .toList();
+    }
+
+    /**
      * Fetches VehicleTypes with their currently valid Vehicles using a two-step approach:
      * 1. First query fetches the VehicleType IDs that meet the criteria
      * 2. Second query fetches the VehicleTypes with their valid Vehicles in separate batches
@@ -254,6 +279,9 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
         fetchVehiclesQuery.setParameter("ids", vehicleTypeIds);
         fetchVehiclesQuery.setParameter("now", now);
         List<Vehicle> vehicles = fetchVehiclesQuery.getResultList();
+        if (dataOwnerRef != null) {
+            vehicles = onlyVisibleTo(dataOwnerRef, vehicles, now);
+        }
 
         // Group vehicles by VehicleType ID
         Map<Long, List<Vehicle>> vehiclesByTypeId = vehicles.stream()

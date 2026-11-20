@@ -45,7 +45,8 @@ public class FleetRepositoryImpl implements FleetRepositoryCustom {
             filterSuffix.append(" AND (f.name is not null and lower(f.name.value) LIKE :name ESCAPE '\\')");
         }
         if (dataOwnerRef != null) {
-            filterSuffix.append(" AND f.dataOwnerRef = :dataOwnerRef");
+            // The fleets of the organisation, and the ones that other organisations share with it
+            filterSuffix.append(" AND (f.dataOwnerRef = :dataOwnerRef OR " + QueryHelper.sharedWithCondition("f", "dataOwnerRef") + ")");
         }
 
         String fetchJpql = "SELECT f FROM Fleet f WHERE " + QueryHelper.objectValidCondition("f", "now")

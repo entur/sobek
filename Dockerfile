@@ -1,7 +1,6 @@
-FROM gcr.io/distroless/java25-debian13:nonroot@sha256:8ac5525549d14b8ddd34562f9fc8e6ba4840c995363a1507b17cadf8bb7ab57e
+FROM gcr.io/distroless/java25-debian13:nonroot@sha256:573ef04c0f84aaf4b34e0cb6eeef91c25a83290334586c4c44ef41ecae13a25e
 WORKDIR /deployments
 COPY --chown=65532:65532 target/sobek.jar sobek.jar
 COPY --chown=65532:65532 docker/data /deployments/data
 EXPOSE 8780
-ENTRYPOINT ["java", "-XX:-UseBASE64Intrinsics", "-jar"]
 CMD ["sobek.jar"]

@@ -74,11 +74,8 @@ class FleetSharingGraphQLTest {
         assertSeen(OWNER, fixture, true);
         assertSeen(OTHER, fixture, false);
 
-        // The vehicle that is not in the fleet is not seen through the vehicle type that is
-        graphql("{ vehicleTypes(filter: { netexIds: [\"" + fixture.type + "\"] vehicleTypeKind: PHYSICAL dataOwnerRef: \"" + SHARED_WITH + "\" }) "
-                + "{ content { vehicles { netexId } } } }")
-                .body("errors", nullValue())
-                .body("data.vehicleTypes.content[0].vehicles.netexId", containsInAnyOrder(fixture.member));
+        // The user of this test is authorized for the owner too, so the vehicles of the type are all of the owner's. What a user
+        // of B alone sees of them is tested in FleetVisibilityGraphQLTest.
         graphql("{ vehicleTypes(filter: { netexIds: [\"" + fixture.type + "\"] vehicleTypeKind: PHYSICAL dataOwnerRef: \"" + OWNER + "\" }) "
                 + "{ content { vehicles { netexId } } } }")
                 .body("data.vehicleTypes.content[0].vehicles.netexId", containsInAnyOrder(fixture.member, fixture.outsider));

@@ -5,6 +5,7 @@ import org.rutebanken.sobek.model.vehicle.CompoundTrain;
 import org.rutebanken.sobek.model.vehicle.Fleet;
 import org.rutebanken.sobek.model.vehicle.Vehicle;
 import org.rutebanken.sobek.repository.FleetRepository;
+import org.rutebanken.sobek.repository.VehicleTypeRepository;
 import org.rutebanken.sobek.model.vehicle.Train;
 import org.rutebanken.sobek.model.vehicle.TrainComponent;
 import org.rutebanken.sobek.model.vehicle.TrainElement;
@@ -33,6 +34,7 @@ public class QueryController {
     private final VehicleFetcher vehicleFetcher;
     private final FleetFetcher fleetFetcher;
     private final FleetRepository fleetRepository;
+    private final VehicleTypeRepository vehicleTypeRepository;
     private final VehicleTypeFetcher vehicleTypeFetcher;
     private final DeckPlanFetcher deckPlanFetcher;
     private final OrganisationFetcher organisationFetcher;
@@ -44,6 +46,7 @@ public class QueryController {
         VehicleFetcher vehicleFetcher,
         FleetFetcher fleetFetcher,
         FleetRepository fleetRepository,
+        VehicleTypeRepository vehicleTypeRepository,
         VehicleTypeFetcher vehicleTypeFetcher,
         DeckPlanFetcher deckPlanFetcher,
         OrganisationFetcher organisationFetcher, CodeValueFetcher codeValueFetcher,
@@ -52,6 +55,7 @@ public class QueryController {
         this.vehicleFetcher = vehicleFetcher;
         this.fleetFetcher = fleetFetcher;
         this.fleetRepository = fleetRepository;
+        this.vehicleTypeRepository = vehicleTypeRepository;
         this.vehicleTypeFetcher = vehicleTypeFetcher;
         this.deckPlanFetcher = deckPlanFetcher;
         this.organisationFetcher = organisationFetcher;
@@ -178,6 +182,15 @@ public class QueryController {
      */
     private List<Fleet> visibleFleets(List<Fleet> fleets) {
         return fleets.stream().filter(authorizationService::canViewFleet).toList();
+    }
+
+    // The vehicles of a vehicle type, whichever way the type was reached: from the vehicle types query, from a vehicle, or from
+    // a fleet that is shared (where the type is the owner's, and its other vehicles must not be seen). They are the ones in use
+    // now that the user may see: the vehicles of the user's organisations, and the ones in a fleet that is shared with them.
+    @SchemaMapping(typeName = "VehicleType", field = "vehicles")
+    @Transactional(readOnly = true)
+    public List<Vehicle> vehicleTypeVehicles(VehicleType source) {
+        return vehicleTypeRepository.findCurrentVehiclesVisibleTo(source.getId(), authorizationService.getOrganisationRefsUserCanView());
     }
 
     // Field mappings for Fleet

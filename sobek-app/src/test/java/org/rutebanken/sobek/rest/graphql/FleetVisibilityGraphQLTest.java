@@ -117,7 +117,7 @@ class FleetVisibilityGraphQLTest {
         // The fleets of the vehicle and of the vehicle type
         graphql("{ vehicles(filter: { netexIds: [\"" + shared.member + "\"] dataOwnerRef: \"" + B + "\" }) { content { fleets { netexId } } } }")
                 .body("errors", nullValue())
-                .body("data.vehicleTypes.content[0].fleets.netexId", not(hasItem(privateFleet)))
+                .body("data.vehicles.content[0].fleets.netexId", not(hasItem(privateFleet)))
                 .body("data.vehicles.content[0].fleets.netexId", containsInAnyOrder(shared.fleet));
         graphql("{ vehicleTypes(filter: { netexIds: [\"" + shared.type + "\"] vehicleTypeKind: PHYSICAL dataOwnerRef: \"" + B + "\" }) { content { fleets { netexId } } } }")
                 .body("errors", nullValue())
@@ -128,6 +128,45 @@ class FleetVisibilityGraphQLTest {
         actAs(OWNER);
         graphql("{ vehicles(filter: { netexIds: [\"" + shared.member + "\"] dataOwnerRef: \"" + OWNER + "\" }) { content { fleets { netexId } } } }")
                 .body("data.vehicles.content[0].fleets.netexId", containsInAnyOrder(shared.fleet, privateFleet));
+    }
+
+    @Test
+    @DisplayName("The vehicles of a vehicle type that is reached through a shared fleet are only the ones in a shared fleet, and only the current ones")
+    void vehiclesOfAVehicleTypeReachedInOtherWaysAreLimited() {
+        Fixture fixture = fixture("Nested");
+        share(fixture.fleet, B);
+        // The vehicles get new versions, so that the type also has old versions of them (history)
+        actAs(OWNER);
+        updateVehicle(fixture.member, fixture.type, fixture.name + " member v2");
+        updateVehicle(fixture.outsider, fixture.type, fixture.name + " outsider v2");
+
+        actAs(B);
+        // From the fleet, through its transport types
+        graphql("{ fleets(filter: { netexIds: [\"" + fixture.fleet + "\"] dataOwnerRef: \"" + B + "\" }) "
+                + "{ content { transportTypes { vehicles { netexId version } } } } }")
+                .body("errors", nullValue())
+                .body("data.fleets.content[0].transportTypes[0].vehicles.netexId", not(hasItem(fixture.outsider)))
+                .body("data.fleets.content[0].transportTypes[0].vehicles.netexId", containsInAnyOrder(fixture.member))
+                .body("data.fleets.content[0].transportTypes[0].vehicles.version", containsInAnyOrder("2"));
+        // From the fleet, through the type of a member
+        graphql("{ fleets(filter: { netexIds: [\"" + fixture.fleet + "\"] dataOwnerRef: \"" + B + "\" }) "
+                + "{ content { members { transportType { vehicles { netexId } } } } } }")
+                .body("errors", nullValue())
+                .body("data.fleets.content[0].members[0].transportType.vehicles.netexId", not(hasItem(fixture.outsider)))
+                .body("data.fleets.content[0].members[0].transportType.vehicles.netexId", containsInAnyOrder(fixture.member));
+        // From the vehicle, through its type
+        graphql("{ vehicles(filter: { netexIds: [\"" + fixture.member + "\"] dataOwnerRef: \"" + B + "\" }) "
+                + "{ content { transportType { vehicles { netexId } } } } }")
+                .body("errors", nullValue())
+                .body("data.vehicles.content[0].transportType.vehicles.netexId", not(hasItem(fixture.outsider)))
+                .body("data.vehicles.content[0].transportType.vehicles.netexId", containsInAnyOrder(fixture.member));
+
+        // The owner sees the current version of both vehicles, and none of the old ones
+        actAs(OWNER);
+        graphql("{ fleets(filter: { netexIds: [\"" + fixture.fleet + "\"] dataOwnerRef: \"" + OWNER + "\" }) "
+                + "{ content { transportTypes { vehicles { netexId version } } } } }")
+                .body("data.fleets.content[0].transportTypes[0].vehicles.netexId", containsInAnyOrder(fixture.member, fixture.outsider))
+                .body("data.fleets.content[0].transportTypes[0].vehicles.version", containsInAnyOrder("2", "2"));
     }
 
     @Test
@@ -264,6 +303,12 @@ class FleetVisibilityGraphQLTest {
         return graphql("mutation { createOrUpdateFleet(input: { name: { value: \"" + name + "\" lang: \"en\" } "
                 + "members: [ { netexId: \"" + member + "\" } ] transportTypes: [ { netexId: \"" + type + "\" } ] dataOwnerRef: \"" + OWNER + "\" }) }")
                 .body("errors", nullValue()).extract().path("data.createOrUpdateFleet");
+    }
+
+    private void updateVehicle(String vehicle, String vehicleType, String name) {
+        graphql("mutation { createOrUpdateVehicle(input: { netexId: \"" + vehicle + "\" name: { value: \"" + name + "\" lang: \"en\" } "
+                + "transportType: { netexId: \"" + vehicleType + "\" } dataOwnerRef: \"" + OWNER + "\" }) }")
+                .body("errors", nullValue());
     }
 
     private void share(String fleet, String organisation) {

@@ -16,11 +16,13 @@
 package org.rutebanken.sobek.repository;
 
 import org.rutebanken.sobek.model.vehicle.AllPublicTransportModesEnumeration;
+import org.rutebanken.sobek.model.vehicle.Vehicle;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
 import org.rutebanken.sobek.model.vehicle.VehicleTypeKindEnumeration;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface VehicleTypeRepositoryCustom extends DataManagedObjectStructureRepository<VehicleType> {
@@ -59,5 +61,13 @@ public interface VehicleTypeRepositoryCustom extends DataManagedObjectStructureR
     boolean existsValidWithDeckPlan(String deckPlanNetexId, Long deckPlanVersion);
 
     List<String> findCurrentNeTExIds();
+
+    /**
+     * The vehicles in use now that have the vehicle type (the row) as their transport type, and that the organisations may
+     * see: the vehicles of the organisations, and the ones of other organisations that are in a fleet in use now that is
+     * shared with them or with everyone. Null for the organisations means all vehicles. This is the only way to the vehicles
+     * of a vehicle type, as the type can be reached through a shared fleet, where its other vehicles must not be seen.
+     */
+    List<Vehicle> findCurrentVehiclesVisibleTo(Long vehicleTypeId, Collection<String> organisationRefs);
 }
 

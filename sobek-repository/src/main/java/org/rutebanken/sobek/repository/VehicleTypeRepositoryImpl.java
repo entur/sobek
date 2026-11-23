@@ -14,10 +14,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Repository
 public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
@@ -79,7 +78,7 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
         }
 
         if (pageable.isUnpaged()) {
-            List<VehicleType> vehicleTypes = fetchVehicleTypesWithValidVehicles(dataOwnerRef, netexIds, transportModes, vehicleTypeKind, subtype, name, now, filterSuffix.toString(), null);
+            List<VehicleType> vehicleTypes = fetchVehicleTypes(dataOwnerRef, netexIds, transportModes, vehicleTypeKind, subtype, name, now, filterSuffix.toString(), null);
             return new PageImpl<>(vehicleTypes);
         }
 
@@ -91,7 +90,7 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
         long total = countQuery.getSingleResult();
 
         // Fetch with pagination
-        List<VehicleType> vehicleTypes = fetchVehicleTypesWithValidVehicles(dataOwnerRef, netexIds, transportModes, vehicleTypeKind, subtype, name, now, filterSuffix.toString(), pageable);
+        List<VehicleType> vehicleTypes = fetchVehicleTypes(dataOwnerRef, netexIds, transportModes, vehicleTypeKind, subtype, name, now, filterSuffix.toString(), pageable);
 
         return new PageImpl<>(vehicleTypes, pageable, total);
     }
@@ -200,36 +199,51 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
         return fetchQuery.getResultList();
     }
 
+    @Override
+    public List<Vehicle> findCurrentVehiclesVisibleTo(Long vehicleTypeId, Collection<String> organisationRefs) {
+        Instant now = Instant.now();
+        List<Vehicle> vehicles = entityManager.createQuery(
+                        "SELECT v FROM Vehicle v WHERE v.transportType.id = :typeId AND " + QueryHelper.objectValidCondition("v", "now")
+                                + " ORDER BY v.id", Vehicle.class)
+                .setParameter("typeId", vehicleTypeId)
+                .setParameter("now", now)
+                .getResultList();
+        return organisationRefs == null ? vehicles : onlyVisibleTo(organisationRefs, vehicles, now);
+    }
+
     /**
-     * The vehicles of the organisation, and the ones of other organisations that are in a fleet in use now that is shared
-     * with it. A vehicle type that is shared through a fleet does not show the owner's other vehicles.
+     * The vehicles of the organisations, and the ones of other organisations that are in a fleet in use now that is shared
+     * with them or with everyone. A vehicle type that is shared through a fleet does not show the owner's other vehicles.
      */
-    private List<Vehicle> onlyVisibleTo(String dataOwnerRef, List<Vehicle> vehicles, Instant now) {
+    private List<Vehicle> onlyVisibleTo(Collection<String> organisationRefs, List<Vehicle> vehicles, Instant now) {
+        if (organisationRefs.isEmpty()) {
+            return List.of();
+        }
         List<Long> foreignIds = vehicles.stream()
-                .filter(v -> !dataOwnerRef.equals(v.getDataOwnerRef()))
+                .filter(v -> !organisationRefs.contains(v.getDataOwnerRef()))
                 .map(Vehicle::getId)
                 .toList();
         if (foreignIds.isEmpty()) {
             return vehicles;
         }
         List<Long> sharedIds = entityManager.createQuery(
-                        "SELECT DISTINCT m.id FROM Fleet f JOIN f.members m WHERE m.id IN :ids AND "
-                                + QueryHelper.objectValidCondition("f", "now") + " AND " + QueryHelper.sharedWithCondition("f", "dataOwnerRef"), Long.class)
+                        "SELECT DISTINCT m.id FROM Fleet f JOIN f.members m LEFT JOIN f.sharedWith s WHERE m.id IN :ids AND "
+                                + QueryHelper.objectValidCondition("f", "now") + " AND (f.sharedWithAll = true OR s IN :organisationRefs)", Long.class)
                 .setParameter("ids", foreignIds)
                 .setParameter("now", now)
-                .setParameter("dataOwnerRef", dataOwnerRef)
+                .setParameter("organisationRefs", organisationRefs)
                 .getResultList();
         return vehicles.stream()
-                .filter(v -> dataOwnerRef.equals(v.getDataOwnerRef()) || sharedIds.contains(v.getId()))
+                .filter(v -> organisationRefs.contains(v.getDataOwnerRef()) || sharedIds.contains(v.getId()))
                 .toList();
     }
 
     /**
-     * Fetches VehicleTypes with their currently valid Vehicles using a two-step approach:
+     * Fetches VehicleTypes using a two-step approach:
      * 1. First query fetches the VehicleType IDs that meet the criteria
-     * 2. Second query fetches the VehicleTypes with their valid Vehicles in separate batches
+     * 2. Second query fetches the VehicleTypes with their passenger capacity
      */
-    private List<VehicleType> fetchVehicleTypesWithValidVehicles(
+    private List<VehicleType> fetchVehicleTypes(
         String dataOwnerRef,
         List<String> netexIds,
         List<AllPublicTransportModesEnumeration> transportModes,
@@ -269,29 +283,8 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
         fetchVtQuery.setParameter("ids", vehicleTypeIds);
         List<VehicleType> vehicleTypes = fetchVtQuery.getResultList();
 
-        // Step 3: Fetch only the currently valid Vehicles for these VehicleTypes
-        String fetchVehiclesJpql = "SELECT v FROM Vehicle v " +
-            "WHERE v.transportType.id IN :ids " +
-            "AND v.validBetween.fromDate <= :now " +
-            "AND (v.validBetween.toDate IS NULL OR v.validBetween.toDate >= :now)";
-
-        TypedQuery<Vehicle> fetchVehiclesQuery = entityManager.createQuery(fetchVehiclesJpql, Vehicle.class);
-        fetchVehiclesQuery.setParameter("ids", vehicleTypeIds);
-        fetchVehiclesQuery.setParameter("now", now);
-        List<Vehicle> vehicles = fetchVehiclesQuery.getResultList();
-        if (dataOwnerRef != null) {
-            vehicles = onlyVisibleTo(dataOwnerRef, vehicles, now);
-        }
-
-        // Group vehicles by VehicleType ID
-        Map<Long, List<Vehicle>> vehiclesByTypeId = vehicles.stream()
-            .collect(Collectors.groupingBy(v -> v.getTransportType().getId()));
-
-        // Set the valid vehicles collection for each VehicleType
-        vehicleTypes.forEach(vt ->
-            vt.setVehicles(vehiclesByTypeId.getOrDefault(vt.getId(), new java.util.ArrayList<>()))
-        );
-
+        // The vehicles are not set here: they are given by VehicleType.vehicles in GraphQL, which limits them to the ones that
+        // the user may see (see findCurrentVehiclesVisibleTo), however the vehicle type was reached.
         return vehicleTypes;
     }
 }

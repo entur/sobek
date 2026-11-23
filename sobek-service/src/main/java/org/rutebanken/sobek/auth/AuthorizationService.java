@@ -57,6 +57,14 @@ public interface AuthorizationService {
     void verifyCanViewDataOwner(String dataOwnerRef);
 
     /**
+     * The organisations whose data the current user may see: the ones the user is authorized for, plus what other
+     * organisations share with them. Null means all organisations (an administrator, or authorization is disabled).
+     */
+    default List<String> getOrganisationRefsUserCanView() {
+        return isAdmin() ? null : getOrganisationRefsUserIsAuthorizedFor();
+    }
+
+    /**
      * Whether the current user may see the fleet: it belongs to an organisation the user is authorized for, or it is shared
      * with everyone or with one of those organisations. Used where a fleet is reached from something else (the fleets of a
      * vehicle), and the data owner that the user asked for is not known.

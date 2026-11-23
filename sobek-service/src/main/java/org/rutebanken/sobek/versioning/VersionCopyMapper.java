@@ -97,6 +97,7 @@ public interface VersionCopyMapper {
      */
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "keyValues", ignore = true) // Copied in @AfterMapping: a key value belongs to one version
+    @Mapping(target = "sharingChanged", ignore = true)
     @Mapping(target = "members", qualifiedByName = "sameVehicles")
     @Mapping(target = "transportTypes", qualifiedByName = "sameVehicleTypes")
     Fleet copy(Fleet source);

@@ -106,7 +106,7 @@ public class FleetMembershipService {
      * A copy of the latest version that is valid from now on, as any new version is. The end of the validity is kept, so
      * that a deactivation that is planned still is. A fleet that has not started yet keeps its start.
      */
-    private Fleet newVersionOf(Fleet existing) {
+    Fleet newVersionOf(Fleet existing) {
         Fleet newVersion = versionCreator.createCopy(existing, Fleet.class);
         Instant from = existing.getValidBetween() == null ? null : existing.getValidBetween().getFromDate();
         Instant to = existing.getValidBetween() == null ? null : existing.getValidBetween().getToDate();
@@ -114,7 +114,7 @@ public class FleetMembershipService {
         return newVersion;
     }
 
-    private Fleet findFleet(String fleetNetexId) {
+    Fleet findFleet(String fleetNetexId) {
         Fleet asGiven = new Fleet();
         asGiven.setNetexId(fleetNetexId);
         Fleet fleet = fleetRepository.findFirstByNetexIdOrderByVersionDesc(fleetIdConverter.convertIncomingId(asGiven).getNetexId());

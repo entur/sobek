@@ -1,6 +1,7 @@
 package org.rutebanken.sobek.auth;
 
 import org.rutebanken.sobek.model.EntityStructure;
+import org.rutebanken.sobek.model.vehicle.Fleet;
 import org.springframework.security.access.AccessDeniedException;
 
 import java.util.Collection;
@@ -53,4 +54,32 @@ public interface AuthorizationService {
      * @param dataOwnerRef organisation ref, e.g. "AKT"
      * @throws AccessDeniedException if the user is not authorized for the organisation.
      */
-    void verifyCanViewDataOwner(String dataOwnerRef);}
+    void verifyCanViewDataOwner(String dataOwnerRef);
+
+    /**
+     * The organisations whose data the current user may see: the ones the user is authorized for, plus what other
+     * organisations share with them. Null means all organisations (an administrator, or authorization is disabled).
+     */
+    default List<String> getOrganisationRefsUserCanView() {
+        return isAdmin() ? null : getOrganisationRefsUserIsAuthorizedFor();
+    }
+
+    /**
+     * Whether the current user may see the fleet: it belongs to an organisation the user is authorized for, or it is shared
+     * with everyone or with one of those organisations. Used where a fleet is reached from something else (the fleets of a
+     * vehicle), and the data owner that the user asked for is not known.
+     */
+    default boolean canViewFleet(Fleet fleet) {
+        if (isAdmin()) {
+            return true;
+        }
+        List<String> organisationRefs = getOrganisationRefsUserIsAuthorizedFor();
+        if (organisationRefs == null) {
+            // Authorization is disabled
+            return true;
+        }
+        return organisationRefs.contains(fleet.getDataOwnerRef())
+                || (fleet.isSharedWithAll() && !organisationRefs.isEmpty())
+                || organisationRefs.stream().anyMatch(fleet.getSharedWith()::contains);
+    }
+}

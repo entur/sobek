@@ -184,6 +184,14 @@ input FleetChangeInput {
     transportTypes: [VehicleTypeReferenceInput!]
 }
 
+input FleetSharingInput {
+    fleetNetexId: String!
+    "Share with everyone (shareFleet), or stop sharing with everyone (unshareFleet)"
+    everyone: Boolean
+    "Organisations, by their id in the organisation registry. At least one organisation, or everyone, must be given."
+    organisationRefs: [String!]
+}
+
 input FleetFilter {
     netexIds: [String!]
     name: String
@@ -363,6 +371,10 @@ type Fleet {
     "The id of the organisation of the fleet in the organisation registry. It can be an organisation of any type."
     transportOrganisationRef: String
     contractNumber: String
+    "True if the fleet is shared with everyone: users of any organisation see it, and its vehicles and vehicle types"
+    sharedWithAll: Boolean!
+    "The organisations the fleet is shared with, besides its owner"
+    sharedWith: [String!]!
     "The vehicles of the fleet, in their latest versions"
     members: [Vehicle!]!
     "The vehicle types the fleet is made of"
@@ -552,6 +564,10 @@ type Mutation {
     addToFleet(input: FleetChangeInput!): String
     "Removes vehicles and vehicle types from a fleet in one new version, which is otherwise unchanged. At least one vehicle or vehicle type must be given. What is not in the fleet is left out. Returns the id of the fleet."
     removeFromFleet(input: FleetChangeInput!): String
+    "Shares a fleet with everyone and/or with organisations, in one new version of the fleet. The users of those organisations see the fleet, its vehicles and its vehicle types when they query for their own data owner. It is read only for them. At least one organisation, or everyone, must be given. Returns the id of the fleet."
+    shareFleet(input: FleetSharingInput!): String
+    "Stops sharing a fleet with everyone and/or with organisations, in one new version of the fleet. Organisations it is not shared with are left out. Returns the id of the fleet."
+    unshareFleet(input: FleetSharingInput!): String
     createOrUpdateVehicleType(input: VehicleTypeInput!): String
     createOrUpdateDeckPlan(input: DeckPlanInput!): String
 

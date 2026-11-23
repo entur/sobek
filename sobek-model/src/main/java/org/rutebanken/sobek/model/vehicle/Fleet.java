@@ -2,13 +2,16 @@ package org.rutebanken.sobek.model.vehicle;
 
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Transient;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,7 +24,9 @@ import org.rutebanken.sobek.model.PrivateCodeStructure;
 import org.rutebanken.sobek.model.authorization.OwnedEntity;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * A group of vehicles that are managed together. Corresponds to NeTEx Fleet, which is a GroupOfEntities.
@@ -90,6 +95,28 @@ public class Fleet extends DataManagedObjectStructure implements OwnedEntity {
      */
     private String contractNumber;
 
+    /**
+     * The fleet is shared with everyone: users of any organisation see it, and its vehicles and vehicle types. Read only.
+     */
+    private boolean sharedWithAll;
+
+    /**
+     * The organisations (refs in the organisation registry) the fleet is shared with, in addition to the owner: users of these
+     * see the fleet, and its vehicles and vehicle types. Read only.
+     */
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Fetch(FetchMode.SUBSELECT)
+    @CollectionTable(name = "fleet_shared_with", joinColumns = @JoinColumn(name = "fleet_id"))
+    @Column(name = "organisation_ref", nullable = false)
+    private Set<String> sharedWith = new HashSet<>();
+
+    /**
+     * Set by the share and unshare operations on the new version they make. A new version that does not come from them
+     * (an update of the fleet, an import) keeps the sharing of the previous version, as it does not mention it.
+     */
+    @Transient
+    private boolean sharingChanged;
+
     @Setter(AccessLevel.NONE)
     private String dataOwnerRef;
 
@@ -102,6 +129,10 @@ public class Fleet extends DataManagedObjectStructure implements OwnedEntity {
     public void mergeWithExistingVersion(EntityInVersionStructure existingVersion) {
         if (existingVersion instanceof Fleet fleetExisting) {
             mergeKeyValues(fleetExisting);
+            if (!sharingChanged) {
+                sharedWithAll = fleetExisting.isSharedWithAll();
+                sharedWith = new HashSet<>(fleetExisting.getSharedWith());
+            }
         }
     }
 }

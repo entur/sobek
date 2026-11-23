@@ -74,7 +74,7 @@ public class VehicleTypeRepositoryImpl implements VehicleTypeRepositoryCustom {
         }
         if(dataOwnerRef != null) {
             // The vehicle types of the organisation, and the ones that are transport types of a fleet that another organisation shares with it
-            filterSuffix.append(" AND (vt.dataOwnerRef = :dataOwnerRef OR " + QueryHelper.inSharedFleetCondition("vt", "transportTypes", "dataOwnerRef", "now") + ")");
+            filterSuffix.append(" AND (vt.dataOwnerRef = :dataOwnerRef OR " + QueryHelper.VEHICLE_TYPE_IN_SHARED_FLEET + ")");
         }
 
         if (pageable.isUnpaged()) {

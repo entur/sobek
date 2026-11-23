@@ -46,7 +46,7 @@ public class FleetRepositoryImpl implements FleetRepositoryCustom {
         }
         if (dataOwnerRef != null) {
             // The fleets of the organisation, and the ones that other organisations share with it
-            filterSuffix.append(" AND (f.dataOwnerRef = :dataOwnerRef OR " + QueryHelper.sharedWithCondition("f", "dataOwnerRef") + ")");
+            filterSuffix.append(" AND (f.dataOwnerRef = :dataOwnerRef OR " + QueryHelper.FLEET_SHARED_WITH_ORGANISATION + ")");
         }
 
         String fetchJpql = "SELECT f FROM Fleet f WHERE " + QueryHelper.objectValidCondition("f", "now")

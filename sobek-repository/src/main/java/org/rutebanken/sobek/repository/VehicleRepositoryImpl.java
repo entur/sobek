@@ -79,7 +79,7 @@ public class VehicleRepositoryImpl implements VehicleRepositoryCustom {
         if(dataOwnerRef != null) {
             // The vehicles of the organisation, and the ones that are in a fleet that another organisation shares with it
             filterSuffix.append(" AND ((v.dataOwnerRef = :dataOwnerRef and (v.transportType is null or v.transportType.dataOwnerRef = :dataOwnerRef))"
-                    + " OR " + QueryHelper.inSharedFleetCondition("v", "members", "dataOwnerRef", "now") + ")");
+                    + " OR " + QueryHelper.VEHICLE_IN_SHARED_FLEET + ")");
         }
 
         String fetchJpql = "SELECT DISTINCT v FROM Vehicle v " +

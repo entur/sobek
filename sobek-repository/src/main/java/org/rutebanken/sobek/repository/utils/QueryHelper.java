@@ -7,21 +7,25 @@ public class QueryHelper {
     }
 
     /**
-     * True for a fleet (the alias) that is shared with the organisation in the parameter: with everyone, or with that
-     * organisation by name. Does not look at who owns the fleet, or at whether it is in use.
+     * True for a fleet (alias f) that is shared with the organisation in the parameter :dataOwnerRef: with everyone, or with
+     * that organisation by name. Does not look at who owns the fleet, or at whether it is in use.
+     * <p>
+     * The conditions below are constants, so that no query is built from anything but literals; the values are bound as parameters.
      */
-    public static String sharedWithCondition(String fleetAlias, String organisationParameter) {
-        return String.format("(%s.sharedWithAll = true OR :%s MEMBER OF %s.sharedWith)", fleetAlias, organisationParameter, fleetAlias);
-    }
+    public static final String FLEET_SHARED_WITH_ORGANISATION =
+            "(f.sharedWithAll = true OR :dataOwnerRef MEMBER OF f.sharedWith)";
 
-    /**
-     * True for a row (the alias, a vehicle or a vehicle type) that is in a fleet in use now that is shared with the
-     * organisation in the parameter. The collection is the one of the fleet that holds the row: members or transportTypes.
-     */
-    public static String inSharedFleetCondition(String rowAlias, String fleetCollection, String organisationParameter, String nowParameter) {
-        return String.format("EXISTS (SELECT 1 FROM Fleet sf JOIN sf.%s sm WHERE sm.id = %s.id AND %s AND %s)",
-                fleetCollection, rowAlias, objectValidCondition("sf", nowParameter), sharedWithCondition("sf", organisationParameter));
-    }
+    private static final String SHARED_FLEET_IN_USE =
+            "sf.validBetween.fromDate <= :now AND (sf.validBetween.toDate IS NULL OR sf.validBetween.toDate >= :now) " +
+            "AND (sf.sharedWithAll = true OR :dataOwnerRef MEMBER OF sf.sharedWith)";
+
+    /** True for a vehicle (alias v) that is a member of a fleet in use now that is shared with :dataOwnerRef. Takes :now too. */
+    public static final String VEHICLE_IN_SHARED_FLEET =
+            "EXISTS (SELECT 1 FROM Fleet sf JOIN sf.members sm WHERE sm.id = v.id AND " + SHARED_FLEET_IN_USE + ")";
+
+    /** True for a vehicle type (alias vt) that is a transport type of a fleet in use now that is shared with :dataOwnerRef. Takes :now too. */
+    public static final String VEHICLE_TYPE_IN_SHARED_FLEET =
+            "EXISTS (SELECT 1 FROM Fleet sf JOIN sf.transportTypes sm WHERE sm.id = vt.id AND " + SHARED_FLEET_IN_USE + ")";
 
     /**
      * Escapes special LIKE wildcard characters to treat them as literals

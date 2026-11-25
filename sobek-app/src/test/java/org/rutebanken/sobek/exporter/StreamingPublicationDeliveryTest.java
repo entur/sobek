@@ -25,7 +25,6 @@ import org.rutebanken.sobek.netex.mapping.mapstruct.equipment.EquipmentMapper;
 import org.rutebanken.sobek.repository.DeckPlanRepository;
 import org.rutebanken.sobek.repository.EquipmentRepository;
 import org.rutebanken.sobek.repository.FleetRepository;
-import org.rutebanken.sobek.repository.VehicleModelRepository;
 import org.rutebanken.sobek.repository.VehicleRepository;
 import org.rutebanken.sobek.repository.VehicleTypeRepository;
 import org.springframework.data.domain.PageImpl;
@@ -49,7 +48,6 @@ class StreamingPublicationDeliveryTest {
     @Mock private VehicleRepository vehicleRepository;
     @Mock private FleetRepository fleetRepository;
     @Mock private VehicleTypeRepository vehicleTypeRepository;
-    @Mock private VehicleModelRepository vehicleModelRepository;
     @Mock private DeckPlanRepository deckPlanRepository;
     @Mock private EquipmentRepository equipmentRepository;
     @Mock private PublicationDeliveryCreator publicationDeliveryCreator;
@@ -72,7 +70,6 @@ class StreamingPublicationDeliveryTest {
             vehicleRepository,
             fleetRepository,
             vehicleTypeRepository,
-            vehicleModelRepository,
             deckPlanRepository,
             equipmentRepository,
             publicationDeliveryCreator,
@@ -103,8 +100,6 @@ class StreamingPublicationDeliveryTest {
             .thenReturn(new PageImpl<>(List.of()));
         lenient().when(deckPlanRepository.findCurrentFiltered(any(), any(), any(), any(), any(), any(Pageable.class)))
             .thenReturn(new PageImpl<>(List.of()));
-        lenient().when(vehicleModelRepository.findCurrentFiltered(any(), any(), any(), any(), any(), any(Pageable.class)))
-            .thenReturn(new PageImpl<>(List.of()));
         lenient().when(equipmentRepository.findCurrentFiltered(any(), any(), any(), any(Pageable.class)))
             .thenReturn(new PageImpl<>(List.of()));
     }
@@ -130,8 +125,6 @@ class StreamingPublicationDeliveryTest {
         verify(vehicleTypeRepository).findCurrentFiltered(eq(DATA_OWNER), isNull(), isNull(), isNull(), isNull(), eq(Pageable.unpaged()));
         verify(deckPlanRepository).findCurrentFiltered(eq(DATA_OWNER), isNull(), isNull(), isNull(), isNull(), eq(Pageable.unpaged()));
         verify(equipmentRepository).findCurrentFiltered(eq(DATA_OWNER), isNull(), isNull(), eq(Pageable.unpaged()));
-        // BOTH is the default selection in these tests, so neither vehicle types nor vehicle models are filtered on kind
-        verify(vehicleModelRepository).findCurrentFiltered(eq(DATA_OWNER), isNull(), isNull(), isNull(), isNull(), eq(Pageable.unpaged()));
     }
 
     // --- 2. admin: no dataOwner means "all dataowners" ---
@@ -144,27 +137,24 @@ class StreamingPublicationDeliveryTest {
         verify(vehicleTypeRepository).findCurrentFiltered(isNull(), isNull(), isNull(), isNull(), isNull(), eq(Pageable.unpaged()));
         verify(deckPlanRepository).findCurrentFiltered(isNull(), isNull(), isNull(), isNull(), isNull(), eq(Pageable.unpaged()));
         verify(equipmentRepository).findCurrentFiltered(isNull(), isNull(), isNull(), eq(Pageable.unpaged()));
-        verify(vehicleModelRepository).findCurrentFiltered(isNull(), isNull(), isNull(), isNull(), isNull(), eq(Pageable.unpaged()));
     }
 
     // --- vehicle type kind selection ---
 
     @Test
-    void streamVehicles_physical_filtersVehicleTypesAndModelsOnPhysicalAndIncludesVehicles() throws Exception {
+    void streamVehicles_physical_filtersVehicleTypesOnPhysicalAndIncludesVehicles() throws Exception {
         streamingPublicationDelivery.streamVehicles(exportParamsFor(DATA_OWNER, VehicleTypeKindSelection.PHYSICAL), new ByteArrayOutputStream());
 
         verify(vehicleTypeRepository).findCurrentFiltered(eq(DATA_OWNER), isNull(), isNull(), eq(VehicleTypeKindEnumeration.PHYSICAL), isNull(), eq(Pageable.unpaged()));
-        verify(vehicleModelRepository).findCurrentFiltered(eq(DATA_OWNER), isNull(), isNull(), eq(VehicleTypeKindEnumeration.PHYSICAL), isNull(), eq(Pageable.unpaged()));
         verify(deckPlanRepository).findCurrentFiltered(eq(DATA_OWNER), isNull(), isNull(), eq(VehicleTypeKindEnumeration.PHYSICAL), isNull(), eq(Pageable.unpaged()));
         verify(vehicleRepository).findCurrentFiltered(eq(DATA_OWNER), isNull(), isNull(), isNull(), eq(Pageable.unpaged()));
     }
 
     @Test
-    void streamVehicles_contractual_filtersVehicleTypesAndModelsOnContractualAndSkipsVehicles() throws Exception {
+    void streamVehicles_contractual_filtersVehicleTypesOnContractualAndSkipsVehicles() throws Exception {
         streamingPublicationDelivery.streamVehicles(exportParamsFor(DATA_OWNER, VehicleTypeKindSelection.CONTRACTUAL), new ByteArrayOutputStream());
 
         verify(vehicleTypeRepository).findCurrentFiltered(eq(DATA_OWNER), isNull(), isNull(), eq(VehicleTypeKindEnumeration.CONTRACTUAL), isNull(), eq(Pageable.unpaged()));
-        verify(vehicleModelRepository).findCurrentFiltered(eq(DATA_OWNER), isNull(), isNull(), eq(VehicleTypeKindEnumeration.CONTRACTUAL), isNull(), eq(Pageable.unpaged()));
         verify(deckPlanRepository).findCurrentFiltered(eq(DATA_OWNER), isNull(), isNull(), eq(VehicleTypeKindEnumeration.CONTRACTUAL), isNull(), eq(Pageable.unpaged()));
         verify(vehicleRepository, never()).findCurrentFiltered(any(), any(), any(), any(), any(Pageable.class));
     }
@@ -173,7 +163,7 @@ class StreamingPublicationDeliveryTest {
     void streamVehicles_without_vehicleTypeKind_isRejected() {
         assertThrows(ValidationException.class,
             () -> streamingPublicationDelivery.streamVehicles(exportParamsFor(DATA_OWNER, null), new ByteArrayOutputStream()));
-        verifyNoInteractions(vehicleTypeRepository, vehicleModelRepository);
+        verifyNoInteractions(vehicleTypeRepository);
     }
 
     // --- 4. only current versions, never the whole history ---
@@ -185,7 +175,6 @@ class StreamingPublicationDeliveryTest {
         verify(vehicleRepository, never()).findAll();
         verify(vehicleTypeRepository, never()).findAll();
         verify(deckPlanRepository, never()).findAll();
-        verify(vehicleModelRepository, never()).findAll();
         verify(equipmentRepository, never()).findAll();
     }
 

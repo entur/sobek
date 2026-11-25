@@ -47,7 +47,6 @@ public class PublicationDeliveryImporter {
     private final VehicleTypeImportHandler vehicleTypeImportHandler;
     private final DeckPlanImportHandler deckPlanImportHandler;
     private final EquipmentImportHandler equipmentImportHandler;
-    private final VehicleModelImportHandler vehicleModelImportHandler;
     private final SchematicMapImportHandler schematicMapImportHandler;
     private final FleetImportHandler fleetImportHandler;
     private final MappingContext mappingContext;
@@ -55,7 +54,7 @@ public class PublicationDeliveryImporter {
     @Autowired
     public PublicationDeliveryImporter(PublicationDeliveryHelper publicationDeliveryHelper,
                                        PublicationDeliveryCreator publicationDeliveryCreator,
-                                       VehicleImportHandler vehicleImportHandler, VehicleTypeImportHandler vehicleTypeImportHandler, DeckPlanImportHandler deckPlanImportHandler, EquipmentImportHandler equipmentImportHandler, VehicleModelImportHandler vehicleModelImportHandler,
+                                       VehicleImportHandler vehicleImportHandler, VehicleTypeImportHandler vehicleTypeImportHandler, DeckPlanImportHandler deckPlanImportHandler, EquipmentImportHandler equipmentImportHandler,
                                         SchematicMapImportHandler schematicMapImportHandler, FleetImportHandler fleetImportHandler, MappingContext mappingContext) {
         this.fleetImportHandler = fleetImportHandler;
         this.publicationDeliveryHelper = publicationDeliveryHelper;
@@ -64,7 +63,6 @@ public class PublicationDeliveryImporter {
         this.vehicleTypeImportHandler = vehicleTypeImportHandler;
         this.deckPlanImportHandler = deckPlanImportHandler;
         this.equipmentImportHandler = equipmentImportHandler;
-        this.vehicleModelImportHandler = vehicleModelImportHandler;
         this.schematicMapImportHandler = schematicMapImportHandler;
         this.mappingContext = mappingContext;
     }
@@ -90,7 +88,6 @@ public class PublicationDeliveryImporter {
 
         AtomicInteger vehicleCounter = new AtomicInteger(0);
         AtomicInteger vehicleTypeCounter = new AtomicInteger(0);
-        AtomicInteger vehicleModelCounter = new AtomicInteger(0);
         AtomicInteger deckPlanCounter = new AtomicInteger(0);
         AtomicInteger equipmentCounter = new AtomicInteger(0);
         AtomicInteger schematicMapCounter = new AtomicInteger(0);
@@ -121,10 +118,8 @@ public class PublicationDeliveryImporter {
                 if(netexResourceFrame.getDeckPlans() != null) {
                     deckPlanImportHandler.handleDeckPlans(netexResourceFrame, importParams, deckPlanCounter, responseResourceFrame);
                 }
-                if(netexResourceFrame.getVehicleModels() != null) {
-                    vehicleModelImportHandler.handleVehicleModels(netexResourceFrame, importParams, vehicleModelCounter, responseResourceFrame);
-                }
-                if(netexResourceFrame.getVehicleTypes() != null || netexResourceFrame.getTrainElementTypes() != null) {
+                // The vehicle models are read by the vehicle type handler: a model is kept in its type
+                if(netexResourceFrame.getVehicleTypes() != null || netexResourceFrame.getTrainElementTypes() != null || netexResourceFrame.getVehicleModels() != null) {
                     vehicleTypeImportHandler.handleVehicleTypes(netexResourceFrame, importParams, vehicleTypeCounter, responseResourceFrame);
                 }
                 if(netexResourceFrame.getVehicles() != null) {

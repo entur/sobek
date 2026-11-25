@@ -7,8 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.entur.netex2.model.ObjectFactory;
 import org.entur.netex2.model.TransportTypeRefStructure;
 import org.entur.netex2.model.Vehicle;
-import org.entur.netex2.model.VehicleModelRefStructure;
-import org.rutebanken.sobek.model.vehicle.VehicleModel;
+import org.rutebanken.sobek.model.EmbeddableMultilingualString;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
 import org.rutebanken.sobek.netex.id.NetexIdHelper;
 import org.rutebanken.sobek.netex.id.ValidPrefixList;
@@ -16,6 +15,7 @@ import org.rutebanken.sobek.repository.reference.ReferenceResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -75,16 +75,12 @@ class VehicleMapperTest extends DataManagedObjectStructureMapperTestBase<
         originalReferenceResolver = context.getReferenceResolver();
         originalDataOwnerRef = context.getDataOwnerRef();
         // Create mock resolver
-        VehicleModel mockVehicleModel = new VehicleModel();
-        mockVehicleModel.setNetexId("NMR:VehicleModel:1");
-
         VehicleType mockVehicleType = new VehicleType();
         mockVehicleType.setNetexId("NMR:VehicleType:1");
         mockVehicleType.setDataOwnerRef("NOG:Authority:1");
 
         ReferenceResolver referenceResolver = mock(ReferenceResolver.class);
         when(referenceResolver.resolve(any(),any(),eq(VehicleType.class))).thenReturn(mockVehicleType);
-        when(referenceResolver.resolve(any(),any(),eq(VehicleModel.class))).thenReturn(mockVehicleModel);
         context.setReferenceResolver(referenceResolver);
         context.setKeyListStructureMapper(keyListStructureMapper);
         context.setNetexIdHelper(netexIdHelper);
@@ -111,11 +107,6 @@ class VehicleMapperTest extends DataManagedObjectStructureMapperTestBase<
         netexVehicle.setOperationalNumber("OP456");
         netexVehicle.setRegistrationDate(LocalDate.of(2023, 1, 15));
 
-        // Vehicle Model Reference
-        VehicleModelRefStructure vehicleModelRef = new VehicleModelRefStructure();
-        vehicleModelRef.setRef("NMR:VehicleModel:1");
-        netexVehicle.setVehicleModelRef(vehicleModelRef);
-
         // Transport Type Reference (VehicleType)
         TransportTypeRefStructure transportTypeRef = new TransportTypeRefStructure();
         transportTypeRef.setRef("NMR:VehicleType:1");
@@ -137,9 +128,6 @@ class VehicleMapperTest extends DataManagedObjectStructureMapperTestBase<
         assertEquals("NOG:Authority:1", sobekVehicle.getDataOwnerRef());
 
         // Check that references are stored in transient fields
-        assertNotNull(sobekVehicle.getVehicleModel());
-        assertEquals("NMR:VehicleModel:1", sobekVehicle.getVehicleModel().getNetexId());
-
         assertNotNull(sobekVehicle.getTransportType());
         assertEquals("NMR:VehicleType:1", sobekVehicle.getTransportType().getNetexId());
         assertEquals("NOG:Authority:1", sobekVehicle.getTransportType().getDataOwnerRef());
@@ -153,10 +141,6 @@ class VehicleMapperTest extends DataManagedObjectStructureMapperTestBase<
         netexVehicle.setVersion("1");
         netexVehicle.setRegistrationNumber("ABC123");
 
-        VehicleModelRefStructure vehicleModelRef = new VehicleModelRefStructure();
-        vehicleModelRef.setRef("NMR:VehicleModel:1");
-        netexVehicle.setVehicleModelRef(vehicleModelRef);
-
         TransportTypeRefStructure transportTypeRef = new TransportTypeRefStructure();
         transportTypeRef.setRef("NMR:VehicleType:1");
         JAXBElement<TransportTypeRefStructure> jaxbTransportType =
@@ -168,9 +152,6 @@ class VehicleMapperTest extends DataManagedObjectStructureMapperTestBase<
                 mapper.mapToSobek(netexVehicle, context);
 
         // Then
-        assertNotNull(sobekVehicle.getVehicleModel());
-        assertEquals("NMR:VehicleModel:1", sobekVehicle.getVehicleModel().getNetexId());
-
         assertNotNull(sobekVehicle.getTransportType());
         assertEquals("NMR:VehicleType:1", sobekVehicle.getTransportType().getNetexId());
     }
@@ -190,10 +171,8 @@ class VehicleMapperTest extends DataManagedObjectStructureMapperTestBase<
         vehicleType.setNetexId("NMR:VehicleType:1");
         sobekVehicle.setTransportType(vehicleType);
 
-        // Set up VehicleModel with incomingId
-        VehicleModel vehicleModel = new VehicleModel();
-        vehicleModel.setNetexId("NMR:VehicleModel:1");
-        sobekVehicle.setVehicleModel(vehicleModel);
+        // The model of the vehicle is the one of its type
+        vehicleType.setManufacturer(new EmbeddableMultilingualString("Stadler", "en"));
 
         // When
         Vehicle netexVehicle = mapper.mapToNetex(sobekVehicle, context);
@@ -227,9 +206,7 @@ class VehicleMapperTest extends DataManagedObjectStructureMapperTestBase<
         vehicleType.setNetexId("NMR:VehicleType:1");
         sobekVehicle.setTransportType(vehicleType);
 
-        VehicleModel vehicleModel = new VehicleModel();
-        vehicleModel.setNetexId("NMR:VehicleModel:1");
-        sobekVehicle.setVehicleModel(vehicleModel);
+        vehicleType.setRange(new BigDecimal("500"));
 
         // When
         Vehicle netexVehicle = mapper.mapToNetex(sobekVehicle, context);
@@ -240,6 +217,20 @@ class VehicleMapperTest extends DataManagedObjectStructureMapperTestBase<
 
         assertNotNull(netexVehicle.getVehicleModelRef());
         assertEquals("NMR:VehicleModel:1", netexVehicle.getVehicleModelRef().getRef());
+    }
+
+    @Test
+    void testMapToNetexWithoutVehicleModelDataHasNoVehicleModelRef() {
+        org.rutebanken.sobek.model.vehicle.Vehicle sobekVehicle = new org.rutebanken.sobek.model.vehicle.Vehicle();
+        sobekVehicle.setVersion(1);
+        VehicleType vehicleType = new VehicleType();
+        vehicleType.setNetexId("NMR:VehicleType:1");
+        sobekVehicle.setTransportType(vehicleType);
+
+        Vehicle netexVehicle = mapper.mapToNetex(sobekVehicle, context);
+
+        assertNotNull(netexVehicle.getTransportTypeRef());
+        assertNull(netexVehicle.getVehicleModelRef());
     }
 
     @Test
@@ -255,10 +246,6 @@ class VehicleMapperTest extends DataManagedObjectStructureMapperTestBase<
         vehicleType.setNetexId("NMR:VehicleType:1");
         originalSobek.setTransportType(vehicleType);
 
-        VehicleModel vehicleModel = new VehicleModel();
-        vehicleModel.setNetexId("NMR:VehicleModel:1");
-        originalSobek.setVehicleModel(vehicleModel);
-
         // When - Round trip mapping
         Vehicle netex = mapper.mapToNetex(originalSobek, context);
         org.rutebanken.sobek.model.vehicle.Vehicle backToSobek =
@@ -272,8 +259,5 @@ class VehicleMapperTest extends DataManagedObjectStructureMapperTestBase<
         // References are preserved
         assertNotNull(backToSobek.getTransportType());
         assertEquals("NMR:VehicleType:1", backToSobek.getTransportType().getNetexId());
-
-        assertNotNull(backToSobek.getVehicleModel());
-        assertEquals("NMR:VehicleModel:1", backToSobek.getVehicleModel().getNetexId());
     }
 }

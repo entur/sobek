@@ -16,10 +16,13 @@
 package org.rutebanken.sobek.importer.handler;
 
 import org.entur.netex2.model.*;
+import jakarta.validation.ValidationException;
 import org.rutebanken.sobek.importer.ImportParams;
+import org.rutebanken.sobek.netex.id.VehicleModelId;
 import org.rutebanken.sobek.importer.VehicleImporter;
 import org.rutebanken.sobek.importer.converter.VehicleIdConverter;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
+import org.rutebanken.sobek.netex.mapping.mapstruct.VehicleModelMapper;
 import org.rutebanken.sobek.netex.mapping.mapstruct.VehicleMapper;
 import org.rutebanken.sobek.netex.util.PublicationDeliveryHelper;
 import org.slf4j.Logger;
@@ -39,13 +42,15 @@ public class VehicleImportHandler {
     private final VehicleImporter vehicleImporter;
     private final VehicleIdConverter vehicleIdConverter;
     private final MappingContext context;
+    private final VehicleModelMapper vehicleModelMapper;
 
-    public VehicleImportHandler(PublicationDeliveryHelper publicationDeliveryHelper, VehicleMapper vehicleMapper, VehicleImporter vehicleImporter, VehicleIdConverter vehicleIdConverter, MappingContext context) {
+    public VehicleImportHandler(PublicationDeliveryHelper publicationDeliveryHelper, VehicleMapper vehicleMapper, VehicleImporter vehicleImporter, VehicleIdConverter vehicleIdConverter, MappingContext context, VehicleModelMapper vehicleModelMapper) {
         this.publicationDeliveryHelper = publicationDeliveryHelper;
         this.vehicleMapper = vehicleMapper;
         this.vehicleImporter = vehicleImporter;
         this.vehicleIdConverter = vehicleIdConverter;
         this.context = context;
+        this.vehicleModelMapper = vehicleModelMapper;
     }
 
     public void handleVehicles(ResourceFrame netexResourceFrame, ImportParams importParams, AtomicInteger vehiclesCounter, ResourceFrame responseResourceFrame) {
@@ -62,9 +67,48 @@ public class VehicleImportHandler {
             List<org.rutebanken.sobek.model.vehicle.Vehicle> mappedVehicles = vehicleMapper
                     .mapAsList(originalWithMappedIds, context);
             logger.info("Mapped {} vehicles to internal model", mappedVehicles.size());
+
+            VehicleModelAssociations models = VehicleModelAssociations.of(netexResourceFrame);
+            for (int i = 0; i < mappedVehicles.size(); i++) {
+                checkVehicleModelRef(originalWithMappedIds.get(i), mappedVehicles.get(i), models);
+            }
             List<Vehicle> importedVehicles = vehicleImporter.importVehicles(mappedVehicles, vehiclesCounter);
             responseResourceFrame.withVehicles(new VehiclesInFrame_RelStructure().withVehicle(importedVehicles));
+            // The vehicles refer to the models of their types: the response has them, as the export does
+            mappedVehicles.stream()
+                    .map(org.rutebanken.sobek.model.vehicle.Vehicle::getTransportType)
+                    .filter(java.util.Objects::nonNull)
+                    .forEach(type -> vehicleModelMapper.addToFrame(responseResourceFrame, type));
             logger.info("Finished importing vehicles");
+        }
+    }
+
+    /**
+     * A vehicle has no vehicle model of its own: its model is the one of its vehicle type. A model reference on an
+     * incoming vehicle is therefore accepted only if it is the model of the type of the vehicle: the model id derived
+     * from the id of the type, as exported, or the id of the model the same delivery gives the type. Anything else says
+     * the vehicle has a model it cannot have, and is rejected.
+     */
+    private static void checkVehicleModelRef(org.entur.netex2.model.Vehicle incoming,
+                                             org.rutebanken.sobek.model.vehicle.Vehicle mapped,
+                                             VehicleModelAssociations models) {
+        if (incoming.getVehicleModelRef() == null || incoming.getVehicleModelRef().getRef() == null) {
+            return;
+        }
+        String modelRef = incoming.getVehicleModelRef().getRef();
+        org.rutebanken.sobek.model.vehicle.VehicleType type = mapped.getTransportType();
+        String typeRef = incoming.getTransportTypeRef() != null && incoming.getTransportTypeRef().getValue() != null
+                ? incoming.getTransportTypeRef().getValue().getRef() : null;
+
+        if (type == null || !type.hasVehicleModelData()) {
+            throw new ValidationException("The vehicle " + incoming.getId() + " refers to the vehicle model " + modelRef
+                    + ", but its vehicle type has no vehicle model. The vehicle model of a vehicle is the one of its vehicle type.");
+        }
+        boolean isModelOfType = modelRef.equals(VehicleModelId.forVehicleType(type.getNetexId()))
+                || models.typeIdOfModel(modelRef).filter(typeId -> typeId.equals(typeRef) || typeId.equals(type.getNetexId())).isPresent();
+        if (!isModelOfType) {
+            throw new ValidationException("The vehicle " + incoming.getId() + " refers to the vehicle model " + modelRef
+                    + ", which is not the vehicle model of its vehicle type " + type.getNetexId() + ".");
         }
     }
 }

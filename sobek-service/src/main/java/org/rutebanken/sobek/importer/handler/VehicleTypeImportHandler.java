@@ -74,6 +74,17 @@ public class VehicleTypeImportHandler {
     public void handleVehicleTypes(ResourceFrame netexResourceFrame, ImportParams importParams, AtomicInteger vehicleTypesCounter, ResourceFrame responseResourceframe) {
 
         List<DataManagedObjectStructure> incoming = incomingVehicleTypes(netexResourceFrame);
+
+        // The vehicle models of the frame are kept in their vehicle types, so each must belong to exactly one of them
+        VehicleModelAssociations models = VehicleModelAssociations.of(netexResourceFrame);
+        Set<String> incomingIds = incoming.stream().map(EntityStructure::getId).collect(Collectors.toSet());
+        for (String typeId : models.typeIds()) {
+            if (!incomingIds.contains(typeId)) {
+                throw new ValidationException("The vehicle type " + typeId + " has a vehicle model in the delivery, but is not itself in it. "
+                        + "A vehicle model is kept in its vehicle type, so they must be sent together.");
+            }
+        }
+
         if (!incoming.isEmpty()) {
             logger.info("Publication delivery contains {} vehicle types for import.", incoming.size());
 
@@ -89,10 +100,12 @@ public class VehicleTypeImportHandler {
                 String clientId = incomingType.getId();
                 if (incomingType instanceof TrainElement trainElement) {
                     var mapped = mapWithKind(vehicleTypeMapper.mapToSobek(trainElementIdConverter.convertIncomingId(trainElement), context), clientId, importParams);
+                    models.modelOfType(clientId).ifPresent(model -> VehicleModelAssociations.applyTo(model, mapped));
                     trainElements.add(vehicleTypeImporter.importTrainElement((org.rutebanken.sobek.model.vehicle.TrainElement) mapped, vehicleTypesCounter));
                 } else {
                     var vehicleType = (VehicleType_VersionStructure) incomingType;
                     var mapped = mapWithKind(vehicleTypeMapper.mapAnyToSobek(vehicleTypeIdConverter.convertIncomingId(vehicleType), context), clientId, importParams);
+                    models.modelOfType(clientId).ifPresent(model -> VehicleModelAssociations.applyTo(model, mapped));
                     importedVehicleTypes.addAll(vehicleTypeImporter.importVehicleTypes(List.of(mapped), vehicleTypesCounter));
                 }
             }

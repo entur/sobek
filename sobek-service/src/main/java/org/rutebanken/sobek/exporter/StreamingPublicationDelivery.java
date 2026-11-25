@@ -30,7 +30,6 @@ import org.rutebanken.sobek.model.job.VehicleTypeKindSelection;
 import org.rutebanken.sobek.model.vehicle.*;
 import org.rutebanken.sobek.model.vehicle.DeckPlan;
 import org.rutebanken.sobek.model.vehicle.Vehicle;
-import org.rutebanken.sobek.model.vehicle.VehicleModel;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.rutebanken.sobek.netex.mapping.mapstruct.*;
@@ -52,6 +51,7 @@ import java.io.OutputStream;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -73,7 +73,6 @@ public class StreamingPublicationDelivery {
     private final VehicleRepository vehicleRepository;
     private final FleetRepository fleetRepository;
     private final VehicleTypeRepository vehicleTypeRepository;
-    private final VehicleModelRepository vehicleModelRepository;
     private final DeckPlanRepository deckPlanRepository;
     private final EquipmentRepository equipmentRepository;
     private final PublicationDeliveryCreator publicationDeliveryCreator;
@@ -97,7 +96,6 @@ public class StreamingPublicationDelivery {
     public StreamingPublicationDelivery(VehicleRepository vehicleRepository,
                                         FleetRepository fleetRepository,
                                         VehicleTypeRepository vehicleTypeRepository,
-                                        VehicleModelRepository vehicleModelRepository,
                                         DeckPlanRepository deckPlanRepository,
                                         EquipmentRepository equipmentRepository,
                                         PublicationDeliveryCreator publicationDeliveryCreator,
@@ -114,7 +112,6 @@ public class StreamingPublicationDelivery {
         this.vehicleRepository = vehicleRepository;
         this.fleetRepository = fleetRepository;
         this.vehicleTypeRepository = vehicleTypeRepository;
-        this.vehicleModelRepository = vehicleModelRepository;
         this.deckPlanRepository = deckPlanRepository;
         this.equipmentRepository = equipmentRepository;
         this.publicationDeliveryCreator = publicationDeliveryCreator;
@@ -167,8 +164,8 @@ public class StreamingPublicationDelivery {
         netexCompositeFrame.withFrames(framesRelStructure);
 
         logger.info("Preparing scrollable iterators");
-        prepareVehicleTypes(exportParams.getDataOwner(), exportParams.getVehicleTypeKind(), mappedVehicleTypeCount, netexResourceFrame);
-        prepareVehicleModels(exportParams.getDataOwner(), exportParams.getVehicleTypeKind(), mappedVehicleModelCount, netexResourceFrame);
+        List<VehicleType> exportedVehicleTypes = prepareVehicleTypes(exportParams.getDataOwner(), exportParams.getVehicleTypeKind(), mappedVehicleTypeCount, netexResourceFrame);
+        prepareVehicleModels(exportedVehicleTypes, mappedVehicleModelCount, netexResourceFrame);
         if (exportParams.getVehicleTypeKind().includesPhysical()) {
             prepareVehicles(exportParams.getDataOwner(), mappedVehicleCount, netexResourceFrame);
             // Fleets are made of physical vehicles and vehicle types, so they are exported with those
@@ -314,7 +311,7 @@ public class StreamingPublicationDelivery {
         mappedFleetCount.set(fleets.size());
     }
 
-    private void prepareVehicleTypes(String dataOwnerRef, VehicleTypeKindSelection kindSelection, AtomicInteger mappedVehicleTypeCount, org.entur.netex2.model.ResourceFrame resourceFrame) {
+    private List<VehicleType> prepareVehicleTypes(String dataOwnerRef, VehicleTypeKindSelection kindSelection, AtomicInteger mappedVehicleTypeCount, org.entur.netex2.model.ResourceFrame resourceFrame) {
         List<VehicleType> vehicleTypesInDb = vehicleTypeRepository
             .findCurrentFiltered(dataOwnerRef, null, null, kindSelection.toKindOrNull(), null, Pageable.unpaged())
             .getContent();
@@ -346,25 +343,26 @@ public class StreamingPublicationDelivery {
         } else {
             logger.info("No vehicle types to export");
         }
+        return vehicleTypesInDb;
     }
 
     private static boolean isTrainElement(VehicleType vehicleType) {
         return org.hibernate.Hibernate.unproxy(vehicleType) instanceof org.rutebanken.sobek.model.vehicle.TrainElement;
     }
 
-    private void prepareVehicleModels(String dataOwnerRef, VehicleTypeKindSelection vehicleTypeKindSelection, AtomicInteger mappedVehicleModelCount, org.entur.netex2.model.ResourceFrame resourceFrame) {
-        List<VehicleModel> vehicleModelsInDb = vehicleModelRepository
-            .findCurrentFiltered(dataOwnerRef, null, null, vehicleTypeKindSelection.toKindOrNull(), null, Pageable.unpaged())
-            .getContent();
+    /**
+     * The vehicle models are not stored: each is derived from the vehicle type that has its data, so they are exactly
+     * the models of the vehicle types that are exported.
+     */
+    private void prepareVehicleModels(List<VehicleType> exportedVehicleTypes, AtomicInteger mappedVehicleModelCount, org.entur.netex2.model.ResourceFrame resourceFrame) {
+        List<org.entur.netex2.model.VehicleModel> vehicleModels = exportedVehicleTypes.stream()
+                .map(vt -> vehicleModelMapper.mapToNetex((VehicleType) org.hibernate.Hibernate.unproxy(vt)))
+                .flatMap(Optional::stream)
+                .toList();
 
-        if (!vehicleModelsInDb.isEmpty()) {
+        if (!vehicleModels.isEmpty()) {
             logger.info("There are vehicle models to export");
-
-            VehicleModelsInFrame_RelStructure vehicleModelsInFrameRelStructure = new VehicleModelsInFrame_RelStructure();
-            List<org.entur.netex2.model.VehicleModel> vehicleModels = vehicleModelsInDb.stream().map(vt -> vehicleModelMapper.mapToNetex(vt, mappingContext)).toList();
-
-            vehicleModelsInFrameRelStructure.withVehicleModel(vehicleModels);
-            resourceFrame.setVehicleModels(vehicleModelsInFrameRelStructure);
+            resourceFrame.setVehicleModels(new VehicleModelsInFrame_RelStructure().withVehicleModel(vehicleModels));
             mappedVehicleModelCount.set(vehicleModels.size());
         } else {
             logger.info("No vehicle models to export");

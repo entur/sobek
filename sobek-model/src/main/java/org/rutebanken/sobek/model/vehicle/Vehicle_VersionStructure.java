@@ -49,15 +49,8 @@ public class Vehicle_VersionStructure extends DataManagedObjectStructure impleme
     @Transient
     private String transportTypeRef;
 
-    @ManyToOne
-    private VehicleModel vehicleModel;
-    @Transient
-    private String vehicleModelRef;
-
     @Transient
     private VehicleEquipmentProfileRefs_RelStructure equipmentProfiles;
-    //@Transient
-    //private JAXBElement<? extends VehicleModelProfileRefStructure> vehicleModelProfileRef;
     @Transient
     private Equipments_RelStructure actualVehicleEquipments;
     private Boolean monitored;

@@ -6,6 +6,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.entur.netex2.model.*;
+import org.rutebanken.sobek.netex.id.VehicleModelId;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 
@@ -14,14 +15,15 @@ import java.util.List;
 /**
  * MapStruct mapper for Vehicle.
  * Handles mapping between NeTEx Vehicle and Sobek Vehicle entity.
- * Vehicle references both VehicleType (transportType) and VehicleModel.
+ * A vehicle references its VehicleType (transportType). The vehicle model is the one of the type, so the vehicle has
+ * no reference to a model of its own in Sobek: one on an incoming vehicle is checked by the import handler.
  */
 @Mapper(
         config = SobekMapperConfig.class,
         uses = {
                 DataManagedObjectStructureMapper.class,
                 VehicleTypeMapper.class,
-                VehicleModelMapper.class, EntityInVersionMapper.class
+                EntityInVersionMapper.class
         }
 )
 public interface VehicleMapper {
@@ -33,10 +35,8 @@ public interface VehicleMapper {
      */
     @DataManagedObjectStructureMapper.ToSobekMappings
     @Mapping(target = "transportType", ignore = true) // Handled in @AfterMapping
-    @Mapping(target = "vehicleModel", ignore = true) // Handled in @AfterMapping
     @Mapping(target = "transportTypeRef", ignore = true) // Transient field
     //@Mapping(target = "vehicleTypeRef", ignore = true) // Transient field
-    @Mapping(target = "vehicleModelRef", ignore = true) // Transient field
     @Mapping(target = "actualVehicleEquipments", ignore = true) // Transient field
     @Mapping(target = "equipmentProfiles", ignore = true) // Transient field
     //@Mapping(target = "transportOrganisationRef", ignore = true) // Transient field
@@ -52,7 +52,6 @@ public interface VehicleMapper {
      */
     @DataManagedObjectStructureMapper.ToNetexMappings
     @Mapping(target = "transportTypeRef", ignore = true) // Handled in @AfterMapping
-    @Mapping(target = "vehicleModelRef", ignore = true) // Handled in @AfterMapping
     @Mapping(target = "actualVehicleEquipments", ignore = true)
     @Mapping(target = "equipmentProfiles", ignore = true)
     @Mapping(target = "transportOrganisationRef", ignore = true)
@@ -69,8 +68,6 @@ public interface VehicleMapper {
     @DataManagedObjectStructureMapper.ToSobekMappings
     @Mapping(target = "transportType", ignore = true)
     @Mapping(target = "transportTypeRef", ignore = true)
-    @Mapping(target = "vehicleModel", ignore = true)
-    @Mapping(target = "vehicleModelRef", ignore = true)
     @Mapping(target = "actualVehicleEquipments", ignore = true)
     @Mapping(target = "equipmentProfiles", ignore = true)
     //@Mapping(target = "transportOrganisationRef", ignore = true)
@@ -107,20 +104,6 @@ public interface VehicleMapper {
             }
         }
 
-        // Extract and resolve VehicleModelRef if present
-        if (source.getVehicleModelRef() != null) {
-            VehicleModelRefStructure vehicleModelRefStructure = source.getVehicleModelRef();
-
-            // Resolve the actual DeckPlan entity if resolver is available
-            org.rutebanken.sobek.model.vehicle.VehicleModel vehicleModel = ReferenceMapper.resolveReference(
-                    vehicleModelRefStructure,
-                    org.rutebanken.sobek.model.vehicle.VehicleModel.class,
-                    context
-            );
-            if (vehicleModel != null) {
-                target.setVehicleModel(vehicleModel);
-            }
-        }
         context.getOwnedEntityMapper().updateSobekFromNetex(target, context);
     }
 
@@ -142,16 +125,13 @@ public interface VehicleMapper {
                     TransportTypeRefStructure.class
             );
             target.withTransportTypeRef(OBJECT_FACTORY.createTransportTypeRef(transportTypeRefStructure));
-        }
 
-        // Handle VehicleModel -> VehicleModelRef wrapping
-        if (source.getVehicleModel() != null && source.getVehicleModel().getNetexId() != null) {
-            // Create reference from actual entity
-            VehicleModelRefStructure vehicleModelRefStructure = ReferenceMapper.createReference(
-                    source.getVehicleModel(),
-                    VehicleModelRefStructure.class
-            );
-            target.withVehicleModelRef(vehicleModelRefStructure);
+            // The vehicle model of a vehicle is the one of its type, exported with the id derived from the id of the type
+            if (source.getTransportType().hasVehicleModelData()) {
+                target.withVehicleModelRef(new VehicleModelRefStructure()
+                        .withRef(VehicleModelId.forVehicleType(source.getTransportType().getNetexId()))
+                        .withVersion(String.valueOf(source.getTransportType().getVersion())));
+            }
         }
     }
 

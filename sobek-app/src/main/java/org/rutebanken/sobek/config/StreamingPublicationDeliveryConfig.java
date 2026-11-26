@@ -42,9 +42,6 @@ public class StreamingPublicationDeliveryConfig {
     private VehicleTypeRepository vehicleTypeRepository;
 
     @Autowired
-    private VehicleModelRepository vehicleModelRepository;
-
-    @Autowired
     private DeckPlanRepository deckPlanRepository;
 
     @Autowired
@@ -91,7 +88,7 @@ public class StreamingPublicationDeliveryConfig {
     }
 
     private StreamingPublicationDelivery createStreamingPublicationDelivery() {
-        return new StreamingPublicationDelivery(vehicleRepository, fleetRepository, vehicleTypeRepository, vehicleModelRepository, deckPlanRepository, equipmentRepository, publicationDeliveryCreator,
+        return new StreamingPublicationDelivery(vehicleRepository, fleetRepository, vehicleTypeRepository, deckPlanRepository, equipmentRepository, publicationDeliveryCreator,
                 vehicleTypeMapper, equipmentMapper, vehicleMapper, fleetMapper, deckPlanMapper, vehicleModelMapper, authorizationService, mappingContext, sobekResourceFrameExporter, sobekComositeFrameExporter );
     }
 }

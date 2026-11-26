@@ -1,176 +1,74 @@
 package org.rutebanken.sobek.netex.mapping.mapstruct;
 
-import jakarta.xml.bind.JAXBElement;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.entur.netex2.model.ObjectFactory;
-import org.entur.netex2.model.TransportTypeRefStructure;
 import org.entur.netex2.model.VehicleModel;
+import org.junit.jupiter.api.Test;
 import org.rutebanken.sobek.model.EmbeddableMultilingualString;
 import org.rutebanken.sobek.model.vehicle.VehicleType;
-import org.rutebanken.sobek.netex.id.NetexIdHelper;
-import org.rutebanken.sobek.netex.id.ValidPrefixList;
-import org.rutebanken.sobek.repository.reference.ReferenceResolver;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.rutebanken.sobek.netex.id.VehicleModelId;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SpringBootTest
-class VehicleModelMapperTest extends DataManagedObjectStructureMapperTestBase<
-    org.entur.netex2.model.VehicleModel,
-    org.rutebanken.sobek.model.vehicle.VehicleModel> {
+/**
+ * Sobek keeps the vehicle model in the vehicle type: the NeTEx vehicle model is derived from the type on export.
+ */
+class VehicleModelMapperTest {
 
-    @Autowired
-    private VehicleModelMapper mapper;
-    @Autowired
-    private NetexIdHelper netexIdHelper;
-    @Autowired
-    private ValidPrefixList validPrefixList;
-    @Autowired
-    private DataManagedObjectStructureMapper dataManagedObjectStructureMapper;
+    private final VehicleModelMapper mapper = new VehicleModelMapper();
 
-    private final ObjectFactory objectFactory = new ObjectFactory();
-
-    protected VehicleModelMapperTest() {
-        super(org.entur.netex2.model.VehicleModel.class, org.rutebanken.sobek.model.vehicle.VehicleModel.class);
-    }
-
-    @Override
-    protected org.rutebanken.sobek.model.vehicle.VehicleModel mapToSobek(org.entur.netex2.model.VehicleModel source) {
-        return mapper.mapToSobek(source, context);
-    }
-
-    @Override
-    protected org.entur.netex2.model.VehicleModel mapToNetex(org.rutebanken.sobek.model.vehicle.VehicleModel source) {
-        return mapper.mapToNetex(source, context);
-    }
-
-    // The mapping context is shared by the tests of the module: put back what this test changes, see FleetMapperTest
-    private ReferenceResolver originalReferenceResolver;
-
-    @BeforeEach
-    void setUp() {
-        originalReferenceResolver = context.getReferenceResolver();
-        // Create mock resolver
-        org.rutebanken.sobek.model.vehicle.VehicleModel mockVehicleModel = new org.rutebanken.sobek.model.vehicle.VehicleModel();
-        mockVehicleModel.setNetexId("NMR:VehicleModel:1");
-
-        VehicleType mockVehicleType = new VehicleType();
-        mockVehicleType.setNetexId("NMR:VehicleType:1");
-
-        ReferenceResolver referenceResolver = mock(ReferenceResolver.class);
-        when(referenceResolver.resolve(any(),any(),eq(VehicleType.class))).thenReturn(mockVehicleType);
-        when(referenceResolver.resolve(any(),any(),eq(org.rutebanken.sobek.model.vehicle.VehicleModel.class))).thenReturn(mockVehicleModel);
-        context.setReferenceResolver(referenceResolver);
-        context.setNetexIdHelper(netexIdHelper);
-        context.setValidPrefixList(validPrefixList);
-        context.setDataManagedObjectStructureMapper(dataManagedObjectStructureMapper);
-    }
-
-    @AfterEach
-    void restoreContext() {
-        context.setReferenceResolver(originalReferenceResolver);
+    private static VehicleType typeWithModelData() {
+        VehicleType type = new VehicleType();
+        type.setNetexId("NMR:VehicleType:12");
+        type.setVersion(3);
+        type.setName(new EmbeddableMultilingualString("Flirt", "en"));
+        type.setManufacturer(new EmbeddableMultilingualString("Stadler", "en"));
+        type.setRange(new BigDecimal("500.00"));
+        type.setFullCharge(new BigDecimal("100.00"));
+        return type;
     }
 
     @Test
-    void testMapperIsInjected() {
-        assertNotNull(mapper, "Mapper should be injected by Spring");
+    void theModelOfATypeIsDerivedFromIt() {
+        Optional<VehicleModel> model = mapper.mapToNetex(typeWithModelData());
+
+        assertFalse(model.isEmpty());
+        assertEquals("NMR:VehicleModel:12", model.get().getId());
+        assertEquals("3", model.get().getVersion());
+        assertEquals(new BigDecimal("500.00"), model.get().getRange());
+        assertEquals(new BigDecimal("100.00"), model.get().getFullCharge());
+        assertNotNull(model.get().getManufacturer());
+        assertEquals("Stadler", model.get().getManufacturer().getContent().getFirst());
+        assertEquals("NMR:VehicleType:12", model.get().getTransportTypeRef().getValue().getRef());
     }
 
     @Test
-    void testMapToSobek() {
-        // Given
-        VehicleModel netexModel = new VehicleModel();
-        netexModel.setId("NMR:VehicleModel:1");
-        netexModel.setVersion("1");
+    void aTypeWithoutModelDataHasNoModel() {
+        VehicleType type = new VehicleType();
+        type.setNetexId("NMR:VehicleType:12");
+        type.setName(new EmbeddableMultilingualString("Flirt", "en"));
 
-        TransportTypeRefStructure transportTypeRef = new TransportTypeRefStructure()
-                .withRef("NMR:VehicleType:1");
-        JAXBElement<TransportTypeRefStructure> jaxbRef =
-                objectFactory.createTransportTypeRef(transportTypeRef);
-        netexModel.setTransportTypeRef(jaxbRef);
-
-        netexModel.setRange(new BigDecimal("500.0"));
-
-        // When
-        org.rutebanken.sobek.model.vehicle.VehicleModel sobekModel =
-                mapper.mapToSobek(netexModel, context);
-
-        // Then
-        assertNotNull(sobekModel);
-        assertEquals(1, sobekModel.getVersion());
-        assertNotNull(sobekModel.getTransportType());
-        assertEquals("NMR:VehicleType:1", sobekModel.getTransportType().getNetexId());
-        assertEquals(new BigDecimal("500.0"), sobekModel.getRange());
+        assertEquals(Optional.empty(), mapper.mapToNetex(type));
     }
 
     @Test
-    void testMapToNetex() {
-        // Given
-        org.rutebanken.sobek.model.vehicle.VehicleModel sobekModel =
-                new org.rutebanken.sobek.model.vehicle.VehicleModel();
-        sobekModel.setVersion(1);
-        org.rutebanken.sobek.model.vehicle.VehicleType vehicleType = new org.rutebanken.sobek.model.vehicle.VehicleType();
-        vehicleType.setNetexId("NMR:VehicleType:1");
-        sobekModel.setTransportType(vehicleType);
-        sobekModel.setRange(new BigDecimal("500.0"));
+    void anyOfTheModelDataIsEnoughForAModel() {
+        VehicleType type = new VehicleType();
+        type.setNetexId("CVT:VehicleType:7");
+        type.setRange(new BigDecimal("80"));
 
-        // When
-        VehicleModel netexModel = mapper.mapToNetex(sobekModel, context);
-
-        // Then
-        assertNotNull(netexModel);
-        assertEquals("1", netexModel.getVersion());
-        assertNotNull(netexModel.getTransportTypeRef());
-        assertEquals("NMR:VehicleType:1", netexModel.getTransportTypeRef().getValue().getRef());
-        assertEquals(new BigDecimal("500.0"), netexModel.getRange());
+        assertEquals("CVT:VehicleModel:7", mapper.mapToNetex(type).orElseThrow().getId());
     }
 
     @Test
-    void testBidirectionalMapping() {
-        // Given
-        org.rutebanken.sobek.model.vehicle.VehicleModel originalSobek =
-                new org.rutebanken.sobek.model.vehicle.VehicleModel();
-        originalSobek.setVersion(1);
-        org.rutebanken.sobek.model.vehicle.VehicleType vehicleType = new org.rutebanken.sobek.model.vehicle.VehicleType();
-        vehicleType.setNetexId("NMR:VehicleType:1");
-        originalSobek.setTransportType(vehicleType);
-        originalSobek.setFullCharge(new BigDecimal("100.0"));
-        originalSobek.setDescription(new EmbeddableMultilingualString("Description ABC", "nor"));
-
-        // When - Round trip mapping
-        VehicleModel netex = mapper.mapToNetex(originalSobek, context);
-        org.rutebanken.sobek.model.vehicle.VehicleModel backToSobek =
-                mapper.mapToSobek(netex, context);
-
-        // Then
-        assertEquals(originalSobek.getVersion(), backToSobek.getVersion());
-        assertEquals(originalSobek.getFullCharge(), backToSobek.getFullCharge());
-        assertEquals(originalSobek.getDescription(), backToSobek.getDescription());
-        assertEquals(originalSobek.getDescription().getValue(), backToSobek.getDescription().getValue());
-    }
-
-    @Test
-    void testMapToSobekWithNullTransportTypeRef() {
-        // Given
-        VehicleModel netexModel = new VehicleModel();
-        netexModel.setVersion("1");
-        // No transportTypeRef set
-
-        // When
-        org.rutebanken.sobek.model.vehicle.VehicleModel sobekModel =
-                mapper.mapToSobek(netexModel, context);
-
-        // Then
-        assertNotNull(sobekModel);
-        assertNull(sobekModel.getTransportType());
+    void modelIdIsDerivedFromTheIdOfTheType() {
+        assertEquals("NMR:VehicleModel:12", VehicleModelId.forVehicleType("NMR:VehicleType:12"));
+        assertEquals("NMR:VehicleModel:5", VehicleModelId.forVehicleType("NMR:Train:5"));
+        assertThrows(IllegalArgumentException.class, () -> VehicleModelId.forVehicleType("12"));
+        assertThrows(IllegalArgumentException.class, () -> VehicleModelId.forVehicleType(null));
     }
 }

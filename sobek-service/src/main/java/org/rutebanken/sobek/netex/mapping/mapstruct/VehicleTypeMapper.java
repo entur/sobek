@@ -6,12 +6,14 @@ import org.mapstruct.*;
 import org.entur.netex2.model.DataManagedObjectStructure;
 import org.entur.netex2.model.DeckPlanRefStructure;
 import org.entur.netex2.model.ObjectFactory;
+import org.entur.netex2.model.VehicleModelRefStructure;
 import org.entur.netex2.model.VehicleType;
 import org.entur.netex2.model.VehicleType_VersionStructure;
 import org.rutebanken.sobek.model.vehicle.DeckPlan;
 import org.rutebanken.sobek.model.vehicle.HybridCategoryEnumeration;
 import org.rutebanken.sobek.model.vehicle.VehicleTypeKindEnumeration;
 import org.rutebanken.sobek.netex.id.ValidPrefixList;
+import org.rutebanken.sobek.netex.id.VehicleModelId;
 import org.rutebanken.sobek.netex.mapping.config.SobekMapperConfig;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
 import org.rutebanken.sobek.netex.util.KeyValuesHelper;
@@ -351,4 +353,13 @@ public interface VehicleTypeMapper {
                 trainElement.withDeckPlanRef(deckPlanRef);
             }
         }
-    }}
+
+        // The vehicle model is exported as an element of its own, with an id derived from the one of the type
+        if (target instanceof VehicleType_VersionStructure vehicleType
+                && source.hasVehicleModelData() && source.getNetexId() != null) {
+            vehicleType.withClassifiedAsRef(new VehicleModelRefStructure()
+                    .withRef(VehicleModelId.forVehicleType(source.getNetexId()))
+                    .withVersion(String.valueOf(source.getVersion())));
+        }
+    }
+}

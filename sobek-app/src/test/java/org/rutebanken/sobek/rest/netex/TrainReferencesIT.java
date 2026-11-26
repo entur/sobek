@@ -7,7 +7,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import jakarta.validation.ValidationException;
-import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,11 +19,9 @@ import org.rutebanken.sobek.model.vehicle.TrainComponent;
 import org.rutebanken.sobek.model.vehicle.TrainElement;
 import org.rutebanken.sobek.model.vehicle.TrainElementTypeEnumeration;
 import org.rutebanken.sobek.model.vehicle.Vehicle;
-import org.rutebanken.sobek.model.vehicle.VehicleModel;
 import org.rutebanken.sobek.model.vehicle.VehicleTypeKindEnumeration;
-import org.rutebanken.sobek.repository.VehicleModelRepository;
 import org.rutebanken.sobek.repository.VehicleRepository;
-import org.rutebanken.sobek.versioning.save.VehicleModelVersionedSaverService;
+import org.rutebanken.sobek.netex.id.VehicleModelId;
 import org.rutebanken.sobek.versioning.save.VehicleTypeVersionedSaverService;
 import org.rutebanken.sobek.versioning.save.VehicleVersionedSaverService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +29,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.support.TransactionTemplate;
 
 /**
@@ -51,22 +47,27 @@ class TrainReferencesIT {
 
     @Autowired private VehicleTypeVersionedSaverService vehicleTypeSaver;
     @Autowired private VehicleVersionedSaverService vehicleSaver;
-    @Autowired private VehicleModelVersionedSaverService vehicleModelSaver;
     @Autowired private VehicleRepository vehicleRepository;
-    @Autowired private VehicleModelRepository vehicleModelRepository;
     @Autowired private TransactionTemplate transactionTemplate;
 
     private Train physicalTrain;
     private Train contractualTrain;
     private String vehicleOfPhysicalTrain;
     private String modelOfPhysicalTrain;
+    private String modelOfContractualTrain;
 
     @BeforeAll
     void seed() {
-        physicalTrain = saveTrain(VehicleTypeKindEnumeration.PHYSICAL, "References physical train", 2);
-        contractualTrain = saveTrain(VehicleTypeKindEnumeration.CONTRACTUAL, "References contractual train", 2);
+        // The vehicle model of a train is kept in the train
+        Train physical = trainWithoutId(VehicleTypeKindEnumeration.PHYSICAL, "References physical train", 2);
+        physical.setManufacturer(new EmbeddableMultilingualString("References manufacturer", "en"));
+        physicalTrain = (Train) vehicleTypeSaver.saveNewVersion(physical);
+        Train contractual = trainWithoutId(VehicleTypeKindEnumeration.CONTRACTUAL, "References contractual train", 2);
+        contractual.setRange(new java.math.BigDecimal("250"));
+        contractualTrain = (Train) vehicleTypeSaver.saveNewVersion(contractual);
         vehicleOfPhysicalTrain = saveVehicleOf(physicalTrain).getNetexId();
-        modelOfPhysicalTrain = saveModelOf(physicalTrain).getNetexId();
+        modelOfPhysicalTrain = VehicleModelId.forVehicleType(physicalTrain.getNetexId());
+        modelOfContractualTrain = VehicleModelId.forVehicleType(contractualTrain.getNetexId());
     }
 
     @BeforeEach
@@ -107,14 +108,13 @@ class TrainReferencesIT {
     }
 
     @Test
-    @DisplayName("A vehicle model can be of a train, and follows its kind")
+    @DisplayName("The vehicle model of a train is exported with it, and follows its kind")
     void vehicleModelOfATrainFollowsItsKind() {
-        List<String> physicalModels = modelIds(VehicleTypeKindEnumeration.PHYSICAL);
-        List<String> contractualModels = modelIds(VehicleTypeKindEnumeration.CONTRACTUAL);
+        String physical = export("PHYSICAL");
+        String contractual = export("CONTRACTUAL");
 
-        assertThat(physicalModels).contains(modelOfPhysicalTrain);
-        assertThat(contractualModels).doesNotContain(modelOfPhysicalTrain);
-        assertThat(export("PHYSICAL")).contains(idAttribute(modelOfPhysicalTrain));
+        assertThat(physical).contains(idAttribute(modelOfPhysicalTrain)).doesNotContain(idAttribute(modelOfContractualTrain));
+        assertThat(contractual).contains(idAttribute(modelOfContractualTrain)).doesNotContain(idAttribute(modelOfPhysicalTrain));
     }
 
     @Test
@@ -185,18 +185,6 @@ class TrainReferencesIT {
         vehicle.setTransportType(train);
         vehicle.setDataOwnerRef(DATA_OWNER);
         return vehicleSaver.saveNewVersion(vehicle);
-    }
-
-    private VehicleModel saveModelOf(Train train) {
-        VehicleModel model = new VehicleModel();
-        model.setName(new EmbeddableMultilingualString("References model", "en"));
-        model.setTransportType(train);
-        return vehicleModelSaver.saveNewVersion(model);
-    }
-
-    private List<String> modelIds(VehicleTypeKindEnumeration kind) {
-        return vehicleModelRepository.findCurrentFiltered(DATA_OWNER, null, null, kind, null, Pageable.unpaged())
-                .getContent().stream().map(VehicleModel::getNetexId).toList();
     }
 
     private static String export(String kindSelection) {

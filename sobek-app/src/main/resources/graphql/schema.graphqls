@@ -484,6 +484,10 @@ type VehicleType {
     maximumEngineEffectKW: Float
     maximumVelocity: Float
     maximumRange: Float
+    "Not for train elements"
+    manufacturer: MultilingualString
+    "The energy of a full charge. Not for train elements"
+    fullCharge: Float
     length: Float
     height: Float
     width: Float
@@ -528,6 +532,10 @@ input VehicleTypeInput {
     maximumEngineEffectKW: Float
     maximumVelocity: Float
     maximumRange: Float
+    "Not for train elements"
+    manufacturer: MultilingualStringInput
+    "The energy of a full charge. Not for train elements"
+    fullCharge: Float
     length: Float
     height: Float
     width: Float

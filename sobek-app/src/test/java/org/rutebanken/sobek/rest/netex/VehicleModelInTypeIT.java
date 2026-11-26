@@ -46,6 +46,9 @@ class VehicleModelInTypeIT {
         String assignedTypeId = firstMatch(response, "<VehicleType[^>]* id=\"([^\"]+)\"");
         String derivedModelId = VehicleModelId.forVehicleType(assignedTypeId);
 
+        // The response has the model its type is classified as, also when no vehicle is imported
+        assertThat(response).contains("<VehicleModel ").contains("id=\"" + derivedModelId + "\"").contains("Stadler");
+
         String export = export();
         // The model is an element of its own, with the id derived from the id of the type, and the type is classified as it
         assertThat(export).contains("id=\"" + derivedModelId + "\"");

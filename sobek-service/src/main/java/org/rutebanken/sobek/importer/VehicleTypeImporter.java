@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 import static java.util.stream.Collectors.toList;
 
@@ -49,7 +50,7 @@ public class VehicleTypeImporter {
         this.context = context;
     }
 
-    public List<org.entur.netex2.model.VehicleType_VersionStructure> importVehicleTypes(List<VehicleType> vehicleTypes, AtomicInteger vehicleTypesCounter) {
+    public List<org.entur.netex2.model.VehicleType_VersionStructure> importVehicleTypes(List<VehicleType> vehicleTypes, AtomicInteger vehicleTypesCounter, Consumer<VehicleType> saved) {
 
         logger.info("Importing {} incoming vehicle types", vehicleTypes.size());
 
@@ -57,7 +58,9 @@ public class VehicleTypeImporter {
 
         logger.info("Importing vehicle types");
         for (VehicleType incomingVehicleType : vehicleTypes) {
-            result.add(importVehicleType(incomingVehicleType, vehicleTypesCounter));
+            VehicleType savedType = importVehicleType(incomingVehicleType, vehicleTypesCounter);
+            saved.accept(savedType);
+            result.add(savedType);
         }
 
         return result.stream().map(vt -> vehicleTypeMapper.mapAnyToNetex(vt, context)).collect(toList());
@@ -65,8 +68,10 @@ public class VehicleTypeImporter {
     }
 
     /** Imports a train element. In NeTEx it is not a vehicle type, so it is not imported with the vehicle types. */
-    public org.entur.netex2.model.TrainElement importTrainElement(org.rutebanken.sobek.model.vehicle.TrainElement trainElement, AtomicInteger vehicleTypesCounter) {
-        return vehicleTypeMapper.mapToNetex((org.rutebanken.sobek.model.vehicle.TrainElement) importVehicleType(trainElement, vehicleTypesCounter), context);
+    public org.entur.netex2.model.TrainElement importTrainElement(org.rutebanken.sobek.model.vehicle.TrainElement trainElement, AtomicInteger vehicleTypesCounter, Consumer<VehicleType> saved) {
+        VehicleType savedElement = importVehicleType(trainElement, vehicleTypesCounter);
+        saved.accept(savedElement);
+        return vehicleTypeMapper.mapToNetex((org.rutebanken.sobek.model.vehicle.TrainElement) savedElement, context);
     }
 
     private VehicleType importVehicleType(VehicleType incomingVehicleType, AtomicInteger vehicleTypesCounter) {

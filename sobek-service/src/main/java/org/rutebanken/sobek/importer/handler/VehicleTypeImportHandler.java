@@ -23,6 +23,7 @@ import org.rutebanken.sobek.importer.converter.TrainElementIdConverter;
 import org.rutebanken.sobek.importer.converter.VehicleTypeIdConverter;
 import org.rutebanken.sobek.model.vehicle.VehicleTypeKindEnumeration;
 import org.rutebanken.sobek.netex.mapping.context.MappingContext;
+import org.rutebanken.sobek.netex.mapping.mapstruct.VehicleModelMapper;
 import org.rutebanken.sobek.netex.mapping.mapstruct.VehicleTypeMapper;
 import org.rutebanken.sobek.netex.util.PublicationDeliveryHelper;
 import org.slf4j.Logger;
@@ -57,16 +58,20 @@ public class VehicleTypeImportHandler {
 
     private final MappingContext context;
 
+    private final VehicleModelMapper vehicleModelMapper;
+
     public VehicleTypeImportHandler(PublicationDeliveryHelper publicationDeliveryHelper,
                                     VehicleTypeMapper vehicleTypeMapper,
                                     VehicleTypeImporter vehicleTypeImporter, VehicleTypeIdConverter vehicleTypeIdConverter,
-                                    TrainElementIdConverter trainElementIdConverter, MappingContext context) {
+                                    TrainElementIdConverter trainElementIdConverter, MappingContext context,
+                                    VehicleModelMapper vehicleModelMapper) {
         this.publicationDeliveryHelper = publicationDeliveryHelper;
         this.vehicleTypeMapper = vehicleTypeMapper;
         this.vehicleTypeImporter = vehicleTypeImporter;
         this.vehicleTypeIdConverter = vehicleTypeIdConverter;
         this.trainElementIdConverter = trainElementIdConverter;
         this.context = context;
+        this.vehicleModelMapper = vehicleModelMapper;
     }
 
     // One transaction for all vehicle types: they are saved one at a time, but a failure must still undo the whole file
@@ -101,12 +106,12 @@ public class VehicleTypeImportHandler {
                 if (incomingType instanceof TrainElement trainElement) {
                     var mapped = mapWithKind(vehicleTypeMapper.mapToSobek(trainElementIdConverter.convertIncomingId(trainElement), context), clientId, importParams);
                     models.modelOfType(clientId).ifPresent(model -> VehicleModelAssociations.applyTo(model, mapped));
-                    trainElements.add(vehicleTypeImporter.importTrainElement((org.rutebanken.sobek.model.vehicle.TrainElement) mapped, vehicleTypesCounter));
+                    trainElements.add(vehicleTypeImporter.importTrainElement((org.rutebanken.sobek.model.vehicle.TrainElement) mapped, vehicleTypesCounter, savedType -> vehicleModelMapper.addToFrame(responseResourceframe, savedType)));
                 } else {
                     var vehicleType = (VehicleType_VersionStructure) incomingType;
                     var mapped = mapWithKind(vehicleTypeMapper.mapAnyToSobek(vehicleTypeIdConverter.convertIncomingId(vehicleType), context), clientId, importParams);
                     models.modelOfType(clientId).ifPresent(model -> VehicleModelAssociations.applyTo(model, mapped));
-                    importedVehicleTypes.addAll(vehicleTypeImporter.importVehicleTypes(List.of(mapped), vehicleTypesCounter));
+                    importedVehicleTypes.addAll(vehicleTypeImporter.importVehicleTypes(List.of(mapped), vehicleTypesCounter, savedType -> vehicleModelMapper.addToFrame(responseResourceframe, savedType)));
                 }
             }
             logger.info("Mapped and imported {} vehicle types", importedVehicleTypes.size() + trainElements.size());

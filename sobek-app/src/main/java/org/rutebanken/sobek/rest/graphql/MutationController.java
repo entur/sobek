@@ -135,6 +135,13 @@ public class MutationController {
             }
             input.setDeckPlan(dp);
         }
+        // The range is not in GraphQL (it is set by a NeTEx import), so a new version keeps the one of the previous version
+        if (input.getNetexId() != null) {
+            VehicleType previous = vehicleTypeRepository.findFirstByNetexIdOrderByVersionDesc(input.getNetexId());
+            if (previous != null && input.getRange() == null && input.getClass() == org.hibernate.Hibernate.getClass(previous)) {
+                input.setRange(previous.getRange());
+            }
+        }
         var output = vehicleTypeVersionedSaverService.saveNewVersion(input);
         return output.getNetexId();
     }

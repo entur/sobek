@@ -76,6 +76,9 @@ public class VehicleTypeInputBinder {
         }
         if (subtype != VehicleTypeSubtype.TRAIN_ELEMENT) {
             rejectFields(raw, subtype, "trainElementType");
+        } else {
+            // A train element has no vehicle model
+            rejectFields(raw, subtype, "manufacturer", "fullCharge");
         }
     }
 

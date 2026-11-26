@@ -125,21 +125,20 @@ class VehicleModelInTypeIT {
     }
 
     @Test
-    @DisplayName("The model of a train element is kept in it (the schema has no ClassifiedAsRef on a train element)")
-    void modelOfTrainElementIsAccepted() {
+    @DisplayName("A vehicle model of a train element is rejected: a train element has no vehicle model")
+    void modelOfTrainElementIsRejected() {
         String suffix = unique();
         String elementId = "EXT:TrainElement:" + suffix;
-        String modelId = "EXT:VehicleModel:" + suffix;
         String element = "<TrainElement version=\"1\" id=\"" + elementId + "\">"
                 + "<Name lang=\"nb\">Model test element</Name>"
                 + "<TrainElementType>carriage</TrainElementType>"
                 + "</TrainElement>";
-        String delivery = delivery(vehicleType("EXT:VehicleType:" + suffix, null), models(model(modelId, elementId, "Siemens", "400", null)), "")
+        String delivery = delivery(vehicleType("EXT:VehicleType:" + suffix, null), models(model("EXT:VehicleModel:" + suffix, elementId, "Siemens", "400", null)), "")
                 .replace("</ResourceFrame>", "<trainElementTypes>" + element + "</trainElementTypes></ResourceFrame>");
 
-        String response = postImport(delivery).statusCode(200).extract().body().asString();
+        String body = postImport(delivery).statusCode(400).extract().body().asString();
 
-        assertThat(response).contains("<VehicleModel ").contains("Siemens");
+        assertThat(body).contains("A train element has no vehicle model");
     }
 
     @Test

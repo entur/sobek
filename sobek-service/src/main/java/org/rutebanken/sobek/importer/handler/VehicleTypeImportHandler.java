@@ -90,6 +90,14 @@ public class VehicleTypeImportHandler {
             }
         }
 
+        // A train element is not a vehicle type in NeTEx and has no vehicle model, though it shares the vehicle type storage
+        for (DataManagedObjectStructure incomingType : incoming) {
+            if (incomingType instanceof TrainElement && models.modelOfType(incomingType.getId()).isPresent()) {
+                throw new ValidationException("The vehicle model " + models.modelOfType(incomingType.getId()).get().getId()
+                        + " refers to the train element " + incomingType.getId() + ". A train element has no vehicle model.");
+            }
+        }
+
         if (!incoming.isEmpty()) {
             logger.info("Publication delivery contains {} vehicle types for import.", incoming.size());
 

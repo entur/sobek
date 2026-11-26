@@ -6,9 +6,11 @@ import org.entur.netex2.model.VehicleModel;
 import org.entur.netex2.model.VehicleType_VersionStructure;
 import org.rutebanken.sobek.netex.mapping.mapstruct.MultilingualStringMapper;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -62,21 +64,26 @@ final class VehicleModelAssociations {
                 associate(typesOfModel, modelsOfType, model.getId(), model.getTransportTypeRef().getValue().getRef());
             }
         }
+        // The train elements are in a container of their own in the frame, but are vehicle types like the others
+        List<Object> types = new ArrayList<>();
         if (frame.getVehicleTypes() != null) {
-            frame.getVehicleTypes().getTransportType().stream()
-                    .map(jaxbElement -> jaxbElement.getValue())
-                    .filter(VehicleType_VersionStructure.class::isInstance)
-                    .map(VehicleType_VersionStructure.class::cast)
-                    .filter(type -> type.getClassifiedAsRef() != null && type.getClassifiedAsRef().getRef() != null)
-                    .forEach(type -> {
-                        String modelId = type.getClassifiedAsRef().getRef();
-                        if (!modelsById.containsKey(modelId)) {
-                            throw new ValidationException("The vehicle type " + type.getId() + " is classified as the vehicle model "
-                                    + modelId + ", which is not in the delivery. A vehicle model is kept in its vehicle type, so it must be sent with it.");
-                        }
-                        associate(typesOfModel, modelsOfType, modelId, type.getId());
-                    });
+            frame.getVehicleTypes().getTransportType().forEach(jaxbElement -> types.add(jaxbElement.getValue()));
         }
+        if (frame.getTrainElementTypes() != null) {
+            types.addAll(frame.getTrainElementTypes().getTrailingElementTypeOrTractiveElementTypeOrTrainElement());
+        }
+        types.stream()
+                .filter(VehicleType_VersionStructure.class::isInstance)
+                .map(VehicleType_VersionStructure.class::cast)
+                .filter(type -> type.getClassifiedAsRef() != null && type.getClassifiedAsRef().getRef() != null)
+                .forEach(type -> {
+                    String modelId = type.getClassifiedAsRef().getRef();
+                    if (!modelsById.containsKey(modelId)) {
+                        throw new ValidationException("The vehicle type " + type.getId() + " is classified as the vehicle model "
+                                + modelId + ", which is not in the delivery. A vehicle model is kept in its vehicle type, so it must be sent with it.");
+                    }
+                    associate(typesOfModel, modelsOfType, modelId, type.getId());
+                });
 
         Map<String, String> typeIdByModelId = new HashMap<>();
         for (String modelId : modelsById.keySet()) {

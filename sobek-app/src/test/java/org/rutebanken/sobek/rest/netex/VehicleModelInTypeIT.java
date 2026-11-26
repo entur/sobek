@@ -125,6 +125,24 @@ class VehicleModelInTypeIT {
     }
 
     @Test
+    @DisplayName("The model of a train element is kept in it (the schema has no ClassifiedAsRef on a train element)")
+    void modelOfTrainElementIsAccepted() {
+        String suffix = unique();
+        String elementId = "EXT:TrainElement:" + suffix;
+        String modelId = "EXT:VehicleModel:" + suffix;
+        String element = "<TrainElement version=\"1\" id=\"" + elementId + "\">"
+                + "<Name lang=\"nb\">Model test element</Name>"
+                + "<TrainElementType>carriage</TrainElementType>"
+                + "</TrainElement>";
+        String delivery = delivery(vehicleType("EXT:VehicleType:" + suffix, null), models(model(modelId, elementId, "Siemens", "400", null)), "")
+                .replace("</ResourceFrame>", "<trainElementTypes>" + element + "</trainElementTypes></ResourceFrame>");
+
+        String response = postImport(delivery).statusCode(200).extract().body().asString();
+
+        assertThat(response).contains("<VehicleModel ").contains("Siemens");
+    }
+
+    @Test
     @DisplayName("A vehicle that refers to another vehicle model than the one of its type is rejected")
     void vehicleWithModelRefOfAnotherModelIsRejected() {
         String suffix = unique();
